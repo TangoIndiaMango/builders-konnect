@@ -4,7 +4,7 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/builders-connect-ecommerce"
+      "path": "./apps/main"
     }
   ]
 }

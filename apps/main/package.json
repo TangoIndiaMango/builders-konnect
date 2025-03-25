@@ -1,0 +1,8 @@
+{
+  "name": "@builders-connect/main-app",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "main-app"
+  }
+}
