@@ -6,5 +6,11 @@
       "path": "./tsconfig.app.json"
     }
   ],
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*", "./app/*"]
+    }
+  },
   "extends": "../../tsconfig.base.json"
 }

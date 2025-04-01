@@ -11,8 +11,13 @@
       "@nx/react/typings/image.d.ts",
       "vite/client"
     ],
-    "rootDir": "src"
+    "rootDir": "src",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*", "./app/*"]
+    }
   },
+
   "exclude": [
     "out-tsc",
     "dist",
