@@ -20,7 +20,7 @@ const items = [
   label: `nav ${index + 1}`,
 }));
 
-const MainLayout: React.FC = () => (
+const MainLayout = ({children}: {children: React.ReactNode}) => (
   <Layout style={{ height: '100vh' }}>
     <Sider
       breakpoint="lg"
@@ -41,7 +41,7 @@ const MainLayout: React.FC = () => (
       />
     </Sider>
     <Layout>
-      <Header style={{ padding: 0, background: 'red' }} className="h-[10vh]" />
+      <Header style={{ padding: 0, background: 'white' }} className="h-[10vh]" />
       <Content
         style={{ margin: '24px 16px 0', background: 'white', height: '100%' }}
         className="overflow-y-scroll"
@@ -82,6 +82,7 @@ const MainLayout: React.FC = () => (
           doloribus quidem repellat sint ea magni quo est reprehenderit quae
           reiciendis commodi aliquam!
         </p>
+        {children}
         <Slider defaultValue={30} />
       </Content>
     </Layout>
