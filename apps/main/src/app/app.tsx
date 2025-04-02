@@ -6,12 +6,14 @@ import ForgotPassword from './pages/auth/forgot-password';
 import CreateVendorAccount from './pages/auth/create-vendor-account';
 import ChangePassword from './pages/auth/change-password';
 import MultipleAccounts from './pages/auth/multiple-accounts';
+import CreatePassword from './pages/auth/create-vendor-account';
 import DashboardHome from './pages/home';
 const App = () => {
   return (
     <Routes>
-      <Route path="auth" element={<AuthOutlet />}>
-        <Route path="" element={<RegisterVendor />} />
+      <Route path="auth/vendor" element={<AuthOutlet />}>
+        <Route path="register-vendor" element={<RegisterVendor />} />
+        <Route path="create-password" element={<CreatePassword />} />
         <Route path="create-vendor" element={<CreateVendorAccount />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<ForgotPassword />} />

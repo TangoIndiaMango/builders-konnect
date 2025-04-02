@@ -7,8 +7,6 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
-
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -19,13 +17,10 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           backgroundImage: `linear-gradient(to bottom, rgba(39, 86, 214, 0.3), rgba(0, 51, 153, 0.3)), url(${authBackground})`,
         }}
       >
-          <div className="">
-            {children}
-          </div>
-
+        <div className="">{children}</div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AuthLayout
+export default AuthLayout;
