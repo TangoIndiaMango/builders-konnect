@@ -1,5 +1,4 @@
 import React from 'react';
-
 import Header from '../components/Header';
 import { authBackground } from '../utils/assets/background';
 
