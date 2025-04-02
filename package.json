@@ -12,6 +12,7 @@
     "axios": "^1.8.4",
     "isbot": "^4.4.0",
     "jotai": "^2.12.2",
+    "lucide-react": "^0.487.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router": "^7.2.0",
