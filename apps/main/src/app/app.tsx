@@ -8,8 +8,8 @@ import CreatePassword from './pages/auth/create-vendor-account';
 const App = () => {
   return (
     <Routes>
-      <Route path="vendor/auth" element={<AuthOutlet />}>
-        <Route path="" element={<RegisterVendor />} />
+      <Route path="auth/vendor" element={<AuthOutlet />}>
+        <Route path="register-vendor" element={<RegisterVendor />} />
         <Route path="create-password" element={<CreatePassword />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
