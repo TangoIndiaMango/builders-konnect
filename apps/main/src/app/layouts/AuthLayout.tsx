@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from '../components/Header';
-import { authBackground } from '../utils/assets/background';
+import { authBackground } from '../lib/assets/background';
 
 interface AuthLayoutProps {
   children?: React.ReactNode;
