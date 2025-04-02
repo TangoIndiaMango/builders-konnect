@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ErrorModal from '../../components/common/ErrorModal';
 import SuccessModal from '../../components/common/SuccessModal';
 
-const CreateVendorAccount = () => {
+const CreatePassword = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [successModalOpen, setSuccessModalOpen] = useState(false);
@@ -97,4 +97,4 @@ const CreateVendorAccount = () => {
   );
 };
 
-export default CreateVendorAccount;
+export default CreatePassword;
