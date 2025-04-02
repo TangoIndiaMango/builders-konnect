@@ -1,5 +1,6 @@
+import { businessLogo } from '../../lib/assets/icons';
 import { Radio } from 'antd';
-// import { businessLogo } from '../../../utils/';
+
 interface Store {
   id: number;
   name: string;
@@ -19,7 +20,7 @@ interface AccountCardProps {
 const AccountCard: React.FC<AccountCardProps> = ({
   id,
   name,
-  logo = 'businessLogo',
+  logo = businessLogo,
   role,
   stores,
   selected = false,

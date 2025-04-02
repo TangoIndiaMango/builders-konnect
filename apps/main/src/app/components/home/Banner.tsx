@@ -1,4 +1,4 @@
-import { bannerLogo, bgPattern } from '../../utils/assets/background';
+import { bannerLogo, bgPattern } from '../../lib/assets/background';
 import { Button } from 'antd';
 
 const Banner = () => {
