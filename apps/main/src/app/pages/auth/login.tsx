@@ -1,28 +1,33 @@
+import { useCreateData } from '../../../hooks/useApis';
 import { Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { isPending, data, mutateAsync } = useCreateData('auth/signin');
   const [form] = Form.useForm();
 
-  // const onFinish = (values: any) => {
-  //   console.log('Form values:', values);
-  //   // Handle form submission
-  // };
-
-  const handleSubmit = async () => {
-    try {
-      const values = await form.validateFields();
-      console.log('Form values:', values);
-      // API call to submit form
-
-    } catch (error) {
-      console.error('Form validation error:', error);
-
-
-    }
+  const onFinish = (values: any) => {
+    console.log('Form values:', values);
+    handleSubmit();
   };
 
+  const handleSubmit = async () => {
+    console.log('submit');
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        identifier: values.email,
+        password: values.password,
+        entity: 'merchant',
+      };
+
+      const res = await mutateAsync(payload);
+      console.log(res);
+    } catch (error) {
+      console.error('Form validation error:', error);
+    }
+  };
 
   return (
     <div className="max-w-4xl p-8 mx-auto bg-white rounded-sm min-h-[400px] space-y-5">
@@ -32,7 +37,7 @@ const Login = () => {
           form={form}
           className="flex flex-col w-full min-h-[400px]"
           layout="horizontal"
-          // onFinish={onFinish}
+          onFinish={onFinish}
           labelCol={{ span: 6 }}
           size="middle"
         >
@@ -58,12 +63,16 @@ const Login = () => {
 
           <div className="pt-6 mt-auto space-y-4">
             <div className="flex justify-end gap-4">
-              <Button type="link" onClick={() => navigate('/auth/forgot-password')}>
+              <Button
+                type="link"
+                onClick={() => navigate('/auth/forgot-password')}
+              >
                 Forgot Password?
               </Button>
               <Button
+                loading={isPending}
                 type="primary"
-                onClick={handleSubmit}
+                htmlType="submit"
                 size="large"
                 className="w-[114px]"
               >
@@ -73,7 +82,6 @@ const Login = () => {
           </div>
         </Form>
       </div>
-
     </div>
   );
 };

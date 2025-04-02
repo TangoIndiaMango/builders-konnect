@@ -1,5 +1,5 @@
 import { Radio } from 'antd';
-import { businessLogo } from '../../utils/assets/icons';
+// import { businessLogo } from '../../../utils/';
 interface Store {
   id: number;
   name: string;
@@ -19,7 +19,7 @@ interface AccountCardProps {
 const AccountCard: React.FC<AccountCardProps> = ({
   id,
   name,
-  logo = businessLogo,
+  logo = 'businessLogo',
   role,
   stores,
   selected = false,
@@ -28,7 +28,9 @@ const AccountCard: React.FC<AccountCardProps> = ({
   return (
     <div
       className={`p-5 rounded-md border ${
-        selected ? 'border-[#003399] bg-[#E6F7FF] shadow-lg shadow-[#38476824]' : 'border-gray-200 shadow-sm'
+        selected
+          ? 'border-[#003399] bg-[#E6F7FF] shadow-lg shadow-[#38476824]'
+          : 'border-gray-200 shadow-sm'
       } cursor-pointer hover:border-[#003399] transition-colors`}
       onClick={() => onSelect(id)}
     >
@@ -44,7 +46,13 @@ const AccountCard: React.FC<AccountCardProps> = ({
 
           <div className="flex-1">
             <div className="">
-              <h3 className={`${selected ? 'text-[#003399]' : 'text-gray-500'} text-lg font-bold`}>{name}</h3>
+              <h3
+                className={`${
+                  selected ? 'text-[#003399]' : 'text-gray-500'
+                } text-lg font-bold`}
+              >
+                {name}
+              </h3>
               <p className="text-sm">
                 {stores.length} {stores.length === 1 ? 'store' : 'stores'}
               </p>

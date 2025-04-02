@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { header_logo } from '../utils/assets/logo';
+import { header_logo } from '../lib/assets/logo';
 import { Button, Layout } from 'antd';
 
 const Header = () => {
