@@ -1,8 +1,16 @@
+import { useNavigate } from 'react-router-dom';
+import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { bannerLogo, bgPattern } from '../../lib/assets/background';
 import { Button } from 'antd';
 
 const Banner = () => {
-  console.log('bgPattern:', bgPattern);
+  const { clearUser } = useSessionStorage();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearUser();
+    navigate('/vendor/auth/login');
+  };
 
   return (
     <div
@@ -34,9 +42,18 @@ const Banner = () => {
                 Complete your business profile by uploading your business logo
               </p>
             </div>
-            <Button type="default" className="bg-white hover:bg-gray-100">
-              Upload Logo
-            </Button>
+            <div className="flex gap-2">
+              <Button type="default" className="bg-white hover:bg-gray-100">
+                Upload Logo
+              </Button>
+              <Button
+                type="default"
+                className="bg-white hover:bg-gray-100"
+                onClick={handleLogout}
+              >
+                logout
+              </Button>
+            </div>
           </div>
 
           <div className="relative h-[200px] w-[200px]">

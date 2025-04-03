@@ -7,20 +7,27 @@ import CreatePassword from './pages/auth/create-vendor-account';
 import ChangePassword from './pages/auth/change-password';
 import MultipleAccounts from './pages/auth/multiple-accounts';
 import DashboardHome from './pages/home';
+import { ProtectedRoute } from './hoc/ProtectedRoute';
 const App = () => {
   return (
     <Routes>
-      <Route path="auth/vendor" element={<AuthOutlet />}>
+      <Route path="vendor/auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
         <Route path="create-password" element={<CreatePassword />} />
         <Route path="login" element={<Login />} />
-        <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="change-password" element={<ChangePassword />} />
         <Route path="multiple-accounts" element={<MultipleAccounts />} />
       </Route>
 
-      <Route path="/" element={<DashboardHome />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <DashboardHome />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 };

@@ -1,20 +1,34 @@
+import { useCreateData } from '../../../hooks/useApis';
 import { Button, Form, Input } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ChangePassword = () => {
   const navigate = useNavigate();
-  const [form] = Form.useForm();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const RecoverPasswordState = useCreateData('auth/forgot-password/recover');
 
-  // const onFinish = (values: any) => {
-  //   console.log('Form values:', values);
-  //   // Handle form submission
-  // };
+  const token = searchParams.get('token');
+  const code = searchParams.get('code');
+
+  const [form] = Form.useForm();
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       console.log('Form values:', values);
+
+      const payload = {
+        token: token,
+        code: code,
+        password: values?.password,
+        password_confirmation: values?.confirmPassword,
+        entity: 'merchant',
+      };
       // API call to submit form
+      const res = await RecoverPasswordState.mutateAsync(payload);
+      navigate('/vendor/auth/login');
+      console.log(res);
     } catch (error) {
       console.error('Form validation error:', error);
     }
@@ -28,7 +42,6 @@ const ChangePassword = () => {
           form={form}
           className="flex flex-col w-full min-h-[400px]"
           layout="horizontal"
-          // onFinish={onFinish}
           labelCol={{ span: 6 }}
           size="middle"
         >
@@ -36,9 +49,7 @@ const ChangePassword = () => {
             <Form.Item
               label="New Password"
               name="password"
-              rules={[
-                { required: true, message: 'Please enter new password' },
-              ]}
+              rules={[{ required: true, message: 'Please enter new password' }]}
             >
               <Input placeholder="Enter new password" />
             </Form.Item>
@@ -46,9 +57,7 @@ const ChangePassword = () => {
             <Form.Item
               label="Confirm New Password"
               name="confirmPassword"
-              rules={[
-                { required: true, message: 'Please enter new password' },
-              ]}
+              rules={[{ required: true, message: 'Please enter new password' }]}
             >
               <Input placeholder="Confirm new password" />
             </Form.Item>
@@ -61,6 +70,7 @@ const ChangePassword = () => {
                 onClick={handleSubmit}
                 size="large"
                 className="w-[114px]"
+                loading={RecoverPasswordState.isPending}
               >
                 Send
               </Button>

@@ -12,7 +12,7 @@ interface AccountCardProps {
   name: string;
   logo?: string;
   role: string;
-  stores: Store[];
+  stores: number;
   selected?: boolean;
   onSelect: (id: number) => void;
 }
@@ -27,8 +27,8 @@ const AccountCard: React.FC<AccountCardProps> = ({
   onSelect,
 }) => {
   return (
-    <div
-      className={`p-5 rounded-md border ${
+    <button
+      className={`p-5 rounded-md border w-full ${
         selected
           ? 'border-[#003399] bg-[#E6F7FF] shadow-lg shadow-[#38476824]'
           : 'border-gray-200 shadow-sm'
@@ -55,7 +55,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
                 {name}
               </h3>
               <p className="text-sm">
-                {stores.length} {stores.length === 1 ? 'store' : 'stores'}
+                {stores} {stores === 1 ? 'store' : 'stores'}
               </p>
             </div>
           </div>
@@ -65,7 +65,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 

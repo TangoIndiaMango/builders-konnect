@@ -16,7 +16,15 @@ const Header = () => {
           />
         </div>
 
-        <Button onClick={() => navigate('/auth/login')}>Log in</Button>
+        <div className="flex items-center gap-4">
+          <Button onClick={() => navigate('/vendor/auth/login')}>Log in</Button>
+          <Button
+            type="primary"
+            onClick={() => navigate('/vendor/auth/register-vendor')}
+          >
+            Register
+          </Button>
+        </div>
       </div>
     </AntHeader>
   );

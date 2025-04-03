@@ -1,3 +1,4 @@
+import { useCreateData } from '../../../hooks/useApis';
 import { Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
@@ -5,16 +6,21 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
-  // const onFinish = (values: any) => {
-  //   console.log('Form values:', values);
-  //   // Handle form submission
-  // };
+  const { mutateAsync, isPending } = useCreateData(
+    'auth/forgot-password/reset'
+  );
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      console.log('Form values:', values);
+
       // API call to submit form
+      const res = await mutateAsync({
+        identifier: values.email,
+        callback_url: 'http://localhost:4200/vendor/auth/change-password',
+      });
+
+      console.log(res);
     } catch (error) {
       console.error('Form validation error:', error);
     }
@@ -23,12 +29,11 @@ const ForgotPassword = () => {
   return (
     <div className="max-w-4xl p-8 mx-auto bg-white rounded-sm min-h-[400px] space-y-5">
       <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto space-y-5">
-        <h1 className="text-2xl font-bold">Account Login</h1>
+        <h1 className="text-2xl font-bold">Forgot Password</h1>
         <Form
           form={form}
           className="flex flex-col w-full min-h-[400px]"
           layout="horizontal"
-          // onFinish={onFinish}
           labelCol={{ span: 6 }}
           size="middle"
         >
@@ -46,12 +51,17 @@ const ForgotPassword = () => {
 
           <div className="pt-6 mt-auto space-y-4">
             <div className="flex justify-end gap-4">
-              <Button type="default" onClick={() => navigate('/auth/login')} size="large"
-                className="w-[114px]">
+              <Button
+                type="default"
+                onClick={() => navigate('/vendor/auth/login')}
+                size="large"
+                className="w-[114px]"
+              >
                 Cancel
               </Button>
               <Button
                 type="primary"
+                loading={isPending}
                 onClick={handleSubmit}
                 size="large"
                 className="w-[114px]"
