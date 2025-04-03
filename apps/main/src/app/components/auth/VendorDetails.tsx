@@ -1,24 +1,9 @@
+import { useState } from 'react';
 import { useFetchData } from '../../../hooks/useApis';
-import { Form, Input, Select, Button } from 'antd';
+import { Form, Input, Select, FormInstance } from 'antd';
 
-const VendorDetails = () => {
-  const businessCategories = [
-    { value: 'category1', label: 'Category 1' },
-    { value: 'category2', label: 'Category 2' },
-    // Add more categories as needed
-  ];
-
-  const businessTypes = [
-    { value: 'type1', label: 'Type 1' },
-    { value: 'type2', label: 'Type 2' },
-    // Add more types as needed
-  ];
-
-  const states = [
-    { value: 'lagos', label: 'Lagos' },
-    { value: 'abuja', label: 'Abuja' },
-    // Add more states as needed
-  ];
+const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
+  const [state, setState] = useState('');
 
   const BusinessCategoryState = useFetchData(
     'shared/categorizations?paginate=0&table=tenant_information&level=category'
@@ -28,8 +13,19 @@ const VendorDetails = () => {
     'shared/categorizations?paginate=0&table=tenant_information&level=type'
   );
 
-  console.log(BusinessCategoryState.data);
-  console.log(BusinessTypeState.data);
+  const StatesState = useFetchData('shared/states?paginate=0&country_id=161');
+
+  const CitiesState = useFetchData(
+    state ? `shared/cities?paginate=0&country_id=161&state_id=${state}` : ''
+  );
+
+  const handleStateChange = (value: string) => {
+    setState(value);
+    form.setFieldsValue({
+      state: value,
+      cityRegion: undefined,
+    });
+  };
 
   return (
     <div className="">
@@ -48,7 +44,11 @@ const VendorDetails = () => {
       >
         <Select
           placeholder="Select business category"
-          options={businessCategories}
+          loading={BusinessCategoryState.isPending}
+          options={BusinessCategoryState?.data?.data?.map((b: any) => ({
+            value: b?.id,
+            label: b?.name,
+          }))}
         />
       </Form.Item>
 
@@ -57,7 +57,14 @@ const VendorDetails = () => {
         name="businessType"
         rules={[{ required: true, message: 'Please select business type' }]}
       >
-        <Select placeholder="Select business type" options={businessTypes} />
+        <Select
+          placeholder="Select business type"
+          loading={BusinessTypeState.isPending}
+          options={BusinessTypeState?.data?.data?.map((b: any) => ({
+            value: b?.id,
+            label: b?.name,
+          }))}
+        />
       </Form.Item>
 
       <Form.Item
@@ -101,15 +108,30 @@ const VendorDetails = () => {
         name="state"
         rules={[{ required: true, message: 'Please select state' }]}
       >
-        <Select placeholder="Select state" options={states} />
+        <Select
+          placeholder="Select state"
+          loading={StatesState.isPending}
+          options={StatesState?.data?.data?.map((b: any) => ({
+            value: b?.id,
+            label: b?.name,
+          }))}
+          onChange={handleStateChange}
+        />
       </Form.Item>
 
       <Form.Item
         label="City/Region"
         name="cityRegion"
-        rules={[{ required: true, message: 'Please enter city/region' }]}
+        rules={[{ required: true, message: 'Please select city/region' }]}
       >
-        <Input placeholder="Enter city/region" />
+        <Select
+          placeholder="Select city/region"
+          loading={CitiesState.isPending}
+          options={CitiesState?.data?.data?.map((b: any) => ({
+            value: b?.id,
+            label: b?.name,
+          }))}
+        />
       </Form.Item>
 
       <Form.Item

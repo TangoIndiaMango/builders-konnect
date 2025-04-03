@@ -103,14 +103,17 @@ export const useGetData = (url: string) => {
 
   return mutation;
 };
+
 // Fetch Data (GET with Query)
 export const useFetchData = (url: string) => {
   const query = useQuery({
-    queryKey: [url],
+    queryKey: ['fetchData', url],
     queryFn: async () => {
+      if (!url) return null;
       const response = await axiosInstance.get(baseUrl + url);
       return response.data;
     },
+    enabled: !!url,
   });
 
   return { ...query, isLoading: query.isFetching || query.isLoading };

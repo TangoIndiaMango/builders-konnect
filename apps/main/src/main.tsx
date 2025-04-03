@@ -1,8 +1,9 @@
 import * as ReactDOM from 'react-dom/client';
 import App from './app/app';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, App as AntApp } from 'antd';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -13,18 +14,18 @@ root.render(
   <ConfigProvider
     theme={{
       token: {
-        // Seed Token
         colorPrimary: '#003399',
         borderRadius: 2,
-
-        // Alias Token
-        // colorBgContainer: '#f6ffed',
       },
     }}
   >
     <Router>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <AntApp
+          notification={{ placement: 'topRight', duration: 4.5, maxCount: 3 }}
+        >
+          <App />
+        </AntApp>
       </QueryClientProvider>
     </Router>
   </ConfigProvider>

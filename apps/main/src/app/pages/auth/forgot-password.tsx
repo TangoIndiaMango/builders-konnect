@@ -1,10 +1,14 @@
 import { useCreateData } from '../../../hooks/useApis';
-import { Button, Form, Input } from 'antd';
+import { App, Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { frontendBaseUrl } from './auth-outlets';
+import { useEmailProvider } from '../../../hooks/useEmailProvider';
 
 const ForgotPassword = () => {
+  const { notification } = App.useApp();
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const { openEmailProvider } = useEmailProvider();
 
   const { mutateAsync, isPending } = useCreateData(
     'auth/forgot-password/reset'
@@ -17,11 +21,31 @@ const ForgotPassword = () => {
       // API call to submit form
       const res = await mutateAsync({
         identifier: values.email,
-        callback_url: 'http://localhost:4200/vendor/auth/change-password',
+        callback_url: frontendBaseUrl + '/vendor/auth/change-password',
       });
 
       console.log(res);
+
+      notification.success({
+        message: 'Login Successful',
+        description: 'You have successfully logged in to your account.',
+        btn: (
+          <Button
+            type="primary"
+            size="middle"
+            onClick={() => {
+              notification.destroy();
+              openEmailProvider(values.email);
+            }}
+          >
+            Go to Email
+          </Button>
+        ),
+      });
     } catch (error) {
+      notification.error({
+        message: 'An error occured, please try again',
+      });
       console.error('Form validation error:', error);
     }
   };

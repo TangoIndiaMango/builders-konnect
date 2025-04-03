@@ -13,11 +13,10 @@ const DocumentUpload = () => {
     address?: UploadFile[];
   }>({});
 
-
   const beforeUpload = (file: File) => {
-    const isAccepted = acceptedFileTypes.split(',').some(type =>
-      file.name.toLowerCase().endsWith(type.toLowerCase())
-    );
+    const isAccepted = acceptedFileTypes
+      .split(',')
+      .some((type) => file.name.toLowerCase().endsWith(type.toLowerCase()));
 
     if (!isAccepted) {
       message.error('You can only upload PDF or Word documents!');
@@ -30,14 +29,20 @@ const DocumentUpload = () => {
 
     return isAccepted && isLt5M;
   };
-  console.log(fileList);
 
   return (
     <div className="space-y-6">
       <Form.Item
         label="CAC Number"
         name="cacNumber"
-        rules={[{ required: true, message: 'Please enter CAC number' }]}
+        rules={[
+          {
+            required: true,
+            message: 'Please enter CAC number',
+            min: 8,
+            max: 16,
+          },
+        ]}
       >
         <Input placeholder="Enter registration number" />
       </Form.Item>
@@ -53,7 +58,9 @@ const DocumentUpload = () => {
           maxCount={1}
           beforeUpload={beforeUpload}
           listType="text"
-          onChange={({ fileList }) => setFileList({ ...fileList, cac: fileList })}
+          onChange={({ fileList }) =>
+            setFileList({ ...fileList, cac: fileList })
+          }
         >
           <Button icon={<UploadOutlined />}>Click to upload certificate</Button>
         </Upload>
@@ -62,7 +69,9 @@ const DocumentUpload = () => {
       <Form.Item
         label="TIN"
         name="tinNumber"
-        rules={[{ required: true, message: 'Please enter TIN' }]}
+        rules={[
+          { required: true, message: 'Please enter TIN', min: 8, max: 16 },
+        ]}
       >
         <Input placeholder="Enter tax identification number" />
       </Form.Item>
@@ -78,7 +87,9 @@ const DocumentUpload = () => {
           maxCount={1}
           beforeUpload={beforeUpload}
           listType="text"
-          onChange={({ fileList }) => setFileList({ ...fileList, tin: fileList })}
+          onChange={({ fileList }) =>
+            setFileList({ ...fileList, tin: fileList })
+          }
         >
           <Button icon={<UploadOutlined />}>Click to Upload</Button>
         </Upload>
@@ -95,13 +106,20 @@ const DocumentUpload = () => {
           maxCount={1}
           beforeUpload={beforeUpload}
           listType="text"
-          onChange={({ fileList }) => setFileList({ ...fileList, address: fileList })}
+          onChange={({ fileList }) =>
+            setFileList({ ...fileList, address: fileList })
+          }
         >
           <Button icon={<UploadOutlined />}>Click to Upload</Button>
         </Upload>
       </Form.Item>
 
-
+      <div className="flex items-center justify-center gap-2 py-5">
+        <span className="text-lg text-blue-600">ⓘ</span>
+        <span className="text-sm">
+          Skip the document upload process if you do not have the documents
+        </span>
+      </div>
     </div>
   );
 };

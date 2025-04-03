@@ -1,5 +1,5 @@
 import { useCreateData } from '../../../hooks/useApis';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, App } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const ChangePassword = () => {
@@ -7,6 +7,7 @@ const ChangePassword = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const RecoverPasswordState = useCreateData('auth/forgot-password/recover');
+  const { notification } = App.useApp();
 
   const token = searchParams.get('token');
   const code = searchParams.get('code');
@@ -27,10 +28,35 @@ const ChangePassword = () => {
       };
       // API call to submit form
       const res = await RecoverPasswordState.mutateAsync(payload);
-      navigate('/vendor/auth/login');
+
+      notification.success({
+        message: 'Password Changed Successfully',
+        description:
+          'Your password has been updated. You can now login with your new password.',
+        btn: (
+          <Button
+            type="primary"
+            size="middle"
+            onClick={() => {
+              notification.destroy();
+
+              navigate('/vendor/auth/login');
+            }}
+          >
+            Go to Login
+          </Button>
+        ),
+      });
+
       console.log(res);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Form validation error:', error);
+      notification.error({
+        message: 'Password Change Failed',
+        description:
+          error?.response?.data?.message ||
+          'Failed to change password. Please try again.',
+      });
     }
   };
 

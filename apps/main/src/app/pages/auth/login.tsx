@@ -1,13 +1,14 @@
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { useCreateData, useGetData } from '../../../hooks/useApis';
-import { Button, Form, Input } from 'antd';
+import { App, Button, Form, Input, notification } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const { notification } = App.useApp();
   const navigate = useNavigate();
   const { isPending, mutateAsync } = useCreateData('auth/signin');
 
-  const getMerchantDetailState = useGetData('merchants/profile/all');
+  // const getMerchantDetailState = useGetData('merchants/profile/all');
 
   const { updateUser } = useSessionStorage();
   const [form] = Form.useForm();
@@ -29,21 +30,39 @@ const Login = () => {
       const res = await mutateAsync(payload);
       sessionStorage.setItem('access_token', res.data.accessToken || '');
       updateUser(res?.data?.user);
+      navigate('/');
+      notification.success({
+        message: 'Login Successful',
+      });
 
-      const merchantRes = await getMerchantDetailState.mutateAsync();
-      if (merchantRes?.data?.length <= 1) {
-        sessionStorage.setItem(
-          'tenant_id',
-          String(merchantRes?.data?.[0]?.id) || ''
-        );
-        navigate('/');
-      } else {
-        navigate('/vendor/auth/multiple-accounts', {
-          state: { data: merchantRes?.data },
-        });
-      }
-    } catch (error) {
+      // const merchantRes = await getMerchantDetailState.mutateAsync();
+      // if (merchantRes?.data?.length <= 1) {
+      //   sessionStorage.setItem(
+      //     'tenant_id',
+      //     String(merchantRes?.data?.[0]?.id) || ''
+      //   );
+      //   notification.success({
+      //     message: 'Login Successful',
+      //     description: 'Welcome back! You have been logged in successfully.',
+      //   });
+      //   navigate('/');
+      // } else {
+      //   notification.success({
+      //     message: 'Login Successful',
+      //     description: 'Please select an account to continue.',
+      //   });
+      //   navigate('/vendor/auth/multiple-accounts', {
+      //     state: { data: merchantRes?.data },
+      //   });
+      // }
+    } catch (error: any) {
       console.error('Form validation error:', error);
+      notification.error({
+        message: 'Login Failed',
+        description:
+          error?.response?.data?.message ||
+          'An error occurred during login. Please try again.',
+      });
     }
   };
 

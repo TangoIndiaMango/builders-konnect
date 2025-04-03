@@ -1,8 +1,9 @@
-import { Button, Form, Input, Steps } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorModal from '../../components/common/ErrorModal';
 import SuccessModal from '../../components/common/SuccessModal';
+import { useCreateData } from '../../../hooks/useApis';
 
 const CreatePassword = () => {
   const navigate = useNavigate();
@@ -10,16 +11,26 @@ const CreatePassword = () => {
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
 
-  // const onFinish = (values: any) => {
-  //   console.log('Form values:', values);
-  //   // Handle form submission
-  // };
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const PasswordState = useCreateData('merchants/onboarding/add-password');
+
+  const token = searchParams.get('token');
+  const code = searchParams.get('code');
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       console.log('Form values:', values);
+      const payload = {
+        token: token,
+        code: code,
+        password: values?.password,
+        password_confirmation: values?.confirmPassword,
+        entity: 'merchant',
+      };
       // API call to submit form
+      const res = await PasswordState.mutateAsync(payload);
 
       setSuccessModalOpen(true);
     } catch (error) {
@@ -31,7 +42,7 @@ const CreatePassword = () => {
 
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false);
-    navigate('/login');
+    navigate('/vendor/auth/login');
   };
 
   return (
@@ -73,6 +84,7 @@ const CreatePassword = () => {
                 onClick={handleSubmit}
                 size="large"
                 className="w-[114px]"
+                loading={PasswordState.isPending}
               >
                 Next
               </Button>
