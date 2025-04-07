@@ -10,7 +10,7 @@ const ForgotPassword = () => {
   const [form] = Form.useForm();
   const { openEmailProvider } = useEmailProvider();
 
-  const { mutateAsync, isPending } = useCreateData(
+  const { mutateAsync, isLoading } = useCreateData(
     'auth/forgot-password/reset'
   );
 
@@ -36,6 +36,7 @@ const ForgotPassword = () => {
             onClick={() => {
               notification.destroy();
               openEmailProvider(values.email);
+              navigate('/vendor/auth/login');
             }}
           >
             Go to Email
@@ -85,7 +86,7 @@ const ForgotPassword = () => {
               </Button>
               <Button
                 type="primary"
-                loading={isPending}
+                loading={isLoading}
                 onClick={handleSubmit}
                 size="large"
                 className="w-[114px]"

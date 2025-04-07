@@ -1,12 +1,13 @@
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
-import { useCreateData, useGetData } from '../../../hooks/useApis';
-import { App, Button, Form, Input, notification } from 'antd';
+import { useCreateData } from '../../../hooks/useApis';
+import { App, Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import Password from 'antd/es/input/Password';
 
 const Login = () => {
   const { notification } = App.useApp();
   const navigate = useNavigate();
-  const { isPending, mutateAsync } = useCreateData('auth/signin');
+  const { isLoading, mutateAsync } = useCreateData('auth/signin');
 
   // const getMerchantDetailState = useGetData('merchants/profile/all');
 
@@ -94,12 +95,12 @@ const Login = () => {
               name="password"
               rules={[{ required: true, message: 'Please enter password' }]}
             >
-              <Input placeholder="Enter password" />
+              <Password placeholder="Enter password" />
             </Form.Item>
           </div>
 
           <div className="pt-6 mt-auto space-y-4">
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-end gap-4 items-center">
               <Button
                 type="link"
                 onClick={() => navigate('/vendor/auth/forgot-password')}
@@ -107,7 +108,7 @@ const Login = () => {
                 Forgot Password?
               </Button>
               <Button
-                loading={isPending}
+                loading={isLoading}
                 type="primary"
                 htmlType="submit"
                 size="large"

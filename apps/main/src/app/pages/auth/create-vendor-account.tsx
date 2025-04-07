@@ -84,7 +84,7 @@ const CreatePassword = () => {
                 onClick={handleSubmit}
                 size="large"
                 className="w-[114px]"
-                loading={PasswordState.isPending}
+                loading={PasswordState.isLoading}
               >
                 Next
               </Button>

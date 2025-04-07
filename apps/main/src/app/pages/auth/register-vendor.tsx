@@ -1,7 +1,8 @@
 import BankDetails from '../../components/auth/BankDetails';
 import DocumentUpload from '../../components/auth/DocumentUpload';
 import VendorDetails from '../../components/auth/VendorDetails';
-import { Steps, Button, Form, notification } from 'antd';
+import { Steps, Form, notification } from 'antd';
+import Button from 'antd/es/button';
 import { useState } from 'react';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import SuccessModal from '../../components/common/SuccessModal';
@@ -9,6 +10,7 @@ import ErrorModal from '../../components/common/ErrorModal';
 import { useCreateData, useUploadData } from '../../../hooks/useApis';
 import { frontendBaseUrl } from './auth-outlets';
 import { useEmailProvider } from '../../../hooks/useEmailProvider';
+import { useNavigate } from 'react-router';
 
 interface MediaMetadata {
   identification_number: string;
@@ -46,6 +48,7 @@ const steps = [
 ];
 
 const RegisterVendor = () => {
+  const navigate = useNavigate();
   const { openEmailProvider } = useEmailProvider();
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
@@ -195,6 +198,7 @@ const RegisterVendor = () => {
             onClick={() => {
               notification.destroy();
               openEmailProvider(data?.email);
+              navigate('/vendor/auth/login');
             }}
           >
             Go to Email
@@ -254,8 +258,8 @@ const RegisterVendor = () => {
                   size="large"
                   className="w-[114px]"
                   loading={
-                    validateBusinessState.isPending ||
-                    validateBankState.isPending
+                    validateBusinessState.isLoading ||
+                    validateBankState.isLoading
                   }
                 >
                   Next
@@ -266,7 +270,7 @@ const RegisterVendor = () => {
                   onClick={documentUpload}
                   size="large"
                   className="w-[114px]"
-                  loading={MediaState.isPending}
+                  loading={MediaState.isLoading}
                 >
                   Submit
                 </Button>
@@ -280,7 +284,7 @@ const RegisterVendor = () => {
         open={confirmModalOpen}
         onCancel={() => setConfirmModalOpen(false)}
         onConfirm={handleSubmit}
-        pending={createVendorState.isPending}
+        pending={createVendorState.isLoading}
       />
 
       <SuccessModal

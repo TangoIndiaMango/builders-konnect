@@ -8,6 +8,7 @@ import ChangePassword from './pages/auth/change-password';
 import MultipleAccounts from './pages/auth/multiple-accounts';
 import DashboardHome from './pages/home';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
+import NotFound from './pages/NotFound';
 const App = () => {
   return (
     <Routes>
@@ -28,6 +29,8 @@ const App = () => {
           </ProtectedRoute>
         }
       />
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
