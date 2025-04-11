@@ -42,7 +42,7 @@ const CreatePassword = () => {
 
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false);
-    navigate('//auth/login');
+    navigate('/vendor/auth/login');
   };
 
   return (
