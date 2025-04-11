@@ -9,10 +9,13 @@ import MultipleAccounts from './pages/auth/multiple-accounts';
 import DashboardHome from './pages/home';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
 import NotFound from './pages/NotFound';
+import VendorProfile from './pages/profile';
+import VendorProfileOutlet from './pages/profile/profile-outlet';
+import VendorHomeOutlet from './pages/home/dashboard-outlet';
 const App = () => {
   return (
     <Routes>
-      <Route path="vendor/auth" element={<AuthOutlet />}>
+      <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
         <Route path="create-password" element={<CreatePassword />} />
         <Route path="login" element={<Login />} />
@@ -22,14 +25,26 @@ const App = () => {
       </Route>
 
       <Route
-        path="/"
+        path="/pos"
         element={
           <ProtectedRoute>
-            <DashboardHome />
+            <VendorHomeOutlet />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<DashboardHome />} />
+      </Route>
 
+      <Route
+        path="pos/profile"
+        element={
+          <ProtectedRoute>
+            <VendorProfileOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<VendorProfile />} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

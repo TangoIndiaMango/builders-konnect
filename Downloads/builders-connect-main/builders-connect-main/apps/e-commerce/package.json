@@ -1,8 +1,0 @@
-{
-  "name": "@builders-connect/e-commerce",
-  "version": "0.0.1",
-  "private": true,
-  "nx": {
-    "name": "e-commerce"
-  }
-}

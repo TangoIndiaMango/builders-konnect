@@ -31,7 +31,7 @@ const Login = () => {
       const res = await mutateAsync(payload);
       sessionStorage.setItem('access_token', res.data.accessToken || '');
       updateUser(res?.data?.user);
-      navigate('/');
+      navigate('/pos');
       notification.success({
         message: 'Login Successful',
       });
