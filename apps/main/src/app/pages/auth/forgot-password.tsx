@@ -36,7 +36,7 @@ const ForgotPassword = () => {
             onClick={() => {
               notification.destroy();
               openEmailProvider(values.email);
-              navigate('/vendor/auth/login');
+              navigate('//auth/login');
             }}
           >
             Go to Email
@@ -78,7 +78,7 @@ const ForgotPassword = () => {
             <div className="flex justify-end gap-4">
               <Button
                 type="default"
-                onClick={() => navigate('/vendor/auth/login')}
+                onClick={() => navigate('//auth/login')}
                 size="large"
                 className="w-[114px]"
               >

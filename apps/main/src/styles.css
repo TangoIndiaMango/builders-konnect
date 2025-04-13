@@ -2,3 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 /* You can add global styles to this file, and also import other style files */
+.main-navigation-tabs .ant-tabs-nav {
+  margin-bottom: 0 !important;
+}
+
+.main-navigation-tabs .ant-tabs-nav::before {
+  border: none !important;
+}
+
+.main-navigation-tabs .ant-tabs-tab {
+  padding: 8px 14px !important;
+  font-weight: 400;
+  border: none !important;
+}
+
+.main-navigation-tabs .ant-tabs-tab-active {
+  background-color: #0050B3 !important;
+  color: #fff !important;
+  border-color: #0050B3 !important;
+  border-radius: 10px !important;
+}
+
+.main-navigation-tabs .ant-tabs-tab-btn {
+  color: #fff !important;
+
+}
+
+.main-navigation-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #fff !important;
+  font-weight: 500 !important;
+}

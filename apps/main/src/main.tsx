@@ -19,7 +19,7 @@ root.render(
       },
     }}
   >
-    <Router>
+    <Router basename="/vendor">
       <QueryClientProvider client={queryClient}>
         <AntApp notification={{ placement: 'topRight', maxCount: 3 }}>
           <App />
