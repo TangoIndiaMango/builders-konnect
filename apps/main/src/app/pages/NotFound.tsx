@@ -4,13 +4,13 @@ import type { FC } from 'react';
 const NotFound: FC = () => {
   return (
     <div
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent:"center" }}
     >
       <Empty description="Page Not Found" />
       <Button
         type="primary"
         style={{ marginTop: 16 }}
-        onClick={() => (window.location.href = '/')}
+        onClick={() => (window.location.href = '/vendor/pos')}
       >
         Return Home
       </Button>

@@ -21,7 +21,7 @@ const ForgotPassword = () => {
       // API call to submit form
       const res = await mutateAsync({
         identifier: values.email,
-        callback_url: frontendBaseUrl + '/vendor/auth/change-password',
+        callback_url: frontendBaseUrl + '/auth/change-password',
       });
 
       console.log(res);
@@ -36,7 +36,7 @@ const ForgotPassword = () => {
             onClick={() => {
               notification.destroy();
               openEmailProvider(values.email);
-              navigate('//auth/login');
+              navigate('/auth/login');
             }}
           >
             Go to Email
@@ -78,7 +78,7 @@ const ForgotPassword = () => {
             <div className="flex justify-end gap-4">
               <Button
                 type="default"
-                onClick={() => navigate('//auth/login')}
+                onClick={() => navigate('/auth/login')}
                 size="large"
                 className="w-[114px]"
               >
