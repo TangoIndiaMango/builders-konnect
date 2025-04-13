@@ -170,8 +170,8 @@ const RegisterVendor = () => {
         account_number: data?.account_number,
         bank_id: data?.bank_id,
         account_name: data?.account_name,
-        callback_url: frontendBaseUrl + '/vendor/auth/create-password',
-        create_password_url: frontendBaseUrl + '/vendor/auth/create-password',
+        callback_url: frontendBaseUrl + '/auth/create-password',
+        create_password_url: frontendBaseUrl + '/auth/create-password',
         media: mediaUrl?.length
           ? mediaUrl.map((url: string, index: number) => ({
               name: ['cac', 'address', 'tin'][index],
@@ -198,7 +198,7 @@ const RegisterVendor = () => {
             onClick={() => {
               notification.destroy();
               openEmailProvider(data?.email);
-              navigate('/vendor/auth/login');
+              navigate('/auth/login');
             }}
           >
             Go to Email
