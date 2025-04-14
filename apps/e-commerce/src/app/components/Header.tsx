@@ -62,10 +62,10 @@ const Header = () => {
               <div className='w-[3px] h-[40px]  bg-[#9CAFFC]'></div>
               {!loggedIn && (
                 <>
-                    <Link to="customer/auth/signup" className="text-[#003399] text-xs hover:text-[#9CAFFC] transition-colors px-6">
+                    <Link to="/auth/register" className="text-[#003399] text-xs hover:text-[#9CAFFC] transition-colors px-6">
                     Sign Up
                     </Link>
-                    <Link to="customer/auth/login" className=" text-xs   px-6 bg-[#003399] text-white rounded py-1.5 ">
+                    <Link to="/auth/login" className=" text-xs   px-6 bg-[#003399] text-white rounded py-1.5 ">
                     Log In
                     </Link>
               </>
@@ -142,13 +142,18 @@ const Header = () => {
           <div className="flex flex-col space-y-4">
             {!loggedIn && (
                 <>
-                <Link to="customer/auth/login" className="px-4 h-10 flex items-center justify-center bg-[#003399] text-white text-xs rounded hover:bg-[#9CAFFC] transition-colors">
+                <Link to="/auth/login" className="px-4 h-10 flex items-center justify-center bg-[#003399] text-white text-xs rounded hover:bg-[#9CAFFC] transition-colors">
                   Log In
                 </Link>
-                <Link to="customer/auth/signup" className="px-4 h-10 flex items-center justify-center border border-[#003399] text-[#003399] text-xs rounded hover:bg-[#9CAFFC] hover:text-white hover:border-[#9CAFFC] transition-colors">
+                <Link to="/auth/register" className="px-4 h-10 flex items-center justify-center border border-[#003399] text-[#003399] text-xs rounded hover:bg-[#9CAFFC] hover:text-white hover:border-[#9CAFFC] transition-colors">
                   Sign Up
                 </Link>
               </>
+            )}
+            {loggedIn && (
+              <Link to="/profile" className="px-4 h-10 flex items-center justify-center border border-[#003399] text-[#003399] text-xs rounded hover:bg-[#9CAFFC] hover:text-white hover:border-[#9CAFFC] transition-colors">
+                Profile
+              </Link>
             )}
            
             <button className="px-4 h-10 flex items-center justify-center border border-[#003399] text-[#003399] text-xs rounded hover:bg-[#9CAFFC] hover:text-white hover:border-[#9CAFFC] transition-colors">

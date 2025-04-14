@@ -9,13 +9,15 @@ const { Content } = Layout;
 const MainLayout = () => {
   const location = useLocation();
   const isAuthPage = location.pathname.includes('/auth/');
+  const isHome = location.pathname === '/';
+
 
   return (
     <Layout className="min-h-screen">
       <Header />
       {!isAuthPage && <MainLayoutHeader />}
       <Content className="py-6">
-        <div className="container mx-auto px-4">
+      <div className={`${!isHome ? 'container mx-auto px-4' : ''}`}>
           <Outlet />
         </div>
       </Content>

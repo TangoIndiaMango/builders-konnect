@@ -7,15 +7,17 @@ import ForgotPassword from './pages/auth/forgot-password';
 import NotFound from './pages/NotFound';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
+import NewPassword from './pages/auth/new-password';
 
 const App = () => {
   return (
     <Routes>
       {/* Auth Routes */}
-      <Route path="customer/auth" element={<AppLayout />}>
+      <Route path="/auth" element={<AppLayout />}>
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="new-password" element={<NewPassword />} />
       </Route>
 
       {/* Main Routes */}
@@ -24,7 +26,6 @@ const App = () => {
       </Route>
 
       <Route path="*" element={<NotFound />} />
-
     </Routes>
   );
 };
