@@ -14,8 +14,8 @@ const MainLayout = () => {
     <Layout className="min-h-screen">
       <Header />
       {!isAuthPage && <MainLayoutHeader />}
-      <Content className="py-6">
-        <div className="container mx-auto px-4">
+      <Content className="">
+        <div className=" mx-auto ">
           <Outlet />
         </div>
       </Content>
