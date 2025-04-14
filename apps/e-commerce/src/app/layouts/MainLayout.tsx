@@ -10,14 +10,18 @@ const MainLayout = () => {
   const location = useLocation();
   const isAuthPage = location.pathname.includes('/auth/');
   const isHome = location.pathname === '/';
+  const isAbout = location.pathname === '/about';
+  const isSell = location.pathname === '/sell';
+  const isAdvertise = location.pathname === '/advertise';
+
 
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className="min-h-screen bg-white">
       <Header />
       {!isAuthPage && <MainLayoutHeader />}
-      <Content className="py-6">
-      <div className={`${!isHome ? 'container mx-auto px-4' : ''}`}>
+      <Content className="">
+      <div className={`${!isHome && !isAbout && !isSell && !isAdvertise ? 'container mx-auto px-4' : ''}`}>
           <Outlet />
         </div>
       </Content>

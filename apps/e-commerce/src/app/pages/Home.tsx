@@ -1,76 +1,30 @@
 import { Carousel, Button } from 'antd';
-import ProductCard from '../components/ProductCard';
-import { paint } from '../lib/assets/images';
-import { useEffect, useState } from 'react';
+import { paint, starburst } from '../lib/assets/images';
+import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-
-const featuredProducts = [
-  {
-    id: 1,
-    title: 'Montreal Serene Paint',
-    price: 23803,
-    originalPrice: 48577,
-    discount: 51,
-    rating: 4.5,
-    reviews: 567,
-    imageUrl: '/paint-1.jpg'
-  },
-  // Add more products here
-];
-
-const patterns = [
-  {
-    id: 1,
-    title: 'Pattern 1',
-    rating: 4.0,
-    reviews: 120,
-    imageUrl: '/pattern-1.jpg',
-    price: 15000
-  },
-  // Add more patterns
-];
-
-const dealItems = [
-  {
-    id: 1,
-    title: 'Kitchens',
-    discount: '25% OFF',
-    image: '/kitchen-sale.jpg',
-    brandText: 'BIG BRAND',
-    buttonText: 'Shop Now',
-    bgColor: 'bg-red-700'
-  },
-  {
-    id: 2,
-    title: 'Bathroom',
-    discount: '25% OFF',
-    image: '/bathroom-sale.jpg',
-    brandText: 'BIG BRAND',
-    buttonText: 'Shop Now',
-    bgColor: 'bg-red-700'
-  },
-  {
-    id: 3,
-    title: 'Goodwill Tiles',
-    discount: '25% OFF',
-    subtext: 'Quality and affordable tiles',
-    image: '/tiles-sale.jpg',
-    buttonText: 'Shop Now',
-    bgColor: 'bg-blue-700'
-  },
-  {
-    id: 4,
-    title: 'Hurry Up',
-    discount: '25% OFF',
-    image: '/clearance-sale.jpg',
-    brandText: 'Clearance',
-    buttonText: 'Shop Now',
-    bgColor: 'bg-red-700'
-  }
-];
+import { featuredProducts, patterns, dealItems, heroSlides } from '../lib/Constants';
+import type { CarouselRef } from 'antd/es/carousel';
 
 const Home = () => {
+  const carouselRef = useRef<CarouselRef>(null);
+  const [current, setCurrent] = useState(0);
+
+  const handleDotClick = (index: number) => {
+    setCurrent(index);
+    carouselRef.current?.goTo(index);
+  };
+
+  const getSlideImage = (imageName: string) => {
+    switch (imageName) {
+      case 'paint':
+        return paint;
+      case 'tools':
+        return paint;
+      default:
+        return paint;
+    }
+  };
+
   const [timeLeft, setTimeLeft] = useState({
     days: 3,
     hours: 23,
@@ -116,30 +70,69 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Carousel */}
-      <section className="mb-8">
-        <Carousel autoplay dots={true}>
-          <div>
-            <div className="h-[450px] bg-[#00205B] relative flex items-center justify-between px-8 text-white overflow-hidden">
-              <div className="hidden md:block absolute right-0 top-0 w-[450px] h-[450px] rounded-full bg-[#D92D20] opacity-80 translate-x-1/2 translate-y-1/2"></div>
-              <div className="hidden md:block absolute right-0 bottom-0 w-[350px] h-[350px] rounded-full bg-[#003399] opacity-80 translate-x-1/3 -translate-y-1/3"></div>
-              <div className="md:text-left text-center z-10 max-w-xl px-10 flex flex-col items-center md:items-start">
-                <h1 className="md:text-[60px] text-[25px] font-bold mb-4">Transform Your Home with Dulux Premium Paints</h1>
-                <Button type="primary" size="large" className="bg-white text-black">
-                  Shop Now
-                </Button>
-              </div>
-              <div className="hidden md:block w-1/2">
-                <img src={paint} alt="Dulux Paint" className="z-10 object-contain w-full h-full" />
+      <section className="mb-8 relative">
+        <Carousel
+          ref={carouselRef}
+          afterChange={(currentSlide) => setCurrent(currentSlide)}
+          autoplay
+          effect="fade"
+          dots={false}
+        >
+          {heroSlides.map((slide) => (
+            <div key={slide.id}>
+              <div 
+                className="h-[450px] relative flex items-center justify-between px-8 text-white overflow-hidden"
+                style={{ backgroundColor: slide.bgColor }}
+              >
+                {slide.circles.map((circle, i) => (
+                  <div
+                    key={i}
+                    className="hidden md:block absolute right-0 z-0"
+                    style={{
+                      top: circle.position === 'top' ? 0 : 'auto',
+                      bottom: circle.position === 'bottom' ? 0 : 'auto',
+                      width: circle.size,
+                      height: circle.size,
+                      borderRadius: '50%',
+                      backgroundColor: circle.color,
+                      opacity: circle.opacity,
+                      transform: circle.transform
+                    }}
+                  />
+                ))}
+                <div className="md:text-left text-center z-10 max-w-xl px-10 flex flex-col items-center md:items-start">
+                  <h1 className="md:text-[60px] text-[25px] font-bold mb-4">{slide.title}</h1>
+                  <Button type="primary" size="large" className="bg-white text-black hover:bg-gray-100">
+                    {slide.buttonText}
+                  </Button>
+                </div>
+                <div className="hidden md:block w-1/2 z-10 relative">
+                  <img 
+                    src={getSlideImage(slide.image)} 
+                    alt={slide.title} 
+                    className="object-contain w-full h-full" 
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          {/* Add more carousel items */}
+          ))}
         </Carousel>
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+          {heroSlides.map((_, index) => (
+            <span
+              key={index}
+              onClick={() => handleDotClick(index)}
+              className={`mx-1 w-2 h-2 rounded-full cursor-pointer ${
+                current === index ? 'bg-white' : 'bg-white/40'
+              }`}
+            />
+          ))}
+        </div>
       </section>
 
       {/* Deals Section */}
       <section className="mb-12 container mx-auto px-4 mt-6">
-        <div className="relative">
+        <div className="relative px-8">
           <Carousel
             arrows
             infinite={false}
@@ -166,35 +159,60 @@ const Home = () => {
                 }
               }
             ]}
-            prevArrow={<div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10">
-              <Button 
-                icon={<LeftOutlined />} 
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md hover:bg-gray-100"
-              />
-            </div>}
-            nextArrow={<div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10">
-              <Button 
-                icon={<RightOutlined />} 
-                className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md hover:bg-gray-100"
-              />
-            </div>}
           >
             {dealItems.map(item => (
               <div key={item.id} className="px-2">
-                <div className={`${item.bgColor} rounded-lg p-4 relative aspect-square flex flex-col items-center justify-center text-white text-center`}>
+                <div 
+                  className={`${item.bgColor} rounded-lg relative aspect-square flex flex-col items-center justify-center text-white text-center overflow-hidden`}
+                  style={{
+                    ...(item.bgImage && {
+                      backgroundImage: `url(${item.bgImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    })
+                  }}
+                >
+                  {/* Overlay for background image */}
+                  {/* {item.bgImage && (
+                    <div className="absolute inset-0 bg-black/40 z-0"></div>
+                  )} */}
+                  
+                  {/* Black diagonal banner */}
                   {item.brandText && (
-                    <div className="absolute top-4 left-4 right-4">
-                      <div className="inline-block border-2 border-white rounded-full px-4 py-1">
+                    <div className="absolute top-0 left-0 w-72 h-72 z-10">
+                      <div className="absolute top-[10px] left-[-35px] bg-black text-white text-sm py-1 px-12 font-semibold">
                         {item.brandText}
                       </div>
                     </div>
                   )}
-                  <div className="text-4xl font-bold mb-2">{item.title}</div>
-                  <div className="text-3xl font-bold mb-2">{item.discount}</div>
-                  {item.subtext && <div className="text-sm mb-4">{item.subtext}</div>}
-                  <Button type="primary" className="bg-white text-black hover:bg-gray-100">
-                    {item.buttonText}
-                  </Button>
+                  
+                  {/* Main content */}
+                  {
+                    !item.bgImage && (
+                      <div className="relative z-10 flex flex-col items-center">
+                        <div>
+                          <div  style={{ 
+                              backgroundImage: `url(${starburst})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center'
+                            }} className="w-[240px] h-[240px] flex items-center justify-center mb-6">
+              <div className='border border-white border-dotted border-[2px] rounded-full h-[220px] w-[220px] flex flex-col items-center justify-center'>
+                <span className="text-3xl font-bold leading-none mb-3 text-white">SALE!</span>
+                <span className="text-2xl font-bold leading-none mb-3 text-white">{item.discount}</span>
+                <span className="text-2xl font-bold text-white mb-4">{item.title}</span>
+              </div>
+            </div>
+                        </div>
+                        <Button 
+                          type="primary" 
+                          className="bg-white text-black hover:bg-gray-100 mt-2 border-0 shadow-md font-semibold"
+                        >
+                          {item.buttonText}
+                        </Button>
+                      </div>
+                    )
+                  }
+              
                 </div>
               </div>
             ))}
@@ -242,51 +260,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Products Section */}
-      <section className="container mx-auto px-4 mb-12">
-        <h2 className="text-2xl font-semibold mb-6">Featured Products</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {featuredProducts.map(product => (
-            <ProductCard
-              key={product.id}
-              title={product.title}
-              price={product.price}
-              originalPrice={product.originalPrice}
-              discount={product.discount}
-              rating={product.rating}
-              reviews={product.reviews}
-              imageUrl={product.imageUrl}
-              onAddToCart={() => handleAddToCart(product.id)}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Patterns Section */}
-      <section className="container mx-auto px-4 mb-12">
-        <h2 className="text-2xl font-semibold mb-6">Browse By Pattern</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {patterns.map(pattern => (
-            <ProductCard
-              key={pattern.id}
-              title={pattern.title}
-              price={pattern.price}
-              rating={pattern.rating}
-              reviews={pattern.reviews}
-              imageUrl={pattern.imageUrl}
-              onAddToCart={() => handleAddToCart(pattern.id)}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* New Selling Items */}
-      <section className="container mx-auto px-4 mb-12">
-        <h2 className="text-2xl font-semibold mb-6">New Selling Items</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {/* Add new selling items using ProductCard */}
-        </div>
-      </section>
+     
     </div>
   );
 };

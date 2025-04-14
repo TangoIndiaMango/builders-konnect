@@ -7,12 +7,16 @@ const { Content } = Layout;
 
 const AppLayout = () => {
   const isHome = location.pathname === '/';
+  const isAbout = location.pathname === '/about';
+  const isSell = location.pathname === '/sell';
+  const isAdvertise = location.pathname === '/advertise';
+
 
   return (
     <Layout className="min-h-screen bg-white">
       <Header />
-      <Content className="flex-grow py-6">
-      <div className={`${!isHome ? 'container mx-auto px-4' : ''}`}>
+      <Content className="flex-grow">
+      <div className={`${!isHome && !isAbout && !isSell && !isAdvertise ? 'container mx-auto px-4' : ''}`}>
       <Outlet />
         </div>
       </Content>

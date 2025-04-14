@@ -8,6 +8,9 @@ import NotFound from './pages/NotFound';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import NewPassword from './pages/auth/new-password';
+import About from './pages/About';
+import Sell from './pages/sell';
+import Advertise from './pages/advertise';
 
 const App = () => {
   return (
@@ -23,6 +26,9 @@ const App = () => {
       {/* Main Routes */}
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
+        <Route path="about" element={<About/>} />
+        <Route path="sell" element={<Sell/>} />
+        <Route path="advertise" element={<Advertise/>} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
