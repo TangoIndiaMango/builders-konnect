@@ -11,6 +11,9 @@ import NewPassword from './pages/auth/new-password';
 import About from './pages/About';
 import Sell from './pages/sell';
 import Advertise from './pages/advertise';
+import TilingAndFlooring from './pages/TilingAndFlooring';
+import TilingAndFlooringListings from './pages/TillingAndFlooringListings';
+import ProductDetails from './pages/ProductDetails';
 
 const App = () => {
   return (
@@ -26,9 +29,18 @@ const App = () => {
       {/* Main Routes */}
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
-        <Route path="about" element={<About/>} />
-        <Route path="sell" element={<Sell/>} />
-        <Route path="advertise" element={<Advertise/>} />
+        <Route path="about" element={<About />} />
+        <Route path="sell" element={<Sell />} />
+        <Route path="advertise" element={<Advertise />} />
+        <Route
+          path="/category/flooring-wall-tiles"
+          element={<TilingAndFlooring />}
+        />
+        <Route
+          path="/category/flooring-wall-tiles/:subcategory"
+          element={<TilingAndFlooringListings />}
+        />
+        <Route path="/productdetails/:id" element={<ProductDetails />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

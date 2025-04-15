@@ -14,6 +14,7 @@ import three from '../../../assets/icons/three.png'
 import four from '../../../assets/icons/four.png'
 import advert from '../../../assets/icons/advert.png'
 import data from '../../../assets/icons/data.png'
+import facart from "../../../assets/icons/facart.png"
 
 export {
     reliability,
@@ -31,5 +32,6 @@ export {
     three,
     four,
     advert,
-data,
+    data,
+facart,
 }
