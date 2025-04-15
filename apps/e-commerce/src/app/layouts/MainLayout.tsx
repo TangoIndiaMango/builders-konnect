@@ -13,6 +13,7 @@ const MainLayout = () => {
   const isAbout = location.pathname === '/about';
   const isSell = location.pathname === '/sell';
   const isAdvertise = location.pathname === '/advertise';
+  const isTilingAndFlooring = location.pathname === '/tilingAndFlooring';
 
 
 
@@ -21,7 +22,7 @@ const MainLayout = () => {
       <Header />
       {!isAuthPage && <MainLayoutHeader />}
       <Content className="">
-      <div className={`${!isHome && !isAbout && !isSell && !isAdvertise ? 'container mx-auto px-4' : ''}`}>
+      <div className={`${!isHome && !isAbout && !isSell && !isAdvertise && !isTilingAndFlooring ? 'container mx-auto px-4' : ''}`}>
           <Outlet />
         </div>
       </Content>
