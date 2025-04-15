@@ -1,8 +1,8 @@
-import { Button, Input, Form } from "antd";
-import { Link} from "react-router";
-import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { googleLogo } from "../../lib/assets/images";
+import { Button, Input, Form, App } from "antd";
+import { Link, useNavigate} from "react-router";
 import { header_logo } from "../../lib/assets/logo";
+import { useCreateData } from "../../../hooks/useApis";
+import { ForgotPasswordValue } from "../../../utils/types";
 
 const onFinish = (values: any) => {
   console.log('Success:', values);
@@ -10,6 +10,39 @@ const onFinish = (values: any) => {
 };
 
 const ForgotPassword = () => {
+  const { notification } = App.useApp();
+  const navigate = useNavigate();
+  const { isPending, mutateAsync } = useCreateData('auth/forgot-password/reset');
+  const [form] = Form.useForm();
+
+  const onFinish = () => {
+    handleSubmit();
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields() as ForgotPasswordValue;
+      const payload = {
+        identifier: values.email,
+        callback_url: 'http://localhost:4200/auth/new-password'
+      };
+
+      const response = await mutateAsync(payload);
+      if (response.data === 200) {
+        notification.success({
+          message: 'Password Reset Request Successful',
+          description: 'Please check your email for instructions.',
+        });
+        navigate('/auth/check-your-mail');
+      }
+    } catch (error: unknown) {
+      console.error('Form validation error:', error);
+      notification.error({
+        message: 'Password Reset Request Failed',
+        description: error instanceof Error ? error.message : 'An error occurred during password reset request. Please try again.',
+      });
+    }
+  };
   return (
     <div className="flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-[580px] bg-white rounded-lg p-16 border border-[rgba(0, 0, 0, 0.45)]">
@@ -24,6 +57,7 @@ const ForgotPassword = () => {
 
        
         <Form
+          form={form}
           name="login"
           onFinish={onFinish}
           layout="vertical"
@@ -50,7 +84,7 @@ const ForgotPassword = () => {
               htmlType="submit"
               className="w-full h-[42px] bg-[#003399]"
             >
-              Reset Password
+              {isPending ? 'Loading...' : 'Reset Password'}
             </Button>
           </Form.Item>
         </Form>

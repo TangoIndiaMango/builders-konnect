@@ -1,17 +1,70 @@
-import { Form, Button, Input } from "antd";
-import { Link,  } from "react-router";
+import { App, Form, Button, Input } from "antd";
+import { Link } from "react-router";
 import { googleLogo } from "../../lib/assets/images";
 import { header_logo } from "../../lib/assets/logo";
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-
+import { useNavigate } from 'react-router-dom';
+import { useCreateData } from "../../../hooks/useApis";
+import { SignInFormValues } from "../../../utils/types";
+import { setAuthUser } from "../../../utils/auth";
 
 const Login = () => {
 
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
-    // Handle registration logic here
+  const { notification } = App.useApp();
+  const navigate = useNavigate();
+  const { isPending, mutateAsync } = useCreateData('auth/signin');
+  const [form] = Form.useForm();
+
+  const onFinish = () => {
+    handleSubmit();
   };
 
+ const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields() as SignInFormValues;
+      const payload = {
+        identifier: values.email,
+        password: values.password,
+        entity: 'customer',
+      };
+
+      const response = await mutateAsync(payload);
+      
+      // Check if response exists and has data
+      if (response?.data) {
+        // Save auth data
+        setAuthUser({
+          token: response.data.token,
+          user: {
+            id: response.data.user.id,
+            email: response.data.user.email,
+            name: response.data.user.name
+          }
+        });
+
+        notification.success({
+          message: 'Login Successful',
+          description: 'You have successfully logged in.',
+          duration: 2,
+        });
+        // Add a small delay before navigation to ensure notification is seen
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      const errorMessage = error?.response?.data?.message || error.message || 'An error occurred during login. Please try again.';
+      
+      notification.error({
+        message: 'Login Failed',
+        description: errorMessage,
+        duration: 4,
+      });
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center p-4">
@@ -23,7 +76,7 @@ const Login = () => {
           </Link>
         </div>
 
-        <h1 className="text-2xl font-semibold text-center mb-6">Create Account</h1>
+        <h1 className="text-2xl font-semibold text-center mb-6">Sign In</h1>
 
         {/* Google login Button */}
         <Button
@@ -41,6 +94,7 @@ const Login = () => {
         </div>
 
         <Form
+          form={form}
           name="login"
           onFinish={onFinish}
           layout="vertical"
@@ -80,9 +134,10 @@ const Login = () => {
             <Button 
               type="primary" 
               htmlType="submit"
+              loading={isPending}
               className="w-full h-[42px] bg-[#003399]"
             >
-              Sign In
+              {isPending ? 'Loading...' : 'Sign in'}
             </Button>
           </Form.Item>
         </Form>

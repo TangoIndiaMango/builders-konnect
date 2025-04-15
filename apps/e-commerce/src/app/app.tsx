@@ -11,6 +11,8 @@ import NewPassword from './pages/auth/new-password';
 import About from './pages/About';
 import Sell from './pages/sell';
 import Advertise from './pages/advertise';
+import VerifyEmail from './pages/auth/verify-email';
+import CheckYourMail from './pages/auth/check-your-mail';
 
 const App = () => {
   return (
@@ -21,6 +23,8 @@ const App = () => {
         <Route path="register" element={<Register />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="new-password" element={<NewPassword />} />
+        <Route path="verify-email" element={<VerifyEmail />} />
+        <Route path="check-your-mail" element={<CheckYourMail />} />
       </Route>
 
       {/* Main Routes */}
