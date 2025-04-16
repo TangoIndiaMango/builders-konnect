@@ -2,8 +2,12 @@ import { Carousel, Button } from 'antd';
 import { paint, starburst } from '../lib/assets/images';
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router';
-import { featuredProducts, patterns, dealItems, heroSlides } from '../lib/Constants';
+import {dealItems, heroSlides } from '../lib/Constants';
 import type { CarouselRef } from 'antd/es/carousel';
+import TileCard from '../components/Home/TileGrid';
+import CategoryFilter from '../components/Home/Category';
+import Reccomended from '../components/Home/Reccomended';
+import BestSellingItems from '../components/Home/BestSellingItems';
 
 const Home = () => {
   const carouselRef = useRef<CarouselRef>(null);
@@ -80,7 +84,7 @@ const Home = () => {
         >
           {heroSlides.map((slide) => (
             <div key={slide.id}>
-              <div 
+              <div
                 className="h-[450px] relative flex items-center justify-between px-8 text-white overflow-hidden"
                 style={{ backgroundColor: slide.bgColor }}
               >
@@ -96,21 +100,27 @@ const Home = () => {
                       borderRadius: '50%',
                       backgroundColor: circle.color,
                       opacity: circle.opacity,
-                      transform: circle.transform
+                      transform: circle.transform,
                     }}
                   />
                 ))}
                 <div className="md:text-left text-center z-10 max-w-xl px-10 flex flex-col items-center md:items-start">
-                  <h1 className="md:text-[60px] text-[25px] font-bold mb-4">{slide.title}</h1>
-                  <Button type="primary" size="large" className="bg-white text-black hover:bg-gray-100">
+                  <h1 className="md:text-[60px] text-[25px] font-bold mb-4">
+                    {slide.title}
+                  </h1>
+                  <Button
+                    type="primary"
+                    size="large"
+                    className="bg-white text-black hover:bg-gray-100"
+                  >
                     {slide.buttonText}
                   </Button>
                 </div>
                 <div className="hidden md:block w-1/2 z-10 relative">
-                  <img 
-                    src={getSlideImage(slide.image)} 
-                    alt={slide.title} 
-                    className="object-contain w-full h-full" 
+                  <img
+                    src={getSlideImage(slide.image)}
+                    alt={slide.title}
+                    className="object-contain w-full h-full"
                   />
                 </div>
               </div>
@@ -144,39 +154,39 @@ const Home = () => {
                 breakpoint: 1024,
                 settings: {
                   slidesToShow: 3,
-                }
+                },
               },
               {
                 breakpoint: 768,
                 settings: {
                   slidesToShow: 2,
-                }
+                },
               },
               {
                 breakpoint: 480,
                 settings: {
                   slidesToShow: 1,
-                }
-              }
+                },
+              },
             ]}
           >
-            {dealItems.map(item => (
+            {dealItems.map((item) => (
               <div key={item.id} className="px-2">
-                <div 
+                <div
                   className={`${item.bgColor} rounded-lg relative aspect-square flex flex-col items-center justify-center text-white text-center overflow-hidden`}
                   style={{
                     ...(item.bgImage && {
                       backgroundImage: `url(${item.bgImage})`,
                       backgroundSize: 'cover',
-                      backgroundPosition: 'center'
-                    })
+                      backgroundPosition: 'center',
+                    }),
                   }}
                 >
                   {/* Overlay for background image */}
                   {/* {item.bgImage && (
                     <div className="absolute inset-0 bg-black/40 z-0"></div>
                   )} */}
-                  
+
                   {/* Black diagonal banner */}
                   {item.brandText && (
                     <div className="absolute top-0 left-0 w-72 h-72 z-10">
@@ -185,34 +195,40 @@ const Home = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Main content */}
-                  {
-                    !item.bgImage && (
-                      <div className="relative z-10 flex flex-col items-center">
-                        <div>
-                          <div  style={{ 
-                              backgroundImage: `url(${starburst})`,
-                              backgroundSize: 'cover',
-                              backgroundPosition: 'center'
-                            }} className="w-[240px] h-[240px] flex items-center justify-center mb-6">
-              <div className='border border-white border-dotted border-[2px] rounded-full h-[220px] w-[220px] flex flex-col items-center justify-center'>
-                <span className="text-3xl font-bold leading-none mb-3 text-white">SALE!</span>
-                <span className="text-2xl font-bold leading-none mb-3 text-white">{item.discount}</span>
-                <span className="text-2xl font-bold text-white mb-4">{item.title}</span>
-              </div>
-            </div>
-                        </div>
-                        <Button 
-                          type="primary" 
-                          className="bg-white text-black hover:bg-gray-100 mt-2 border-0 shadow-md font-semibold"
+                  {!item.bgImage && (
+                    <div className="relative z-10 flex flex-col items-center">
+                      <div>
+                        <div
+                          style={{
+                            backgroundImage: `url(${starburst})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                          }}
+                          className="w-[240px] h-[240px] flex items-center justify-center mb-6"
                         >
-                          {item.buttonText}
-                        </Button>
+                          <div className="border border-white border-dotted border-[2px] rounded-full h-[220px] w-[220px] flex flex-col items-center justify-center">
+                            <span className="text-3xl font-bold leading-none mb-3 text-white">
+                              SALE!
+                            </span>
+                            <span className="text-2xl font-bold leading-none mb-3 text-white">
+                              {item.discount}
+                            </span>
+                            <span className="text-2xl font-bold text-white mb-4">
+                              {item.title}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    )
-                  }
-              
+                      <Button
+                        type="primary"
+                        className="bg-white text-black hover:bg-gray-100 mt-2 border-0 shadow-md font-semibold"
+                      >
+                        {item.buttonText}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -229,29 +245,36 @@ const Home = () => {
                   <div className="flex items-center gap-2">
                     <div className=" px-2 py-1 rounded">
                       <h1>Days</h1>
-                      <p className='font-semibold text-[25px]'>{String(timeLeft.days).padStart(2, '0')}</p>
+                      <p className="font-semibold text-[25px]">
+                        {String(timeLeft.days).padStart(2, '0')}
+                      </p>
                     </div>
                     <span>:</span>
                     <div className=" px-2 py-1 rounded">
                       <h1>Hours</h1>
-                      <p className='font-semibold text-[25px]'>{String(timeLeft.hours).padStart(2, '0')}</p>
+                      <p className="font-semibold text-[25px]">
+                        {String(timeLeft.hours).padStart(2, '0')}
+                      </p>
                     </div>
                     <span>:</span>
                     <div className=" px-2 py-1 rounded">
                       <h1>Minutes</h1>
-                      <p className='font-semibold text-[25px]'>{String(timeLeft.minutes).padStart(2, '0')}</p>
+                      <p className="font-semibold text-[25px]">
+                        {String(timeLeft.minutes).padStart(2, '0')}
+                      </p>
                     </div>
                     <span>:</span>
                     <div className=" px-2 py-1 rounded">
                       <h1>Seconds</h1>
-                      <p className='font-semibold text-[25px]'>{String(timeLeft.seconds).padStart(2, '0')}</p>
+                      <p className="font-semibold text-[25px]">
+                        {String(timeLeft.seconds).padStart(2, '0')}
+                      </p>
                     </div>
                   </div>
                 </div>
-               
               </div>
               <div>
-              <Link className="text-" to="/deals">
+                <Link className="text-" to="/deals">
                   View All
                 </Link>
               </div>
@@ -259,8 +282,29 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-     
+      <div className="container mx-auto px-4">
+        <TileCard
+          item={{
+            id: 0,
+            image: '',
+            name: '',
+            price: 0,
+            discount: 0,
+            rating: 0,
+            icon: '',
+            timeleft: 0,
+          }}
+        />
+      </div>
+      <div>
+        <CategoryFilter/>
+      </div>
+      <div>
+        <Reccomended/>
+      </div>
+      <div>
+        <BestSellingItems/>
+      </div>
     </div>
   );
 };

@@ -11,101 +11,101 @@ const categories = [
     id: 1,
     name: 'Others',
     path: '/others',
-    // subcategories: [
-    //   { id: 28, name: 'Miscellaneous', path: '/others/miscellaneous' },
-    //   { id: 29, name: 'Accessories', path: '/others/accessories' },
-    //   { id: 30, name: 'Custom Orders', path: '/others/custom-orders' },
-    // ]
+    subcategories: [
+      { id: 28, name: 'Miscellaneous', path: '/others/miscellaneous' },
+      { id: 29, name: 'Accessories', path: '/others/accessories' },
+      { id: 30, name: 'Custom Orders', path: '/others/custom-orders' },
+    ]
   },
   {
     id: 2,
     name: 'Flooring & Wall Tiles',
     path: '/category/flooring-wall-tiles',
-    // subcategories: [
-    //   { id: 1, name: 'Ceramic Tiles', path: '/category/ceramic-tiles' },
-    //   { id: 2, name: 'Porcelain Tiles', path: '/category/porcelain-tiles' },
-    //   { id: 3, name: 'Natural Stone', path: '/category/natural-stone' },
-    // ]
+    subcategories: [
+      { id: 1, name: 'Ceramic Tiles', path: '/category/ceramic-tiles' },
+      { id: 2, name: 'Porcelain Tiles', path: '/category/porcelain-tiles' },
+      { id: 3, name: 'Natural Stone', path: '/category/natural-stone' },
+    ]
   },
   {
     id: 3,
     name: 'Plumbing & Sanitary',
     path: '/category/plumbing-sanitary',
-    // subcategories: [
-    //   { id: 4, name: 'Bathroom Fixtures', path: '/category/bathroom-fixtures' },
-    //   { id: 5, name: 'Kitchen Fixtures', path: '/category/kitchen-fixtures' },
-    //   { id: 6, name: 'Pipes & Fittings', path: '/category/pipes-fittings' },
-    // ]
+    subcategories: [
+      { id: 4, name: 'Bathroom Fixtures', path: '/category/bathroom-fixtures' },
+      { id: 5, name: 'Kitchen Fixtures', path: '/category/kitchen-fixtures' },
+      { id: 6, name: 'Pipes & Fittings', path: '/category/pipes-fittings' },
+    ]
   },
   {
     id: 4,
     name: 'Building Materials',
     path: '/category/building-materials',
-    // subcategories: [
-    //   { id: 7, name: 'Cement', path: '/category/cement' },
-    //   { id: 8, name: 'Steel', path: '/category/steel' },
-    //   { id: 9, name: 'Blocks', path: '/category/blocks' },
-    // ]
+    subcategories: [
+      { id: 7, name: 'Cement', path: '/category/cement' },
+      { id: 8, name: 'Steel', path: '/category/steel' },
+      { id: 9, name: 'Blocks', path: '/category/blocks' },
+    ]
   },
   {
     id: 5,
     name: 'Doors & Windows',
     path: '/category/doors-windows',
-    // subcategories: [
-    //   { id: 10, name: 'Interior Doors', path: '/category/interior-doors' },
-    //   { id: 11, name: 'Exterior Doors', path: '/category/exterior-doors' },
-    //   { id: 12, name: 'Windows', path: '/category/windows' },
-    // ]
+    subcategories: [
+      { id: 10, name: 'Interior Doors', path: '/category/interior-doors' },
+      { id: 11, name: 'Exterior Doors', path: '/category/exterior-doors' },
+      { id: 12, name: 'Windows', path: '/category/windows' },
+    ]
   },
   {
     id: 5,
     name: 'Wood & Carpentry',
     path: '/category/wood-carpentry',
-    // subcategories: [
-    //   { id: 13, name: 'Lumber', path: '/category/lumber' },
-    //   { id: 14, name: 'Plywood', path: '/category/plywood' },
-    //   { id: 15, name: 'Furniture Wood', path: '/category/furniture-wood' },
-    // ]
+    subcategories: [
+      { id: 13, name: 'Lumber', path: '/category/lumber' },
+      { id: 14, name: 'Plywood', path: '/category/plywood' },
+      { id: 15, name: 'Furniture Wood', path: '/category/furniture-wood' },
+    ]
   },
   {
     id: 7,
     name: 'Tools & Equipment',
     path: '/category/tools-equipment',
-    // subcategories: [
-    //   { id: 16, name: 'Power Tools', path: '/category/power-tools' },
-    //   { id: 17, name: 'Hand Tools', path: '/category/hand-tools' },
-    //   { id: 18, name: 'Safety Equipment', path: '/category/safety-equipment' },
-    // ]
+    subcategories: [
+      { id: 16, name: 'Power Tools', path: '/category/power-tools' },
+      { id: 17, name: 'Hand Tools', path: '/category/hand-tools' },
+      { id: 18, name: 'Safety Equipment', path: '/category/safety-equipment' },
+    ]
   },
   {
     id: 8,
     name: 'Painting & Decoration',
     path: '/category/painting-decoration',
-    // subcategories: [
-    //   { id: 19, name: 'Paints', path: '/category/paints' },
-    //   { id: 20, name: 'Wallpapers', path: '/category/wallpapers' },
-    //   { id: 21, name: 'Decorative Items', path: '/category/decorative-items' },
-    // ]
+    subcategories: [
+      { id: 19, name: 'Paints', path: '/category/paints' },
+      { id: 20, name: 'Wallpapers', path: '/category/wallpapers' },
+      { id: 21, name: 'Decorative Items', path: '/category/decorative-items' },
+    ]
   },
   {
     id: 9,
     name: 'Electrical & Lighting',
     path: '/category/electrical-lighting',
-    // subcategories: [
-    //   { id: 22, name: 'Wiring', path: '/category/wiring' },
-    //   { id: 23, name: 'Light Fixtures', path: '/category/light-fixtures' },
-    //   { id: 24, name: 'Switches & Outlets', path: '/category/switches-outlets' },
-    // ]
+    subcategories: [
+      { id: 22, name: 'Wiring', path: '/category/wiring' },
+      { id: 23, name: 'Light Fixtures', path: '/category/light-fixtures' },
+      { id: 24, name: 'Switches & Outlets', path: '/category/switches-outlets' },
+    ]
   },
   {
     id: 10,
     name: 'Specials & Offers',
     path: '/specials',
-    // subcategories: [
-    //   { id: 25, name: 'Clearance', path: '/specials/clearance' },
-    //   { id: 26, name: 'New Arrivals', path: '/specials/new-arrivals' },
-    //   { id: 27, name: 'Bundle Deals', path: '/specials/bundle-deals' },
-    // ]
+    subcategories: [
+      { id: 25, name: 'Clearance', path: '/specials/clearance' },
+      { id: 26, name: 'New Arrivals', path: '/specials/new-arrivals' },
+      { id: 27, name: 'Bundle Deals', path: '/specials/bundle-deals' },
+    ]
   },
  
 ];
@@ -147,7 +147,7 @@ const MainLayoutHeader = () => {
                 </Link>
 
                 {/* Desktop Dropdown */}
-                {/* {activeCategory === category.id && (
+                {activeCategory === category.id && (
                   <div className="absolute left-0 top-full w-48 bg-white shadow-lg rounded-b border-t border-gray-100 py-2 z-50">
                     {category.subcategories.map((subcategory) => (
                       <Link
@@ -159,7 +159,7 @@ const MainLayoutHeader = () => {
                       </Link>
                     ))}
                   </div>
-                )} */}
+                )}
               </li>
             ))}
           </ul>
@@ -199,7 +199,7 @@ const MainLayoutHeader = () => {
             </div>
 
             {/* Subcategories Panel */}
-            {/* <Drawer
+            <Drawer
               placement="right"
               onClose={() => setSelectedMobileCategory(null)}
               open={selectedMobileCategory !== null}
@@ -224,7 +224,7 @@ const MainLayoutHeader = () => {
                     </Link>
                   ))}
               </div>
-            </Drawer> */}
+            </Drawer>
           </div>
         </Drawer>
       </div>

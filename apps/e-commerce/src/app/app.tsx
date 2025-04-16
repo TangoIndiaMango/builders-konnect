@@ -21,6 +21,8 @@ import Orders from './pages/Profile/Orders';
 import Addresses from './pages/Profile/Addresses';
 import PaymentMethods from './pages/Profile/PaymentMethods';
 import AccountDetails from './pages/Profile/AccountDetails';
+import CartPage from './pages/Cart';
+import ContactPage from './pages/Contact';
 
 const App = () => {
   return (
@@ -41,15 +43,13 @@ const App = () => {
         <Route path="about" element={<About />} />
         <Route path="sell" element={<Sell />} />
         <Route path="advertise" element={<Advertise />} />
+        <Route path="/category/:category" element={<TilingAndFlooring />} />
         <Route
-          path="/category/flooring-wall-tiles"
-          element={<TilingAndFlooring />}
-        />
-        <Route
-          path="/category/flooring-wall-tiles/:subcategory"
+          path="/category/:category/:subcategory"
           element={<TilingAndFlooringListings />}
         />
-        <Route path="/productdetails/:id" element={<ProductDetails />} />
+
+        <Route path="/product-details/:id" element={<ProductDetails />} />
         <Route path="/profile" element={<Profile />}>
           <Route index element={<Navigate to="/profile/orders" replace />} />
           <Route path="orders" element={<Orders />} />
@@ -57,6 +57,8 @@ const App = () => {
           <Route path="payment" element={<PaymentMethods />} />
           <Route path="account" element={<AccountDetails />} />
         </Route>
+        <Route path="cart" element={<CartPage />} />
+        <Route path="contact" element={<ContactPage />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
