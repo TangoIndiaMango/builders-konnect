@@ -48,14 +48,6 @@ const Register = () => {
   };
 
   return (
- 
-
-
-
-
-
-
-
     <div className="flex flex-col items-center justify-center p-4">
     <div className="w-full max-w-[580px] bg-white rounded-lg p-16 border border-[rgba(0, 0, 0, 0.45)]">
       {/* Logo */}

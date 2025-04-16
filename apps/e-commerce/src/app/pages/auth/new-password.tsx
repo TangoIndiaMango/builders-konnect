@@ -24,7 +24,7 @@ const NewPassword = () => {
       };
 
       const response = await mutateAsync(payload);
-      if (response.data === 200) {
+      if (response) {
         notification.success({
           message: 'Password Reset Successful',
           description: 'Your password has been reset successfully. Please login with your new password.',

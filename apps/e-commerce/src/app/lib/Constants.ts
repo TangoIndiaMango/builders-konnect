@@ -1,5 +1,244 @@
-import { advert, audience, builders, data, delivery, efficiency, four, industry, innovation, integration, one, qualityAssurance, reliability, salesCart, three, two } from "./assets/icons";
-import { kawthar, mike, miller, paint, deals } from "./assets/images";
+import { OrderData } from "../../utils/types";
+import { advert, audience, builders, data, delivery, efficiency, facart, four, industry, innovation, integration, one, qualityAssurance, reliability, salesCart, three, two } from "./assets/icons";
+import { kawthar, mike, miller, paint, deals, flooring, ceramic, granite, accesories, quartz, marble, tiles, woodlikeone, woodliketwo, woodlikethree, woodlikefour, woodlikefive, woodlikesix, woodlikeseven, woodlikeeight, woodlikenine, woodliketen, woodtwo, woodthree, woodfour, woodfive, woodsix, dartmoorewood } from "./assets/images";
+
+
+export const productCards = [
+  {
+    id: 1,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4.5,
+    icon:facart,
+  },
+  {
+    id: 2,
+    image: woodlikeone,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 3,
+    image: woodliketwo,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 3.5,
+    icon: facart,
+  },
+  {
+    id: 4,
+    image: woodlikethree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 5,
+    icon: facart,
+  },
+  {
+    id: 5,
+    image: woodlikefour,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4.5,
+    icon: facart,
+  },
+  {
+    id: 6,
+    image: woodlikefive,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 7,
+    image: woodlikesix,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4.5,
+    icon: facart,
+  },
+  {
+    id: 8,
+    image: woodlikeseven,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 5,
+    icon: facart,
+  },
+  {
+    id: 9,
+    image: woodlikeeight,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 3.5,
+    icon: facart,
+  },
+  {
+    id: 10,
+    image: woodlikenine,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 11,
+    image: woodliketen,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 12,
+    image: woodtwo,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 13,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 14,
+    image: woodfour,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 15,
+    image: woodfive,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 16,
+    image: woodlikethree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 5,
+    icon: facart,
+  },
+];
+export const SimilarProductData = [
+  {
+    id: 1,
+    image: woodlikesix,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4.5,
+    icon: facart,
+  },
+  {
+    id: 2,
+    image: woodlikeseven,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 5,
+    icon: facart,
+  },
+  {
+    id: 3,
+    image: woodlikeeight,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 3.5,
+    icon: facart,
+  },
+  {
+    id: 4,
+    image: woodlikenine,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 5,
+    image: woodliketen,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+ ]
+
+export const TilingAndFlooringData = [
+  {
+    id: 1,
+    image: flooring,
+    name: 'Flooring',
+  },
+  {
+    id: 2,
+    image: ceramic,
+    name: 'Ceramic',
+  },
+  {
+    id: 3,
+    image:ceramic,
+    name: 'Tools',
+  },
+  {
+    id: 4,
+    image: granite,
+    name: 'Granite',
+  },
+  {
+    id: 5,
+    image: accesories,
+    name: 'Accesories',
+  },
+  {
+    id: 6,
+    image: quartz,
+    name: 'Quartz Stones',
+  },
+  {
+    id: 7,
+    image: marble,
+    name: 'Marble Tiles',
+  },
+  {
+    id: 8,
+    image: tiles,
+    name: 'Other Tiles',
+  },
+];
 
 export const coreValuesData = [
     {
@@ -432,4 +671,464 @@ export const dealItems = [
     buttonText: 'Shop Now',
     bgColor: 'bg-[#A8071A]',
   }
+];
+export const filterTitles = [
+  'Application Surface',
+  'Effect',
+  'Slip Resistance',
+  'Room Application',
+  'Resistant to water',
+  'Thickness (mm)',
+  'Brand',
+  'Size (cm)',
+  'Color',
+  'Price',
+];
+export const productDetailsImage = [
+  {
+    id: 1,
+    imageUrl: dartmoorewood,
+  },
+  {
+    id: 2,
+    imageUrl: woodlikefive,
+  },
+  {
+    id: 3,
+    imageUrl: woodthree,
+  },
+  {
+    id: 4,
+    imageUrl: woodsix,
+  },
+  {
+    id: 5,
+    imageUrl: woodliketen,
+  },
+]
+export const specs = [
+  ['Brand', "Builder's Choice"],
+  ['Effect', 'Oak Effect'],
+  ['Style', 'Rustic'],
+  ['Finish', 'Matt'],
+  ['Material', 'Wood'],
+  ['Product length', '1290cm'],
+  ['Product Width', '129cm'],
+  ['Coverage', '1.48m'],
+  ['Usage & Application', 'Wall'],
+];
+export const productInfo = [
+  'Easy to Install: These deck flooring tiles have an interlocking design base for easy do-it-yourself installation and no tools required for installation.No messy glue, no nails, perfect match and precision spacing between every tile.',
+  'Unique Design:Our wooden tiles has a simple, beautiful design that can be used indoors and outdoors,4 slats per tile,each flooring tile dimensions is 12 inch x 12 inch x 0.8 inch,there is a small gap between each slats for better drainage.',
+  'Indoor & Outdoor Use: The interlocking deck tiles has PE platform base allows for adequate drainage and moisture, Great for decks, patios, balconies, around pools, saunas, showers, sun rooms, mud rooms, bedrooms, and more.',
+  'High Quality:Our wood flooring tiles are made of wood-plastic composites. Wood-plastic composite material makes superior water resistance compared to natural wood, resistant to swelling or decay, slip resistant. Super durability and fade resistance.It is eco-friendly product for your home to create a beautiful space both inside and outside.',
+  'Risk Free Guarantee:We take pride in delivering top quality products, if you are not satisfied with our product, contact us any time, we will get you back within 24 hours try our best to make things right.',
+];
+export const reviewImages = [
+woodlikeeight,
+woodlikefour,
+woodlikenine,
+woodlikefour,
+woodlikeeight,
+woodlikenine,
+woodlikeeight,
+woodlikeeight,
+woodlikenine,
+woodlikefour,
+woodlikenine,
+woodlikefour,
+woodlikenine,
+woodlikefour,
+woodlikenine,
+woodlikeeight,
+woodlikenine,
+woodlikeeight,
+woodlikefour,
+];
+export const ratingData = [
+  { stars: 5, percentage: 60 },
+  { stars: 4, percentage: 20 },
+  { stars: 3, percentage: 10 },
+  { stars: 2, percentage: 5 },
+  { stars: 1, percentage: 5 },
+];
+
+export const mockData: OrderData[] = [
+  {
+    orderNumber: '#12746398',
+    orderDate: '25 Jan, 2025',
+    orderTime: '04:00 AM',
+    deliveryDate: '25 Jan, 2025',
+    deliveryTime: '04:00 AM',
+    amount: 45450.00,
+    status: 'Processing',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 1,
+        price: 34550.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 6,
+        price: 10900.00
+      }
+    ],
+    discount: 1980.00,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746399',
+    orderDate: '27 Jan, 2025',
+    orderTime: '05:14 AM',
+    deliveryDate: '27 Jan, 2025',
+    deliveryTime: '05:14 AM',
+    amount: 25000.00,
+    status: 'Cancelled',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 1,
+        price: 24000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 2,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746400',
+    orderDate: '14 Feb, 2025',
+    orderTime: '12:00 PM',
+    deliveryDate: '14 Feb, 2025',
+    deliveryTime: '12:00 PM',
+    amount: 62800.00,
+    status: 'Completed',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 2,
+        price: 60800.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 2,
+        price: 2000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746401',
+    orderDate: '15 Feb, 2025',
+    orderTime: '02:30 PM',
+    deliveryDate: '15 Feb, 2025',
+    deliveryTime: '02:30 PM',
+    amount: 35000.00,
+    status: 'Processing',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 1,
+        price: 34000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746402',
+    orderDate: '16 Feb, 2025',
+    orderTime: '03:45 PM',
+    deliveryDate: '16 Feb, 2025',
+    deliveryTime: '03:45 PM',
+    amount: 45000.00,
+    status: 'Cancelled',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 1,
+        price: 44000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746403',
+    orderDate: '17 Feb, 2025',
+    orderTime: '05:00 PM',
+    deliveryDate: '17 Feb, 2025',
+    deliveryTime: '05:00 PM',
+    amount: 55000.00,
+    status: 'Completed',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 1,
+        price: 54000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746404',
+    orderDate: '18 Feb, 2025',
+    orderTime: '06:15 PM',
+    deliveryDate: '18 Feb, 2025',
+    deliveryTime: '06:15 PM',
+    amount: 65000.00,
+    status: 'Processing',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 1,
+        price: 64000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746405',
+    orderDate: '27 Jan, 2025',
+    orderTime: '05:14 AM',
+    deliveryDate: '27 Jan, 2025',
+    deliveryTime: '05:14 AM',
+    amount: 25000.00,
+    status: 'Cancelled',
+    totalItems: 2,
+    products: [],
+    paymentMethod: "",
+    paymentStatus: "Successful"
+  },
+  {
+    orderNumber: '#12746406',
+    orderDate: '20 Feb, 2025',
+    orderTime: '08:45 PM',
+    deliveryDate: '20 Feb, 2025',
+    deliveryTime: '08:45 PM',
+    amount: 85000.00,
+    status: 'Completed',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 2,
+        price: 84000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746407',
+    orderDate: '21 Feb, 2025',
+    orderTime: '10:00 PM',
+    deliveryDate: '21 Feb, 2025',
+    deliveryTime: '10:00 PM',
+    amount: 95000.00,
+    status: 'Processing',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 2,
+        price: 94000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746408',
+    orderDate: '22 Feb, 2025',
+    orderTime: '11:15 PM',
+    deliveryDate: '22 Feb, 2025',
+    deliveryTime: '11:15 PM',
+    amount: 105000.00,
+    status: 'Cancelled',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 3,
+        price: 104000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746409',
+    orderDate: '23 Feb, 2025',
+    orderTime: '12:30 AM',
+    deliveryDate: '23 Feb, 2025',
+    deliveryTime: '12:30 AM',
+    amount: 115000.00,
+    status: 'Completed',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 3,
+        price: 114000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746410',
+    orderDate: '24 Feb, 2025',
+    orderTime: '01:45 AM',
+    deliveryDate: '24 Feb, 2025',
+    deliveryTime: '01:45 AM',
+    amount: 125000.00,
+    status: 'Processing',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 3,
+        price: 124000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746411',
+    orderDate: '25 Feb, 2025',
+    orderTime: '03:00 AM',
+    deliveryDate: '25 Feb, 2025',
+    deliveryTime: '03:00 AM',
+    amount: 135000.00,
+    status: 'Cancelled',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 4,
+        price: 134000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
+  {
+    orderNumber: '#12746412',
+    orderDate: '26 Feb, 2025',
+    orderTime: '04:15 AM',
+    deliveryDate: '26 Feb, 2025',
+    deliveryTime: '04:15 AM',
+    amount: 145000.00,
+    status: 'Completed',
+    totalItems: 2,
+    products: [
+      {
+        name: 'Belgian Cement',
+        quantity: 4,
+        price: 144000.00
+      },
+      {
+        name: 'Ceramic Tiles',
+        quantity: 1,
+        price: 1000.00
+      }
+    ],
+    discount: 0,
+    deliveryFee: 1000.00,
+    paymentMethod: 'Flutterwave',
+    paymentStatus: 'Successful'
+  },
 ];

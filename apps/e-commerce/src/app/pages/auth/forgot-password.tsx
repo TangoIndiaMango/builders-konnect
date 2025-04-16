@@ -28,7 +28,7 @@ const ForgotPassword = () => {
       };
 
       const response = await mutateAsync(payload);
-      if (response.data === 200) {
+      if (response) {
         notification.success({
           message: 'Password Reset Request Successful',
           description: 'Please check your email for instructions.',

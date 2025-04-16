@@ -43,7 +43,7 @@ const VerifyEmail = () => {
 
         const response = await mutateAsync(payload);
         
-        if (response.data === 200) {
+        if (response) {
           setVerificationStatus({
             success: true,
             message: 'Email verified successfully! Redirecting to login...',
