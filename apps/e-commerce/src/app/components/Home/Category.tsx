@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Button} from 'antd';
 import type { FC } from 'react';
 import { categories, filterCards } from '../../lib/Constants'; 
-import ProductCard from '../ProductListing/ProductListing';
 import { Link } from 'react-router-dom';
+import ProductCards from '../ProductListing/ProductListingHomePage';
 
 
 
@@ -48,20 +48,20 @@ const CategoryFilter: FC = () => {
 
       <div className="">
         {filteredCards.map((item) => (
-          <ProductCard key={item.id} item={item} />
+          <ProductCards key={item.id} item={item} />
         ))}
-          </div>
-          <Link to={`/productdetails/:id}`}>
-          <div  className='mt-10 flex justify-center'>           
-      <Button
-        type= "primary"
-        size="large"
-        className='min-w-[150px] h-16 rounded-xl text-lg font-semibold transition-all duration-200 bg-[#D64545] border-none text-white'
-      >
-        View All
-      </Button>
-          </div>
-          </Link>
+      </div>
+      <Link to="/">
+        <div className="mt-10 flex justify-center">
+          <Button
+            type="primary"
+            size="large"
+            className="min-w-[150px] h-16 rounded-xl text-lg font-semibold transition-all duration-200 bg-[#D64545] border-none text-white"
+          >
+            View All
+          </Button>
+        </div>
+      </Link>
     </div>
   );
 };
