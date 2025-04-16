@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { Layout, Input, Button, Space } from 'antd';
 import { FacebookOutlined, TwitterOutlined, InstagramOutlined, LinkedinOutlined, AndroidOutlined, AppleOutlined } from '@ant-design/icons';
 import { appStore, paymentMethods, playStore, qrcode } from '../lib/assets/images';
@@ -6,6 +6,15 @@ import { appStore, paymentMethods, playStore, qrcode } from '../lib/assets/image
 const { Footer: AntFooter } = Layout;
 
 const Footer = () => {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Add a small delay before navigation to allow smooth scroll
+    setTimeout(() => {
+      navigate(path);
+    }, 500);
+  };
   return (
     <AntFooter className="bg-[#1A1A1A] text-white p-0">
       <div className="container mx-auto px-4 py-8">
@@ -31,35 +40,35 @@ const Footer = () => {
           <div>
             <h4 className="font-bold mb-4">About</h4>
             <ul className="space-y-2">
-              <li><Link to="/about">About</Link></li>
-              <li><Link to="/contact">Contact</Link></li>
-              <li><Link to="/terms">Terms & Conditions</Link></li>
+              <li><a onClick={() => handleNavigation('/about')} style={{ cursor: 'pointer' }}>About</a></li>
+              <li><a onClick={() => handleNavigation('/contact')} style={{ cursor: 'pointer' }}>Contact</a></li>
+              <li><a onClick={() => handleNavigation('/terms')} style={{ cursor: 'pointer' }}>Terms & Conditions</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-4">Make Money with Us</h4>
             <ul className="space-y-2">
-              <li><Link to="/sell">Sell on Builder's Konnect</Link></li>
-              <li><Link to="/advertise">Advertise Your Products</Link></li>
+              <li><a onClick={() => handleNavigation('/sell')} style={{ cursor: 'pointer' }}>Sell on Builder's Konnect</a></li>
+              <li><a onClick={() => handleNavigation('/advertise')} style={{ cursor: 'pointer' }}>Advertise Your Products</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-4">Customer Service</h4>
             <ul className="space-y-2">
-              <li><Link to="/orders">Your Orders</Link></li>
-              <li><Link to="/returns">Return & Refund Policy</Link></li>
-              <li><Link to="/shipping">Shipping Rates & Policies</Link></li>
+              <li><a onClick={() => handleNavigation('/orders')} style={{ cursor: 'pointer' }}>Your Orders</a></li>
+              <li><a onClick={() => handleNavigation('/returns')} style={{ cursor: 'pointer' }}>Return & Refund Policy</a></li>
+              <li><a onClick={() => handleNavigation('/shipping')} style={{ cursor: 'pointer' }}>Shipping Rates & Policies</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-4">Our Subsidiaries</h4>
             <ul className="space-y-2">
-              <li><Link to="/academy">Builder's Academy</Link></li>
-              <li><Link to="/workman">Builder's Workman</Link></li>
-              <li><Link to="/mart">B-Hub's Mart</Link></li>
+              <li><a onClick={() => handleNavigation('/academy')} style={{ cursor: 'pointer' }}>Builder's Academy</a></li>
+              <li><a onClick={() => handleNavigation('/workman')} style={{ cursor: 'pointer' }}>Builder's Workman</a></li>
+              <li><a onClick={() => handleNavigation('/mart')} style={{ cursor: 'pointer' }}>B-Hub's Mart</a></li>
             </ul>
           </div>
           

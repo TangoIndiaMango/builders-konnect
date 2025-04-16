@@ -2,7 +2,7 @@ export interface RegisterFormValues {
   username: string;
   email: string;
   password: string;
-  how?: string;
+  howDidYouHear?: string;
 }
 
 export interface SignInFormValues {

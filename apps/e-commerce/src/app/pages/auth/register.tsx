@@ -1,5 +1,5 @@
 import { useCreateData } from '../../../hooks/useApis';
-import { App, Button, Form, Input } from 'antd';
+import { App, Button, Form, Input, Select } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router";  
 import Password from 'antd/es/input/Password';
@@ -25,7 +25,7 @@ const Register = () => {
         name: values.username,
         email: values.email,
         password: values.password,
-        referral_source: values.how,
+        referral_source: values.howDidYouHear,
         opened_via: 'web',
         callback_url: 'http://localhost:4200/auth/verify-email'
       };
@@ -100,11 +100,21 @@ const Register = () => {
             </Form.Item>
 
             <Form.Item
-              label="How did you hear about us?"
-              name="how"
+              name="howDidYouHear"
               rules={[{ required: true, message: 'Please tell us how you heard about us' }]}
             >
-              <Input placeholder="Enter source" />
+              <Select
+                placeholder="How did you hear about us?"
+                className="w-full"
+                options={[
+                  { value: 'social_media', label: 'Social Media' },
+                  { value: 'friend', label: 'Friend or Family' },
+                  { value: 'search', label: 'Search Engine' },
+                  { value: 'advertisement', label: 'Advertisement' },
+                  { value: 'blog', label: 'Blog or Article' },
+                  { value: 'other', label: 'Other' },
+                ]}
+              />
             </Form.Item>
 
             <Form.Item
