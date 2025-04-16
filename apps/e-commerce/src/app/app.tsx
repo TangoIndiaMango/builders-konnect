@@ -14,6 +14,8 @@ import Advertise from './pages/advertise';
 import TilingAndFlooring from './pages/TilingAndFlooring';
 import TilingAndFlooringListings from './pages/TillingAndFlooringListings';
 import ProductDetails from './pages/ProductDetails';
+import CartPage from './pages/Cart';
+import ContactPage from './pages/Contact';
 
 const App = () => {
   return (
@@ -32,15 +34,15 @@ const App = () => {
         <Route path="about" element={<About />} />
         <Route path="sell" element={<Sell />} />
         <Route path="advertise" element={<Advertise />} />
+        <Route path="/category/:category" element={<TilingAndFlooring />} />
         <Route
-          path="/category/flooring-wall-tiles"
-          element={<TilingAndFlooring />}
-        />
-        <Route
-          path="/category/flooring-wall-tiles/:subcategory"
+          path="/category/:category/:subcategory"
           element={<TilingAndFlooringListings />}
         />
-        <Route path="/productdetails/:id" element={<ProductDetails />} />
+
+        <Route path="/product-details/:id" element={<ProductDetails />} />
+        <Route path="cart" element={<CartPage />} />
+        <Route path="contact" element={<ContactPage />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

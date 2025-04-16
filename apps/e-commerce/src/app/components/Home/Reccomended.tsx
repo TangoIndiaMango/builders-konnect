@@ -1,23 +1,18 @@
-import { Card, Rate } from 'antd';
-import type { FC } from 'react';
+import { Card, Rate } from "antd";
+import { SimilarProductData } from "../../lib/Constants";
 
-
-interface ProductCardProps {
-  item: {
-    id: number;
-    image: string;
-    name: string;
-    price: number;
-    discount: number;
-    rating: number;
-    icon: string;
-  };
-}
-
-
-const ProductCard: FC<ProductCardProps> = ({ item })=>{
+function Reccomended() {
   return (
-      <div className="">
+    <div className="container mx-auto py-16 px-4">
+      <div className="mb-8 flex items-center justify-between">
+        <h2 className="md:text-3xl text-lg font-medium leading-[40px] text-[#000000D9] flex items-center">
+          <span className="w-1.5 h-8 bg-red-600 mr-4 inline-block"></span>
+          Recommended for you
+        </h2>
+        <h4 className="text-[#FF4D4F] font-medium">View All</h4>
+      </div>
+      <div className="grid grid-cols-1 mt-4 sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        {SimilarProductData.map((item) => (
           <Card
             key={item.id}
             hoverable
@@ -63,8 +58,10 @@ const ProductCard: FC<ProductCardProps> = ({ item })=>{
               </div>
             </div>
           </Card>
+        ))}
       </div>
+    </div>
   );
-};
+}
 
-export default ProductCard;
+export default Reccomended
