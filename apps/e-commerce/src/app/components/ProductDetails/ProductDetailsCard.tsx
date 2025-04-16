@@ -1,17 +1,33 @@
 import { dartmoorewood } from '../../lib/assets/images';
-import { productDetailsImage } from '../../lib/Constants';
+import { productDetailsImage, categoriess } from '../../lib/Constants';
 import Detail from './Details';
 
 function ProductDetailsCard() {
+  const product = productDetailsImage.find(
+    (item) => item.imageUrl === dartmoorewood
+  );
+
+  const category = categoriess.find(
+    (cat) => cat.slug === product?.categorySlug
+  );
+  const subcategory = category?.subcategories.find(
+    (sub) => sub.slug === product?.subcategorySlug
+  );
+
   return (
     <div>
-      <h1 className="text-sm cursor-pointer text-[#00000073]  py-8">
-        {' '}
-        Home / <span className="text-[#00000073]">
-          Tiling and Flooring
-        </span> / <span className="text-[#00000073]">Flooring</span>/{' '}
-        <span className="text-[#000000D9]">Laminate Flooring</span>
+      <h1 className="text-sm cursor-pointer text-[#00000073] py-8">
+        Home /{' '}
+        <span className="text-[#00000073]">
+          {category?.name || product?.categorySlug}
+        </span>{' '}
+        /{' '}
+        <span className="text-[#00000073]">
+          {subcategory?.name || product?.subcategorySlug}
+        </span>{' '}
+        / <span className="text-[#000000D9]">Laminate Flooring</span>
       </h1>
+
       <div className="flex flex-col xl:flex-row gap-4 ">
         <div className="flex flex-col sm:flex-row p-4 gap-4 xl:gap-6 xl:h-full">
           <div className="hidden md:flex flex-col gap-4 w-[120px]">
