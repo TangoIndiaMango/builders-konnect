@@ -7,7 +7,7 @@ import { productCards, categoriess } from '../lib/Constants';
 // Helper to normalize slugs (replace spaces with hyphens and lowercase)
 const slugify = (str: string) => str.toLowerCase().replace(/\s+/g, '-');
 
-function TilingAndFlooringListings() {
+function ProductCategory() {
   const { category, subcategory } = useParams();
 
   const categoryData = categoriess.find(
@@ -47,4 +47,4 @@ function TilingAndFlooringListings() {
   );
 }
 
-export default TilingAndFlooringListings;
+export default ProductCategory;

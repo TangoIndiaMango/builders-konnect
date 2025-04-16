@@ -10,7 +10,7 @@ const categories = [
   {
     id: 1,
     name: 'Others',
-    path: '/others',
+    path: '/category/others',
     subcategories: [
       { id: 28, name: 'Miscellaneous', path: '/others/miscellaneous' },
       { id: 29, name: 'Accessories', path: '/others/accessories' },
@@ -100,7 +100,7 @@ const categories = [
   {
     id: 10,
     name: 'Specials & Offers',
-    path: '/specials',
+    path: '/category/specials',
     subcategories: [
       { id: 25, name: 'Clearance', path: '/specials/clearance' },
       { id: 26, name: 'New Arrivals', path: '/specials/new-arrivals' },

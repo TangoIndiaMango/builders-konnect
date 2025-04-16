@@ -13,8 +13,7 @@ import Sell from './pages/sell';
 import Advertise from './pages/advertise';
 import VerifyEmail from './pages/auth/verify-email';
 import CheckYourMail from './pages/auth/check-your-mail';
-import TilingAndFlooring from './pages/TilingAndFlooring';
-import TilingAndFlooringListings from './pages/TillingAndFlooringListings';
+import TilingAndFlooring from './pages/TilingAndFlooring'; 
 import ProductDetails from './pages/ProductDetails';
 import Profile from './pages/Profile';
 import Orders from './pages/Profile/Orders';
@@ -23,6 +22,7 @@ import PaymentMethods from './pages/Profile/PaymentMethods';
 import AccountDetails from './pages/Profile/AccountDetails';
 import CartPage from './pages/Cart';
 import ContactPage from './pages/Contact';
+import ProductCategory from './pages/TillingAndFlooringListings';
 
 const App = () => {
   return (
@@ -46,7 +46,7 @@ const App = () => {
         <Route path="/category/:category" element={<TilingAndFlooring />} />
         <Route
           path="/category/:category/:subcategory"
-          element={<TilingAndFlooringListings />}
+          element={<ProductCategory />}
         />
 
         <Route path="/product-details/:id" element={<ProductDetails />} />
