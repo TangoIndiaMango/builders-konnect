@@ -1,21 +1,29 @@
-import { Layout } from 'antd';
+import { App as AntApp, Layout } from 'antd';
+import { Outlet } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const { Content } = Layout;
-interface AppLayoutProps {
-    children?: React.ReactNode;
-  }
+export const frontendBaseUrl = window.location.origin;
+const AppLayout = () => {
+  const isHome = location.pathname === '/';
+  const isAbout = location.pathname === '/about';
+  const isSell = location.pathname === '/sell';
+  const isAdvertise = location.pathname === '/advertise';
+  
 
-const AppLayout = ({ children }: AppLayoutProps) => {
   return (
-    <Layout className="min-h-screen">
-      <Header />
-      <Content className="flex-grow bg-gray-50 py-6">
-        {children}
-      </Content>
-      <Footer />
-    </Layout>
+    <AntApp>
+      <Layout className="min-h-screen bg-white">
+        <Header />
+        <Content className="flex-grow">
+          <div className={`${!isHome && !isAbout && !isSell && !isAdvertise ? 'container mx-auto px-4' : ''}`}>
+            <Outlet />
+          </div>
+        </Content>
+        <Footer />
+      </Layout>
+    </AntApp>
   );
 };
 

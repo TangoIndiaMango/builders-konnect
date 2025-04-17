@@ -5,10 +5,20 @@ import { MenuOutlined, RightOutlined } from '@ant-design/icons';
 
 const { Header } = Layout;
 
-// Demo data - this would come from the backend in production
+// Demo data - this would come from the backend
 const categories = [
   {
     id: 1,
+    name: 'Others',
+    path: '/category/others',
+    subcategories: [
+      { id: 28, name: 'Miscellaneous', path: '/others/miscellaneous' },
+      { id: 29, name: 'Accessories', path: '/others/accessories' },
+      { id: 30, name: 'Custom Orders', path: '/others/custom-orders' },
+    ]
+  },
+  {
+    id: 2,
     name: 'Flooring & Wall Tiles',
     path: '/category/flooring-wall-tiles',
     subcategories: [
@@ -18,7 +28,7 @@ const categories = [
     ]
   },
   {
-    id: 2,
+    id: 3,
     name: 'Plumbing & Sanitary',
     path: '/category/plumbing-sanitary',
     subcategories: [
@@ -28,7 +38,7 @@ const categories = [
     ]
   },
   {
-    id: 3,
+    id: 4,
     name: 'Building Materials',
     path: '/category/building-materials',
     subcategories: [
@@ -38,7 +48,7 @@ const categories = [
     ]
   },
   {
-    id: 4,
+    id: 5,
     name: 'Doors & Windows',
     path: '/category/doors-windows',
     subcategories: [
@@ -58,7 +68,7 @@ const categories = [
     ]
   },
   {
-    id: 6,
+    id: 7,
     name: 'Tools & Equipment',
     path: '/category/tools-equipment',
     subcategories: [
@@ -68,7 +78,7 @@ const categories = [
     ]
   },
   {
-    id: 7,
+    id: 8,
     name: 'Painting & Decoration',
     path: '/category/painting-decoration',
     subcategories: [
@@ -78,7 +88,7 @@ const categories = [
     ]
   },
   {
-    id: 8,
+    id: 9,
     name: 'Electrical & Lighting',
     path: '/category/electrical-lighting',
     subcategories: [
@@ -88,25 +98,16 @@ const categories = [
     ]
   },
   {
-    id: 9,
+    id: 10,
     name: 'Specials & Offers',
-    path: '/specials',
+    path: '/category/specials',
     subcategories: [
       { id: 25, name: 'Clearance', path: '/specials/clearance' },
       { id: 26, name: 'New Arrivals', path: '/specials/new-arrivals' },
       { id: 27, name: 'Bundle Deals', path: '/specials/bundle-deals' },
     ]
   },
-  {
-    id: 10,
-    name: 'Others',
-    path: '/others',
-    subcategories: [
-      { id: 28, name: 'Miscellaneous', path: '/others/miscellaneous' },
-      { id: 29, name: 'Accessories', path: '/others/accessories' },
-      { id: 30, name: 'Custom Orders', path: '/others/custom-orders' },
-    ]
-  },
+ 
 ];
 
 const MainLayoutHeader = () => {
