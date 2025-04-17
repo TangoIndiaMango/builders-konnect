@@ -33,7 +33,14 @@ const statsData = [
 ];
 const Stats = () => {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+    <>
+    <div className="m-8 bg-white">
+        <h1 className="text-2xl font-bold">Dashboard Overview</h1>
+        <p className="text-muted-foreground text-sm mt-1">
+          An overview of your sales performance
+        </p>
+      </div>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4 m-6">
       {statsData.map((stat, index) => (
         <StatsCard
           key={index}
@@ -44,7 +51,8 @@ const Stats = () => {
         />
       ))}
     </div>
+    </>
   );
 };
 
-export default Stats;
+export default Stats;
