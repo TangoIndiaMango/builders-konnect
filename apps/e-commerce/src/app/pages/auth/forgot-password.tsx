@@ -5,10 +5,7 @@ import { useCreateData } from "../../../hooks/useApis";
 import { ForgotPasswordValue } from "../../../utils/types";
 import { frontendBaseUrl } from "../../layouts/Applayout";
 
-const onFinish = (values: any) => {
-  console.log('Success:', values);
-  // Handle registration logic here
-};
+
 
 const ForgotPassword = () => {
   const { notification } = App.useApp();
