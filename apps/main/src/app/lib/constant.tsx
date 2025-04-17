@@ -41,8 +41,8 @@ function getItem(
 
 // Point of Sale Menu Items
 export const POSMenus: MenuItem[] = [
-  getItem('Dashboard', 'dashboard', '/pos/dashboard', <DashboardOutlined />),
-  getItem('Vendor Profile', 'vendor', '/pos/vendor', <UserOutlined />),
+  getItem('Dashboard', 'dashboard', '/pos', <DashboardOutlined />),
+  getItem('Vendor Profile', 'vendor', '/pos/profile', <UserOutlined />),
   getItem('Products and Inventory', 'inventory', '/pos/inventory', <ShopOutlined />),
   getItem('Sales', 'sales', '/pos/sales', <ShoppingCartOutlined />, [
     getItem('Sales Overview', 'sales-overview', '/pos/sales/overview', <BarChartOutlined />),
@@ -59,7 +59,7 @@ export const POSMenus: MenuItem[] = [
   getItem('Settings', 'settings', '/pos/settings', <SettingOutlined />),
 ];
 
-// Accounting Menu Items
+// Accounting Menu Items 
 export const AccountingMenus: MenuItem[] = [
   getItem('Dashboard', 'acc-dashboard', '/accounting/dashboard', <DashboardOutlined />),
   getItem('Financial Overview', 'financial', '/accounting/overview', <BankOutlined />),

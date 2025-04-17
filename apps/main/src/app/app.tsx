@@ -14,9 +14,11 @@ import VendorProfileOutlet from './pages/profile/profile-outlet';
 import VendorHomeOutlet from './pages/home/dashboard-outlet';
 const App = () => {
   return (
+    
     <Routes>
       <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
+        
         <Route path="create-password" element={<CreatePassword />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
@@ -43,10 +45,13 @@ const App = () => {
           </ProtectedRoute>
         }
       >
+        
         <Route index element={<VendorProfile />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
+
+    
   );
 };
 
