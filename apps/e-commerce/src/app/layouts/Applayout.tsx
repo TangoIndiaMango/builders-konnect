@@ -4,12 +4,13 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const { Content } = Layout;
-
+export const frontendBaseUrl = window.location.origin;
 const AppLayout = () => {
   const isHome = location.pathname === '/';
   const isAbout = location.pathname === '/about';
   const isSell = location.pathname === '/sell';
   const isAdvertise = location.pathname === '/advertise';
+  
 
   return (
     <AntApp>

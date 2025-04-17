@@ -6,7 +6,7 @@ import Password from 'antd/es/input/Password';
 import { RegisterFormValues } from '../../../utils/types';
 import { googleLogo } from "../../lib/assets/images";
 import { header_logo } from "../../lib/assets/logo";
-
+import { frontendBaseUrl } from "../../layouts/Applayout";
 
 const Register = () => {
   const { notification } = App.useApp();
@@ -27,7 +27,7 @@ const Register = () => {
         password: values.password,
         referral_source: values.howDidYouHear,
         opened_via: 'web',
-        callback_url: 'http://localhost:4200/auth/verify-email'
+        callback_url: frontendBaseUrl + '/auth/verify-email'
       };
 
       const response = await mutateAsync(payload);

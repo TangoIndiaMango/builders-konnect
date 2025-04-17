@@ -3,6 +3,7 @@ import { Link, useNavigate} from "react-router";
 import { header_logo } from "../../lib/assets/logo";
 import { useCreateData } from "../../../hooks/useApis";
 import { ForgotPasswordValue } from "../../../utils/types";
+import { frontendBaseUrl } from "../../layouts/Applayout";
 
 const onFinish = (values: any) => {
   console.log('Success:', values);
@@ -24,7 +25,7 @@ const ForgotPassword = () => {
       const values = await form.validateFields() as ForgotPasswordValue;
       const payload = {
         identifier: values.email,
-        callback_url: 'http://localhost:4200/auth/new-password'
+        callback_url: frontendBaseUrl + '/auth/new-password'
       };
 
       const response = await mutateAsync(payload);
