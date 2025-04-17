@@ -72,7 +72,7 @@ const Header = () => {
             </div>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-2 ">
+            <div className="hidden md:flex items-center gap-2" onClick={() => navigate('https://builders-konnect-app.netlify.app/vendor/auth/login')}>
               <button className="text-[#003399] text-xs px-6 border border-[rgba(217, 217, 217, 1)] rounded py-1.5 ">
                 Become A Vendor
               </button>
