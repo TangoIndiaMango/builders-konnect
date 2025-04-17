@@ -1,14 +1,31 @@
-import { Link } from 'react-router-dom';
-import { SearchOutlined, ShoppingCartOutlined, MenuOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons';
+import { Link, useNavigate } from 'react-router-dom';
+import { SearchOutlined, ShoppingCartOutlined, MenuOutlined, CloseOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Layout, Input, Badge, Drawer } from 'antd';
 import { header_logo } from '../lib/assets/logo';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getAuthUser, isAuthenticated, removeAuthUser } from '../../utils/auth';
 
 const { Header: AntHeader } = Layout;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(getAuthUser());
+
+  useEffect(() => {
+    setIsLoggedIn(isAuthenticated());
+    setUser(getAuthUser());
+  }, []);
+
+
+  const handleLogout = () => {
+    removeAuthUser();
+    setIsLoggedIn(false);
+    setUser(null);
+    navigate('/auth/login');
+  };
+
   return (
     <div className="sticky top-0 z-50">
       {/* Top blue bar */}
@@ -60,26 +77,34 @@ const Header = () => {
                 Become A Vendor
               </button>
               <div className='w-[3px] h-[40px]  bg-[#9CAFFC]'></div>
-              {!loggedIn && (
+              {!isLoggedIn && (
                 <>
-                    <Link to="customer/auth/signup" className="text-[#003399] text-xs hover:text-[#9CAFFC] transition-colors px-6">
+                    <Link to="/auth/register" className="text-[#003399] text-xs hover:text-[#9CAFFC] transition-colors px-6">
                     Sign Up
                     </Link>
-                    <Link to="customer/auth/login" className=" text-xs   px-6 bg-[#003399] text-white rounded py-1.5 ">
+                    <Link to="/auth/login" className=" text-xs   px-6 bg-[#003399] text-white rounded py-1.5 ">
                     Log In
                     </Link>
               </>
               )}
-             {loggedIn && ( <>
-                    <Link to="/profile" className="px-6">
-                  <UserOutlined style={{ fontSize: '20px' }} />
-                </Link>
-                </>)}
+
               <Link to="/cart" className="text-[#003399] hover:text-[#9CAFFC] px-6">
                 <Badge count={0} color="#003399">
                   <ShoppingCartOutlined style={{ fontSize: '18px' }} />
                 </Badge>
               </Link>
+
+              {isLoggedIn && ( <>
+                    <Link to="/profile" className="px-6">
+                  <UserOutlined style={{ fontSize: '20px' }} />
+                </Link>
+
+                {/* <Link to="/" onClick={handleLogout} className=" hover:text-[#9CAFFC] px-6">
+                <LogoutOutlined style={{ fontSize: '20px' }} />
+              </Link> */}
+                </>)}
+             
+
             </div>
 
             {/* Mobile Actions */}
@@ -99,7 +124,7 @@ const Header = () => {
                     <ShoppingCartOutlined style={{ fontSize: '20px', color: 'rgba(0, 0, 0, 0.45)' }} />
                   </Badge>
                 </Link>
-                {loggedIn && ( <>
+                {isLoggedIn && ( <>
                 <Link to="/profile" className="px-6">
                   <UserOutlined style={{ fontSize: '20px', color: 'rgba(0, 0, 0, 0.45)' }} />
                 </Link>
@@ -140,15 +165,20 @@ const Header = () => {
             </button>
           </div>
           <div className="flex flex-col space-y-4">
-            {!loggedIn && (
+            {!isLoggedIn && (
                 <>
-                <Link to="customer/auth/login" className="px-4 h-10 flex items-center justify-center bg-[#003399] text-white text-xs rounded hover:bg-[#9CAFFC] transition-colors">
+                <Link to="/auth/login" className="px-4 h-10 flex items-center justify-center bg-[#003399] text-white text-xs rounded hover:bg-[#9CAFFC] transition-colors">
                   Log In
                 </Link>
-                <Link to="customer/auth/signup" className="px-4 h-10 flex items-center justify-center border border-[#003399] text-[#003399] text-xs rounded hover:bg-[#9CAFFC] hover:text-white hover:border-[#9CAFFC] transition-colors">
+                <Link to="/auth/register" className="px-4 h-10 flex items-center justify-center border border-[#003399] text-[#003399] text-xs rounded hover:bg-[#9CAFFC] hover:text-white hover:border-[#9CAFFC] transition-colors">
                   Sign Up
                 </Link>
               </>
+            )}
+            {isLoggedIn && (
+              <Link to="/profile" className="px-4 h-10 flex items-center justify-center border border-[#003399] text-[#003399] text-xs rounded hover:bg-[#9CAFFC] hover:text-white hover:border-[#9CAFFC] transition-colors">
+                Profile
+              </Link>
             )}
            
             <button className="px-4 h-10 flex items-center justify-center border border-[#003399] text-[#003399] text-xs rounded hover:bg-[#9CAFFC] hover:text-white hover:border-[#9CAFFC] transition-colors">
