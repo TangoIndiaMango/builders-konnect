@@ -1,6 +1,6 @@
 import { OrderData } from "../../utils/types";
 import { advert, audience, builders, data, delivery, efficiency, facart, four, industry, innovation, integration, one, qualityAssurance, reliability, salesCart, three, two } from "./assets/icons";
-import { kawthar, mike, miller, paint, deals, flooring, ceramic, granite, accesories, quartz, marble, tiles, woodlikeone, woodliketwo, woodlikethree, woodlikefour, woodlikefive, woodlikesix, woodlikeseven, woodlikeeight, woodlikenine, woodliketen, woodtwo, woodthree, woodfour, woodfive, woodsix, dartmoorewood } from "./assets/images";
+import { kawthar, mike, miller, paint, deals, flooring, ceramic, granite, accesories, quartz, marble, tiles, woodlikeone, woodliketwo, woodlikethree, woodlikefour, woodlikefive, woodlikesix, woodlikeseven, woodlikeeight, woodlikenine, woodliketen, woodtwo, woodthree, woodfour, woodfive, woodsix, dartmoorewood, payment } from "./assets/images";
 
 
 export const productCards = [
@@ -1312,6 +1312,66 @@ export const tileCategories = [
     title: 'Kitchen',
     description: 'Virony Kitchen',
     image: woodliketen,
+  },
+];
+export const steps = ['Cart', 'Information', 'Shipping', 'Payment'];
+export const details = [
+  {
+    label: 'Contact',
+    value: 'johndoe@email.com',
+  },
+  {
+    label: 'Phone',
+    value: '0810 000 0000',
+  },
+  {
+    label: 'Ship to',
+    value: '3A, Alaba International Market, Ojo, Lagos',
+  },
+];
+export const paymentDetails = [
+  {
+    label: 'Contact',
+    value: 'johndoe@email.com',
+  },
+  {
+    label: 'Phone',
+    value: '0810 000 0000',
+  },
+  {
+    label: 'Ship to',
+    value: '3A, Alaba International Market, Ojo, Lagos',
+  },
+  {
+    label: 'Method',
+    value: 'Standard ( Delivered within 3-5 working days)', 
+  }
+];
+
+export const paymentOptions = [
+  { value: 'paystack', label: 'Paystack', image: payment },
+  { value: 'flutterwave', label: 'Flutterwave', image: payment },
+  { value: 'bank', label: 'Bank Transfer' },
+];
+
+export const shippingProducts = [
+  {
+    id: 'product-1',
+    name: 'Ceramic Tile (30 X 60)',
+    price: '₦4,250',
+    image: marble,
+  },
+  {
+    id: 'product-2',
+    name: 'Ceramic Tile (30 X 60)',
+    price: '₦4,250',
+    image: marble,
+  },
+  {
+    id: 'product-3',
+    name: 'Ceramic Tile (30 X 60)',
+    price: '₦4,250',
+    image: marble,
   },
 ];
 export const categoriess = [

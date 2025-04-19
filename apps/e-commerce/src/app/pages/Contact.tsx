@@ -1,11 +1,14 @@
 import {
-  FaFacebookSquare,
-  FaTwitterSquare,
-  FaInstagram,
-  FaLinkedin,
-} from 'react-icons/fa';
-import { MdEmail, MdOutlinePhonelinkRing, MdPhone } from 'react-icons/md';
+  FacebookFilled,
+  TwitterSquareFilled,
+  InstagramFilled,
+  LinkedinFilled,
+  MailOutlined,
+  PhoneOutlined,
+  MobileOutlined,
+} from '@ant-design/icons';
 import Hero from '../components/ProductDetails/Hero';
+import { Input, Button, Form, Row, Col } from 'antd';
 
 const ContactPage = () => {
   return (
@@ -27,7 +30,7 @@ const ContactPage = () => {
             <div className="space-y-8">
               <div>
                 <div className="flex  items-center gap-2">
-                  <MdEmail className=" text-[#000000D9] text-lg md:text-2xl" />
+                  <MailOutlined className="text-[#000000D9] text-lg md:text-2xl" />
                   <span className="font-medium text-[#000000D9] text-base md:text-xl">
                     Email
                   </span>
@@ -57,7 +60,7 @@ const ContactPage = () => {
 
               <div>
                 <div className="flex items-center gap-2">
-                  <MdPhone className="md:text-xl text-base text-black" />
+                  <PhoneOutlined className="md:text-xl text-base text-black" />
                   <span className="text-black md:text-xl text-base font-medium">
                     Phone
                   </span>
@@ -74,93 +77,64 @@ const ContactPage = () => {
 
               <div>
                 <h4 className="font-medium flex gap-2 items-center text-[#000000D9] mb-1">
-                  <MdOutlinePhonelinkRing />
+                  <MobileOutlined />
                   Connect With Us
                 </h4>
                 <div className="flex gap-4 text-2xl text-[#000000D9]">
                   <a href="#" target="_blank" rel="noopener noreferrer">
-                    <FaFacebookSquare />
+                    <FacebookFilled />
                   </a>
                   <a href="#" target="_blank" rel="noopener noreferrer">
-                    <FaTwitterSquare />
+                    <TwitterSquareFilled />
                   </a>
                   <a href="#" target="_blank" rel="noopener noreferrer">
-                    <FaInstagram />
+                    <InstagramFilled />
                   </a>
                   <a href="#" target="_blank" rel="noopener noreferrer">
-                    <FaLinkedin />
+                    <LinkedinFilled />
                   </a>
                 </div>
               </div>
             </div>
           </div>
+
           <div>
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-              </div>
+            <Form layout="vertical" className="space-y-4">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item label="First Name" name="firstName">
+                    <Input placeholder="First Name" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item label="Last Name" name="lastName">
+                    <Input placeholder="Last Name" />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  placeholder="Enter"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+              <Form.Item label="Email Address" name="email">
+                <Input type="email" placeholder="Enter" />
+              </Form.Item>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+              <Form.Item label="Phone Number" name="phone">
+                <Input placeholder="Enter" />
+              </Form.Item>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Message
-                </label>
-                <textarea
-                  rows={4}
-                  placeholder="Enter"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                ></textarea>
-              </div>
+              <Form.Item label="Message" name="message">
+                <Input.TextArea rows={4} placeholder="Enter" />
+              </Form.Item>
 
-              <div>
-                <button
-                  type="submit"
-                  className="w-full bg-[#1d3b87] text-white py-2 rounded-md hover:bg-[#152b6c] transition"
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="bg-[#1d3b87] hover:bg-[#152b6c] text-white w-full"
                 >
                   Send Message
-                </button>
-              </div>
-            </form>
+                </Button>
+              </Form.Item>
+            </Form>
           </div>
         </div>
       </div>
