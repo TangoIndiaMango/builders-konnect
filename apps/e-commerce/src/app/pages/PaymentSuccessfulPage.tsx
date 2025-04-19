@@ -29,7 +29,7 @@ const OrderSuccess = () => {
               </p>
                     </div>
                     <Link to="/">          
-            <Button type="primary" className="bg-[#0033A1] rounded-md w-80">
+            <Button type="primary" className="bg-[#0033A1] py-5 rounded-md w-80">
               Continue Shopping
             </Button>
                     </Link>
