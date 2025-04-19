@@ -35,9 +35,11 @@ import woodsix from '../../../assets/images/woodSix.png'
 import woodlikeone from '../../../assets/images/woodliketilesOne.png'
 import dartmoorewood from '../../../assets/images/dartmoorewood.png'
 import floors from '../../../assets/images/floors.png'
+import payment  from '../../../assets/images/payment.svg'
 
 
 export {
+  payment,
   floors,
   appStore,
   playStore,

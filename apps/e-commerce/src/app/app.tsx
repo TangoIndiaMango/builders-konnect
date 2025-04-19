@@ -20,9 +20,18 @@ import Orders from './pages/Profile/Orders';
 import Addresses from './pages/Profile/Addresses';
 import PaymentMethods from './pages/Profile/PaymentMethods';
 import AccountDetails from './pages/Profile/AccountDetails';
-import CartPage from './pages/Cart';
+
 import ContactPage from './pages/Contact';
 import ProductCategory from './pages/TillingAndFlooringListings';
+import CartPage from './pages/Cart';
+import CheckoutPage from './pages/CheckoutPage';
+import Shipping from './pages/Shipping';
+import CheckoutPaymentPage from './pages/Payment';
+import PaymentPage from './pages/PaymentPage';
+import OrderSuccess from './pages/PaymentSuccessfulPage';
+import FooterOnlyLayout from './components/FooterOnlyLayout';
+import EmptyCart from './pages/EmptyCartPage';
+import CartSummary from './pages/CartSummaryPage';
 
 const App = () => {
   return (
@@ -36,6 +45,16 @@ const App = () => {
         <Route path="verify-email" element={<VerifyEmail />} />
         <Route path="check-your-mail" element={<CheckYourMail />} />
       </Route>
+
+      <Route element={<FooterOnlyLayout />}>
+        <Route path="checkout" element={<CheckoutPage />} />
+        <Route path="shipping" element={<Shipping />} />
+        <Route path="payment" element={<CheckoutPaymentPage />} />
+        <Route path="pay" element={<PaymentPage />} />
+      </Route>
+
+      <Route path="carts" element={<EmptyCart/>} />
+      <Route path="order-summary" element={<CartSummary/>} />
 
       {/* Main Routes */}
       <Route path="/" element={<MainLayout />}>
@@ -59,6 +78,7 @@ const App = () => {
         </Route>
         <Route path="cart" element={<CartPage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="success" element={<OrderSuccess />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
