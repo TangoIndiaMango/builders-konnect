@@ -72,9 +72,11 @@ const Header = () => {
             </div>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-2 ">
+            <div className="hidden md:flex items-center gap-2" >
               <button className="text-[#003399] text-xs px-6 border border-[rgba(217, 217, 217, 1)] rounded py-1.5 ">
+                <a href="https://builders-konnect-app.netlify.app/vendor/auth/login" target="_blank" rel="noopener noreferrer">
                 Become A Vendor
+                </a>
               </button>
               <div className='w-[3px] h-[40px]  bg-[#9CAFFC]'></div>
               {!isLoggedIn && (
