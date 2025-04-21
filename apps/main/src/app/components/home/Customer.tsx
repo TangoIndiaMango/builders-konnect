@@ -1,52 +1,71 @@
-import { Card, Select } from "antd";
-import EmptyState from "../common/EmptyState";
+import { Button } from 'antd';
+import CardWithFilter from '../common/CardWithFilter';
+import EmptyState from '../common/EmptyState';
+import FilterGroup from '../common/filters/FilterGroup';
+import CustomerTrafficChart from './charts/CustomerTrafficChart';
+import { customerData } from './constant';
+import CustomerListItem from './customer/CustomerListItem';
 
 
-const { Option } = Select;
+const customers = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=2',
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=3',
+  },
+  {
+    id: 3,
+    name: 'Bob Johnson',
+    email: 'bob.johnson@example.com',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=4',
+  },
+];
+
 
 const Customer = () => {
   return (
-    <div className="p-4 bg-white">
-      <div className="flex flex-col gap-4 md:flex-row">
-        {/* Left (Customer Traffic) */}
-        <div className="w-full md:w-3/4">
-          <Card
-            title={
-              <div className="flex items-center justify-between">
-                <span className="text-base font-medium">Customer Traffic</span>
-                <div className="flex gap-2">
-                  <Select defaultValue="all" size="small" style={{ width: 100 }}>
-                    <Option value="all">All Sales</Option>
-                    <Option value="online">Online</Option>
-                    <Option value="store">In Store</Option>
-                  </Select>
-                  <Select defaultValue="month" size="small" style={{ width: 100 }}>
-                    <Option value="month">This month</Option>
-                    <Option value="week">This week</Option>
-                    <Option value="year">This year</Option>
-                  </Select>
-                </div>
-              </div>
-            }
-            bodyStyle={{ padding: 0 }}
-          >
-            <EmptyState
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="xl:col-span-2">
+        <CardWithFilter
+          title="Customer Analytics"
+          description="Create sales orders and track order sales and performance here"
+          rightSection={<FilterGroup />}
+        >
+          {customerData?.length > 0 ? (
+            <CustomerTrafficChart data={customerData} />
+          ) : (
+            <EmptyState description="You have no data here yet." />
+          )}
+        </CardWithFilter>
+      </div>
 
-            />
-          </Card>
-        </div>
+      <div className="xl:col-span-1">
+        <CardWithFilter title="Recent Customers">
+          {customers?.length > 0 ? (
+              <div className="flex flex-col gap-4">
+              {customers.map((customer) => (
+                <CustomerListItem
+                  key={customer.id}
+                  name={customer.name}
+                  email={customer.email}
+                  avatar={customer.avatar}
+                  onClick={() => console.log(`Clicked on ${customer.name}`)}
+                />
+              ))}
 
-        {/* Right (Recent Customers) */}
-        <div className="w-full md:w-1/4">
-          <Card
-            title={<span className="text-base font-medium">Recent Customers</span>}
-            bodyStyle={{ padding: 0 }}
-          >
-            <EmptyState
-            
-            />
-          </Card>
-        </div>
+              <Button type="link" className="w-full">View All</Button>
+            </div>
+          ) : (
+            <EmptyState description="You have no data here yet." />
+          )}
+        </CardWithFilter>
       </div>
     </div>
   );

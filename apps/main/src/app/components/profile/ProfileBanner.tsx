@@ -1,24 +1,8 @@
 import React from 'react';
-import { Typography, Tabs } from 'antd';
+import { Typography, Tabs, Button } from 'antd';
 import type { TabsProps } from 'antd';
+import PageIntroBanner from '../common/PageIntroBanner';
 
-const ProfileBanner = () => {
-  return (
-    <div className="flex justify-between bg-white px-6 pt-6 pb-4 border-b">
-      <div className="flex flex-col space-y-1">
-        <Typography.Title level={4} className="!mb-0">
-          My Profile
-        </Typography.Title>
-        <Typography.Text className="text-gray-500 !mb-0">
-          Track and measure store performance and analytics here
-        </Typography.Text>
-      </div>
-      <button className="h-fit px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors">
-        View Storefront
-      </button>
-    </div>
-  );
-};
 
 const items: TabsProps['items'] = [
   {
@@ -29,7 +13,7 @@ const items: TabsProps['items'] = [
         <h2 className="text-lg font-semibold">Profile Information</h2>
         <p>This is where the profile info will go.</p>
       </div>
-    )
+    ),
   },
   {
     key: 'stores',
@@ -39,7 +23,7 @@ const items: TabsProps['items'] = [
         <h2 className="text-lg font-semibold">Stores</h2>
         <p>This is where the store info will go.</p>
       </div>
-    )
+    ),
   },
   {
     key: 'subscription',
@@ -49,8 +33,8 @@ const items: TabsProps['items'] = [
         <h2 className="text-lg font-semibold">Subscription</h2>
         <p>This is where the subscription details will go.</p>
       </div>
-    )
-  }
+    ),
+  },
 ];
 
 const ProfilePage: React.FC = () => {
@@ -60,7 +44,11 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="bg-gray-100">
-      <ProfileBanner />
+      <PageIntroBanner
+        title="My Profile"
+        description="Track and measure store performance and analytics here"
+        actionButton={<Button size="large">View Storefront</Button>}
+      />
       <div className="px-6 bg-white">
         <Tabs
           defaultActiveKey="subscription"

@@ -1,52 +1,112 @@
-import { Card, Select } from "antd";
-import EmptyState from "../common/EmptyState";
+import { DollarOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Button, Divider } from 'antd';
+import CardWithFilter from '../common/CardWithFilter';
+import EmptyState from '../common/EmptyState';
+import FilterGroup from '../common/filters/FilterGroup';
+import StatsCard from '../common/StatsCard';
+import ProductSalesChart from './charts/ProductSalesChart';
+import CustomerListItem from './customer/CustomerListItem';
 
+const data = [
+  { name: 'Cement', sales: 200, value: 30, amount: 4544 },
+  { name: 'Paint', sales: 126, value: 25, amount: 4544 },
+  { name: 'Tiles', sales: 100, value: 20, amount: 4544 },
+  { name: 'Cement Mixer', sales: 50, value: 15, amount: 4544 },
+  { name: 'Paint brush', sales: 20, value: 5, amount: 4544 },
+  { name: 'Screed', sales: 18, value: 5, amount: 4544 },
+];
 
-const { Option } = Select;
+const products = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=2',
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=3',
+  },
+  {
+    id: 3,
+    name: 'Bob Johnson',
+    email: 'bob.johnson@example.com',
+    avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=4',
+  },
+];
 
+const statsData = [
+  {
+    title: 'Total Products',
+    value: 0,
+    color: 'blue' as const,
+    icon: <ShoppingCartOutlined style={{ fontSize: 16 }} />,
+  },
+  {
+    title: 'Revenue Generated',
+    value: 0,
+    color: 'pink' as const,
+    icon: <DollarOutlined style={{ fontSize: 16 }} />,
+  },
+];
 const Product = () => {
   return (
-    <div className="p-4 bg-white">
-      <div className="flex flex-col gap-4 md:flex-row">
-        {/* Left (Customer Traffic) - 75% width */}
-        <div className="w-full md:w-3/4">
-          <Card
-            title={
-              <div className="flex items-center justify-between">
-                <span className="text-base font-medium">Products Overview</span>
-                <div className="flex gap-2">
-                  <Select defaultValue="all" size="small" style={{ width: 100 }}>
-                    <Option value="all">All Sales</Option>
-                    <Option value="online">Online</Option>
-                    <Option value="store">In Store</Option>
-                  </Select>
-                  <Select defaultValue="month" size="small" style={{ width: 100 }}>
-                    <Option value="month">This month</Option>
-                    <Option value="week">This week</Option>
-                    <Option value="year">This year</Option>
-                  </Select>
-                </div>
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="col-span-2">
+        <CardWithFilter
+          title="Product Overview"
+          // description="Create sales orders and track order sales and performance here"
+          rightSection={<FilterGroup />}
+        >
+          {data?.length > 0 ? (
+            <div className="space-y-5">
+              <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+                {statsData.map((stat, index) => (
+                  <StatsCard
+                    key={index}
+                    title={stat.title}
+                    value={stat.value}
+                    color={stat.color}
+                    icon={stat.icon}
+                  />
+                ))}
               </div>
-            }
-            bodyStyle={{ padding: 0 }}
-          >
-            <EmptyState
+              <Divider />
+              <div>
+                <h3 className="text-lg font-semibold">Product Sales</h3>
+                <ProductSalesChart data={data} />
+              </div>
+            </div>
+          ) : (
+            <EmptyState description="You have no data here yet." />
+          )}
+        </CardWithFilter>
+      </div>
 
-            />
-          </Card>
-        </div>
+      <div className="col-span-1">
+        <CardWithFilter title="New products Added">
+          {products?.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {products.map((customer) => (
+                <CustomerListItem
+                  key={customer.id}
+                  name={customer.name}
+                  email={customer.email}
+                  avatar={customer.avatar}
+                  onClick={() => console.log(`Clicked on ${customer.name}`)}
+                />
+              ))}
 
-        {/* Right (Recent Customers) - 25% width */}
-        <div className="w-full md:w-1/4">
-          <Card
-            title={<span className="text-base font-medium">New Products Added</span>}
-            bodyStyle={{ padding: 0 }}
-          >
-            <EmptyState
-            
-            />
-          </Card>
-        </div>
+              <Button type="link" className="w-full">
+                View All
+              </Button>
+            </div>
+          ) : (
+            <EmptyState description="You have no data here yet." />
+          )}
+        </CardWithFilter>
       </div>
     </div>
   );

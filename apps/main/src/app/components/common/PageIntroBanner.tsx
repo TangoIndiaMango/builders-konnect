@@ -1,18 +1,28 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Typography } from 'antd';
+import { Typography } from 'antd';
 
-const PageIntroBanner = () => {
+interface PageIntroProps {
+  title?: string;
+  description?: string;
+  actionButton?: React.ReactNode;
+  children?: React.ReactNode;
+}
+const PageIntroBanner = ({
+  title = 'Dashboard',
+  description = 'Track and measure store performance and analytics here',
+  actionButton,
+  children,
+}: PageIntroProps) => {
   return (
-    <div className="flex justify-between bg-white p-6 border-b">
+    <div className="flex justify-between p-6 bg-white border-b">
       <div className="flex flex-col space-y-2">
         <Typography.Title level={4} className="!mb-0">
-          Dashboard
+          {title}
         </Typography.Title>
         <Typography.Text className="text-gray-500">
-          Track and measure store performance and analytics here
+          {description}
         </Typography.Text>
         {/* <div className="flex items-center gap-8 mt-4">
-          <span className="text-blue-800 cursor-pointer border-b-2 border-blue-800">
+          <span className="text-blue-800 border-b-2 border-blue-800 cursor-pointer">
             Profile Information
           </span>
           <span className="text-gray-600 cursor-pointer hover:text-blue-800">
@@ -23,12 +33,9 @@ const PageIntroBanner = () => {
           </span>
         </div> */}
       </div>
-      <Button
-        icon={<PlusOutlined />}
-        className="h-fit px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-      >
-        Add Product
-      </Button>
+      {actionButton && <div className="justify-end ">{actionButton}</div>}
+
+      {children && children}
     </div>
   );
 };

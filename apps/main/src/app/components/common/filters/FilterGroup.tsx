@@ -23,7 +23,7 @@ const FilterGroup: React.FC<FilterGroupProps> = ({ className = '' }) => {
   ];
 
   return (
-    <div className={`flex gap-4 flex-wrap ${className}`}>
+    <div className={`flex gap-4 flex-wrap justify-end ${className}`}>
       <FilterDropdown
         // label="Store"
         options={storeOptions}

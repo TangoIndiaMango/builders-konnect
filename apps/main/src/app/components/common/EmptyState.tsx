@@ -1,18 +1,18 @@
-import React from "react"
-import { Empty } from "antd"
-import { BarChart3 } from "lucide-react"
+import React from 'react';
+import { Empty } from 'antd';
+import { BarChart3 } from 'lucide-react';
 
 interface EmptyStateProps {
-  description?: string
-  height?: number | string
-  className?: string
-  icon?: React.ReactNode
+  description?: string;
+  height?: number | string;
+  className?: string;
+  icon?: React.ReactNode;
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({
-  description = "You have no data here yet",
+  description = 'You have no data here yet',
   height = 200,
-  className = "",
+  className = '',
   icon,
 }) => {
   return (
@@ -25,7 +25,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         description={<p className="text-sm text-gray-500">{description}</p>}
       />
     </div>
-  )
-}
+  );
+};
 
-export default EmptyState
+export default EmptyState;

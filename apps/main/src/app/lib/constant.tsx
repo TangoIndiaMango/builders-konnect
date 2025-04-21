@@ -45,8 +45,8 @@ export const POSMenus: MenuItem[] = [
   getItem('Vendor Profile', 'vendor', '/pos/profile', <UserOutlined />),
   getItem('Products and Inventory', 'inventory', '/pos/inventory', <ShopOutlined />),
   getItem('Sales', 'sales', '/pos/sales', <ShoppingCartOutlined />, [
-    getItem('Sales Overview', 'sales-overview', '/pos/sales/overview', <BarChartOutlined />),
-    getItem('Transactions', 'transactions', '/pos/sales/transactions', <TransactionOutlined />),
+    getItem('All Sales', 'sales', '/pos/sales', <BarChartOutlined />),
+    getItem('Sales Analytics', 'analytics', '/pos/sales/analytics', <TransactionOutlined />),
   ]),
   getItem('Returns and Refunds', 'returns', '/pos/returns', <RollbackOutlined />),
   getItem('Customers', 'customers', '/pos/customers', <UsergroupAddOutlined />, [
@@ -59,7 +59,7 @@ export const POSMenus: MenuItem[] = [
   getItem('Settings', 'settings', '/pos/settings', <SettingOutlined />),
 ];
 
-// Accounting Menu Items 
+// Accounting Menu Items
 export const AccountingMenus: MenuItem[] = [
   getItem('Dashboard', 'acc-dashboard', '/accounting/dashboard', <DashboardOutlined />),
   getItem('Financial Overview', 'financial', '/accounting/overview', <BankOutlined />),
