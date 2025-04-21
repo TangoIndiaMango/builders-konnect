@@ -40,6 +40,19 @@ export interface OrderProduct {
   price: number;
 }
 
+export type AddressType = "billing" | "shipping";
+
+export interface Address {
+  firstName: string;
+  lastName: string;
+  company?: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  phone: string;
+}
+
 export interface OrderData {
   orderNumber: string;
   orderDate: string;
