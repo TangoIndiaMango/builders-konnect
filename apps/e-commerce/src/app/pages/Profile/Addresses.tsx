@@ -1,106 +1,93 @@
-import React, { useState } from 'react';
-import { Button, Modal, Form, Input, notification } from 'antd';
+import { useEffect, useState } from 'react';
+import { Button, Modal, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Address, AddressType } from '../../../utils/types';
 
-interface Address {
-  id: number;
-  type: string;
-  address: string;
-  isDefault: boolean;
-}
+const AddressMainPage = () => {
+  const [addresses, setAddresses] = useState<
+    Partial<Record<AddressType, Address>>
+  >({});
+  const [deleteType, setDeleteType] = useState<AddressType | null>(null);
+  const navigate = useNavigate();
 
-interface AddressFormValues {
-  type: string;
-  address: string;
-}
+ useEffect(() => {
+   const stored = localStorage.getItem('addresses');
+   if (stored) {
+     setAddresses(JSON.parse(stored));
+   }
+ }, []);
 
-const Addresses: React.FC = () => {
-  const [addresses] = useState<Address[]>([]);
-  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
-
-  const handleAddAddress = (values: AddressFormValues) => {
-    console.log('New address:', values);
-    setIsAddressModalVisible(false);
-    notification.success({
-      message: 'Address Added',
-      description: 'Your new address has been added successfully.',
-    });
+  const handleDelete = () => {
+    if (deleteType) {
+      const updated = { ...addresses };
+      delete updated[deleteType];
+      localStorage.setItem('addresses', JSON.stringify(updated));
+      setAddresses(updated);
+      setDeleteType(null);
+      message.success('Address deleted');
+    }
   };
 
+  const renderCard = (type: AddressType, address: Address) => (
+    <div key={type}>
+      <h2 className="text-lg md:text-2xl text-[#4E4E4E] font-medium mb-4 capitalize">
+        {type} Address
+      </h2>
+      <div className="bg-[#F9F9F9] p-6 shadow-sm">
+        <div className="mb-4">
+          <p className=" text-base md:text-lg font-medium text-[#4E4E4E]">
+            {address.firstName} {address.lastName}
+          </p>
+          <p className="text-[#4E4E4E]">
+            {address.address}, {address.city}, {address.state},{' '}
+            {address.country}
+          </p>
+        </div>
+        <div className="flex gap-4">
+          <Button type="primary" onClick={() => navigate(`/edit/${type}`)}>
+            Edit
+          </Button>
+          <Button danger onClick={() => setDeleteType(type)}>
+            Delete
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div>
-      {addresses.length === 0 ? (
-        <div>
-          <p className="mb-4">You do not have any address yet</p>
-          <Button
-            type="primary"
-            onClick={() => setIsAddressModalVisible(true)}
-            className="bg-[#003399]"
-          >
+    <main className="py-16 px-8">
+      <h1 className="text-xl text-[#1E1E1E] md:text-3xl mb-12">My Addresses</h1>
+
+      {!addresses.billing && !addresses.shipping ? (
+        <div className="text-center space-y-4">
+          <p>You do not have any address yet.</p>
+          <Button type="primary" onClick={() => navigate('/edit/billing')}>
             Add New Address
           </Button>
         </div>
       ) : (
-        <div>
-          <Button
-            type="primary"
-            onClick={() => setIsAddressModalVisible(true)}
-            className="mb-4 bg-[#003399]"
-          >
-            Add New Address
-          </Button>
-          <div className="space-y-4">
-            {addresses.map((item) => (
-              <div key={item.id} className="border rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold">{item.type}</p>
-                    <p>{item.address}</p>
-                    {item.isDefault && (
-                      <span className="text-[#003399] text-sm">Default Address</span>
-                    )}
-                  </div>
-                  <div>
-                    <Button type="link">Edit</Button>
-                    <Button type="link" danger>Delete</Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="grid md:grid-cols-2 gap-8">
+          {addresses.billing && renderCard('billing', addresses.billing)}
+          {addresses.shipping && renderCard('shipping', addresses.shipping)}
         </div>
       )}
 
-      {/* Add Address Modal */}
       <Modal
-        title="Add New Address"
-        open={isAddressModalVisible}
-        onCancel={() => setIsAddressModalVisible(false)}
-        footer={null}
+        open={!!deleteType}
+        onCancel={() => setDeleteType(null)}
+        onOk={handleDelete}
+        okText="Yes, Delete"
+        okButtonProps={{ danger: true }}
+        cancelText="Cancel"
+        title="Delete Address"
       >
-        <Form onFinish={handleAddAddress} layout="vertical">
-          <Form.Item
-            name="type"
-            label="Address Type"
-            rules={[{ required: true, message: 'Please select address type' }]}
-          >
-            <Input placeholder="e.g., Home, Office" />
-          </Form.Item>
-          <Form.Item
-            name="address"
-            label="Address"
-            rules={[{ required: true, message: 'Please enter your address' }]}
-          >
-            <Input.TextArea rows={3} placeholder="Enter your full address" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" className="bg-[#003399]">
-              Save Address
-            </Button>
-          </Form.Item>
-        </Form>
+        <p className="text-[#000000D9] text-sm mb-5">
+          Are you sure you want to delete this address? This cannot be undone.
+        </p>
       </Modal>
-    </div>
+    </main>
   );
 };
 
-export default Addresses;
+export default AddressMainPage;

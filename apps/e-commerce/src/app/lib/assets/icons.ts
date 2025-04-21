@@ -15,8 +15,14 @@ import four from '../../../assets/icons/four.png'
 import advert from '../../../assets/icons/advert.png'
 import data from '../../../assets/icons/data.png'
 import facart from "../../../assets/icons/facart.png"
+import visa from "../../../assets/icons/visa.png"
+import sterling from "../../../assets/icons/sterling.png"
+import radio from "../../../assets/icons/radio.png"
 
 export {
+    radio,
+    visa,
+    sterling,
     reliability,
     efficiency,
     qualityAssurance,

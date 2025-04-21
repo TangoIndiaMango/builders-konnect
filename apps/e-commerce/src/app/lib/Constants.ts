@@ -1,8 +1,154 @@
 import { OrderData } from "../../utils/types";
-import { advert, audience, builders, data, delivery, efficiency, facart, four, industry, innovation, integration, one, qualityAssurance, reliability, salesCart, three, two } from "./assets/icons";
+import { advert, audience, builders, data, delivery, efficiency, facart, four, industry, innovation, integration, one, qualityAssurance, radio, reliability, salesCart, sterling, three, two, visa } from "./assets/icons";
 import { kawthar, mike, miller, paint, deals, flooring, ceramic, granite, accesories, quartz, marble, tiles, woodlikeone, woodliketwo, woodlikethree, woodlikefour, woodlikefive, woodlikesix, woodlikeseven, woodlikeeight, woodlikenine, woodliketen, woodtwo, woodthree, woodfour, woodfive, woodsix, dartmoorewood, payment } from "./assets/images";
 
 
+export const vendorProductCards = [
+  {
+    id: 1,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4.5,
+    icon:facart,
+  },
+  {
+    id: 2,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 3,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 3.5,
+    icon: facart,
+  },
+  {
+    id: 4,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 5,
+    icon: facart,
+  },
+  {
+    id: 5,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4.5,
+    icon: facart,
+  },
+  {
+    id: 6,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 7,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4.5,
+    icon: facart,
+  },
+  {
+    id: 8,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 5,
+    icon: facart,
+  },
+  {
+    id: 9,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 3.5,
+    icon: facart,
+  },
+  {
+    id: 10,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 11,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 12,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 13,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 14,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 15,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 4,
+    icon: facart,
+  },
+  {
+    id: 16,
+    image: woodthree,
+    name: 'Wood Like Tiles',
+    price: 23803,
+    discount: 51,
+    rating: 5,
+    icon: facart,
+  },
+];
 export const productCards = [
   {
     id: 1,
@@ -672,6 +818,26 @@ export const dealItems = [
     bgColor: 'bg-[#A8071A]',
   }
 ];
+
+export const reviews = [
+  {
+    user: 'John Doe',
+    rating: 4.5,
+    title: 'Beautiful Flooring',
+    message:
+      'Bought this flooring last month and laid in my daughter’s room. Beautiful product and easy to lay',
+    response: 'Thank you for your purchase',
+  },
+  {
+    user: 'John Doe',
+    rating: 4.5,
+    title: 'Beautiful Flooring',
+    message:
+      'Bought this flooring last month and laid in my daughter’s room. Beautiful product and easy to lay',
+    response: 'Thank you for your purchase',
+  },
+];
+
 export const filterTitles = [
   'Application Surface',
   'Effect',
@@ -1292,6 +1458,20 @@ export const categories = [
   "Toilets and Bathroom",
   'Home Appliance',
 ];
+// export const vendorSidebarCategory: Category[] = [
+//   { name: 'Imported Tiles' },
+//   { name: 'Nigerian Tiles' },
+//   { name: 'Laminate Flooring', count: 5 },
+//   { name: '3D Flooring', count: 5 },
+//   { name: 'Wood Plank Flooring', count: 5 },
+//   { name: 'Vinyl Planks', count: 5 },
+//   { name: 'Vinyl Tiles', count: 5 },
+//   { name: 'Carpet Tiles', count: 5 },
+//   { name: 'Epoxy Flooring', count: 5 },
+//   { name: 'Terrazzo Flooring', count: 5 },
+//   { name: 'Spanish Stamping', count: 5 },
+// ];
+
 export const tileCategories = [
   {
     title: 'Flooring',
@@ -1346,6 +1526,31 @@ export const paymentDetails = [
     label: 'Method',
     value: 'Standard ( Delivered within 3-5 working days)', 
   }
+];
+export  const loggedinpaymentOptions = [
+    {
+      id: 'card',
+      type: 'card',
+      icon: visa,
+      label: '****5678',
+    },
+    {
+      id: 'bank',
+      type: 'bank',
+      icon: sterling,
+      label: '00501235455 Union Bank',
+    },
+    {
+      id: 'transfer',
+      type: 'transfer',
+      icon: radio,
+      label: 'Bank Transfer',
+    },
+  ];
+export const cartItems = [
+  { id: 1, name: 'Ceramic Tiles (30) X 40', quantity: 1, price: 3200 },
+  { id: 2, name: 'Ceramic Tiles (20) X 60', quantity: 1, price: 3200 },
+  { id: 3, name: 'Ceramic Tiles (20) X 60', quantity: 1, price: 3200 },
 ];
 
 export const paymentOptions = [
