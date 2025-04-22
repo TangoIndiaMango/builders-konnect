@@ -1,3 +1,4 @@
+// AddressMainPage.tsx
 import { useEffect, useState } from 'react';
 import { Button, Modal, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -10,12 +11,12 @@ const AddressMainPage = () => {
   const [deleteType, setDeleteType] = useState<AddressType | null>(null);
   const navigate = useNavigate();
 
- useEffect(() => {
-   const stored = localStorage.getItem('addresses');
-   if (stored) {
-     setAddresses(JSON.parse(stored));
-   }
- }, []);
+  useEffect(() => {
+    const stored = localStorage.getItem('addresses');
+    if (stored) {
+      setAddresses(JSON.parse(stored));
+    }
+  }, []);
 
   const handleDelete = () => {
     if (deleteType) {
@@ -57,21 +58,49 @@ const AddressMainPage = () => {
 
   return (
     <main className="py-16 px-8">
-      <h1 className="text-xl text-[#1E1E1E] md:text-3xl mb-12">My Addresses</h1>
+      <h1 className="text-xl font-medium text-[#1E1E1E] md:text-3xl mb-12">
+        My Addresses
+      </h1>
 
-      {!addresses.billing && !addresses.shipping ? (
-        <div className="text-center space-y-4">
-          <p>You do not have any address yet.</p>
-          <Button type="primary" onClick={() => navigate('/edit/billing')}>
-            Add New Address
-          </Button>
-        </div>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-8">
-          {addresses.billing && renderCard('billing', addresses.billing)}
-          {addresses.shipping && renderCard('shipping', addresses.shipping)}
-        </div>
-      )}
+      <div className="grid md:grid-cols-2 gap-8">
+        {!addresses.billing ? (
+          <div>
+            <div className="space-y-6 ">
+              <p className="font-medium text-base  text-[#4E4E4E]">
+                You do not have a billing address yet.
+              </p>
+              <Button
+                type="primary"
+                className="py-5 rounded-md px-10 text-white"
+                onClick={() => navigate('/edit/billing')}
+              >
+                Add Billing Address
+              </Button>
+            </div>
+          </div>
+        ) : (
+          renderCard('billing', addresses.billing)
+        )}
+
+        {!addresses.shipping ? (
+          <div>
+            <div className="space-y-6 ">
+              <p className="font-medium text-base  text-[#4E4E4E]">
+                You do not have a shipping address yet.
+              </p>
+              <Button
+                type="primary"
+                className="py-5 rounded-md px-10 text-white"
+                onClick={() => navigate('/edit/shipping')}
+              >
+                Add Shipping Address
+              </Button>
+            </div>
+          </div>
+        ) : (
+          renderCard('shipping', addresses.shipping)
+        )}
+      </div>
 
       <Modal
         open={!!deleteType}

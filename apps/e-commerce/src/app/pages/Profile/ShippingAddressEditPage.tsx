@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import { Address } from '../../../utils/types';
 
-const BillingAddressEditPage = () => {
+const ShippingAddressEditPage = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem('addresses');
     const allAddresses = stored ? JSON.parse(stored) : {};
-    const billing = allAddresses.billing;
-    if (billing) {
-      form.setFieldsValue(billing);
+    const shipping = allAddresses.shipping;
+    if (shipping) {
+      form.setFieldsValue(shipping);
     }
   }, [form]);
 
@@ -22,17 +22,17 @@ const BillingAddressEditPage = () => {
 
     const updated = {
       ...allAddresses,
-      billing: values,
+      shipping: values,
     };
 
     localStorage.setItem('addresses', JSON.stringify(updated));
-    message.success('Billing address updated!');
+    message.success('Shipping address updated!');
     navigate('/profile/addresses');
   };
 
   return (
     <div className="max-w-2xl mx-auto py-10 px-4">
-      <h1 className="text-2xl font-bold mb-6">Billing Address</h1>
+      <h1 className="text-2xl font-bold mb-6">Shipping Address</h1>
       <Form layout="vertical" form={form} onFinish={onFinish}>
         <div className="grid md:grid-cols-2 gap-4">
           <Form.Item
@@ -85,4 +85,4 @@ const BillingAddressEditPage = () => {
   );
 };
 
-export default BillingAddressEditPage;
+export default ShippingAddressEditPage;
