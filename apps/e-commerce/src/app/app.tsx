@@ -31,7 +31,6 @@ import CartPage from './pages/cart';
 import { CheckoutProvider } from '../hooks/useContext';
 import VendorShop from './pages/VendorStore/VendorPage';
 import ReviewSection from './pages/ReviewSection';
-import EditAddressPage from './pages/Profile/EditAddressPage';
 import BillingAddressEditPage from './pages/Profile/EditAddressPage';
 import ShippingAddressEditPage from './pages/Profile/ShippingAddressEditPage';
 
