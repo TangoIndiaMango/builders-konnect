@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Header from '../components/Header';
+import AuthHeader from '../components/headers/AuthHeader';
 import { authBackground } from '../lib/assets/background';
 
 interface AuthLayoutProps {
@@ -10,7 +10,7 @@ interface AuthLayoutProps {
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      <AuthHeader />
 
       <div
         className="flex-1 p-8 bg-center bg-cover"

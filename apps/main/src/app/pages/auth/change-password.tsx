@@ -40,7 +40,7 @@ const ChangePassword = () => {
             onClick={() => {
               notification.destroy();
 
-              navigate('/vendor/auth/login');
+              navigate('/auth/login');
             }}
           >
             Go to Login

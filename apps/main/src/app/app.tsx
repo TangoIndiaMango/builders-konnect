@@ -9,11 +9,22 @@ import MultipleAccounts from './pages/auth/multiple-accounts';
 import DashboardHome from './pages/home';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
 import NotFound from './pages/NotFound';
+import VendorProfile from './pages/profile';
+import VendorProfileOutlet from './pages/profile/profile-outlet';
+import VendorHomeOutlet from './pages/home/dashboard-outlet';
+import SalesOutlet from './pages/sales/outlet';
+import SalesHome from './pages/sales';
+import CreateSales from './pages/sales/create';
+import { OrderView } from './components/sales/view/OrderView';
+import SalesViewPage from './pages/sales/view';
+import PauseSales from './pages/sales/pause-sales';
+import SalesAnalytics from './pages/sales/analytics';
 const App = () => {
   return (
     <Routes>
-      <Route path="vendor/auth" element={<AuthOutlet />}>
+      <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
+
         <Route path="create-password" element={<CreatePassword />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
@@ -22,14 +33,45 @@ const App = () => {
       </Route>
 
       <Route
-        path="/"
+        path="/pos"
         element={
-          <ProtectedRoute>
-            <DashboardHome />
-          </ProtectedRoute>
-        }
-      />
+          // <ProtectedRoute>
 
+          // </ProtectedRoute>
+          <VendorHomeOutlet />
+        }
+      >
+        <Route index element={<DashboardHome />} />
+      </Route>
+
+      <Route
+        path="pos/profile"
+        element={
+          // <ProtectedRoute>
+
+          // </ProtectedRoute>
+          <VendorProfileOutlet />
+        }
+      >
+        <Route index element={<VendorProfile />} />
+      </Route>
+
+      <Route
+        path="pos/sales"
+        element={
+          // <ProtectedRoute>
+
+
+          // </ProtectedRoute>
+          <SalesOutlet />
+        }
+      >
+        <Route index element={<SalesHome />} />
+        <Route path="create" element={<CreateSales />} />
+        <Route path="view/:id" element={<SalesViewPage />} />
+        <Route path="pause" element={<PauseSales />} />
+        <Route path="analytics" element={<SalesAnalytics />} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

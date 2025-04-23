@@ -31,7 +31,7 @@ const Login = () => {
       const res = await mutateAsync(payload);
       sessionStorage.setItem('access_token', res.data.accessToken || '');
       updateUser(res?.data?.user);
-      navigate('/');
+      navigate('/pos');
       notification.success({
         message: 'Login Successful',
       });
@@ -52,7 +52,7 @@ const Login = () => {
       //     message: 'Login Successful',
       //     description: 'Please select an account to continue.',
       //   });
-      //   navigate('/vendor/auth/multiple-accounts', {
+      //   navigate('/auth/multiple-accounts', {
       //     state: { data: merchantRes?.data },
       //   });
       // }
@@ -103,7 +103,7 @@ const Login = () => {
             <div className="flex justify-end gap-4 items-center">
               <Button
                 type="link"
-                onClick={() => navigate('/vendor/auth/forgot-password')}
+                onClick={() => navigate('/auth/forgot-password')}
               >
                 Forgot Password?
               </Button>

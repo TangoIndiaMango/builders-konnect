@@ -1,5 +1,5 @@
-import { Button, Popover } from 'antd';
-import { ChevronDown } from 'lucide-react';
+import { DownOutlined } from '@ant-design/icons';
+import { Popover } from 'antd';
 import { useState } from 'react';
 
 interface FilterOption {
@@ -27,7 +27,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const activeOption = options.find((opt) => opt.value === value);
 
   const content = (
-    <div className="w-48 py-1">
+    <div className="w-full py-1 md:w-40">
       {options.map((option) => (
         <div
           key={option.value}
@@ -60,7 +60,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         className={`
           flex items-center justify-between p-2
           bg-white border border-gray-200 rounded-sm
-          min-w-[150px] hover:border-gray-300
+          md:min-w-[150px] hover:border-gray-300
           transition-colors duration-200 ${className}
         `}
       >
@@ -68,7 +68,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           {label && <span className="text-sm text-gray-500">{label}</span>}
           <span className="">{activeOption?.label}</span>
         </div>
-        <ChevronDown
+        <DownOutlined
           size={20}
           className={`text-gray-400 transition-transform duration-200
             ${open ? 'transform rotate-180' : ''}`}
