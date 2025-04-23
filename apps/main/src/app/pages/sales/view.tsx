@@ -1,6 +1,7 @@
 import { ArrowLeftOutlined, DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps, Select, Tag, Typography } from 'antd';
 import { OrderView } from '../../components/sales/view/OrderView';
+import { useNavigate } from 'react-router-dom';
 const orderData = {
   customer: {
     name: 'Oluwawolemi *******',
@@ -58,12 +59,12 @@ const SalesViewPage = () => {
   const onClick: MenuProps['onClick'] = (e) => {
     console.log('click ', e);
   };
-
+  const navigate = useNavigate();
   return (
     <div>
-      <div className="flex items-center justify-between gap-5 p-5 bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-5 p-5 bg-white">
         <div className="flex items-center gap-3">
-          <ArrowLeftOutlined />
+          <ArrowLeftOutlined onClick={() => navigate(-1)} />
           <Typography.Title level={4} className="!mb-0">
             View order
           </Typography.Title>

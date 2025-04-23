@@ -1,11 +1,12 @@
+
 import { useState } from 'react';
-import CardWithFilter from '../common/CardWithFilter';
-import EmptyState from '../common/EmptyState';
-import MonthDateRange from '../common/filters/MonthDateRange';
-import { RecentSalesTable } from './table/RecentSalesTable';
-import { ordersData } from '../sales/mockData';
-const data = [];
-const Recent = () => {
+import CardWithFilter from '../../common/CardWithFilter';
+import EmptyState from '../../common/EmptyState';
+import MonthDateRange from '../../common/filters/MonthDateRange';
+import RevenueAnalyticsChart from './chart/RevenuAnalytics';
+
+const data = [1,2,3];
+const RevenueAnalytics = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -23,18 +24,12 @@ const Recent = () => {
   };
   return (
     <CardWithFilter
-      title="Recent Sales"
+      title="Revenue Analytics"
       rightSection={<MonthDateRange />}
       description="Create sales order and track order sales and performance here"
     >
-      {ordersData?.length > 0 ? (
-        <RecentSalesTable
-          data={ordersData.slice(0, 5)}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          loading={loading}
-          total={ordersData.length}
-        />
+      {data?.length > 0 ? (
+        <RevenueAnalyticsChart />
       ) : (
         <EmptyState description="You have no data here yet." />
       )}
@@ -42,4 +37,4 @@ const Recent = () => {
   );
 };
 
-export default Recent;
+export default RevenueAnalytics;

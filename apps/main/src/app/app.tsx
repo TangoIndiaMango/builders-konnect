@@ -18,6 +18,7 @@ import CreateSales from './pages/sales/create';
 import { OrderView } from './components/sales/view/OrderView';
 import SalesViewPage from './pages/sales/view';
 import PauseSales from './pages/sales/pause-sales';
+import SalesAnalytics from './pages/sales/analytics';
 const App = () => {
   return (
     <Routes>
@@ -69,6 +70,7 @@ const App = () => {
         <Route path="create" element={<CreateSales />} />
         <Route path="view/:id" element={<SalesViewPage />} />
         <Route path="pause" element={<PauseSales />} />
+        <Route path="analytics" element={<SalesAnalytics />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
