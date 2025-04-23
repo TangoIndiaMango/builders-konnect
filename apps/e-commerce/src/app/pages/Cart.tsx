@@ -3,6 +3,8 @@ import { Button, Select, Typography, Divider, Image } from 'antd';
 import { products } from '../lib/Constants';
 import Hero from '../components/ProductDetails/Hero';
 import { RiDeleteBinLine } from 'react-icons/ri';
+import { Link } from 'react-router-dom';
+
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -94,6 +96,7 @@ const CartPage = () => {
             >
               Taxes and Shipping will be calculated at checkout
             </Text>
+            <Link to="/checkout">       
             <Button
               type="primary"
               size="large"
@@ -102,6 +105,7 @@ const CartPage = () => {
             >
               Check Out
             </Button>
+            </Link>
           </div>
         </div>
 
