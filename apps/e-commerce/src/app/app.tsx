@@ -31,7 +31,8 @@ import CartPage from './pages/cart';
 import { CheckoutProvider } from '../hooks/useContext';
 import VendorShop from './pages/VendorStore/VendorPage';
 import ReviewSection from './pages/ReviewSection';
-import EditAddressPage from './pages/Profile/EditAddressPage';
+import BillingAddressEditPage from './pages/Profile/EditAddressPage';
+import ShippingAddressEditPage from './pages/Profile/ShippingAddressEditPage';
 
 const App = () => {
   return (
@@ -46,8 +47,8 @@ const App = () => {
         <Route path="check-your-mail" element={<CheckYourMail />} />
       </Route>
 
-      {/* Checkout Routes */}
-      <Route element={<FooterOnlyLayout />}>
+      {/* Main Site Routes */}
+      <Route path="/" element={<MainLayout />}>
         <Route
           path="checkout"
           element={
@@ -56,14 +57,8 @@ const App = () => {
             </CheckoutProvider>
           }
         />
-      </Route>
-
-      {/* Cart Pages */}
-      <Route path="carts" element={<EmptyCart />} />
-      <Route path="order-summary" element={<CartSummary />} />
-
-      {/* Main Site Routes */}
-      <Route path="/" element={<MainLayout />}>
+        <Route path="carts" element={<EmptyCart />} />
+        <Route path="order-summary" element={<CartSummary />} />
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="sell" element={<Sell />} />
@@ -88,10 +83,9 @@ const App = () => {
           <Route path="payment" element={<PaymentMethods />} />
           <Route path="account" element={<AccountDetails />} />
         </Route>
+        <Route path="/edit/billing" element={<BillingAddressEditPage />} />
+        <Route path="/edit/shipping" element={<ShippingAddressEditPage />} />
       </Route>
-
-      {/* Standalone Edit Address Page */}
-      <Route path="/edit/:type" element={<EditAddressPage />} />
 
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
