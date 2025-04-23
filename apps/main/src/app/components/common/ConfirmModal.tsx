@@ -8,6 +8,7 @@ interface ConfirmModalProps {
   title?: string;
   message?: string;
   pending?: boolean;
+  buttonText?: string
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -17,6 +18,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   title = 'Submit Registration Form',
   message = 'Are you sure you want to submit this form? Kindly check that all information is correctly filled.',
   pending = false,
+  buttonText="Yes, submit"
 }) => {
   return (
     <Modal
@@ -54,7 +56,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             className="min-w-[100px] bg-[#003399] rounded-sm"
             loading={pending}
           >
-            Yes, submit
+            {buttonText}
           </Button>
         </div>
       </div>

@@ -9,7 +9,7 @@ const Banner = () => {
 
   const handleLogout = () => {
     clearUser();
-    navigate('/vendor/auth/login');
+    navigate('/auth/login');
   };
 
   return (

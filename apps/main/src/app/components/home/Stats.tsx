@@ -1,3 +1,5 @@
+import CardWithFilter from '../common/CardWithFilter';
+import FilterGroup from '../common/filters/FilterGroup';
 import StatsCard from '../common/StatsCard';
 import {
   ShoppingCartOutlined,
@@ -33,17 +35,23 @@ const statsData = [
 ];
 const Stats = () => {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {statsData.map((stat, index) => (
-        <StatsCard
-          key={index}
-          title={stat.title}
-          value={stat.value}
-          color={stat.color}
-          icon={stat.icon}
-        />
-      ))}
-    </div>
+    <CardWithFilter
+      title="Dashboard Overview"
+      description="An overview of your sales performance"
+      rightSection={<FilterGroup />}
+    >
+      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+        {statsData.map((stat, index) => (
+          <StatsCard
+            key={index}
+            title={stat.title}
+            value={stat.value}
+            color={stat.color}
+            icon={stat.icon}
+          />
+        ))}
+      </div>
+    </CardWithFilter>
   );
 };
 
