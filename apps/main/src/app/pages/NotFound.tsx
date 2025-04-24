@@ -10,7 +10,7 @@ const NotFound: FC = () => {
       <Button
         type="primary"
         style={{ marginTop: 16 }}
-        onClick={() => (window.location.href = '/vendor/pos')}
+        onClick={() => (window.location.href = '/')}
       >
         Return Home
       </Button>

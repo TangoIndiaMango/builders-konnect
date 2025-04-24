@@ -46,8 +46,9 @@ const OnlineSales = () => {
       />
 
       <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
-        {tableStatsData?.map((item) => (
+        {tableStatsData?.map((item, index) => (
           <TableStats
+            key={index}
             label={item?.label}
             value={item?.value}
             valueBgColor={item?.valueBgColor}

@@ -72,10 +72,10 @@ const SalesViewPage = () => {
         </div>
 
         <div className="flex items-center justify-end gap-3">
-          <Select
+          {/* <Select
             placeholder="Select order status"
             options={orderStatusOptions}
-          />
+          /> */}
 
           <Dropdown menu={{ items }} placement="bottomLeft">
             <Button type="primary" className="space-x-1 rounded">

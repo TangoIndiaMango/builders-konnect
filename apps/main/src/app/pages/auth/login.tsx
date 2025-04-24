@@ -1,5 +1,5 @@
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
-import { useCreateData } from '../../../hooks/useApis';
+import { useCreateData, useGetData } from '../../../hooks/useApis';
 import { App, Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Password from 'antd/es/input/Password';
@@ -9,7 +9,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { isLoading, mutateAsync } = useCreateData('auth/signin');
 
-  // const getMerchantDetailState = useGetData('merchants/profile/all');
+  const getMerchantDetailState = useGetData('merchants/profile/all');
 
   const { updateUser } = useSessionStorage();
   const [form] = Form.useForm();
@@ -32,30 +32,30 @@ const Login = () => {
       sessionStorage.setItem('access_token', res.data.accessToken || '');
       updateUser(res?.data?.user);
       navigate('/pos');
-      notification.success({
-        message: 'Login Successful',
-      });
+      // notification.success({
+      //   message: 'Login Successful',
+      // });
 
-      // const merchantRes = await getMerchantDetailState.mutateAsync();
-      // if (merchantRes?.data?.length <= 1) {
-      //   sessionStorage.setItem(
-      //     'tenant_id',
-      //     String(merchantRes?.data?.[0]?.id) || ''
-      //   );
-      //   notification.success({
-      //     message: 'Login Successful',
-      //     description: 'Welcome back! You have been logged in successfully.',
-      //   });
-      //   navigate('/');
-      // } else {
-      //   notification.success({
-      //     message: 'Login Successful',
-      //     description: 'Please select an account to continue.',
-      //   });
-      //   navigate('/auth/multiple-accounts', {
-      //     state: { data: merchantRes?.data },
-      //   });
-      // }
+      const merchantRes = await getMerchantDetailState.mutateAsync();
+      if (merchantRes?.data?.length <= 1) {
+        sessionStorage.setItem(
+          'tenant_id',
+          String(merchantRes?.data?.[0]?.id) || ''
+        );
+        notification.success({
+          message: 'Login Successful',
+          description: 'Welcome back! You have been logged in successfully.',
+        });
+        navigate('/');
+      } else {
+        notification.success({
+          message: 'Login Successful',
+          description: 'Please select an account to continue.',
+        });
+        navigate('/auth/multiple-accounts', {
+          state: { data: merchantRes?.data },
+        });
+      }
     } catch (error: any) {
       console.error('Form validation error:', error);
       notification.error({
@@ -100,7 +100,7 @@ const Login = () => {
           </div>
 
           <div className="pt-6 mt-auto space-y-4">
-            <div className="flex justify-end gap-4 items-center">
+            <div className="flex items-center justify-end gap-4">
               <Button
                 type="link"
                 onClick={() => navigate('/auth/forgot-password')}

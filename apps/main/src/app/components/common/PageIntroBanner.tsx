@@ -13,7 +13,7 @@ const PageIntroBanner = ({
   children,
 }: PageIntroProps) => {
   return (
-    <div className="flex justify-between p-6 bg-white border-b">
+    <div className="flex flex-wrap justify-between gap-5 p-6 bg-white border-b">
       <div className="flex flex-col space-y-2">
         <Typography.Title level={4} className="!mb-0">
           {title}
@@ -33,7 +33,7 @@ const PageIntroBanner = ({
           </span>
         </div> */}
       </div>
-      {actionButton && <div className="justify-end ">{actionButton}</div>}
+      {actionButton && <div className="justify-end">{actionButton}</div>}
 
       {children && children}
     </div>

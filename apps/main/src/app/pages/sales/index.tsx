@@ -16,6 +16,24 @@ const SalesHome = () => {
     console.log('Selected tab:', key);
   };
 
+  const items: TabsProps['items'] = [
+    {
+      key: 'all-sales',
+      label: 'All Sales',
+      children: <AllSales />,
+    },
+    {
+      key: 'online-sales',
+      label: 'Online Sales',
+      children: <OnlineSales />,
+    },
+    {
+      key: 'instore-sales',
+      label: 'In-store Sales',
+      children: <InstoreSales />,
+    },
+  ];
+
   return (
     <div>
       <PageIntroBanner
@@ -45,23 +63,7 @@ const SalesHome = () => {
       />
 
       <div className="px-5 bg-white">
-        <Tabs
-          defaultActiveKey="all-sales"
-          onChange={onChange}
-        >
-          <Tabs.TabPane tab="All Sales" key="all-sales">
-            {/* <AllSales data={allSalesData} /> */}
-            <AllSales />
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="Online Sales" key="online-sales">
-            <OnlineSales />
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="In-store Sales" key="instore-sales">
-            <InstoreSales />
-          </Tabs.TabPane>
-        </Tabs>
+        <Tabs defaultActiveKey="all-sales" onChange={onChange} items={items} />
       </div>
 
       <ConfirmModal
