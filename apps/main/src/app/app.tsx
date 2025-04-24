@@ -35,10 +35,10 @@ const App = () => {
       <Route
         path="/pos"
         element={
-          // <ProtectedRoute>
-
-          // </ProtectedRoute>
-          <VendorHomeOutlet />
+          <ProtectedRoute>
+ <VendorHomeOutlet />
+          </ProtectedRoute>
+         
         }
       >
         <Route index element={<DashboardHome />} />
@@ -47,10 +47,10 @@ const App = () => {
       <Route
         path="pos/profile"
         element={
-          // <ProtectedRoute>
-
-          // </ProtectedRoute>
-          <VendorProfileOutlet />
+          <ProtectedRoute>
+ <VendorProfileOutlet />
+          </ProtectedRoute>
+         
         }
       >
         <Route index element={<VendorProfile />} />
@@ -59,11 +59,11 @@ const App = () => {
       <Route
         path="pos/sales"
         element={
-          // <ProtectedRoute>
+          <ProtectedRoute>
 
-
-          // </ProtectedRoute>
-          <SalesOutlet />
+<SalesOutlet />
+          </ProtectedRoute>
+       
         }
       >
         <Route index element={<SalesHome />} />
