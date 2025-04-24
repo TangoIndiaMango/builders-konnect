@@ -46,7 +46,7 @@ const Login = () => {
           message: 'Login Successful',
           description: 'Welcome back! You have been logged in successfully.',
         });
-        navigate('/');
+        navigate('/pos');
       } else {
         notification.success({
           message: 'Login Successful',
