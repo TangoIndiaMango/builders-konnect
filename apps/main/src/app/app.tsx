@@ -33,12 +33,11 @@ const App = () => {
       </Route>
 
       <Route
-        path="/pos"
+        path="/"
         element={
           <ProtectedRoute>
- <VendorHomeOutlet />
+            <VendorHomeOutlet />
           </ProtectedRoute>
-         
         }
       >
         <Route index element={<DashboardHome />} />
@@ -48,9 +47,8 @@ const App = () => {
         path="pos/profile"
         element={
           <ProtectedRoute>
- <VendorProfileOutlet />
+            <VendorProfileOutlet />
           </ProtectedRoute>
-         
         }
       >
         <Route index element={<VendorProfile />} />
@@ -60,10 +58,8 @@ const App = () => {
         path="pos/sales"
         element={
           <ProtectedRoute>
-
-<SalesOutlet />
+            <SalesOutlet />
           </ProtectedRoute>
-       
         }
       >
         <Route index element={<SalesHome />} />
