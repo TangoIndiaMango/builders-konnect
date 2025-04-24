@@ -8,6 +8,15 @@
     },
     {
       "path": "./apps/e-commerce"
+    },
+    {
+      "path": "./builders-connect/apps/e-commerce"
+    },
+    {
+      "path": "./builders-connect/apps/main"
+    },
+    {
+      "path": "./builders-connect"
     }
   ]
 }

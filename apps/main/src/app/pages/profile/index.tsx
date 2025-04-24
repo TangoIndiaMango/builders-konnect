@@ -34,7 +34,6 @@ const documents = {
 
 
 const ProfilePage = () => {
-  
   return (
     <>
       <ProfileBanner />
