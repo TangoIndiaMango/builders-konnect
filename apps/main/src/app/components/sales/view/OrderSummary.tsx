@@ -1,3 +1,5 @@
+import { formatBalance } from '../../../../utils/helper';
+
 interface OrderSummaryProps {
   subtotal: number;
   itemCount: number;
@@ -19,17 +21,17 @@ export const OrderSummary = ({
     <div className="space-y-3">
       <div className="flex justify-between text-gray-600">
         <span>Subtotal ({itemCount} item)</span>
-        <span>₦ {subtotal.toLocaleString()}</span>
+        <span>{formatBalance(subtotal)}</span>
       </div>
 
       <div className="flex justify-between text-gray-600">
         <span>Discount</span>
-        <span>{discount ? `₦ ${discount.toLocaleString()}` : '-'}</span>
+        <span>{discount ? formatBalance(discount) : '-'}</span>
       </div>
 
       <div className="flex justify-between text-gray-600">
         <span>Tax (7.5%VAT)</span>
-        <span>₦ {tax.toLocaleString()}</span>
+        <span>{formatBalance(tax)}</span>
       </div>
 
       <div className="flex justify-between text-gray-600">
@@ -39,12 +41,12 @@ export const OrderSummary = ({
             ⓘ
           </span>
         </span>
-        <span>₦ {serviceFee.toLocaleString()}</span>
+        <span>{formatBalance(serviceFee)}</span>
       </div>
 
-      <div className="flex justify-between font-semibold text-lg pt-3 border-t">
+      <div className="flex justify-between pt-3 text-lg font-semibold border-t">
         <span>TOTAL</span>
-        <span>₦{total.toLocaleString()}</span>
+        <span>{formatBalance(total)}</span>
       </div>
     </div>
   );
