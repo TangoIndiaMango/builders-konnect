@@ -31,7 +31,7 @@ const Login = () => {
       const res = await mutateAsync(payload);
       sessionStorage.setItem('access_token', res.data.accessToken || '');
       updateUser(res?.data?.user);
-      navigate('/pos');
+      navigate('/');
       // notification.success({
       //   message: 'Login Successful',
       // });
@@ -46,7 +46,7 @@ const Login = () => {
           message: 'Login Successful',
           description: 'Welcome back! You have been logged in successfully.',
         });
-        navigate('/pos');
+        navigate('/');
       } else {
         notification.success({
           message: 'Login Successful',

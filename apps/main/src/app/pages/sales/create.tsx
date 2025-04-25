@@ -208,6 +208,7 @@ const CreateSales = () => {
           name: selectedCustomer?.name || '',
           email: selectedCustomer?.email || '',
           phone: selectedCustomer?.phone || '',
+          referral_source: selectedCustomer?.source || '',
         };
 
     const payload = {

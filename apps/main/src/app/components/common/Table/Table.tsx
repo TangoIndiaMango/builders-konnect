@@ -1,8 +1,6 @@
-import { Table as AntTable, Button, TableProps } from 'antd';
+import { Table as AntTable, Button, TableProps, Skeleton } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { TableRowSelection } from 'antd/es/table/interface';
-import { useState } from 'react';
-import { useSelection } from '../../../../hooks/useSelection';
+import TableSkeleton from './TableLoader';
 
 export interface DataType {
   key: string;
@@ -40,7 +38,6 @@ export const PaginatedTable = <T extends DataType>({
   selectedRowKeys,
   resetSelection,
 }: CustomTableProps<T>) => {
-
   return (
     <div className="w-full overflow-x-auto">
       {selectedRowKeys && selectedRowKeys.length > 0 && (
@@ -54,27 +51,31 @@ export const PaginatedTable = <T extends DataType>({
         </div>
       )}
 
-      <AntTable
-        columns={columns}
-        dataSource={data}
-        loading={loading}
-        rowSelection={showCheckbox ? rowSelection : undefined}
-        pagination={
-          showPagination
-            ? {
-                current: currentPage,
-                pageSize: pageSize,
-                total: total,
-                onChange: onPageChange,
-                showSizeChanger: true,
-                showQuickJumper: true,
-                showTotal: (total) => `Total ${total} items`,
-              }
-            : false
-        }
-        className={`custom-table ${striped ? 'table-striped' : ''}`}
-        scroll={{ x: true }}
-      />
+      {loading ? (
+        <TableSkeleton columns={columns.length} />
+      ) : (
+        <AntTable
+          columns={columns}
+          dataSource={data}
+          loading={false} // We handle loading with our skeleton
+          rowSelection={showCheckbox ? rowSelection : undefined}
+          pagination={
+            showPagination
+              ? {
+                  current: currentPage,
+                  pageSize: pageSize,
+                  total: total,
+                  onChange: onPageChange,
+                  showSizeChanger: true,
+                  showQuickJumper: true,
+                  showTotal: (total) => `Total ${total} items`,
+                }
+              : false
+          }
+          className={`custom-table ${striped ? 'table-striped' : ''}`}
+          scroll={{ x: true }}
+        />
+      )}
     </div>
   );
 };

@@ -65,3 +65,65 @@ export interface CustomerType {
   updated_at: string;
   source: string;
 }
+
+  export interface SalesOrder {
+    id: string;
+    order_number: string;
+    receipt_no: string;
+    items_count: number;
+    customer: Customer;
+    date: string;
+    amount: number;
+    payment_status: string;
+    status: string;
+  }
+
+  export interface Customer {
+    name: string;
+    email: string;
+    phone: string;
+  }
+
+  export interface SingleSalesOrder {
+    id: string;
+    order_number: string;
+    receipt_no: string;
+    items_count: number;
+    customer: Customer;
+    date: string;
+    amount: number;
+    payment_status: string;
+    status: string;
+    sales_type: string;
+    payment_methods: PaymentMethod[];
+    billing_address: string;
+    shipping_address: string;
+    line_items: LineItem[];
+    subtotal: number;
+    discount_breakdown: DiscountBreakdown;
+    fees: Fees;
+  }
+
+
+  export interface PaymentMethod {
+    method: string;
+    amount: string;
+  }
+
+  export interface LineItem {
+    product: string;
+    quantity: number;
+    unit_cost: number;
+    discounted_amount: number;
+    total_cost: string;
+  }
+
+  export interface DiscountBreakdown {
+    total_product_discounts: number;
+    order_discount: number;
+  }
+
+  export interface Fees {
+    tax: number;
+    service_fee: number;
+  }

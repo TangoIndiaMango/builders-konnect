@@ -41,7 +41,7 @@ const PausedSales = () => {
           <div>
             <TableWrapper onSearch={handleSearch}>
               <OrdersTable
-                data={ordersData}
+                data={ordersData as any}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 loading={loading}
