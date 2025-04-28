@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Input, Button, Select, AutoComplete, Form } from 'antd';
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Customer, customersList } from './mockData';
+import { Customer, customersList } from '../../lib/mockData';
 
 interface CustomerSectionProps {
   onCustomerSelect?: (customer: Customer) => void;

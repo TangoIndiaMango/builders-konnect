@@ -1,5 +1,5 @@
 import { Select } from 'antd';
-import { discountsList, Discount } from './mockData';
+import { discountsList, Discount } from '../../lib/mockData';
 
 interface DiscountSectionProps {
   onDiscountSelect: (discount: string, option: any) => void;

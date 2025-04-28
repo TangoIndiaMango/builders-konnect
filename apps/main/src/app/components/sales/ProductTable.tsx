@@ -1,7 +1,7 @@
 import { PaginatedTable } from '../common/Table/Table';
 import { Avatar, Button, Input } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { Product } from './mockData';
+import { Product } from '../../lib/mockData';
 
 interface ProductTableProps {
   products: Product[];

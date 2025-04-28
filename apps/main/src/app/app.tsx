@@ -19,6 +19,10 @@ import { OrderView } from './components/sales/view/OrderView';
 import SalesViewPage from './pages/sales/view';
 import PauseSales from './pages/sales/pause-sales';
 import SalesAnalytics from './pages/sales/analytics';
+import InventoryOutlet from './pages/inventory/inventory-outlet';
+import InventoryPage from './pages/inventory';
+import ProductsPage from './pages/inventory';
+import Inventories from './pages/inventory/inventories';
 const App = () => {
   return (
     <Routes>
@@ -35,10 +39,10 @@ const App = () => {
       <Route
         path="/pos"
         element={
-          // <ProtectedRoute>
-
-          // </ProtectedRoute>
+          <ProtectedRoute>
           <VendorHomeOutlet />
+
+          </ProtectedRoute>
         }
       >
         <Route index element={<DashboardHome />} />
@@ -47,10 +51,10 @@ const App = () => {
       <Route
         path="pos/profile"
         element={
-          // <ProtectedRoute>
-
-          // </ProtectedRoute>
+          <ProtectedRoute>
           <VendorProfileOutlet />
+
+          </ProtectedRoute>
         }
       >
         <Route index element={<VendorProfile />} />
@@ -59,11 +63,10 @@ const App = () => {
       <Route
         path="pos/sales"
         element={
-          // <ProtectedRoute>
-
-
-          // </ProtectedRoute>
+        <ProtectedRoute>
           <SalesOutlet />
+
+          </ProtectedRoute>
         }
       >
         <Route index element={<SalesHome />} />
@@ -72,6 +75,24 @@ const App = () => {
         <Route path="pause" element={<PauseSales />} />
         <Route path="analytics" element={<SalesAnalytics />} />
       </Route>
+
+
+      <Route
+        path="pos/products-inventory"
+        element={
+        <ProtectedRoute>
+          <InventoryOutlet />
+
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ProductsPage />} />
+        <Route path="inventories" element={<Inventories />} />
+      </Route>
+
+
+
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
