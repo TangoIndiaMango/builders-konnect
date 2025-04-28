@@ -35,6 +35,33 @@ export const numbersData = [
   },
   
 ];
+export const productNumbersData = [
+  {
+    label: 'Total Products',
+    value: '2846',
+    valueBgColor: '#E6F7FF',
+    valueColor: '#003399',
+  },
+  {
+    label: 'Soldout Products',
+    value: '45',
+    valueBgColor: '#FFF1F0',
+    valueColor: '#CF1322',
+  },
+  {
+    label: 'Low Stock Products',
+    value: '300',
+    valueBgColor: '#FFFBE6',
+    valueColor: '#D48806',
+  },
+  {
+    label: 'Available',
+    value: '2501',
+    valueBgColor: '#E6FFFB',
+    valueColor: '#12B76A',
+  },
+  
+];
 
 export const productData: ProductData[] = [
   {

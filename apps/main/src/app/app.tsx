@@ -23,6 +23,10 @@ import InventoryOutlet from './pages/inventory/inventory-outlet';
 import InventoryPage from './pages/inventory';
 import ProductsPage from './pages/inventory';
 import Inventories from './pages/inventory/inventories';
+import Inventory from './pages/inventory/inventories';
+import EditInventoryPage from './pages/inventory/editInventorybySearch';
+import EditInventoryById from './pages/inventory/editInventory';
+import TriggerReorder from './pages/inventory/triggerReorder';
 const App = () => {
   return (
     <Routes>
@@ -40,8 +44,7 @@ const App = () => {
         path="/"
         element={
           <ProtectedRoute>
-          <VendorHomeOutlet />
-
+            <VendorHomeOutlet />
           </ProtectedRoute>
         }
       >
@@ -52,8 +55,7 @@ const App = () => {
         path="pos/profile"
         element={
           <ProtectedRoute>
-          <VendorProfileOutlet />
-
+            <VendorProfileOutlet />
           </ProtectedRoute>
         }
       >
@@ -63,9 +65,8 @@ const App = () => {
       <Route
         path="pos/sales"
         element={
-        <ProtectedRoute>
-          <SalesOutlet />
-
+          <ProtectedRoute>
+            <SalesOutlet />
           </ProtectedRoute>
         }
       >
@@ -76,22 +77,20 @@ const App = () => {
         <Route path="analytics" element={<SalesAnalytics />} />
       </Route>
 
-
       <Route
-        path="pos/products-inventory"
+        path="pos/inventory"
         element={
-        <ProtectedRoute>
-          <InventoryOutlet />
-
+          <ProtectedRoute>
+            <InventoryOutlet />
           </ProtectedRoute>
         }
       >
         <Route index element={<ProductsPage />} />
-        <Route path="inventories" element={<Inventories />} />
+        <Route path="inventories" element={<Inventory />} />
+        <Route path="edit" element={<EditInventoryPage />} />
+        <Route path="edit/:id" element={<EditInventoryById />} />
+        <Route path="trigger-reorder" element={<TriggerReorder/>} />
       </Route>
-
-
-
 
       <Route path="*" element={<NotFound />} />
     </Routes>
