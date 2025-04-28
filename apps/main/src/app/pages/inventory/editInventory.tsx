@@ -1,5 +1,5 @@
 import { Button, Input, Table, Form, Typography, Space, message } from 'antd';
-import { ArrowLeftOutlined, SearchOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
 const { Title, Text } = Typography;
@@ -73,10 +73,10 @@ export default function EditInventoryById() {
   ];
 
   return (
-    <div className="p-6 bg-white min-h-screen">
+    <div className="p-4 sm:p-6 bg-white min-h-screen">
       {/* Header */}
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
+        <div className="flex items-center gap-2">
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
@@ -86,7 +86,7 @@ export default function EditInventoryById() {
             Edit Inventory Level
           </Title>
         </div>
-        <div className="flex justify-end gap-2 mt-6">
+        <div className="flex flex-wrap justify-end gap-2">
           <Button onClick={handleCancel}>Cancel</Button>
           <Button type="primary" htmlType="submit">
             Save
@@ -95,20 +95,25 @@ export default function EditInventoryById() {
       </div>
 
       <Text type="secondary" className="block mb-6">
-        Form pages are used to collect or verify information to users, and basic
-        forms are common in scenarios where there are fewer data items.
+        Form pages are used to collect or verify information from users, and
+        basic forms are common in scenarios where there are fewer data items.
       </Text>
 
-      {/* Search and Table */}
+      {/* Product Table */}
       <div className="border rounded-lg p-4 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className=" font-medium text-base">Product Inventory</h1>
+          <h1 className="font-medium text-base">Product Inventory</h1>
         </div>
-        <Table dataSource={[product]} columns={columns} pagination={false} />
+        <Table
+          dataSource={[product]}
+          columns={columns}
+          pagination={false}
+          scroll={{ x: 'max-content' }}
+        />
       </div>
 
       {/* Inventory Form */}
-      <div className="border rounded-lg p-6">
+      <div className="border rounded-lg p-4 sm:p-6">
         <Title level={5}>Inventory Details</Title>
         <Form
           form={form}
@@ -141,14 +146,6 @@ export default function EditInventoryById() {
             >
               <Input placeholder="Enter reorder level" />
             </Form.Item>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex justify-end gap-2 mt-6">
-            <Button onClick={handleCancel}>Cancel</Button>
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
           </div>
         </Form>
       </div>

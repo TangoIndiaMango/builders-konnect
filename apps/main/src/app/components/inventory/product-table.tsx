@@ -1,7 +1,9 @@
-import { Tag, Button, Dropdown, Menu } from "antd";
-import { DataType, PaginatedTable } from "../common/Table/Table";
-import { useSelection } from "../../../hooks/useSelection";
-import { EllipsisOutlined } from "@ant-design/icons";
+import { Tag, Button, Dropdown } from 'antd';
+import type { MenuProps } from 'antd';
+import { DataType, PaginatedTable } from '../common/Table/Table';
+import { useSelection } from '../../../hooks/useSelection';
+import { EllipsisOutlined } from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table'; // important!
 
 export interface ProductData extends DataType {
   id: string;
@@ -13,10 +15,17 @@ export interface ProductData extends DataType {
   time: string;
   price: number;
   stockLevel: number;
-  status: 'Active' | 'Not Active' |'Unpublished';
+  status: 'Active' | 'Not Active' | 'Unpublished';
 }
 
-
+interface ProductTableProps {
+  data: ProductData[];
+  currentPage: number;
+  onPageChange: (page: number, pageSize: number) => void;
+  loading: boolean;
+  total: number;
+  showCheckbox?: boolean;
+}
 
 export const ProductTable = ({
   data,
@@ -25,15 +34,23 @@ export const ProductTable = ({
   loading,
   total,
   showCheckbox = true,
-}) => {
+}: ProductTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data,
   });
-  const columns = [
+
+  const actionItems: MenuProps['items'] = [
+    { key: '1', label: 'Edit' },
+    { key: '2', label: 'Delete' },
+    { key: '3', label: 'View Details' },
+  ];
+
+  const columns: ColumnsType<ProductData> = [
     {
       title: 'Product',
       key: 'product',
-      render: (record: ProductData) => (
+      width: 250,
+      render: (_, record) => (
         <div className="flex items-center gap-2">
           <img
             src={record.image}
@@ -41,8 +58,12 @@ export const ProductTable = ({
             className="w-10 h-10 rounded-lg object-cover"
           />
           <div>
-            <div className="font-medium">{record.name}</div>
-            <div className="text-sm text-gray-500">{record.description}</div>
+            <div className="font-medium truncate max-w-[150px]">
+              {record.name}
+            </div>
+            <div className="text-sm text-gray-500 truncate max-w-[150px]">
+              {record.description}
+            </div>
           </div>
         </div>
       ),
@@ -51,11 +72,14 @@ export const ProductTable = ({
       title: 'SKU',
       dataIndex: 'sku',
       key: 'sku',
+      width: 150,
+      className: 'hidden sm:table-cell', // Hide SKU on small screens
     },
     {
       title: 'Date Added',
       key: 'dateAdded',
-      render: (record: ProductData) => (
+      width: 180,
+      render: (_, record) => (
         <div>
           <div>{record.dateAdded}</div>
           <div className="text-sm text-gray-500">{record.time}</div>
@@ -65,49 +89,46 @@ export const ProductTable = ({
     {
       title: 'Price',
       key: 'price',
-      render: (record: ProductData) => (
-        <span>₦ {record.price.toLocaleString()}</span>
-      ),
+      width: 120,
+      render: (_, record) => <span>₦ {record.price.toLocaleString()}</span>,
     },
     {
       title: 'Stock Level',
       key: 'stockLevel',
-      render: (record: ProductData) => (
+      width: 140,
+      render: (_, record) => (
         <p>
-          <span className={`${record.stockLevel <= 0 ? 'text-red-500' : 'text-[#003399]'} font-bold`}>
+          <span
+            className={`${
+              record.stockLevel <= 0 ? 'text-red-500' : 'text-[#003399]'
+            } font-bold`}
+          >
             {record.stockLevel}
-          </span> Left
+          </span>{' '}
+          Left
         </p>
       ),
     },
     {
       title: 'Status',
       key: 'status',
-      render: (record: ProductData) => {
+      width: 130,
+      render: (_, record) => {
         const statusColors = {
-          'Active': 'success',
+          Active: 'success',
           'Not Active': 'error',
-          'Unpublished': 'default'
+          Unpublished: 'default',
         };
-        return (
-          <Tag color={statusColors[record.status]}>{record.status}</Tag>
-        );
+        return <Tag color={statusColors[record.status]}>{record.status}</Tag>;
       },
     },
     {
       title: 'Action',
       key: 'action',
+      fixed: 'right',
+      width: 80,
       render: () => (
-        <Dropdown
-          overlay={(
-            <Menu>
-              <Menu.Item key="1">Edit</Menu.Item>
-              <Menu.Item key="2">Delete</Menu.Item>
-              <Menu.Item key="3">View Details</Menu.Item>
-            </Menu>
-          )}
-          trigger={['click']}
-        >
+        <Dropdown menu={{ items: actionItems }} trigger={['click']}>
           <Button
             type="text"
             className="w-8 h-8 flex items-center justify-center bg-[#E6F7FF] hover:opacity-80 rounded-lg"
@@ -119,24 +140,23 @@ export const ProductTable = ({
     },
   ];
 
-
-
   return (
-    <div>
-         <PaginatedTable
-           data={data}
-           columns={columns}
-           currentPage={currentPage}
-           onPageChange={onPageChange}
-           loading={loading}
-           total={total}
-           showCheckbox={showCheckbox}
-           striped={true}
-           pageSize={10}
-           rowSelection={rowSelection as any}
-           selectedRowKeys={selectedRowKeys}
-           resetSelection={resetSelection}
-         />
-       </div>
+    <div className="w-full">
+      <PaginatedTable
+        data={data}
+        columns={columns}
+        currentPage={currentPage}
+        onPageChange={onPageChange}
+        loading={loading}
+        total={total}
+        showCheckbox={showCheckbox}
+        striped
+        pageSize={10}
+        rowSelection={rowSelection as any}
+        selectedRowKeys={selectedRowKeys}
+        resetSelection={resetSelection}
+        scroll={{ x: '1000px' }} // Add scroll for responsive behavior
+      />
+    </div>
   );
 };
