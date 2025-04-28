@@ -1,20 +1,23 @@
 import { Input, AutoComplete, Avatar } from 'antd';
 import { SearchOutlined, BarcodeOutlined } from '@ant-design/icons';
 import { useState } from 'react';
-import { productsList } from '../../lib/mockData';
+import { ProductType } from '../../lib./../pages/sales/types';
 
 interface ProductSearchProps {
   onSelect: (product: any) => void;
+  data: ProductType[];
 }
 
-export const ProductSearch = ({ onSelect }: ProductSearchProps) => {
+export const ProductSearch = ({ onSelect, data }: ProductSearchProps) => {
+  // console.log(data);
   const [options, setOptions] = useState<any[]>([]);
 
   const handleSearch = (value: string) => {
-    const filtered = productsList.filter(
+    const filtered = data?.filter(
       (product) =>
-        product.name.toLowerCase().includes(value.toLowerCase()) ||
-        product.variant.toLowerCase().includes(value.toLowerCase())
+        product.ean.toLowerCase().includes(value?.toLowerCase()) ||
+        product.name.toLowerCase().includes(value?.toLowerCase()) ||
+        product.SKU.toLowerCase().includes(value?.toLowerCase())
     );
 
     const searchOptions = filtered.map((product) => ({
@@ -24,15 +27,20 @@ export const ProductSearch = ({ onSelect }: ProductSearchProps) => {
             shape="square"
             size={40}
             className="bg-gray-200"
-            src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
+            src={
+              product?.primary_media_url ||
+              'https://api.dicebear.com/7.x/miniavs/svg?seed=2'
+            }
           />
           <div>
-            <div className="font-medium">{product.name}</div>
-            <div className="text-sm text-gray-500">{product.variant}</div>
+            <div className="font-medium capitalize">{product.name}</div>
+            <div className="text-sm text-gray-500 capitalize">
+              {product?.ean ? product.ean : product.SKU}
+            </div>
           </div>
         </div>
       ),
-      value: product.key,
+      value: product.name,
       product: product,
     }));
 

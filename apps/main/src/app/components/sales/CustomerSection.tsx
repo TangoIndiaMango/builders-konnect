@@ -1,16 +1,22 @@
 import { useState } from 'react';
 import { Input, Button, Select, AutoComplete, Form } from 'antd';
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Customer, customersList } from '../../lib/mockData';
+import { CustomerType } from '../../lib./../pages/sales/types';
 
 interface CustomerSectionProps {
-  onCustomerSelect?: (customer: Customer) => void;
+  onCustomerSelect?: (customer: CustomerType) => void;
+  customerData?: CustomerType[];
 }
 
-export const CustomerSection = ({ onCustomerSelect }: CustomerSectionProps) => {
+export const CustomerSection = ({
+  onCustomerSelect,
+  customerData,
+}: CustomerSectionProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(
+    null
+  );
   const [form] = Form.useForm();
 
   const sourceOptions = [
@@ -21,21 +27,22 @@ export const CustomerSection = ({ onCustomerSelect }: CustomerSectionProps) => {
   ];
 
   const handleCustomerSearch = (value: string) => {
-    return customersList
-      .filter(customer =>
-        customer.name.toLowerCase().includes(value.toLowerCase()) ||
-        customer.email.toLowerCase().includes(value.toLowerCase()) ||
-        customer.phone.includes(value)
+    return customerData
+      ?.filter(
+        (customer) =>
+          customer?.name?.toLowerCase().includes(value.toLowerCase()) ||
+          customer?.email?.toLowerCase().includes(value.toLowerCase()) ||
+          customer?.phone?.includes(value)
       )
-      .map(customer => ({
+      .map((customer) => ({
         label: (
           <div className="flex flex-col py-1">
-            <span className="font-medium">{customer.name}</span>
-            <span className="text-sm text-gray-500">{customer.phone}</span>
+            <span className="font-medium">{customer?.name}</span>
+            <span className="text-sm text-gray-500">{customer?.phone}</span>
           </div>
         ),
-        value: customer.id,
-        customer: customer
+        value: customer?.name,
+        customer: customer,
       }));
   };
 
@@ -60,16 +67,21 @@ export const CustomerSection = ({ onCustomerSelect }: CustomerSectionProps) => {
     try {
       const values = await form.validateFields();
       const newCustomer = {
-        id: Date.now().toString(),
-        ...values
+        ...values,
       };
       setSelectedCustomer(newCustomer);
       setIsAdding(false);
       if (onCustomerSelect) {
         onCustomerSelect(newCustomer);
       }
+
     } catch (error) {
       console.error('Validation failed:', error);
+    }
+    finally {
+      form.resetFields();
+      setIsAdding(false);
+      setIsEditing(false);
     }
   };
 
@@ -107,7 +119,11 @@ export const CustomerSection = ({ onCustomerSelect }: CustomerSectionProps) => {
         )}
         {selectedCustomer && !isEditing && !isAdding && (
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <Button type="text" className="text-red-500" onClick={handleRemoveCustomer}>
+            <Button
+              type="text"
+              className="text-red-500"
+              onClick={handleRemoveCustomer}
+            >
               Remove Customer
             </Button>
             <Button icon={<EditOutlined />} onClick={handleEdit}>
@@ -118,11 +134,7 @@ export const CustomerSection = ({ onCustomerSelect }: CustomerSectionProps) => {
       </div>
 
       {(isAdding || isEditing) && (
-        <Form
-          form={form}
-          layout="vertical"
-          className="grid grid-cols-2 gap-4"
-        >
+        <Form form={form} layout="vertical" className="grid grid-cols-2 gap-4">
           <Form.Item
             name="name"
             label="Name"
@@ -144,7 +156,7 @@ export const CustomerSection = ({ onCustomerSelect }: CustomerSectionProps) => {
             label="Email Address"
             rules={[
               { type: 'email', message: 'Please enter valid email' },
-              { required: true, message: 'Please enter email' }
+              { required: true, message: 'Please enter email' },
             ]}
           >
             <Input placeholder="Enter email address" />
@@ -153,19 +165,18 @@ export const CustomerSection = ({ onCustomerSelect }: CustomerSectionProps) => {
           <Form.Item
             name="source"
             label="Source (How did they get to know about you?)"
-            rules={[{ required: true, message: 'Please select source' }]}
+            rules={[{ required: false }]}
           >
-            <Select
-              placeholder="Select source"
-              options={sourceOptions}
-            />
+            <Select placeholder="Select source" options={sourceOptions} />
           </Form.Item>
 
           <div className="flex justify-end col-span-2 gap-3">
-            <Button onClick={() => {
-              setIsAdding(false);
-              setIsEditing(false);
-            }}>
+            <Button
+              onClick={() => {
+                setIsAdding(false);
+                setIsEditing(false);
+              }}
+            >
               Cancel
             </Button>
             <Button type="primary" onClick={handleSave}>
@@ -179,21 +190,21 @@ export const CustomerSection = ({ onCustomerSelect }: CustomerSectionProps) => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1">
             <label className="text-sm text-gray-500">Name</label>
-            <p className="font-medium truncate">{selectedCustomer.name}</p>
+            <p className="font-medium truncate">{selectedCustomer?.name}</p>
           </div>
           <div className="space-y-1">
             <label className="text-sm text-gray-500">Phone Number</label>
-            <p className="font-medium truncate">{selectedCustomer.phone}</p>
+            <p className="font-medium truncate">{selectedCustomer?.phone}</p>
           </div>
           <div className="space-y-1 sm:col-span-2 md:col-span-1">
             <label className="text-sm text-gray-500">Email Address</label>
-            <p className="font-medium truncate" title={selectedCustomer.email}>
-              {selectedCustomer.email}
+            <p className="font-medium truncate" title={selectedCustomer?.email}>
+              {selectedCustomer?.email}
             </p>
           </div>
           <div className="space-y-1">
             <label className="text-sm text-gray-500">Source</label>
-            <p className="font-medium truncate">{selectedCustomer.source}</p>
+            <p className="font-medium truncate">{selectedCustomer?.source || 'N/A'}</p>
           </div>
         </div>
       )}

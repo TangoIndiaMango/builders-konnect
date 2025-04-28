@@ -7,14 +7,40 @@ import AllSales from '../../components/sales/AllSales';
 import OnlineSales from '../../components/sales/OnlineSales';
 import InstoreSales from '../../components/sales/InstoreSales';
 import ConfirmModal from '../../components/common/ConfirmModal';
+import { useGetSales } from '../../../service/sales/salesFN';
 
 const SalesHome = () => {
   const [pauseSalesOpened, setPauseSalesOpened] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [tab, setTab] = useState<string>('pos');
+
+  const { data: sales, isLoading } = useGetSales({
+    paginate: 1,
+    limit: 10,
+    sales_type: 'pos',
+  });
 
   const onChange = (key: string) => {
-    console.log('Selected tab:', key);
+    setTab(key);
   };
+
+  const items: TabsProps['items'] = [
+    {
+      key: 'all-sales',
+      label: 'All Sales',
+      children: <AllSales data={sales?.data} isLoading={isLoading} />,
+    },
+    {
+      key: 'online-sales',
+      label: 'Online Sales',
+      children: <OnlineSales data={sales?.data} isLoading={isLoading} />,
+    },
+    {
+      key: 'instore-sales',
+      label: 'In-store Sales',
+      children: <InstoreSales data={sales?.data} isLoading={isLoading} />,
+    },
+  ];
 
   return (
     <div>
@@ -45,23 +71,7 @@ const SalesHome = () => {
       />
 
       <div className="px-5 bg-white">
-        <Tabs
-          defaultActiveKey="all-sales"
-          onChange={onChange}
-        >
-          <Tabs.TabPane tab="All Sales" key="all-sales">
-            {/* <AllSales data={allSalesData} /> */}
-            <AllSales />
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="Online Sales" key="online-sales">
-            <OnlineSales />
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="In-store Sales" key="instore-sales">
-            <InstoreSales />
-          </Tabs.TabPane>
-        </Tabs>
+        <Tabs defaultActiveKey="all-sales" onChange={onChange} items={items} />
       </div>
 
       <ConfirmModal

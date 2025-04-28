@@ -16,7 +16,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({
   onClick,
 }) => {
   return (
-    <div className="flex items-center justify-between py-2">
+    <div className="flex items-center justify-between w-full py-2">
       <div className="flex items-center gap-2 md:gap-5">
         <Avatar
           src={avatar}

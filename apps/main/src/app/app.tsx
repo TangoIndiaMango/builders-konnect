@@ -37,7 +37,7 @@ const App = () => {
       </Route>
 
       <Route
-        path="/pos"
+        path="/"
         element={
           <ProtectedRoute>
           <VendorHomeOutlet />

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { Divider } from 'antd';
 import DisplayHeader from '../common/DisplayHeader';
 import TimelineFilter from '../common/filters/TimelineFilter';
@@ -7,7 +7,8 @@ import { OrdersTable } from './table/salesTable';
 import { useState } from 'react';
 import TableWrapper from '../common/Table/TableWrapper';
 import { ordersData, tableStatsData } from '../../lib/mockData';
-
+import { SalesDataInterface } from './AllSales';
+import { SkeletonLoader } from '../common/SkeletonLoader';
 
 // Filter data for different tabs
 export const completedOrders = ordersData.filter(
@@ -20,7 +21,13 @@ export const cancelledOrders = ordersData.filter(
   (order) => order.orderStatus === 'Cancelled'
 );
 
-const OnlineSales = () => {
+const OnlineSales = ({
+  data,
+  isLoading,
+}: {
+  data: SalesDataInterface;
+  isLoading: boolean;
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -44,31 +51,33 @@ const OnlineSales = () => {
         description="You're viewing all sales order below."
         actionButton={<TimelineFilter />}
       />
-
-      <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
-        {tableStatsData?.map((item) => (
-          <TableStats
-            label={item?.label}
-            value={item?.value}
-            valueBgColor={item?.valueBgColor}
-            valueColor={item?.valueColor}
-          />
-        ))}
-      </div>
+      <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
+        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
+          {tableStatsData?.map((item, index) => (
+            <TableStats
+              key={index}
+              label={item?.label}
+              value={item?.value}
+              valueBgColor={item?.valueBgColor}
+              valueColor={item?.valueColor}
+            />
+          ))}
+        </div>
+      </SkeletonLoader>
       <Divider />
 
       <TableWrapper onSearch={handleSearch}>
         <OrdersTable
-          data={ordersData}
+          data={data?.data?.data}
           currentPage={currentPage}
           onPageChange={handlePageChange}
-          loading={loading}
+          loading={isLoading}
           showCheckbox={true}
-          total={ordersData.length}
+          total={data?.data?.total}
         />
       </TableWrapper>
     </div>
   );
-}
+};
 
-export default OnlineSales
+export default OnlineSales;

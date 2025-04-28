@@ -1,6 +1,6 @@
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button, Typography } from 'antd';
-import { useState } from 'react';
+import { ArrowLeftOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Button, notification, Spin, Typography } from 'antd';
+import { useEffect, useState } from 'react';
 import Container from '../../components/common/Container';
 import { SearchInput } from '../../components/common/SearchInput';
 import { CustomerSection } from '../../components/sales/CustomerSection';
@@ -10,37 +10,151 @@ import { Customer, Product } from '../../lib/mockData';
 import { DiscountSection } from '../../components/sales/DiscountSection';
 import { useNavigate } from 'react-router';
 import NavigationBack from '../../components/common/NavigationBack';
+import { useCheckOut } from '../../../service/sales/salesFN';
+import { useGetCustomers } from '../../../service/customer/customerFN';
+import { useGetDiscounts } from '../../../service/discount/discountsFN';
+import { CustomerType, DiscountType, OrderSummary, ProductType } from './types';
+import { formatBalance } from '../../../utils/helper';
+import {
+  useCreateData,
+  useFetchData,
+  useFetchPostData,
+} from '../../../hooks/useApis';
+import PaymentMethodModal from '../../components/sales/PaymentMethodModal';
+import PaymentAmountModal from '../../components/sales/PaymentAmountModal';
+import SuccessModal from '../../components/common/SuccessModal';
+
+export interface calculateAmountInterface {
+  line_items: {
+    product_id: string;
+    quantity: number;
+    discount_id: string;
+  }[];
+  discount_id: string;
+}
+
+export interface paymentMethodInterface {
+  id: string;
+  name: string;
+  slug: string;
+  is_balance: string;
+  is_active: string | boolean;
+  created_at: string;
+  updated_at: string;
+}
+/**
+ *
+ * @returns [
+    {
+        "id": "pm_9cxAy5WmxEx9KZqPxoqYp",
+        "name": "Credit Card",
+        "slug": "credit-card",
+        "is_balance": 0,
+        "is_active": true,
+        "created_at": "2025-04-23T16:38:07.000000Z",
+        "updated_at": "2025-04-23T16:38:07.000000Z"
+    },
+    {
+        "id": "pm_Ua7A67U8oK0HM8RliUMOM",
+        "name": "Bank Transfer",
+        "slug": "bank-transfer",
+        "is_balance": 0,
+        "is_active": true,
+        "created_at": "2025-04-23T16:38:07.000000Z",
+        "updated_at": "2025-04-23T16:38:07.000000Z"
+    },
+    {
+        "id": "pm_WDoEYvS37Ufw4pb0NDbfe",
+        "name": "Credit Note",
+        "slug": "credit-note",
+        "is_balance": 1,
+        "is_active": true,
+        "created_at": "2025-04-23T16:38:07.000000Z",
+        "updated_at": "2025-04-23T16:38:07.000000Z"
+    },
+    {
+        "id": "pm_XA2HTbgjBYQMybMMFwHdB",
+        "name": "Cash",
+        "slug": "cash",
+        "is_balance": 0,
+        "is_active": true,
+        "created_at": "2025-04-23T16:38:07.000000Z",
+        "updated_at": "2025-04-23T16:38:07.000000Z"
+    }
+]
+ */
 
 const CreateSales = () => {
   const navigate = useNavigate();
-  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+  const [selectedProducts, setSelectedProducts] = useState<ProductType[]>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(
     null
   );
   const [selectedDiscount, setSelectedDiscount] = useState<string | null>(null);
+  const [orderSummary, setOrderSummary] = useState<OrderSummary | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showAmountModal, setShowAmountModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<paymentMethodInterface | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState<number>(0);
 
-  const handleProductSelect = (product: Product) => {
+  const { mutate: checkOut, isLoading: isCheckingOut } = useCheckOut();
+  const { data: customers, isLoading: isLoadingCustomers } = useGetCustomers();
+  const { data: discounts, isLoading: isLoadingDiscounts } = useGetDiscounts();
+  const products = useFetchData('merchants/inventory-products');
+  const calculateAmount = useCreateData(
+    'merchants/sales-orders/amount-breakdown'
+  );
+  const paymentMethods = useFetchData('shared/sales-payment-methods');
+
+  console.log(paymentMethods?.data);
+
+  // console.log(customers);
+  // console.log(discounts);
+
+  const discountData = discounts?.data as DiscountType[];
+
+  const productData = products?.data?.data as ProductType[];
+
+  const customerData = customers?.data as CustomerType[];
+
+  const paymentMethodData = paymentMethods?.data
+    ?.data as paymentMethodInterface[];
+
+  const handleProductSelect = (product: ProductType) => {
     // Check if product already exists
-    if (!selectedProducts.find((p) => p.key === product.key)) {
-      setSelectedProducts([...selectedProducts, product]);
+    if (!selectedProducts.find((p) => p.id === product.id)) {
+      setSelectedProducts([
+        ...selectedProducts,
+        {
+          ...product,
+          quantity: 1,
+          totalPrice: Number(product.retail_price)
+        }
+      ]);
     }
   };
 
   const handleQuantityChange = (key: string, quantity: number) => {
     setSelectedProducts((products) =>
       products.map((p) =>
-        p.key === key
-          ? { ...p, quantity, totalPrice: p.unitPrice * quantity }
+        p.id === key
+          ? {
+              ...p,
+              quantity,
+              totalPrice: Number(p.retail_price) * quantity,
+            }
           : p
       )
     );
   };
 
   const handleRemoveProduct = (key: string) => {
-    setSelectedProducts((products) => products.filter((p) => p.key !== key));
+    setSelectedProducts((products) => products.filter((p) => p.id !== key));
   };
 
-  const handleCustomerSelect = (customer: Customer) => {
+  const handleCustomerSelect = (customer: CustomerType) => {
     setSelectedCustomer(customer);
   };
 
@@ -57,11 +171,101 @@ const CreateSales = () => {
     // Implementation for applying discount
   };
 
-  // Calculate totals
-  const subtotal = selectedProducts.reduce((sum, p) => sum + p.totalPrice, 0);
-  const tax = subtotal * 0.075; // 7.5% VAT
-  const serviceFee = 1000; // Example service fee
-  const total = subtotal + tax + serviceFee;
+
+  useEffect(() => {
+    calculateAmount.mutate(
+      {
+        line_items: selectedProducts.map((product) => ({
+          product_id: product?.id,
+          quantity: product?.quantity,
+          discount_id: selectedDiscount,
+        })),
+        discount_id: selectedDiscount,
+      },
+      {
+        onSuccess: (data) => {
+          setOrderSummary(data?.data as OrderSummary);
+        },
+      }
+    );
+  }, [selectedProducts, selectedDiscount]);
+
+  const handlePaymentMethodSelect = (method: paymentMethodInterface) => {
+    setSelectedPaymentMethod(method);
+    setShowPaymentModal(false);
+    setShowAmountModal(true);
+  };
+
+  const handlePaymentConfirm = (amount: number) => {
+    setPaymentAmount(amount);
+
+    // Determine customer payload based on whether it's an existing customer or new
+    const customerPayload = selectedCustomer?.id
+      ? {
+          id: selectedCustomer.id
+        }
+      : {
+          name: selectedCustomer?.name || '',
+          email: selectedCustomer?.email || '',
+          phone: selectedCustomer?.phone || '',
+          referral_source: selectedCustomer?.source || '',
+        };
+
+    const payload = {
+      customer: customerPayload,
+      status: 'completed',
+      sales_type: 'pos',
+      line_items: selectedProducts.map((product) => ({
+        product_id: product.id,
+        quantity: product.quantity,
+        discount_id: selectedDiscount || '',
+      })),
+      payment_methods: [
+        {
+          id: selectedPaymentMethod?.id,
+          amount: orderSummary?.total?.toString(),
+        },
+      ],
+      discount_id: selectedDiscount || '',
+    };
+
+    checkOut(
+      {
+        orders: [payload as any],
+      },
+      {
+        onSuccess: (data) => {
+          console.log(data);
+          setShowAmountModal(false);
+          setShowSuccessModal(true);
+        },
+        onError: (error: any) => {
+          notification.error({
+            message: 'Error',
+            description: error?.response?.data?.message || 'An error occurred',
+          });
+        },
+      }
+    );
+  };
+
+  const handleCheckOut = () => {
+    setShowPaymentModal(true);
+  };
+
+  // console.log(orderSummary);
+  // const isLoading =
+  //   isLoadingCustomers || isLoadingDiscounts || paymentMethods?.isLoading;
+
+  const handleClose = () => {
+    // setSelectedProducts([]);
+    // setSelectedCustomer(null);
+    // setSelectedDiscount(null);
+    // setOrderSummary(null);
+    setShowSuccessModal(false);
+    setShowPaymentModal(false);
+    setShowAmountModal(false);
+  };
 
   return (
     <div className="space-y-5">
@@ -69,14 +273,18 @@ const CreateSales = () => {
         title="Create Sales"
         actionButton={
           <div className="flex items-center justify-end gap-3">
-            <Button size="large" className="rounded">
+            {/* <Button size="large" className="rounded">
               Pause Sales
-            </Button>
+            </Button> */}
             <Button
               type="primary"
               size="large"
               className="rounded"
-              onClick={() => navigate('/pos/sales/view/1')}
+              disabled={
+                selectedProducts.length === 0 || selectedCustomer === null
+              }
+              loading={isCheckingOut}
+              onClick={handleCheckOut}
             >
               Next
             </Button>
@@ -85,6 +293,11 @@ const CreateSales = () => {
       />
 
       <div className="p-5 space-y-3">
+        {/* {isLoading && (
+          <div className="flex items-center justify-center h-full">
+            <Spin indicator={<LoadingOutlined style={{ fontSize: 48 }} spin />} />
+          </div>
+        )} */}
         <Container className="space-y-5">
           <div className="flex flex-wrap items-center justify-between w-full gap-5">
             <div>
@@ -95,7 +308,10 @@ const CreateSales = () => {
             </div>
 
             <div className="justify-end w-full md:w-1/2">
-              <ProductSearch onSelect={handleProductSelect} />
+              <ProductSearch
+                onSelect={handleProductSelect}
+                data={productData}
+              />
             </div>
           </div>
           {selectedProducts.length > 0 && (
@@ -108,7 +324,10 @@ const CreateSales = () => {
         </Container>
 
         <Container>
-          <CustomerSection onCustomerSelect={handleCustomerSelect} />
+          <CustomerSection
+            onCustomerSelect={handleCustomerSelect}
+            customerData={customerData}
+          />
         </Container>
 
         <Container>
@@ -120,6 +339,7 @@ const CreateSales = () => {
             <div className="flex flex-wrap items-center justify-end gap-5">
               <DiscountSection
                 onDiscountSelect={handleDiscountSelect}
+                discountData={discountData}
                 selectedDiscount={selectedDiscount}
               />
               {selectedDiscount ? (
@@ -148,25 +368,60 @@ const CreateSales = () => {
             <div className="bg-[#F8F9FC] w-full p-3">
               <LabelValue
                 label={`Subtotal (${selectedProducts.length} Items)`}
-                value={`₦ ${subtotal.toLocaleString()}`}
+                value={`${formatBalance(orderSummary?.subtotal as number)}`}
               />
               <LabelValue
                 label="Tax (7.5% VAT)"
-                value={`₦ ${tax.toLocaleString()}`}
+                value={`${formatBalance(orderSummary?.fees.tax as number)}`}
               />
               <LabelValue
                 label="Service fee"
-                value={`₦ ${serviceFee.toLocaleString()}`}
+                value={`${formatBalance(
+                  orderSummary?.fees.service_fee as number
+                )}`}
               />
               <LabelValue
                 label="Total"
-                value={`₦ ${total.toLocaleString()}`}
+                value={`${formatBalance(orderSummary?.total as number)}`}
                 className="font-semibold text-black"
               />
             </div>
           </div>
         </Container>
       </div>
+
+      <PaymentMethodModal
+        open={showPaymentModal}
+        onClose={handleClose}
+        paymentMethods={paymentMethodData || []}
+        onSelectPaymentMethod={handlePaymentMethodSelect}
+        totalAmount={orderSummary?.total || 0}
+        customerBalance={2}
+      />
+
+      <PaymentAmountModal
+        open={showAmountModal}
+        onClose={handleClose}
+        onBack={() => {
+          setShowAmountModal(false);
+          setShowPaymentModal(true);
+        }}
+        selectedMethod={selectedPaymentMethod!}
+        totalAmount={orderSummary?.total || 0}
+        onConfirmPayment={handlePaymentConfirm}
+        isLoading={isCheckingOut}
+      />
+
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          navigate('/pos/sales');
+        }}
+        title="Payment Successful"
+        message="The payment has been processed successfully."
+        buttonText="Done"
+      />
     </div>
   );
 };
