@@ -120,7 +120,6 @@ export default function TriggerReorder() {
     },
   ];
 
-  // Filter products based on search
   const filteredProducts = products.filter(
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -135,9 +134,9 @@ export default function TriggerReorder() {
   };
 
   return (
-    <div className="p-6 bg-white min-h-screen">
+    <div className="p-4 md:p-6 bg-white min-h-screen">
       {/* Header */}
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center">
           <Button
             type="text"
@@ -148,10 +147,12 @@ export default function TriggerReorder() {
             Trigger Reorder
           </Title>
         </div>
-        <div className="flex justify-end gap-2 mt-6">
-          <Button onClick={handleCancel}>Cancel</Button>
+        <div className="flex flex-col sm:flex-row justify-end gap-2">
+          <Button onClick={handleCancel} className="w-full sm:w-auto">
+            Cancel
+          </Button>
           <Button
-            className="!bg-[#CF1322]"
+            className="!bg-[#CF1322] w-full sm:w-auto"
             type="primary"
             htmlType="button"
             onClick={handleTriggerReorder}
@@ -168,12 +169,12 @@ export default function TriggerReorder() {
 
       {/* Search and Table */}
       <div className="border rounded-lg p-4 mb-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <h1 className="font-medium text-base">Search Product(s)</h1>
           <Input
             placeholder="Input search text"
             prefix={<SearchOutlined />}
-            className="max-w-sm"
+            className="w-full md:max-w-sm"
             onChange={(e) => setSearchTerm(e.target.value)}
             allowClear
           />
@@ -185,6 +186,7 @@ export default function TriggerReorder() {
           columns={columns}
           pagination={false}
           rowKey="key"
+          scroll={{ x: 'max-content' }} // makes table scrollable on small devices
         />
       </div>
     </div>

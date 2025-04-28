@@ -29,12 +29,13 @@ export default function EditInventoryPage() {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const handleCancel = () => {
-    window.history.back(); // ← simple browser back
+    window.history.back();
   };
 
   const handleSave = (values: any) => {
     console.log('Saved values:', values);
     message.success('Inventory updated successfully!');
+    form.resetFields(); // Reset the form to empty values
   };
 
   const columns = [
@@ -76,9 +77,8 @@ export default function EditInventoryPage() {
 
   return (
     <div className="p-6 bg-white min-h-screen">
-      {/* Header */}
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center">
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
@@ -88,9 +88,9 @@ export default function EditInventoryPage() {
             Edit Inventory Level
           </Title>
         </div>
-        <div className="flex justify-end gap-2 mt-6">
+        <div className="flex justify-end gap-2 mt-4 sm:mt-6">
           <Button onClick={handleCancel}>Cancel</Button>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" form="inventoryForm">
             Save
           </Button>
         </div>
@@ -101,10 +101,9 @@ export default function EditInventoryPage() {
         forms are common in scenarios where there are fewer data items.
       </Text>
 
-      {/* Search and Table */}
       <div className="border rounded-lg p-4 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className=" font-medium text-base">Search Product</h1>
+          <h1 className="font-medium text-base">Search Product</h1>
           <Input
             placeholder="Search by product name, code etc."
             prefix={<SearchOutlined />}
@@ -117,20 +116,18 @@ export default function EditInventoryPage() {
         )}
       </div>
 
-      {/* Inventory Form */}
       <div className="border rounded-lg p-6">
         <Title level={5}>Inventory Details</Title>
         <Form
+          id="inventoryForm"
           form={form}
           layout="vertical"
           initialValues={{
             currentStock: product.quantity,
-            addedStock: '',
-            newReorderLevel: '',
           }}
           onFinish={handleSave}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <Form.Item label="Current Stock Level" name="currentStock">
               <Input disabled />
             </Form.Item>
@@ -139,7 +136,10 @@ export default function EditInventoryPage() {
               label="Added Stock Level"
               name="addedStock"
               rules={[
-                { required: true, message: 'Please input added stock level!' },
+                {
+                  required: true,
+                  message: 'Please input added stock level!',
+                },
               ]}
             >
               <Input placeholder="Enter stock level" />

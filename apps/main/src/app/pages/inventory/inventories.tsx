@@ -1,8 +1,7 @@
-import { Button, Divider, Dropdown, Menu } from 'antd';
+import { Button, Divider, Menu } from 'antd';
 import { EmptyInventoryState } from '../../components/inventory/empty-inventory-state';
 import { InventoryTable } from '../../components/inventory/inventoryTable';
 import {
-  numbersData,
   productData,
   productNumbersData,
 } from '../../lib/mockData/productData';
@@ -11,12 +10,24 @@ import { useState } from 'react';
 import TableStats from '../../components/common/TableStats';
 import DisplayHeader from '../../components/common/DisplayHeader';
 import DateFilter from '../../components/common/filters/DateFilter';
-import { ArrowLeftOutlined, PlusOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const Inventory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (value: string) => {
+    console.log('Searching for:', value);
+    setSearchQuery(value);
+    // Implement your search logic here
+  };
+
+  const handlePageChange = (page: number, pageSize: number) => {
+    setCurrentPage(page);
+  };
 
   const menu = (
     <Menu
@@ -39,38 +50,25 @@ const Inventory = () => {
     />
   );
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    // Handle pagination logic here
-  };
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (value: string) => {
-    console.log('Searching for:', value);
-    setSearchQuery(value);
-    // Implement your search logic here
-  };
-
-  const navigate = useNavigate();
-
   return (
     <div className="h-full">
-      <div className="flex justify-between items-center bg-white mb-2 p-6">
+      {/* HEADER */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white mb-2 p-4 sm:p-6">
+        {/* Title & Description */}
         <div>
           <div className="flex items-center gap-3">
-            <div onClick={() => navigate(-1)}>
+            <div onClick={() => navigate(-1)} className="cursor-pointer">
               <ArrowLeftOutlined className="text-xl mt-1 text-black font-medium" />
             </div>
             <h1 className="text-2xl font-semibold">Inventory</h1>
           </div>
-
           <p className="text-gray-500 text-sm">
             Track and measure stock levels here
           </p>
         </div>
 
-        <div className="flex items-center gap-5">
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-5">
           <Button
             className="rounded !bg-[#CF1322] text-white"
             size="large"
@@ -89,16 +87,20 @@ const Inventory = () => {
         </div>
       </div>
 
-      <div className="space-y-3 bg-white p-10">
+      {/* MAIN CONTENT */}
+      <div className="space-y-3 bg-white p-4 sm:p-10">
+        {/* Header + Filter */}
         <DisplayHeader
           title="All Products"
           description="You're viewing all products below."
           actionButton={<DateFilter />}
         />
 
-        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
-          {productNumbersData?.map((item) => (
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {productNumbersData?.map((item, index) => (
             <TableStats
+              key={index}
               label={item?.label}
               value={item?.value}
               valueBgColor={item?.valueBgColor}
@@ -106,7 +108,10 @@ const Inventory = () => {
             />
           ))}
         </div>
+
         <Divider />
+
+        {/* Table or Empty State */}
         {productData.length === 0 ? (
           <EmptyInventoryState />
         ) : (
