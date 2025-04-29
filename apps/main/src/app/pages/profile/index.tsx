@@ -1,8 +1,12 @@
-import ProfileBanner from '../../components/profile/ProfileBanner';
+import React from 'react';
+import { Tabs, Button } from 'antd';
+import type { TabsProps } from 'antd';
+import StoresTable from './views/StoresTable';
 import WelcomeSection from '../../components/profile/WelcomeSection';
 import BusinessProfile from '../../components/profile/BusinessProfile';
 import FinanceSection from '../../components/profile/FinanceSection';
 import DocumentsSection from '../../components/profile/DocumentsSection';
+
 const businessInfo = {
   name: "Builder's Hub Construction",
   email: 'buildershub@gmail.com',
@@ -32,26 +36,63 @@ const documents = {
   proofOfAddress: '/documents/buildershub-address.pdf',
 };
 
+const ProfilePage: React.FC = () => {
+  const onChange = (key: string) => {
+    console.log('Selected tab:', key);
+  };
 
-const ProfilePage = () => {
-  
-  return (
-    <>
-      <ProfileBanner />
-      <div className="bg-gray-50">
-        <div className="max-w-7xl mx-auto p-6">
+  const items: TabsProps['items'] = [
+    {
+      key: 'profile',
+      label: 'Profile Information',
+      children: (
+        <div className="space-y-6 py-6">
           <WelcomeSection />
           <BusinessProfile businessInfo={businessInfo} />
           <FinanceSection financeInfo={financeInfo} />
           <DocumentsSection documents={documents} />
-          <div className="mt-6">
-            <a href="#" className="text-blue-600">
-              Change password
-            </a>
-          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'stores',
+      label: 'Stores',
+      children: <StoresTable />,
+    },
+    {
+      key: 'subscription',
+      label: 'Subscription',
+      children: (
+        <div className="p-6">
+          <h2 className="text-lg font-semibold">Subscription</h2>
+          <p>This is where the subscription details will go.</p>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="bg-gray-100 min-h-screen">
+      <div className="bg-white px-6 py-4 flex justify-between items-center border-b">
+        <div>
+          <h1 className="text-2xl font-semibold">My Profile</h1>
+          <p className="text-gray-500 text-sm">Track and measure store performance and analytics here</p>
+        </div>
+        <Button type="default">View Storefront</Button>
+      </div>
+
+      {/* Tabs */}
+      <div className="px-6 py-6">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <Tabs
+            defaultActiveKey="profile"
+            items={items}
+            onChange={onChange}
+            className="!mb-0"
+          />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
