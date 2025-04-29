@@ -2,6 +2,7 @@ import { Tag, Button, Dropdown, Menu } from "antd";
 import { DataType, PaginatedTable } from "../common/Table/Table";
 import { useSelection } from "../../../hooks/useSelection";
 import { EditOutlined, EllipsisOutlined, EyeOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 export interface ProductData extends DataType {
   id: string;
@@ -29,6 +30,8 @@ export const InventoryTable = ({
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data,
   });
+  
+const navigate = useNavigate();
   const columns = [
     {
       title: 'Product',
@@ -117,8 +120,7 @@ export const InventoryTable = ({
             type="text"
             className="w-8 h-8 flex items-center justify-center bg-[#E6F7FF] hover:opacity-80 rounded-lg"
             onClick={() => {
-              // Go to View Details page
-              window.location.href = `/view/${record.id}`; // Adjust your route if necessary
+           navigate(`/pos/inventory/product-preview`, { state: record }); // record holds your product details
             }}
           >
             <EyeOutlined className="text-[#1890FF]" />

@@ -1,7 +1,7 @@
 import { Button, Divider, Dropdown, Menu } from 'antd';
 import { EmptyInventoryState } from '../../components/inventory/empty-inventory-state';
 import { ProductTable } from '../../components/inventory/product-table';
-import { numbersData, productData } from "../../lib/mockData/productData";
+import { numbersData, productData } from '../../lib/mockData/productData';
 import TableWrapper from '../../components/common/Table/TableWrapper';
 import { useState } from 'react';
 import TableStats from '../../components/common/TableStats';
@@ -10,49 +10,44 @@ import TimelineFilter from '../../components/common/filters/TimelineFilter';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const ProductsPage = () => {
-   const [currentPage, setCurrentPage] = useState(1);
-    const [loading, setLoading] = useState(false);
-  
-   const menu = (
-     <Menu
-       items={[
-         {
-           key: '1',
-           label: 'Add Products',
-           onClick: () => {
-             console.log('Add Products clicked');
-           },
-         },
-         {
-           key: '2',
-           label: 'Add Bulk Products',
-           onClick: () => {
-             console.log('Add Bulk Products clicked');
-           },
-         },
-       ]}
-     />
-   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  
-    const handlePageChange = (page: number, pageSize: number) => {
-      setCurrentPage(page);
-      // Handle pagination logic here
-    };
-  
-    const [searchQuery, setSearchQuery] = useState('');
-  
-    const handleSearch = (value: string) => {
-      console.log('Searching for:', value);
-      setSearchQuery(value);
-      // Implement your search logic here
-    };
+  const menu = (
+    <Menu
+      items={[
+        {
+          key: '1',
+          label: 'Add Products',
+          onClick: () => {
+            navigate('/pos/inventory/create-product-by-search');
+          },
+        },
+        {
+          key: '2',
+          label: 'Add Bulk Products',
+          onClick: () => {
+            navigate('/pos/inventory/add-bulk-product');
+          },
+        },
+      ]}
+    />
+  );
 
-      const navigate = useNavigate();
-    
+  const handlePageChange = (page: number, pageSize: number) => {
+    setCurrentPage(page);
+  };
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (value: string) => {
+    console.log('Searching for:', value);
+    setSearchQuery(value);
+  };
+
+  const navigate = useNavigate();
+
   return (
     <div className="h-full">
       <div className="flex justify-between items-center bg-white mb-2 p-6">

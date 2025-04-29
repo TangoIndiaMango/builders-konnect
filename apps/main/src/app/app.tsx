@@ -27,6 +27,12 @@ import Inventory from './pages/inventory/inventories';
 import EditInventoryPage from './pages/inventory/editInventorybySearch';
 import EditInventoryById from './pages/inventory/editInventory';
 import TriggerReorder from './pages/inventory/triggerReorder';
+import CreateProductBySearch from './pages/inventory/createProductBySearch';
+import CreateProduct from './pages/inventory/createProduct';
+import PreviewPage from './pages/inventory/imagePreview';
+import ProductPreview from './pages/inventory/previewProduct';
+import ScanProductPage from './pages/inventory/barcodeProductAdd';
+import AddBulkProductPage from './pages/inventory/addBulkProduct';
 const App = () => {
   return (
     <Routes>
@@ -89,7 +95,16 @@ const App = () => {
         <Route path="inventories" element={<Inventory />} />
         <Route path="edit" element={<EditInventoryPage />} />
         <Route path="edit/:id" element={<EditInventoryById />} />
-        <Route path="trigger-reorder" element={<TriggerReorder/>} />
+        <Route path="trigger-reorder" element={<TriggerReorder />} />
+        <Route
+          path="create-product-by-search"
+          element={<CreateProductBySearch />}
+        />
+        <Route path="add-product" element={<CreateProduct />} />
+        <Route path="preview-page" element={<PreviewPage />} />
+        <Route path="product-preview" element={<ProductPreview />} />
+        <Route path="scan-product" element={<ScanProductPage />} />
+        <Route path="add-bulk-product" element={<AddBulkProductPage/>} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
