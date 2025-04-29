@@ -6,6 +6,7 @@ import { formatBalance, getStatusColor } from '../../../../utils/helper';
 import { SalesOrder } from '../../../pages/sales/types';
 import { ColumnsType, ColumnType } from 'antd/es/table';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 
 // Create a type that combines SalesOrder with required key
@@ -68,8 +69,8 @@ export const OrdersTable = ({
       dataIndex: 'date',
       render: (_, record: SalesOrderWithKey) => (
         <div>
-          <div>{record.date}</div>
-          <div>{record.date}</div>
+          <div>{dayjs(record.date).format('DD-MM-YYYY')}</div>
+          <div>{dayjs(record.date).format('h:mm A')}</div>
         </div>
       ),
     },

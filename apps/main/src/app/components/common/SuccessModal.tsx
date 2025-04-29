@@ -8,6 +8,7 @@ interface SuccessModalProps {
   title?: string;
   message?: string;
   buttonText?: string;
+  onOk?: () => void;
 }
 
 const SuccessModal: React.FC<SuccessModalProps> = ({
@@ -16,10 +17,12 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
   title = 'Registration Form Submitted!',
   message = "Your registration to join Builder'sKonnect is under review. Kindly check your email for registration updates.",
   buttonText = 'Okay',
+  onOk,
 }) => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const handleOk = () => {
     setConfirmLoading(true);
+    onOk?.();
     setTimeout(() => {
       onClose();
       setConfirmLoading(false);

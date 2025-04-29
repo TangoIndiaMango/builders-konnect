@@ -2,6 +2,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button, Form, Input, message, Upload } from 'antd';
 import type { UploadFile } from 'antd/es/upload/interface';
 import { useState } from 'react';
+import NumericInput from '../common/NumericInput';
 
 const acceptedFileTypes = '.pdf,.doc,.docx';
 const maxFileSize = 10 * 1024 * 1024; // 10MB
@@ -27,7 +28,7 @@ const DocumentUpload = () => {
       message.error('File must be smaller than 5MB!');
     }
 
-    return isAccepted && isLt5M;
+    return isAccepted && isLt5M ? false : Upload.LIST_IGNORE;
   };
 
   return (
@@ -44,7 +45,7 @@ const DocumentUpload = () => {
           },
         ]}
       >
-        <Input placeholder="Enter registration number" />
+        <NumericInput placeholder="Enter registration number" />
       </Form.Item>
 
       <Form.Item
