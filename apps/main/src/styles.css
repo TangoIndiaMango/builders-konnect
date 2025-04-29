@@ -2,6 +2,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 /* You can add global styles to this file, and also import other style files */
 .main-navigation-tabs .ant-tabs-nav {
   margin-bottom: 0 !important;
@@ -50,11 +51,11 @@
   @apply bg-gray-50;
 }
 
-.custom-table .ant-table-thead > tr > th {
+.custom-table .ant-table-thead>tr>th {
   @apply font-medium text-gray-700 bg-gray-50;
 }
 
-.custom-table .ant-table-tbody > tr > td {
+.custom-table .ant-table-tbody>tr>td {
   @apply border-b border-gray-200;
 }
 
@@ -66,7 +67,20 @@
   @apply pl-4;
 }
 
-.ant-tabs-top > .ant-tabs-nav::before,
-.ant-tabs-top > div > .ant-tabs-nav::before {
+.ant-tabs-top>.ant-tabs-nav::before,
+.ant-tabs-top>div>.ant-tabs-nav::before {
   border-bottom: none !important;
+}
+
+.numeric-input .ant-tooltip-inner {
+  min-width: 32px;
+  min-height: 37px;
+}
+
+.numeric-input .numeric-input-title {
+  font-size: 14px;
+}
+
+.ant-upload-list-item-name {
+  color: #1677ff !important
 }

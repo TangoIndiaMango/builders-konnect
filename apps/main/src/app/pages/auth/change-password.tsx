@@ -1,3 +1,5 @@
+import { EyeInvisibleOutlined } from '@ant-design/icons';
+import { EyeTwoTone } from '@ant-design/icons';
 import { useCreateData } from '../../../hooks/useApis';
 import { Button, Form, Input, App } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -77,7 +79,12 @@ const ChangePassword = () => {
               name="password"
               rules={[{ required: true, message: 'Please enter new password' }]}
             >
-              <Input placeholder="Enter new password" />
+              <Input.Password
+                placeholder="Enter new password"
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
 
             <Form.Item
@@ -85,7 +92,12 @@ const ChangePassword = () => {
               name="confirmPassword"
               rules={[{ required: true, message: 'Please enter new password' }]}
             >
-              <Input placeholder="Confirm new password" />
+              <Input.Password
+                placeholder="Confirm new password"
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
           </div>
 

@@ -6,6 +6,7 @@ export const getStatusColor = (status: string) => {
     processing: 'gold',
     completed: 'green',
     cancelled: 'red',
+    pending: 'orange',
   };
   return colorMap[status] || 'default';
 };

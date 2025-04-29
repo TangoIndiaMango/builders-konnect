@@ -27,6 +27,7 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
     });
   };
 
+
   return (
     <div className="">
       <Form.Item
@@ -44,11 +45,15 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
       >
         <Select
           placeholder="Select business category"
-          loading={BusinessCategoryState.isPending}
+          loading={BusinessCategoryState.isLoading}
           options={BusinessCategoryState?.data?.data?.map((b: any) => ({
             value: b?.id,
             label: b?.name,
           }))}
+          showSearch
+          filterOption={(input, option) =>
+            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+          }
         />
       </Form.Item>
 
@@ -59,11 +64,15 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
       >
         <Select
           placeholder="Select business type"
-          loading={BusinessTypeState.isPending}
+          loading={BusinessTypeState.isLoading}
           options={BusinessTypeState?.data?.data?.map((b: any) => ({
             value: b?.id,
             label: b?.name,
           }))}
+          filterOption={(input, option) =>
+            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+          showSearch
         />
       </Form.Item>
 
@@ -110,12 +119,16 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
       >
         <Select
           placeholder="Select state"
-          loading={StatesState.isPending}
+          loading={StatesState.isLoading}
           options={StatesState?.data?.data?.map((b: any) => ({
             value: b?.id,
             label: b?.name,
           }))}
           onChange={handleStateChange}
+          filterOption={(input, option) =>
+            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+          showSearch
         />
       </Form.Item>
 
@@ -126,11 +139,15 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
       >
         <Select
           placeholder="Select city/region"
-          loading={CitiesState.isPending}
+          loading={CitiesState.isLoading}
           options={CitiesState?.data?.data?.map((b: any) => ({
             value: b?.id,
             label: b?.name,
           }))}
+          filterOption={(input, option) =>
+            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+          }
+          showSearch
         />
       </Form.Item>
 
