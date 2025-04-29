@@ -237,7 +237,7 @@ const RegisterVendor = () => {
           </div>
 
           <div className="pt-6 mt-auto space-y-4">
-            <div className="flex justify-end gap-4 items-center">
+            <div className="flex items-center justify-end gap-4">
               {currentStep == 2 && (
                 <Button type="text" onClick={() => setConfirmModalOpen(true)}>
                   Skip
@@ -290,6 +290,11 @@ const RegisterVendor = () => {
       <SuccessModal
         open={successModalOpen}
         onClose={() => setSuccessModalOpen(false)}
+        onOk={() => {
+          notification.destroy();
+          openEmailProvider(data?.email);
+          navigate('/auth/login');
+        }}
       />
 
       <ErrorModal

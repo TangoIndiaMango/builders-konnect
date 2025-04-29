@@ -3,6 +3,8 @@ import { useCreateData, useGetData } from '../../../hooks/useApis';
 import { App, Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Password from 'antd/es/input/Password';
+import { EyeInvisibleOutlined } from '@ant-design/icons';
+import { EyeTwoTone } from '@ant-design/icons';
 
 const Login = () => {
   const { notification } = App.useApp();
@@ -31,7 +33,7 @@ const Login = () => {
       const res = await mutateAsync(payload);
       sessionStorage.setItem('access_token', res.data.accessToken || '');
       updateUser(res?.data?.user);
-      navigate('/pos');
+      navigate('/');
       // notification.success({
       //   message: 'Login Successful',
       // });
@@ -46,7 +48,7 @@ const Login = () => {
           message: 'Login Successful',
           description: 'Welcome back! You have been logged in successfully.',
         });
-        navigate('/pos');
+        navigate('/');
       } else {
         notification.success({
           message: 'Login Successful',
@@ -95,7 +97,12 @@ const Login = () => {
               name="password"
               rules={[{ required: true, message: 'Please enter password' }]}
             >
-              <Password placeholder="Enter password" />
+              <Password
+                placeholder="Enter password"
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
           </div>
 

@@ -1,12 +1,12 @@
-import { localeToCurrency } from "./data";
 
 export const getStatusColor = (status: string) => {
   const colorMap: Record<string, string> = {
-    Paid: 'blue',
-    Failed: 'red',
-    Processing: 'gold',
-    Completed: 'green',
-    Cancelled: 'red',
+    paid: 'blue',
+    failed: 'red',
+    processing: 'gold',
+    completed: 'green',
+    cancelled: 'red',
+    pending: 'orange',
   };
   return colorMap[status] || 'default';
 };

@@ -1,5 +1,6 @@
 import { Tag } from 'antd';
-
+import { PaymentMethod } from '../../../pages/sales/types';
+import { formatBalance, getStatusColor } from '../../../../utils/helper';
 interface CustomerInfoCardProps {
   customerName: string;
   telephone: string;
@@ -7,7 +8,7 @@ interface CustomerInfoCardProps {
   totalItems: number;
   paymentStatus: string;
   orderStatus: string;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod[];
   billingAddress?: string;
   shippingAddress?: string;
 }
@@ -21,17 +22,17 @@ export const CustomerInfoCard = ({
   orderStatus,
   paymentMethod,
   billingAddress = '-',
-  shippingAddress = '-'
+  shippingAddress = '-',
 }: CustomerInfoCardProps) => {
-  const getStatusColor = (status: string) => {
-    const colorMap: Record<string, string> = {
-      Paid: 'blue',
-      Pending: 'gold',
-      Completed: 'green',
-      Failed: 'red'
-    };
-    return colorMap[status] || 'default';
-  };
+  // const getStatusColor = (status: string) => {
+  //   const colorMap: Record<string, string> = {
+  //     paid: 'blue',
+  //     Pending: 'gold',
+  //     Completed: 'green',
+  //     Failed: 'red',
+  //   };
+  //   return colorMap[status] || 'default';
+  // };
 
   return (
     <div className="p-6 space-y-6 rounded-lg bg-gray-50">
@@ -48,7 +49,9 @@ export const CustomerInfoCard = ({
         </div>
         <div>
           <p className="mb-1 text-gray-500">Email Address</p>
-          <p className="font-medium">{email}</p>
+          <p className="font-medium truncate" title={email}>
+            {email}
+          </p>
         </div>
       </div>
 
@@ -70,15 +73,18 @@ export const CustomerInfoCard = ({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div>
           <p className="mb-1 text-gray-500">Payment method</p>
-          <p className="font-medium">{paymentMethod}</p>
+          <p className="font-medium">
+            {paymentMethod?.map((method) => method.method)}
+          </p>{' '}
+          <span>{paymentMethod?.map((method) => formatBalance(method.amount))}</span>
         </div>
         <div>
           <p className="mb-1 text-gray-500">Billing Address</p>
-          <p className="font-medium">{billingAddress}</p>
+          <p className="font-medium">{billingAddress || '-'}</p>
         </div>
         <div>
           <p className="mb-1 text-gray-500">Shipping Address</p>
-          <p className="font-medium">{shippingAddress}</p>
+          <p className="font-medium">{shippingAddress || '-'}</p>
         </div>
       </div>
     </div>

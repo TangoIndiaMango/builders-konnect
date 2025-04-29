@@ -2,19 +2,23 @@ import { EyeOutlined } from '@ant-design/icons';
 import { Button, Tag } from 'antd';
 import { useSelection } from '../../../../hooks/useSelection';
 import { PaginatedTable, type DataType } from '../../common/Table/Table';
-import { getStatusColor } from '../../../../utils/helper';
+import { formatBalance, getStatusColor } from '../../../../utils/helper';
+import { SalesOrder } from '../../../pages/sales/types';
+import { ColumnsType, ColumnType } from 'antd/es/table';
+import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 
-interface OrderData extends DataType {
-  orderNumber: string;
-  customerDetails: {
-    name: string;
-    email: string;
-  };
-  orderDate: string;
-  amount: number;
-  paymentStatus: 'Paid' | 'Failed';
-  orderStatus: 'Processing' | 'Completed' | 'Cancelled';
-  totalItems: number;
+
+// Create a type that combines SalesOrder with required key
+type SalesOrderWithKey = SalesOrder & DataType;
+
+interface OrdersTableProps {
+  data: SalesOrder[];
+  currentPage: number;
+  onPageChange: (page: number, pageSize: number) => void;
+  loading: boolean;
+  total: number;
+  showCheckbox?: boolean;
 }
 
 export const OrdersTable = ({
@@ -24,71 +28,83 @@ export const OrdersTable = ({
   loading,
   total,
   showCheckbox = true,
-}) => {
+}: OrdersTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
-    data,
+    data: data as SalesOrderWithKey[],
   });
-  const columns = [
+
+  const navigate = useNavigate();
+
+  // Map the data to include a key property
+  const dataWithKeys: SalesOrderWithKey[] = data?.map((item) => ({
+    ...item,
+    key: item.id,
+  }));
+
+  const columns: ColumnsType<SalesOrderWithKey> = [
     {
       title: 'Order Number',
-      dataIndex: 'orderNumber',
-      render: (text: string, record: OrderData) => (
+      dataIndex: 'order_number',
+      render: (_, record: SalesOrderWithKey) => (
         <div>
-          <div className="font-medium text-blue-600">{text}</div>
+          <div className="font-medium text-blue-600">{record.order_number}</div>
           <div className="text-sm text-gray-500">
-            Total Items: {record.totalItems}
+            Total Items: {record.items_count}
           </div>
         </div>
       ),
     },
     {
       title: 'Customer Details',
-      dataIndex: 'customerDetails',
-      render: (details: OrderData['customerDetails']) => (
+      dataIndex: 'customer',
+      render: (_, record: SalesOrderWithKey) => (
         <div>
-          <div className="font-medium">{details.name}</div>
-          <div className="text-sm text-gray-500">{details.email}</div>
+          <div className="font-medium">{record.customer.name}</div>
+          <div className="text-sm text-gray-500">{record.customer.email}</div>
         </div>
       ),
     },
     {
       title: 'Order Date',
-      dataIndex: 'orderDate',
-      render: (date: string, record: OrderData) => (
+      dataIndex: 'date',
+      render: (_, record: SalesOrderWithKey) => (
         <div>
-          <div>{date}</div>
-          <div className="text-sm text-gray-500">{record.timeStamp}</div>
+          <div>{dayjs(record.date).format('DD-MM-YYYY')}</div>
+          <div>{dayjs(record.date).format('h:mm A')}</div>
         </div>
       ),
     },
     {
       title: 'Amount',
       dataIndex: 'amount',
-      render: (amount: number) => (
-        <span className="font-medium">₦ {amount.toLocaleString()}</span>
+      render: (_, record: SalesOrderWithKey) => (
+        <span className="font-medium">{formatBalance(record.amount)}</span>
       ),
     },
     {
       title: 'Payment Status',
-      dataIndex: 'paymentStatus',
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>{status}</Tag>
+      dataIndex: 'payment_status',
+      render: (_, record: SalesOrderWithKey) => (
+        <Tag color={getStatusColor(record.payment_status)}>
+          {record.payment_status}
+        </Tag>
       ),
     },
     {
-      title: 'Order Status',
-      dataIndex: 'orderStatus',
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>{status}</Tag>
+      title: 'Status',
+      dataIndex: 'status',
+      render: (_, record: SalesOrderWithKey) => (
+        <Tag color={getStatusColor(record.status)}>{record.status}</Tag>
       ),
     },
     {
       title: 'Action',
       key: 'action',
-      render: () => (
+      render: (_, record: SalesOrderWithKey) => (
         <Button
           type="text"
           icon={<EyeOutlined />}
+          onClick={() => navigate(`/pos/sales/view/${record.id}`)}
           className="text-gray-600 hover:text-blue-600"
         />
       ),
@@ -97,8 +113,8 @@ export const OrdersTable = ({
 
   return (
     <div>
-      <PaginatedTable
-        data={data}
+      <PaginatedTable<SalesOrderWithKey>
+        data={dataWithKeys}
         columns={columns}
         currentPage={currentPage}
         onPageChange={onPageChange}
@@ -107,7 +123,7 @@ export const OrdersTable = ({
         showCheckbox={showCheckbox}
         striped={true}
         pageSize={10}
-        rowSelection={rowSelection as any}
+        rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
       />
