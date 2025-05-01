@@ -126,7 +126,7 @@ const StaffHome = () => {
         children: <RolesAndPermission rolesData={rolesData} isLoading={isLoading} refetch={refetch} />,
       },
     ],
-    [tab]
+    [tab, rolesData, staff, refetch]
   );
 
   return (

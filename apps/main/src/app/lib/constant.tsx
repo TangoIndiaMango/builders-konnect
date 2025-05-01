@@ -41,7 +41,7 @@ function getItem(
 
 // Point of Sale Menu Items
 export const POSMenus: MenuItem[] = [
-  getItem('Dashboard', 'dashboard', '/pos', <DashboardOutlined />),
+  getItem('Dashboard', 'dashboard', '/', <DashboardOutlined />),
   getItem('Vendor Profile', 'vendor', '/pos/profile', <UserOutlined />),
   getItem('Products and Inventory', 'inventory', '/pos/inventory', <ShopOutlined />),
   getItem('Sales', 'sales', '/pos/sales', <ShoppingCartOutlined />, [

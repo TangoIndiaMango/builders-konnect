@@ -53,9 +53,9 @@ export const StaffTable = ({
             style={{ backgroundColor: '#E6F7FF' }}
             icon={<UserOutlined className='text-blue-600' />}
           />
-          <div>
+          <div className='max-w-[150px]'>
             <div className="font-medium">{record.name}</div>
-            <div className="text-sm text-gray-500">ID: <span className='text-blue-600'>{record.id}</span></div>
+            <div className="text-xs text-gray-500">ID: <span className='text-xs text-blue-600'>{record.id}</span></div>
           </div>
         </div>
       ),
@@ -64,7 +64,7 @@ export const StaffTable = ({
       title: 'Email',
       dataIndex: 'email',
       render: (_, record: StaffListWithKey) => (
-        <div>
+        <div className='max-w-[150px]'>
           <div className="font-medium">{record.email}</div>
         </div>
       ),
@@ -131,6 +131,7 @@ export const StaffTable = ({
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
+        scroll={{ x: '1000px' }}
       />
     </div>
   );
