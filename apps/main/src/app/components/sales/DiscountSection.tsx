@@ -1,5 +1,5 @@
 import { Select } from 'antd';
-import { discountsList, Discount } from './mockData';
+import { discountsList, Discount } from '../../lib/mockData';
 import { DiscountType } from '../../pages/sales/types';
 
 interface DiscountSectionProps {

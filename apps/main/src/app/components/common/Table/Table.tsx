@@ -1,4 +1,4 @@
-import { Table as AntTable, Button, TableProps, Skeleton } from 'antd';
+import { Table as AntTable, Button, TableProps } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import TableSkeleton from './TableLoader';
 
@@ -7,7 +7,8 @@ export interface DataType {
   [key: string]: any;
 }
 
-export interface CustomTableProps<T> {
+export interface CustomTableProps<T> extends TableProps<T> {
+  // Extend TableProps
   data: T[];
   columns: ColumnsType<T>;
   currentPage?: number;
@@ -37,6 +38,7 @@ export const PaginatedTable = <T extends DataType>({
   rowSelection,
   selectedRowKeys,
   resetSelection,
+  ...rest // Spread remaining props for further customization (including scroll)
 }: CustomTableProps<T>) => {
   return (
     <div className="w-full overflow-x-auto">
@@ -73,7 +75,8 @@ export const PaginatedTable = <T extends DataType>({
               : false
           }
           className={`custom-table ${striped ? 'table-striped' : ''}`}
-          scroll={{ x: true }}
+          scroll={{ x: 'max-content', y: 'auto' }} // Updated to better handle overflow
+          {...rest} // Pass any other props such as scroll
         />
       )}
     </div>

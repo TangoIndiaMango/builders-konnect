@@ -1,7 +1,7 @@
 import { Input, AutoComplete, Avatar } from 'antd';
 import { SearchOutlined, BarcodeOutlined } from '@ant-design/icons';
 import { useState } from 'react';
-import { ProductType } from '../../pages/sales/types';
+import { ProductType } from '../../lib./../pages/sales/types';
 
 interface ProductSearchProps {
   onSelect: (product: any) => void;

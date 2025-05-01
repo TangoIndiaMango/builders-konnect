@@ -1,7 +1,7 @@
 import { PaginatedTable } from '../common/Table/Table';
 import { Avatar, Button, Input } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { ProductType } from '../../pages/sales/types';
+import { ProductType } from '../../lib./../pages/sales/types';
 import { formatBalance } from '../../../utils/helper';
 
 interface ProductTableProps {

@@ -6,7 +6,7 @@ import { SearchInput } from '../../components/common/SearchInput';
 import { CustomerSection } from '../../components/sales/CustomerSection';
 import { ProductSearch } from '../../components/sales/ProductSearch';
 import { ProductTable } from '../../components/sales/ProductTable';
-import { Customer, Product } from '../../components/sales/mockData';
+import { Customer, Product } from '../../lib/mockData';
 import { DiscountSection } from '../../components/sales/DiscountSection';
 import { useNavigate } from 'react-router';
 import NavigationBack from '../../components/common/NavigationBack';
