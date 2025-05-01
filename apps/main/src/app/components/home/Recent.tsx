@@ -3,7 +3,7 @@ import CardWithFilter from '../common/CardWithFilter';
 import EmptyState from '../common/EmptyState';
 import MonthDateRange from '../common/filters/MonthDateRange';
 import { RecentSalesTable } from './table/RecentSalesTable';
-import { ordersData } from '../sales/mockData';
+import { ordersData } from '../../lib/mockData';
 const data = [];
 const Recent = () => {
   const [currentPage, setCurrentPage] = useState(1);

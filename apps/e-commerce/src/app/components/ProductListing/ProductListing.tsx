@@ -8,9 +8,9 @@ interface ProductCardProps {
     image: string;
     name: string;
     price: number;
-    discount: number;
-    rating: number;
-    icon: string;
+    discount?: number;
+    rating?: number;
+    icon?: string;
   };
 }
 

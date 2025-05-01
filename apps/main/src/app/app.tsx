@@ -19,6 +19,20 @@ import { OrderView } from './components/sales/view/OrderView';
 import SalesViewPage from './pages/sales/view';
 import PauseSales from './pages/sales/pause-sales';
 import SalesAnalytics from './pages/sales/analytics';
+import InventoryOutlet from './pages/inventory/inventory-outlet';
+import InventoryPage from './pages/inventory';
+import ProductsPage from './pages/inventory';
+import Inventories from './pages/inventory/inventories';
+import Inventory from './pages/inventory/inventories';
+import EditInventoryPage from './pages/inventory/editInventorybySearch';
+import EditInventoryById from './pages/inventory/editInventory';
+import TriggerReorder from './pages/inventory/triggerReorder';
+import CreateProductBySearch from './pages/inventory/createProductBySearch';
+import CreateProduct from './pages/inventory/createProduct';
+import PreviewPage from './pages/inventory/imagePreview';
+import ProductPreview from './pages/inventory/previewProduct';
+import ScanProductPage from './pages/inventory/barcodeProductAdd';
+import AddBulkProductPage from './pages/inventory/addBulkProduct';
 const App = () => {
   return (
     <Routes>
@@ -68,6 +82,31 @@ const App = () => {
         <Route path="pause" element={<PauseSales />} />
         <Route path="analytics" element={<SalesAnalytics />} />
       </Route>
+
+      <Route
+        path="pos/inventory"
+        element={
+          <ProtectedRoute>
+            <InventoryOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ProductsPage />} />
+        <Route path="inventories" element={<Inventory />} />
+        <Route path="edit" element={<EditInventoryPage />} />
+        <Route path="edit/:id" element={<EditInventoryById />} />
+        <Route path="trigger-reorder" element={<TriggerReorder />} />
+        <Route
+          path="create-product-by-search"
+          element={<CreateProductBySearch />}
+        />
+        <Route path="add-product" element={<CreateProduct />} />
+        <Route path="preview-page" element={<PreviewPage />} />
+        <Route path=" " element={<ProductPreview />} />
+        <Route path="scan-product" element={<ScanProductPage />} />
+        <Route path="add-bulk-product" element={<AddBulkProductPage/>} />
+      </Route>
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

@@ -3,7 +3,7 @@ import DisplayHeader from '../../components/common/DisplayHeader';
 import TimelineFilter from '../../components/common/filters/TimelineFilter';
 import { Divider } from 'antd';
 import TableWrapper from '../../components/common/Table/TableWrapper';
-import { ordersData } from '../../components/sales/mockData';
+import { ordersData } from '../../lib/mockData';
 import { OrdersTable } from '../../components/sales/table/salesTable';
 import NavigationBack from '../../components/common/NavigationBack';
 const PausedSales = () => {

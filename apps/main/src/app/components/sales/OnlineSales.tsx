@@ -6,7 +6,7 @@ import TableStats from '../common/TableStats';
 import { OrdersTable } from './table/salesTable';
 import { useState } from 'react';
 import TableWrapper from '../common/Table/TableWrapper';
-import { ordersData, tableStatsData } from './mockData';
+import { ordersData, tableStatsData } from '../../lib/mockData';
 import { SalesDataInterface } from './AllSales';
 import { SkeletonLoader } from '../common/SkeletonLoader';
 

@@ -24,7 +24,7 @@ export default function Detail() {
       </h1>
 
       <Link
-              className="text-blue-600 hover:underline mb-6 inline-block" to="#"     >
+              className="text-blue-600 hover:underline mb-6 inline-block" to="/vendor-store"     >
         Visit Builder&apos;s connect store
       </Link>
 
