@@ -224,7 +224,7 @@ const RegisterVendor = () => {
       <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
         <Form
           form={form}
-          className="flex flex-col w-full min-h-[600px]"
+          className="flex flex-col w-full min-h-[300px]"
           layout="horizontal"
           // onFinish={onFinish}
           labelCol={{ span: 6 }}

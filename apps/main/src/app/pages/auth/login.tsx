@@ -70,12 +70,12 @@ const Login = () => {
   };
 
   return (
-    <div className="max-w-4xl p-8 mx-auto bg-white rounded-sm min-h-[400px] space-y-5">
+    <div className="max-w-4xl p-8 mx-auto bg-white rounded-sm min-h-[350px] space-y-5">
       <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto space-y-5">
         <h1 className="text-2xl font-bold">Account Login</h1>
         <Form
           form={form}
-          className="flex flex-col w-full min-h-[400px]"
+          className="flex flex-col w-full min-h-[300px]"
           layout="horizontal"
           onFinish={onFinish}
           labelCol={{ span: 6 }}

@@ -26,13 +26,13 @@ const TableWrapper = ({ onSearch, children }: TableFiltersProps) => {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
-          <FilterDropdown
+          {/* <FilterDropdown
             // label="Filter by"
 
             options={periodOptions}
             value={selectedPeriod}
             onChange={setSelectedPeriod}
-          />
+          /> */}
           <SearchInput
             placeholder="Search with order no."
             onSearch={onSearch}

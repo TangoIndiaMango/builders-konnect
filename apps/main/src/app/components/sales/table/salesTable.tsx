@@ -126,6 +126,7 @@ export const OrdersTable = ({
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
+        scroll={{ x: '1000px' }}
       />
     </div>
   );

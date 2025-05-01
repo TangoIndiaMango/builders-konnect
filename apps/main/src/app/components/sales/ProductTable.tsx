@@ -89,6 +89,7 @@ export const ProductTable = ({
       columns={columns as any}
       showPagination={false}
       showCheckbox={true}
+      scroll={{ x: '1000px' }}
     />
   );
 };
