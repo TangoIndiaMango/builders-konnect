@@ -1,6 +1,6 @@
 import { Typography, Space } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-
+import { useState } from 'react';
 const { Text } = Typography;
 
 interface BusinessProfileProps {

@@ -51,15 +51,12 @@ const statsData = [
     icon: <DollarOutlined style={{ fontSize: 16 }} />,
   },
 ];
+
 const Product = () => {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       <div className="md:col-span-2">
-        <CardWithFilter
-          title="Product Overview"
-          // description="Create sales orders and track order sales and performance here"
-          rightSection={<FilterGroup />}
-        >
+        <CardWithFilter title="Product Overview" rightSection={<FilterGroup />}>
           {data?.length > 0 ? (
             <div className="space-y-5">
               <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
