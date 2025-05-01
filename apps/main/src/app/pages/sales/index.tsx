@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button, Tabs, TabsProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -17,30 +17,32 @@ const SalesHome = () => {
   const { data: sales, isLoading } = useGetSales({
     paginate: 1,
     limit: 10,
-    sales_type: 'pos',
+    sales_type: tab === 'all' ? '' : tab,
   });
 
   const onChange = (key: string) => {
     setTab(key);
   };
 
-  const items: TabsProps['items'] = [
+  const items: TabsProps['items'] = useMemo(() => [
     {
-      key: 'all-sales',
+      key: 'all',
       label: 'All Sales',
       children: <AllSales data={sales?.data} isLoading={isLoading} />,
     },
     {
-      key: 'online-sales',
+      key: 'mop',
       label: 'Online Sales',
       children: <OnlineSales data={sales?.data} isLoading={isLoading} />,
     },
     {
-      key: 'instore-sales',
+      key: 'pos',
       label: 'In-store Sales',
-      children: <InstoreSales data={sales?.data} isLoading={isLoading} />,
-    },
-  ];
+        children: <InstoreSales data={sales?.data} isLoading={isLoading} />,
+      },
+    ],
+    [sales, isLoading, tab],
+  );
 
   return (
     <div>

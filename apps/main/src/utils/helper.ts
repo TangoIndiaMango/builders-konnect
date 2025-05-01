@@ -12,6 +12,14 @@ export const getStatusColor = (status: string) => {
   return colorMap[status] || 'default';
 };
 
+export const getStatus = (status: string) => {
+  const colorMap: Record<string, string> = {
+    active: 'green',
+    inactive: 'red',
+  };
+  return colorMap[status] || 'default';
+};
+
 //To generate a currency format for a balance based on the user's locale
 export function formatBalance(balance: number | string, decimals = 2, fallbackCurrency = 'NGN') {
   const balanceNumber = typeof balance === 'string' ? parseFloat(balance) : balance;
