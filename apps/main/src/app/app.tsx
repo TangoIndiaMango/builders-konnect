@@ -19,6 +19,10 @@ import { OrderView } from './components/sales/view/OrderView';
 import SalesViewPage from './pages/sales/view';
 import PauseSales from './pages/sales/pause-sales';
 import SalesAnalytics from './pages/sales/analytics';
+import StaffOutlet from './pages/staff/outlet';
+import StaffHome from './pages/staff';
+import ViewStaffDetails from './pages/staff/view-staff';
+import AddRole from './pages/staff/add-role';
 const App = () => {
   return (
     <Routes>
@@ -67,6 +71,20 @@ const App = () => {
         <Route path="view/:id" element={<SalesViewPage />} />
         <Route path="pause" element={<PauseSales />} />
         <Route path="analytics" element={<SalesAnalytics />} />
+      </Route>
+
+      <Route
+        path="pos/staff"
+        element={
+          <ProtectedRoute>
+            <StaffOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<StaffHome />} />
+        <Route path="view/:id" element={<ViewStaffDetails />} />
+        <Route path="add-role" element={<AddRole />} />
+        <Route path="role/:id" element={<AddRole />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -9,6 +9,7 @@ import TableWrapper from '../common/Table/TableWrapper';
 import { ordersData, tableStatsData } from './mockData';
 import { SalesDataInterface } from './AllSales';
 import { SkeletonLoader } from '../common/SkeletonLoader';
+import { formatBalance } from '../../../utils/helper';
 
 // Filter data for different tabs
 export const completedOrders = ordersData.filter(
@@ -37,6 +38,33 @@ const InstoreSales = ({ data, isLoading }: { data: SalesDataInterface, isLoading
     setSearchQuery(value);
     // Implement your search logic here
   };
+
+  const tableStatsData = [
+    {
+      label: 'Total Sales',
+      value: `${data?.stats?.total_sales}`,
+      valueBgColor: '#E6F7FF',
+      valueColor: '#003399',
+    },
+    {
+      label: 'Total Sales Value',
+      value: `${formatBalance(data?.stats?.total_sales_value)}`,
+      valueBgColor: '#E6FFFB',
+      valueColor: '#08979C',
+    },
+    {
+      label: 'Online Sales',
+      value: `${formatBalance(data?.stats?.online_sales)}`,
+      valueBgColor: '#F9F0FF',
+      valueColor: '#722ED1',
+    },
+    {
+      label: 'Offline Saless',
+      value: `${formatBalance(data?.stats?.offline_sales)}`,
+      valueBgColor: '#FFFBE6',
+      valueColor: '#D48806',
+    },
+  ];
 
   return (
     <div className="space-y-3">

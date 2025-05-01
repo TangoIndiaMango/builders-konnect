@@ -1,4 +1,4 @@
-import { Typography, Space } from 'antd';
+import { Typography, Space, Button } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 const { Text } = Typography;
@@ -18,45 +18,47 @@ interface BusinessProfileProps {
 
 const BusinessProfile = ({ businessInfo }: BusinessProfileProps) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-      <div className="flex justify-between items-start mb-4">
-        <h3 className="text-lg font-semibold">BUSINESS PROFILE</h3>
-        <Text className="text-gray-500 text-sm">
+    <div className="p-6 mb-6 bg-white rounded-lg shadow-sm">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <h3 className="text-lg font-semibold">BUSINESS PROFILE</h3>
+        <Text className="text-sm text-gray-500">
           To edit your business profile, please contact{' '}
-          <a href="#" className="text-blue-600">support</a>
-        </Text>
+            <a href="#" className="text-blue-600">support</a>
+          </Text>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-x-24 gap-y-6">
         <div>
-          <Text className="text-gray-500 block mb-1">Business name</Text>
+          <Text className="block mb-1 text-gray-500">Business name</Text>
           <Text className="text-gray-900">{businessInfo.name}</Text>
         </div>
         <div>
-          <Text className="text-gray-500 block mb-1">Business email</Text>
+          <Text className="block mb-1 text-gray-500">Business email</Text>
           <Text className="text-gray-900">{businessInfo.email}</Text>
         </div>
         <div>
-          <Text className="text-gray-500 block mb-1">Business category</Text>
+          <Text className="block mb-1 text-gray-500">Business category</Text>
           <Text className="text-gray-900">{businessInfo.category}</Text>
         </div>
         <div>
-          <Text className="text-gray-500 block mb-1">Business type</Text>
+          <Text className="block mb-1 text-gray-500">Business type</Text>
           <Text className="text-gray-900">{businessInfo.type}</Text>
         </div>
         <div>
-          <Text className="text-gray-500 block mb-1">Business phone number</Text>
+          <Text className="block mb-1 text-gray-500">Business phone number</Text>
           <Text className="text-gray-900">{businessInfo.phone}</Text>
         </div>
         <div>
-          <Text className="text-gray-500 block mb-1">Vendor ID</Text>
+          <Text className="block mb-1 text-gray-500">Vendor ID</Text>
           <Space>
             <InfoCircleOutlined className="text-blue-600" />
             <Text className="text-gray-900">{businessInfo.vendorId}</Text>
           </Space>
         </div>
         <div className="col-span-2">
-          <Text className="text-gray-500 block mb-1">Business address</Text>
+          <Text className="block mb-1 text-gray-500">Business address</Text>
           <Text className="text-gray-900">
             {businessInfo.address}
             <br />
