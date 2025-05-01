@@ -102,7 +102,7 @@ const App = () => {
         />
         <Route path="add-product" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
-        <Route path="product-preview" element={<ProductPreview />} />
+        <Route path=" " element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage/>} />
       </Route>
