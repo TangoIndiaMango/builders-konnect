@@ -84,7 +84,10 @@ const RegisterVendor = () => {
         };
 
         setData({ ...payload });
-        const res = await validateBusinessState.mutateAsync(payload);
+        const res = await validateBusinessState.mutateAsync({
+          data: payload,
+          config: { tenant_id: false },
+        });
         setCurrentStep(currentStep + 1);
         notification.success({
           message: 'Business Details Saved',
@@ -102,7 +105,10 @@ const RegisterVendor = () => {
         };
 
         setData((prev: any) => ({ ...prev, ...payload }));
-        const res = await validateBankState.mutateAsync(payload);
+        const res = await validateBankState.mutateAsync({
+          data: payload,
+          config: { tenant_id: false },
+        });
         setCurrentStep(currentStep + 1);
         notification.success({
           message: 'Bank Details Saved',
@@ -184,7 +190,10 @@ const RegisterVendor = () => {
           : [],
       };
 
-      const res = await createVendorState.mutateAsync(payload);
+      const res = await createVendorState.mutateAsync({
+        data: payload,
+        config: { tenant_id: false },
+      });
       setConfirmModalOpen(false);
       setSuccessModalOpen(true);
       notification.success({
