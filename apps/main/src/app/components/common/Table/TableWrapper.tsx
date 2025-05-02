@@ -9,30 +9,33 @@ interface TableFiltersProps {
   onSearch: (value: string) => void;
   showTimeline?: boolean;
   children: React.ReactNode;
+  filterOptions?: any;
+  onFilterChange?: (value: string) => void;
+  selectedFilter?: string;
 }
 
-const TableWrapper = ({ onSearch, children }: TableFiltersProps) => {
-  const [selectedPeriod, setSelectedPeriod] = useState('this_month');
-
-  const periodOptions = [
-    { label: 'Last 7 days', value: 'last_seven_days' },
-    { label: 'This Month', value: 'this_month' },
-    { label: 'Last Month', value: 'last_month' },
-    { label: 'This Year', value: 'this_year' },
-    { label: 'Custom Range', value: 'custom' },
-  ];
-
+const TableWrapper = ({
+  onSearch,
+  children,
+  filterOptions,
+  onFilterChange,
+  selectedFilter,
+}: TableFiltersProps) => {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
-          {/* <FilterDropdown
+          <FilterDropdown
             // label="Filter by"
-
-            options={periodOptions}
-            value={selectedPeriod}
-            onChange={setSelectedPeriod}
-          /> */}
+            options={filterOptions}
+            value={selectedFilter || 'Filter by'}
+            onChange={
+              onFilterChange ||
+              (() => {
+                console.log('no filter change');
+              })
+            }
+          />
           <SearchInput
             placeholder="Search with order no."
             onSearch={onSearch}

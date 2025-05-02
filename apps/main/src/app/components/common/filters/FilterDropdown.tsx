@@ -24,11 +24,11 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  const activeOption = options.find((opt) => opt.value === value);
+  const activeOption = options?.find((opt) => opt.value === value);
 
   const content = (
     <div className="w-full py-1 md:w-40">
-      {options.map((option) => (
+      {options?.map((option) => (
         <div
           key={option.value}
           className={`px-4 py-2 cursor-pointer hover:bg-gray-50

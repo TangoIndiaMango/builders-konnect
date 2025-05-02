@@ -8,7 +8,7 @@ const ChangePassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const RecoverPasswordState = useCreateData('auth/forgot-password/recover');
+  const RecoverPasswordState = useCreateData('auth/signup/add-password');
   const { notification } = App.useApp();
 
   const token = searchParams.get('token');
@@ -35,9 +35,9 @@ const ChangePassword = () => {
       });
 
       notification.success({
-        message: 'Password Changed Successfully',
+        message: 'Password Added Successfully',
         description:
-          'Your password has been updated. You can now login with your new password.',
+          'Your password has been added. You can now login with your new password.',
         btn: (
           <Button
             type="primary"
@@ -68,7 +68,7 @@ const ChangePassword = () => {
   return (
     <div className="max-w-4xl p-8 mx-auto bg-white rounded-sm min-h-[400px] space-y-5">
       <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto space-y-5">
-        <h1 className="text-2xl font-bold">Change Password</h1>
+        <h1 className="text-2xl font-bold">Add Password</h1>
         <Form
           form={form}
           className="flex flex-col w-full min-h-[400px]"

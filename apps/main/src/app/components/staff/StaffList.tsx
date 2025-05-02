@@ -1,33 +1,37 @@
-import { useState } from "react";
-import { StaffListResponse } from "../../pages/staff/types";
-import DisplayHeader from "../common/DisplayHeader";
-import TimelineFilter from "../common/filters/TimelineFilter";
-import { SkeletonLoader } from "../common/SkeletonLoader";
-import TableWrapper from "../common/Table/TableWrapper";
-import TableStats from "../common/TableStats";
-import { StaffTable } from "./table/salesTable";
+import { useState } from 'react';
+import { StaffListResponse } from '../../pages/staff/types';
+import DisplayHeader from '../common/DisplayHeader';
+import TimelineFilter from '../common/filters/TimelineFilter';
+import { SkeletonLoader } from '../common/SkeletonLoader';
+import TableWrapper from '../common/Table/TableWrapper';
+import TableStats from '../common/TableStats';
+import { StaffTable } from './table/salesTable';
+import { Button } from 'antd';
 
 interface StaffListProps {
   data: StaffListResponse;
   isLoading: boolean;
+  currentPage: number;
+  handlePageChange: (page: number, pageSize: number) => void;
+  handleSearch: (value: string) => void;
+  handleDateFilterChange: (value: string) => void;
+  filterOptions: any;
+  handleFilterChange: (value: string) => void;
+  selectedFilter: string;
+  selectedDateFilter: string;
 }
-const StaffList = ({ data, isLoading }: StaffListProps) => {
-  console.log(isLoading);
-  const [currentPage, setCurrentPage] = useState(1);
-  // const [loading, setLoading] = useState(false);
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    // Handle pagination logic here
-  };
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (value: string) => {
-    console.log('Searching for:', value);
-    setSearchQuery(value);
-    // Implement your search logic here
-  };
+const StaffList = ({
+  data,
+  isLoading,
+  currentPage,
+  handlePageChange,
+  handleSearch,
+  handleDateFilterChange,
+  filterOptions,
+  handleFilterChange,
+  selectedFilter,
+  selectedDateFilter,
+}: StaffListProps) => {
   const tableStatsData = [
     {
       label: 'Total Staff',
@@ -54,7 +58,21 @@ const StaffList = ({ data, isLoading }: StaffListProps) => {
       <DisplayHeader
         title="All Staff"
         description="You're viewing all staff below."
-        actionButton={<TimelineFilter />}
+        actionButton={
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <Button
+              onClick={() => {
+                handleFilterChange('');
+              }}
+            >
+              Clear
+            </Button>
+            <TimelineFilter
+              onChange={handleDateFilterChange}
+              value={selectedDateFilter}
+            />
+          </div>
+        }
       />
 
       <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
@@ -71,7 +89,12 @@ const StaffList = ({ data, isLoading }: StaffListProps) => {
         </div>
       </SkeletonLoader>
 
-      <TableWrapper onSearch={handleSearch}>
+      <TableWrapper
+        onSearch={handleSearch}
+        filterOptions={filterOptions}
+        onFilterChange={handleFilterChange}
+        selectedFilter={selectedFilter}
+      >
         <StaffTable
           data={data?.data?.data}
           currentPage={currentPage}

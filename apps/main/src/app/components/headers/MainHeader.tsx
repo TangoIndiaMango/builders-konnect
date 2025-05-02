@@ -54,7 +54,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
           )}
 
           <div className="flex items-center max-w-full gap-2">
-            <h2 className="text-base font-medium text-gray-800 truncate ">
+            <h2 className="text-base font-medium text-gray-800">
               {storeName}
             </h2>
             <Tag className="inline-flex items-center flex-shrink-0 text-xs text-sky-700 bg-sky-50 border border-sky-200 px-3 py-0.5 rounded-full">
@@ -75,7 +75,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
             size="default"
             style={{ backgroundColor: '#87d068' }}
           />
-          <span className="text-sm font-medium text-gray-700">{userName}</span>
+          <span className="hidden text-sm font-medium text-gray-700 md:block">{userName}</span>
           <DownOutlined className="text-xs text-gray-500" />
         </div>
       </div>

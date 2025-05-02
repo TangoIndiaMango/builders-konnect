@@ -5,7 +5,9 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 export const useCreateData = (url: string) => {
   const mutation = useMutation({
     mutationFn: async (arg: any) => {
-      const response = await axiosInstance.post(baseUrl + url, arg);
+      const { data, config } =
+        arg && arg.data !== undefined ? arg : { data: arg, config: {} };
+      const response = await axiosInstance.post(baseUrl + url, data, config);
       return response.data;
     },
   });

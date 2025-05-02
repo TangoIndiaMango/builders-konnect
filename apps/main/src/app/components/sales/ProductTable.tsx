@@ -3,19 +3,23 @@ import { Avatar, Button, Input } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { ProductType } from '../../lib./../pages/sales/types';
 import { formatBalance } from '../../../utils/helper';
+import ActionIcon from '../common/ActionIcon';
+import { DiscountIcon } from '../../lib/CustomIcon';
 
 interface ProductTableProps {
   products: ProductType[];
   onQuantityChange: (key: string, quantity: number) => void;
   onRemove: (key: string) => void;
+  handleDiscountClick: () => void;
 }
 
 export const ProductTable = ({
   products,
   onQuantityChange,
   onRemove,
+  handleDiscountClick,
 }: ProductTableProps) => {
-  console.log(products);
+  // console.log(products);
   const columns = [
     {
       title: 'Product Name & Number',
@@ -73,12 +77,19 @@ export const ProductTable = ({
       title: 'Action',
       key: 'action',
       render: (_: any, record: ProductType) => (
-        <Button
-          type="text"
-          icon={<DeleteOutlined />}
-          className="text-red-500"
-          onClick={() => onRemove(record.id)}
-        />
+        <div className="flex items-center gap-2">
+          <ActionIcon
+            variant="light"
+            icon={<DiscountIcon />}
+            onClick={handleDiscountClick}
+          />
+          <ActionIcon
+            variant="subtle"
+            icon={<DeleteOutlined />}
+            className="text-red-500"
+            onClick={() => onRemove(record.id)}
+          />
+        </div>
       ),
     },
   ];

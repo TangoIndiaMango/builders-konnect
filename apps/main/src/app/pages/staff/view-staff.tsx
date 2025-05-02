@@ -18,40 +18,36 @@ const ViewStaffDetails = () => {
   const updateStaffStatus = usePutData(`merchants/staff/${id}`);
 
   const mockStaffData: any = {
-    id: '2381614',
-    name: 'Adeboyega Boyega',
-    email: 'buildershub@gmail.com',
-    phone: '(+234) 80 2424 24212',
-    role: 'Sales Representative',
-    subsidiary: 'Lagos',
-    houseAddress: '23 Ozumba Mbadiwe, Victoria Island, Lagos State',
-    lastActive: '2025-01-25T09:00:00',
-    status: 'Active',
+    id: getStaff?.data?.data?.id,
+    name: getStaff?.data?.data?.name,
+    email: getStaff?.data?.data?.email,
+    phone: getStaff?.data?.data?.phone,
+    role: getStaff?.data?.data?.role,
+    subsidiary: getStaff?.data?.data?.subsidiary || '--',
+    houseAddress: getStaff?.data?.data?.houseAddress || '--',
+    lastActive: getStaff?.data?.data?.last_active,
+    status: getStaff?.data?.data?.status || '--',
   };
 
   const [status, setStatus] = React.useState<'Active' | 'Inactive'>(
     mockStaffData.status
   );
-  const [isStatusLoading, setIsStatusLoading] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
 
   const handleChangeStatus = (newStatus: 'Active' | 'Inactive') => {
     if (newStatus === status) return;
-    setIsStatusLoading(true);
     updateStaffStatus.mutate(
-      { status: newStatus },
+      { is_active: newStatus === 'Active' ? true : false },
       {
         onSuccess: () => {
           setStatus(newStatus);
-          setIsStatusLoading(false);
+          getStaff.refetch();
           setIsSuccess(true);
         },
         onError: () => {
-          setIsStatusLoading(false);
           setIsSuccess(false);
         },
         onSettled: () => {
-          setIsStatusLoading(false);
           setIsSuccess(true);
         },
       }
@@ -72,7 +68,7 @@ const ViewStaffDetails = () => {
           <ChangeStatusDropdown
             currentStatus={status}
             onChange={handleChangeStatus}
-            loading={isStatusLoading}
+            loading={updateStaffStatus.isLoading}
           />
         </div>
       </div>
