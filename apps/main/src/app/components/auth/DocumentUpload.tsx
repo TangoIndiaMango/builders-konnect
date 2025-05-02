@@ -45,7 +45,7 @@ const DocumentUpload = () => {
           },
         ]}
       >
-        <Input placeholder="Enter registration number" maxLength={8} />
+        <Input placeholder="Enter CAC number e.g (RNXXXXXXX or BNXXXXXXX)" maxLength={8} />
       </Form.Item>
 
       <Form.Item
@@ -74,7 +74,7 @@ const DocumentUpload = () => {
           { required: true, message: 'Please enter TIN', min: 8, max: 16 },
         ]}
       >
-        <Input placeholder="Enter tax identification number" />
+        <Input placeholder="Enter TIN number e.g (XXXXXXXXXX or XXXXXXXX-XXXX)" />
       </Form.Item>
 
       <Form.Item
