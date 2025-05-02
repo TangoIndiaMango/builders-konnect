@@ -37,6 +37,7 @@ import PreviewPage from './pages/inventory/imagePreview';
 import ProductPreview from './pages/inventory/previewProduct';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
+import AddStaffPassword from './pages/auth/add-staff-password';
 const App = () => {
   return (
     <Routes>
@@ -48,6 +49,7 @@ const App = () => {
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="change-password" element={<ChangePassword />} />
         <Route path="multiple-accounts" element={<MultipleAccounts />} />
+        <Route path="add-staff-password" element={<AddStaffPassword />} />
       </Route>
 
       <Route

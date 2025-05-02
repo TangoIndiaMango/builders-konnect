@@ -35,12 +35,14 @@ export const StaffProfileHeader: React.FC<{ staff: StaffDetailsProps }> = ({ sta
 
         {/* Staff Info */}
         <div className="flex-1">
-          <Tag color={staff.status === 'Active' ? 'success' : 'error'} className="">
+          <Tag color={staff.status.toLowerCase() === 'active' ? 'success' : 'error'} className="capitalize">
               {staff.status}
             </Tag>
           <div className="flex items-center gap-3">
-            <h2 className="m-0 text-2xl font-semibold">{staff.name}</h2>
-            <span className="text-blue-600">#{staff.id}</span>
+            <h2 className="m-0 text-2xl font-semibold capitalize">{staff.name}</h2>
+            <Tag className="inline-flex items-center flex-shrink-0 text-xs text-sky-700 bg-sky-50 border border-sky-200 px-3 py-0.5 rounded-full capitalize">
+              #{staff.id}
+            </Tag>
           </div>
 
           {/* Contact Details */}
@@ -89,7 +91,7 @@ export const StaffInformation: React.FC<{ staff: StaffDetailsProps }> = ({ staff
         {infoItems.map((item, index) => (
           <div key={index}>
             <div className="mb-1 text-sm text-gray-500">{item.label}</div>
-            <div className="font-medium">{item.value}</div>
+            <div className="font-medium capitalize">{item.value}</div>
           </div>
         ))}
       </div>

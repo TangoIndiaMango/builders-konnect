@@ -15,8 +15,23 @@ import RolesAndPermission from '../../components/staff/RolesAndPermission';
 import StaffList from '../../components/staff/StaffList';
 import { Roles, Staff, StaffListResponse, Stores } from './types';
 import { PaginatedResponse } from '../../types/paginatedData';
+/**
+ * paginate
+1
 
+limit
+status
+active, inactive
 
+date_filter
+Today, 3 days, 7 days, 14 days, this month, 3 months, this year, 2025, 2025-03-01|2025-03-31
+
+sort_by
+alphabetically, date_ascending, date_descending
+
+export
+csv
+ */
 export interface Role {
   id: number;
   name: string;
@@ -26,20 +41,50 @@ export interface Role {
 const StaffHome = () => {
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [status, setStatus] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+  const [sortBy, setSortBy] = useState('');
+
+  const filterOptions = [
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' },
+  ];
+
+  const handlePageChange = (page: number, pageSize: number) => {
+    setCurrentPage(page);
+  };
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
+  };
+
+  const handleFilterChange = (value: string) => {
+    setStatus(value);
+  };
+
+  const handleDateFilterChange = (value: string) => {
+    setDateFilter(value);
+  };
+
+  const handleSortByChange = (value: string) => {
+    setSortBy(value);
+  };
+
   const [tab, setTab] = useState('staff');
-  const staff = useFetchData('merchants/staff?paginate=1');
+  const staff = useFetchData(
+    `merchants/staff?paginate=1&page=${currentPage}&status=${status}&date_filter=${dateFilter}&sort_by=${sortBy}&q=${searchQuery}`
+  );
   const stores = useFetchData('merchants/locations?q&sort_by=alphabetically');
   const roles = useFetchData('merchants/roles?q&sort_by=alphabetically');
   const createStaff = useCreateData('merchants/staff');
   const updateStaff = usePutData(`merchants/staff/`);
 
-
-    const [search, setSearch] = useState('');
-    const {
-      data: rolesFetch,
-      isLoading,
-      refetch,
-    } = useFetchData('merchants/roles?paginate=1');
+  const {
+    data: rolesFetch,
+    isLoading,
+    refetch,
+  } = useFetchData('merchants/roles?paginate=1');
 
   const rolesData = rolesFetch?.data as PaginatedResponse<Role>;
 
@@ -64,7 +109,7 @@ const StaffHome = () => {
         {
           ...values,
           callback_url:
-            'https://builders-konnect-app.netlify.app/auth/create-password',
+            'https://builders-konnect-app.netlify.app/auth/add-staff-password',
         },
         {
           onSuccess: () => {
@@ -118,12 +163,31 @@ const StaffHome = () => {
       {
         key: 'staff',
         label: 'Staff',
-        children: <StaffList data={staffListResponse} isLoading={staff?.isLoading} />,
+        children: (
+          <StaffList
+            data={staffListResponse}
+            isLoading={staff?.isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            handleSearch={handleSearch}
+            handleFilterChange={handleFilterChange}
+            filterOptions={filterOptions}
+            selectedFilter={status}
+            handleDateFilterChange={handleDateFilterChange}
+            selectedDateFilter={dateFilter}
+          />
+        ),
       },
       {
         key: 'roles',
         label: 'Roles and Permissions',
-        children: <RolesAndPermission rolesData={rolesData} isLoading={isLoading} refetch={refetch} />,
+        children: (
+          <RolesAndPermission
+            rolesData={rolesData}
+            isLoading={isLoading}
+            refetch={refetch}
+          />
+        ),
       },
     ],
     [tab, rolesData, staff, refetch]

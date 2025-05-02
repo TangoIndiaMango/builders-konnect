@@ -13,7 +13,7 @@ import SubHeaderTabs from '../components/headers/SubHeaderTabs';
 import { currentNavigationAtom, NavigationType } from '../store/navigation';
 import { useAtom } from 'jotai';
 import type { MenuProps } from 'antd';
-
+import { useSessionStorage } from '../../hooks/useSessionStorage';
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -25,6 +25,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const [currentNavigation] = useAtom(currentNavigationAtom);
   const navigate = useNavigate();
   const location = useLocation(); // 👈 Get current route
+  const { user } = useSessionStorage();
 
   const toggleSidebar = () => {
     if (!screens.md) {
@@ -71,8 +72,8 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   // 👇 Helper to find the key based on current location path
   const findActiveKey = (items: MenuProps['items'], path: string): string | undefined => {
     for (const item of items || []) {
-      if ('href' in item && item.href === path) return item.key as string;
-      if (item?.children) {
+      if (item && 'href' in item && item.href === path) return item.key as string;
+      if (item && 'children' in item && item.children) {
         const found = findActiveKey(item.children, path);
         if (found) return found;
       }
@@ -118,7 +119,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
         }}
         className="!bg-white h-screen"
       >
-        <div className="logo p-5 text-center">
+        <div className="p-5 text-center logo">
           <Image src={sidebar_logo} alt="logo" preview={false} />
         </div>
 
@@ -144,6 +145,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
             collapsed={collapsed}
             showMobileSidebar={showMobileSidebar}
             toggleSidebar={toggleSidebar}
+            userName={user?.name}
           />
           <SubHeaderTabs />
         </div>
