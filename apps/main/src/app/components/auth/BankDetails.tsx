@@ -80,7 +80,15 @@ const BankDetails = ({ form }: { form: FormInstance<any> }) => {
       <Form.Item
         label="Account Number"
         name="accountNumber"
-        rules={[{ required: true, message: 'Please enter account number' }]}
+        rules={[{ required: true, message: 'Please enter account number',
+          validator(rule, value, callback) {
+            if (value && value.toString().length !== 10) {
+              callback('Account number is invalid');
+            }
+            callback();
+          },
+        },
+        ]}
       >
         <NumericInput
           placeholder="Enter account number"
