@@ -1,4 +1,4 @@
-import { CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BarcodeScannerComponent from 'react-qr-barcode-scanner';
@@ -55,9 +55,10 @@ export default function ScanProductPage() {
         </ol>
       </div>
 
-      <div className="rounded overflow-hidden border border-gray-300 bg-black w-full max-w-3xl mx-auto">
+      <div className="rounded overflow-hidden border border-gray-300 bg-black w-full max-w-3xl mx-auto mb-6">
         <BarcodeScannerComponent onUpdate={handleScan} />
       </div>
+
       <Modal
         title="Product Not Found"
         visible={isModalVisible}
@@ -68,6 +69,7 @@ export default function ScanProductPage() {
             onClick={handleModalCancel}
             className="ant-btn ant-btn-default"
           >
+            <CloseOutlined className="mr-2" />
             Cancel
           </button>,
           <button
@@ -75,6 +77,7 @@ export default function ScanProductPage() {
             onClick={handleAddNewProduct}
             className="ant-btn ant-btn-primary"
           >
+            <PlusOutlined className="mr-2" />
             Add New Product
           </button>,
         ]}
