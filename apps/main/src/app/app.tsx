@@ -38,6 +38,9 @@ import ProductPreview from './pages/inventory/previewProduct';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
 import AddStaffPassword from './pages/auth/add-staff-password';
+import DiscountOutlet from './pages/discount/outlet';
+import DiscountHome from './pages/discount';
+import DiscountCreate from './pages/discount/create';
 const App = () => {
   return (
     <Routes>
@@ -125,6 +128,19 @@ const App = () => {
         <Route path=" " element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage/>} />
+      </Route>
+
+      <Route
+        path="pos/discounts"
+        element={
+          <ProtectedRoute>
+            <DiscountOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<DiscountHome />} />
+        <Route path="create" element={<DiscountCreate />} />
+        <Route path="edit/:id" element={<DiscountCreate />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

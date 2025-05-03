@@ -34,7 +34,10 @@ const BankDetails = ({ form }: { form: FormInstance<any> }) => {
         account_number: value,
         bank_id: bankId,
       };
-      const res = await VerifyAccountState.mutateAsync(payload);
+      const res = await VerifyAccountState.mutateAsync({
+        data: payload,
+        config: { tenant_id: false },
+      });
 
       form.setFieldsValue({
         accountName: res?.data?.account_name,
@@ -71,7 +74,9 @@ const BankDetails = ({ form }: { form: FormInstance<any> }) => {
           }))}
           showSearch
           filterOption={(input, option) =>
-            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label?.toString() ?? '')
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
           onChange={handleBankChange}
         />
@@ -80,14 +85,17 @@ const BankDetails = ({ form }: { form: FormInstance<any> }) => {
       <Form.Item
         label="Account Number"
         name="accountNumber"
-        rules={[{ required: true, message: 'Please enter account number',
-          validator(rule, value, callback) {
-            if (value && value.toString().length !== 10) {
-              callback('Account number is invalid');
-            }
-            callback();
+        rules={[
+          {
+            required: true,
+            message: 'Please enter account number',
+            validator(rule, value, callback) {
+              if (value && value.toString().length !== 10) {
+                callback('Account number is invalid');
+              }
+              callback();
+            },
           },
-        },
         ]}
       >
         <NumericInput

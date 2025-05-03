@@ -6,6 +6,8 @@ import WelcomeSection from '../../components/profile/WelcomeSection';
 import BusinessProfile from '../../components/profile/BusinessProfile';
 import FinanceSection from '../../components/profile/FinanceSection';
 import DocumentsSection from '../../components/profile/DocumentsSection';
+import { useFetchData } from '../../../hooks/useApis';
+import { useSessionStorage } from '../../../hooks/useSessionStorage';
 
 const businessInfo = {
   name: "Builder's Hub Construction",
@@ -40,13 +42,17 @@ const ProfilePage: React.FC = () => {
   const onChange = (key: string) => {
     console.log('Selected tab:', key);
   };
+  const {user} = useSessionStorage()
+
+  const profileData = useFetchData(`merchants/profile/view`)
+  console.log(profileData)
 
   const items: TabsProps['items'] = [
     {
       key: 'profile',
       label: 'Profile Information',
       children: (
-        <div className="space-y-6 py-6">
+        <div className="py-6 space-y-6">
           <WelcomeSection />
           <BusinessProfile businessInfo={businessInfo} />
           <FinanceSection financeInfo={financeInfo} />
@@ -72,18 +78,18 @@ const ProfilePage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="bg-white px-6 py-4 flex justify-between items-center border-b">
+    <div className="min-h-screen bg-gray-100">
+      <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
         <div>
           <h1 className="text-2xl font-semibold">My Profile</h1>
-          <p className="text-gray-500 text-sm">Track and measure store performance and analytics here</p>
+          <p className="text-sm text-gray-500">Track and measure store performance and analytics here</p>
         </div>
         <Button type="default">View Storefront</Button>
       </div>
 
       {/* Tabs */}
       <div className="px-6 py-6">
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="p-6 bg-white rounded-lg shadow-sm">
           <Tabs
             defaultActiveKey="profile"
             items={items}

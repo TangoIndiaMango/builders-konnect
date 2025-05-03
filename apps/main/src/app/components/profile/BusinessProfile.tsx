@@ -18,7 +18,7 @@ interface BusinessProfileProps {
 
 const BusinessProfile = ({ businessInfo }: BusinessProfileProps) => {
   return (
-    <div className="p-6 mb-6 bg-white rounded-lg shadow-sm">
+    <div className="grid grid-cols-2 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold">BUSINESS PROFILE</h3>
