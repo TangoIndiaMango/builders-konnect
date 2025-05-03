@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import CardWithFilter from '../../common/CardWithFilter';
 import FilterDropdown from '../../common/filters/FilterDropdown';
 import ReturnRateChart from './chart/ReturnRate';
+import { useFetchData } from '../../../../hooks/useApis';
+
 
 const ReturnRate = () => {
   const [selectedStore, setSelectedStore] = useState<string>('all');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('this_month');
+
+  const returnRate = useFetchData(`merchants/sales-orders/analytics/returns-rate`)
+  const returnRateStats = returnRate?.data?.data
 
   const storeOptions = [
     { label: 'All orders', value: 'all' },

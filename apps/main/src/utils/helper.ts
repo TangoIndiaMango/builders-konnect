@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 
 export const getStatusColor = (status: string) => {
   const colorMap: Record<string, string> = {
@@ -20,6 +21,11 @@ export const getStatus = (status: string) => {
   return colorMap[status] || 'default';
 };
 
+export const parseDate = (date: any) => {
+  if (!date) return null;
+  if (dayjs.isDayjs(date)) return date;
+  return dayjs(date);
+};
 //To generate a currency format for a balance based on the user's locale
 export function formatBalance(balance: number | string, decimals = 2, fallbackCurrency = 'NGN') {
   const balanceNumber = typeof balance === 'string' ? parseFloat(balance) : balance;

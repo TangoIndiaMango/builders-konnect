@@ -2,6 +2,7 @@ import React from 'react';
 import { Column as RawColumn, ColumnConfig } from '@ant-design/plots';
 import { Divider, Typography } from 'antd';
 import useResizeContainer from '../../../../../hooks/useResizeContainer';
+import { Revenue } from '../RevenueAnalytics';
 
 const Column = RawColumn as unknown as React.FC<ColumnConfig>;
 const { Text } = Typography;
@@ -12,10 +13,10 @@ interface SalesData {
   type: 'Online Sales' | 'Offline Sales';
 }
 
-const RevenueAnalyticsChart = () => {
+const RevenueAnalyticsChart = ({ data }: { data: Revenue[] }) => {
   const { containerRef, containerWidth } = useResizeContainer();
 
-  const data: SalesData[] = [
+  const dataDummy: SalesData[] = [
     // April
     { date: 'Apr 4', type: 'Online Sales', value: 800 },
     { date: 'Apr 4', type: 'Offline Sales', value: 1200 },
@@ -66,10 +67,11 @@ const RevenueAnalyticsChart = () => {
     { date: 'Aug 5', type: 'Offline Sales', value: 1200 },
   ];
 
+  const testData = data?.slice(0, 5)
   const config: ColumnConfig = {
-    data,
-    xField: 'date',
-    yField: 'value',
+    data: testData,
+    xField: 'period',
+    yField: ['online', 'offline'],
     colorField: 'type',
     stack: true,
     height: 400,

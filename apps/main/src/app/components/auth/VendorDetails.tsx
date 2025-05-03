@@ -45,6 +45,7 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
         rules={[{ required: true, message: 'Please select business category' }]}
       >
         <Select
+          // mode="multiple"
           placeholder="Select business category"
           loading={BusinessCategoryState.isLoading}
           options={BusinessCategoryState?.data?.data?.map((b: any) => ({

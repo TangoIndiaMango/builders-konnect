@@ -1,4 +1,4 @@
-import { Modal, Button, Input, Form } from 'antd';
+import { Modal, Button, Input, Form, FormInstance } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { paymentMethodInterface } from '../../pages/sales/create';
 import { formatBalance } from '../../../utils/helper';
@@ -12,6 +12,7 @@ interface PaymentAmountModalProps {
   totalAmount: number;
   onConfirmPayments: (payments: { methodId: string; amount: number; balance: number }[]) => void;
   isLoading: boolean;
+  form: FormInstance<any>
 }
 
 const PaymentAmountModal: React.FC<PaymentAmountModalProps> = ({
@@ -22,8 +23,9 @@ const PaymentAmountModal: React.FC<PaymentAmountModalProps> = ({
   totalAmount,
   onConfirmPayments,
   isLoading,
+  form
 }) => {
-  const [form] = Form.useForm();
+
 
   // Watch the entire form values instead of individual fields
   const formValues = Form.useWatch([], form);

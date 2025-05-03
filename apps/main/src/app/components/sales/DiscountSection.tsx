@@ -18,7 +18,7 @@ export const DiscountSection = ({
   //   (d) => d.value === selectedDiscount
   // );
 
-  const discountOptions = discountData?.map((discount) => ({
+  const discountOptions = discountData?.length > 0 ? discountData?.map((discount) => ({
     label: (
       <div className="flex flex-col py-1">
         <p className="font-medium">{discount?.name}</p>
@@ -31,7 +31,7 @@ export const DiscountSection = ({
     value: discount?.id,
     discount: discount,
     name: discount?.name,
-  }));
+  })) : [];
 
   return (
     <Select
