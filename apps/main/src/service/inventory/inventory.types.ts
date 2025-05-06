@@ -23,6 +23,7 @@ export interface ProductData {
   primary_media_url: string;
   media: string[];
   status: string;
+  date_added: string;
 }
 
 export interface ProductStats {
