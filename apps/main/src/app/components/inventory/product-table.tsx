@@ -1,4 +1,4 @@
-import { Tag, Button, Dropdown } from 'antd';
+import { Tag, Button, Dropdown, Avatar } from 'antd';
 import type { MenuProps } from 'antd';
 import { PaginatedTable } from '../common/Table/Table';
 import { useSelection } from '../../../hooks/useSelection';
@@ -6,6 +6,8 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table'; // important!
 
 import type { ProductData as APIProductData } from '../../../service/inventory/inventory.types';
+import { formatBalance } from '../../../utils/helper';
+import dayjs from 'dayjs';
 
 export type ProductTableData = APIProductData & { key: string };
 
@@ -15,6 +17,7 @@ interface ProductTableProps {
   onPageChange: (page: number, pageSize: number) => void;
   loading: boolean;
   total: number;
+  per_page: number;
   showCheckbox?: boolean;
 }
 
@@ -24,11 +27,13 @@ export const ProductTable = ({
   onPageChange,
   loading,
   total,
+  per_page,
   showCheckbox = true,
 }: ProductTableProps) => {
-  const { rowSelection, selectedRowKeys, resetSelection } = useSelection<ProductTableData>({
-    data,
-  });
+  const { rowSelection, selectedRowKeys, resetSelection } =
+    useSelection<ProductTableData>({
+      data,
+    });
 
   const actionItems: MenuProps['items'] = [
     { key: '1', label: 'Edit' },
@@ -43,10 +48,18 @@ export const ProductTable = ({
       width: 250,
       render: (_, record) => (
         <div className="flex items-center gap-2">
-          <img
-            src={record.primary_media_url || '/placeholder-image.jpg'}
+          <Avatar
+            shape="square"
+            src={
+              record.primary_media_url
+                ? record.primary_media_url
+                : `https://placehold.co/150x150/E6F7FF/black?text=${record.name
+                    ?.split(' ')
+                    .map((word) => word[0])
+                    .join('')}`
+            }
             alt={record.name}
-            className="w-10 h-10 rounded-lg object-cover"
+            className="object-cover w-10 h-10 rounded-lg"
           />
           <div>
             <div className="font-medium truncate max-w-[150px]">
@@ -64,16 +77,19 @@ export const ProductTable = ({
       dataIndex: 'SKU',
       key: 'SKU',
       width: 150,
-      className: 'hidden sm:table-cell', // Hide SKU on small screens
+      className: 'hidden sm:table-cell',
+      render: (_, record) => <span>#{record.SKU || 'No SKU'}</span>,
     },
     {
-      title: 'Category',
-      key: 'category',
+      title: 'Date Added',
+      key: 'date_added',
       width: 180,
       render: (_, record) => (
         <div>
-          <div>{record.category || 'Uncategorized'}</div>
-          <div className="text-sm text-gray-500">{record.subcategory || 'No subcategory'}</div>
+          <div>{dayjs(record.date_added).format('DD MMM YYYY')}</div>
+          <div className="text-xs text-gray-500">
+            {dayjs(record.date_added).format('hh:mm A')}
+          </div>
         </div>
       ),
     },
@@ -81,7 +97,7 @@ export const ProductTable = ({
       title: 'Price',
       key: 'price',
       width: 120,
-      render: (_, record) => <span>₦ {parseFloat(record.retail_price).toLocaleString()}</span>,
+      render: (_, record) => <span>{formatBalance(record.retail_price)}</span>,
     },
     {
       title: 'Stock Level',
@@ -96,16 +112,23 @@ export const ProductTable = ({
           >
             {record.quantity}
           </span>{' '}
-          Left
+          left
         </p>
       ),
     },
     {
-      title: 'Type',
-      key: 'product_type',
+      title: 'Status',
+      key: 'status',
       width: 130,
       render: (_, record) => {
-        return <Tag color="default">{record.product_type || 'No type'}</Tag>;
+        return (
+          <Tag
+            color={record.status === 'active' ? 'green' : 'red'}
+            className="capitalize"
+          >
+            {record.status || 'No status'}
+          </Tag>
+        );
       },
     },
     {
@@ -137,7 +160,7 @@ export const ProductTable = ({
         total={total}
         showCheckbox={showCheckbox}
         striped
-        pageSize={10}
+        pageSize={per_page}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}

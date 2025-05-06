@@ -22,6 +22,8 @@ export interface ProductData {
   reorder_value: string | null;
   primary_media_url: string;
   media: string[];
+  status: string;
+  date_added: string;
 }
 
 export interface ProductStats {
@@ -38,6 +40,7 @@ export interface ProductResponse {
     data: {
       current_page: number;
       data: ProductData[];
+      per_page: number;
     };
   };
 }
