@@ -22,7 +22,7 @@ const ProductsPage = () => {
   const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState('7 days');
-
+  const [perPage, setPerPage] = useState(10);
   const menu = (
     <Menu
       items={[
@@ -47,8 +47,8 @@ const ProductsPage = () => {
   const fetchProducts = async (page = 1, search?: string, exportType?: 'csv' | 'pdf') => {
     try {
       setLoading(true);
-      const response = await getInventoryProducts({ 
-        paginate: page, 
+      const response = await getInventoryProducts({
+        paginate: page,
         q: search,
         date_filter: dateFilter,
         export: exportType
@@ -57,6 +57,7 @@ const ProductsPage = () => {
       setProducts(productsWithKey);
       setStats(response.data.stats);
       setTotal(parseInt(response.data.stats.total_products));
+      setPerPage(response.data.data.per_page);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -66,10 +67,10 @@ const ProductsPage = () => {
 
   const handlePageChange = (page: number, pageSize: number) => {
     setCurrentPage(page);
+    setPerPage(pageSize);
   };
 
   const handleSearch = (value: string) => {
-    setCurrentPage(1);
     setSearchQuery(value);
   };
 
@@ -81,10 +82,10 @@ const ProductsPage = () => {
 
   return (
     <div className="h-full">
-      <div className="flex justify-between items-center bg-white mb-2 p-6">
+      <div className="flex items-center justify-between p-6 mb-2 bg-white">
         <div>
           <h1 className="text-2xl font-semibold">Products and Inventory</h1>
-          <p className="text-gray-500 text-sm">
+          <p className="text-sm text-gray-500">
             Add products, track product performance and inventory here
           </p>
         </div>
@@ -111,7 +112,7 @@ const ProductsPage = () => {
         </div>
       </div>
 
-      <div className="space-y-3 bg-white p-10">
+      <div className="p-10 space-y-3 bg-white">
         <DisplayHeader
           title="All Products"
           description="You're viewing all products below."
@@ -144,6 +145,7 @@ const ProductsPage = () => {
               loading={loading}
               showCheckbox={true}
               total={total}
+              per_page={perPage}
             />
           )}
         </TableWrapper>
