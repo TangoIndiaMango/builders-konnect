@@ -1,42 +1,32 @@
-import React from 'react';
 import { Divider } from 'antd';
+import { useState } from 'react';
+import { formatBalance } from '../../../utils/helper';
+import { FilterOption } from '../../store/table';
 import DisplayHeader from '../common/DisplayHeader';
 import TimelineFilter from '../common/filters/TimelineFilter';
-import TableStats from '../common/TableStats';
-import { OrdersTable } from './table/salesTable';
-import { useState } from 'react';
-import TableWrapper from '../common/Table/TableWrapper';
-import { ordersData, tableStatsData } from '../../lib/mockData';
-import { SalesDataInterface } from './AllSales';
 import { SkeletonLoader } from '../common/SkeletonLoader';
-import { formatBalance } from '../../../utils/helper';
+import TableWrapper from '../common/Table/TableWrapper';
+import TableStats from '../common/TableStats';
+import { SalesDataInterface } from './AllSales';
+import { OrdersTable } from './table/salesTable';
 
-// Filter data for different tabs
-export const completedOrders = ordersData.filter(
-  (order) => order.orderStatus === 'Completed'
-);
-export const processingOrders = ordersData.filter(
-  (order) => order.orderStatus === 'Processing'
-);
-export const cancelledOrders = ordersData.filter(
-  (order) => order.orderStatus === 'Cancelled'
-);
+export interface SalesProps {
+  data: SalesDataInterface;
+  isLoading: boolean;
+  setSearchTerm: (searchTerm: string) => void;
+  periodFilter: string;
+  setPeriodFilter: (periodFilter: string) => void;
+  reset: () => void;
+  periodOptions: FilterOption[];
+}
 
-const InstoreSales = ({ data, isLoading }: { data: SalesDataInterface, isLoading: boolean }) => {
+const InstoreSales = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodFilter, reset, periodOptions }: SalesProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+
 
   const handlePageChange = (page: number, pageSize: number) => {
     setCurrentPage(page);
     // Handle pagination logic here
-  };
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (value: string) => {
-    console.log('Searching for:', value);
-    setSearchQuery(value);
-    // Implement your search logic here
   };
 
   const tableStatsData = [
@@ -71,7 +61,7 @@ const InstoreSales = ({ data, isLoading }: { data: SalesDataInterface, isLoading
       <DisplayHeader
         title="In-store Sales"
         description="You're viewing all sales order below."
-        actionButton={<TimelineFilter />}
+        actionButton={<TimelineFilter value={periodFilter} onChange={setPeriodFilter} options={periodOptions} />}
       />
 
       <SkeletonLoader active={isLoading} type="table" columns={4} rows={1} >
@@ -89,7 +79,7 @@ const InstoreSales = ({ data, isLoading }: { data: SalesDataInterface, isLoading
       </SkeletonLoader>
       <Divider />
 
-      <TableWrapper onSearch={handleSearch}>
+      <TableWrapper onSearch={setSearchTerm}>
         <OrdersTable
           data={data?.data?.data}
           currentPage={currentPage}

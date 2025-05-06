@@ -41,6 +41,7 @@ import AddStaffPassword from './pages/auth/add-staff-password';
 import DiscountOutlet from './pages/discount/outlet';
 import DiscountHome from './pages/discount';
 import DiscountCreate from './pages/discount/create';
+import SingleStoreDetails from './pages/profile/views/single-store';
 const App = () => {
   return (
     <Routes>
@@ -75,6 +76,7 @@ const App = () => {
         }
       >
         <Route index element={<VendorProfile />} />
+        <Route path="store/:id" element={<SingleStoreDetails />} />
       </Route>
 
       <Route

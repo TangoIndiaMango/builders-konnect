@@ -134,11 +134,11 @@ export const useFetchPostData = (url: string, options: any) => {
   return { ...query, isLoading: query.isFetching || query.isLoading };
 };
 
-export const useFetchSingleData = (url: string, enabled = false) => {
+export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = true) => {
   const query = useQuery({
     queryKey: ['fetchSingleData', url],
     queryFn: async () => {
-      const response = await axiosInstance.get(baseUrl + url);
+      const response = await axiosInstance.get(useBaseUrl ? baseUrl + url : url);
       return response.data;
     },
     enabled: enabled,

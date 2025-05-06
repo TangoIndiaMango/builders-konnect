@@ -8,19 +8,10 @@ import TopSellingProducts from '../../components/sales/analytics/TopSellingProdu
 import RevenueAnalytics from '../../components/sales/analytics/RevenueAnalytics';
 import { useFetchData } from '../../../hooks/useApis';
 
+
+
 const SalesAnalytics = () => {
-  const stats = useFetchData(`merchants/sales-orders/analytics/stats`);
 
-  const returnRate = useFetchData(
-    `merchants/sales-orders/analytics/returns-rate`
-  );
-
-  const salesStats = stats?.data?.data;
-
-  const returnRateStats = returnRate?.data?.data;
-
-  console.log('salesStats', salesStats);
-  console.log('returnRateStats', returnRateStats);
   return (
     <div className="space-y-5">
       <PageIntroBanner

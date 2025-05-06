@@ -73,10 +73,14 @@ export const CustomerInfoCard = ({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div>
           <p className="mb-1 text-gray-500">Payment method</p>
-          <p className="font-medium">
-            {paymentMethod?.map((method) => method.method)}
-          </p>{' '}
-          <span>{paymentMethod?.map((method) => formatBalance(method.amount))}</span>
+          <ul className="space-y-1">
+            {paymentMethod?.map((method, idx) => (
+              <li key={idx} className="flex items-center justify-between">
+                <span className="font-medium">{method.method}</span>
+                <span className="text-gray-700">{formatBalance(method.amount)}</span>
+              </li>
+            ))}
+          </ul>
         </div>
         <div>
           <p className="mb-1 text-gray-500">Billing Address</p>

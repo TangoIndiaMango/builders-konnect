@@ -267,8 +267,8 @@ const RegisterVendor = () => {
                   size="large"
                   className="w-[114px]"
                   loading={
-                    validateBusinessState.isLoading ||
-                    validateBankState.isLoading
+                    validateBusinessState.isPending ||
+                    validateBankState.isPending
                   }
                 >
                   Next
@@ -279,7 +279,7 @@ const RegisterVendor = () => {
                   onClick={documentUpload}
                   size="large"
                   className="w-[114px]"
-                  loading={MediaState.isLoading}
+                  loading={MediaState.isPending}
                 >
                   Submit
                 </Button>
@@ -293,7 +293,7 @@ const RegisterVendor = () => {
         open={confirmModalOpen}
         onCancel={() => setConfirmModalOpen(false)}
         onConfirm={handleSubmit}
-        pending={createVendorState.isLoading}
+        pending={createVendorState.isPending}
       />
 
       <SuccessModal

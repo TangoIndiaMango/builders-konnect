@@ -52,7 +52,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   allProductsValue,
 }) => {
   const discountedProducts =
-    initialValues?.products?.map((product) => product.id) || [];
+    initialValues?.products?.map((product: ProductType) => product.id) || [];
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProducts, setSelectedProducts] =
     useState<string[]>(discountedProducts);
@@ -65,15 +65,15 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   useEffect(() => {
     if (initialValues?.products) {
       const discountedProducts = initialValues.products.map(
-        (product) => product.id
+        (product: ProductType) => product.id
       );
       setSelectedProducts(discountedProducts);
       form.setFieldsValue({
         category: initialValues?.category,
         name: initialValues?.name,
         code: initialValues?.code,
-        start_date: parseDate(initialValues?.start_date),
-        end_date: parseDate(initialValues?.end_date),
+        start_date: dayjs(initialValues?.start_date, 'YYYY-MM-DD HH:mm:ss'),
+        end_date: dayjs(initialValues?.end_date, 'YYYY-MM-DD HH:mm:ss'),
         type: initialValues?.type,
         value: initialValues?.value,
         all_products:
@@ -102,7 +102,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   };
 
   // console.log(searchedProducts);
-  if (loading || !initialValues) {
+  if (loading) {
     return <SkeletonLoader active type="form" rows={6} />;
   }
 

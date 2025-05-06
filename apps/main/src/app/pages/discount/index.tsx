@@ -91,8 +91,8 @@ const DiscountHome = () => {
   return (
     <div>
       <PageIntroBanner
-        title="Staff Management"
-        description="Add staff to your business and control staff roles and permissions"
+        title="Discount Management"
+        description="Add discount to your business and control discount status"
         actionButton={
 
               <Button
