@@ -1,12 +1,9 @@
 import { Product } from '../../../service/inventory/inventory.types';
 import { useSearchProducts, useCreateProduct } from "../../../service/inventory/inventoryFN";
 import { ArrowLeftOutlined, BarcodeOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Select, Form, Input, InputNumber, Upload, Typography, Modal, Spin, message } from 'antd';
+import { Button, Select, Form, Input, InputNumber, Upload, Typography, Modal, message } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import React from 'react';
-import type { FormInstance } from 'antd/es/form';
-
 const { Title, Text } = Typography;
 
 interface ProductFormData {
