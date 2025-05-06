@@ -1,5 +1,7 @@
+import { message, Upload } from 'antd';
 import dayjs from 'dayjs';
-
+export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg';
+export const maxFileSize = 10 * 1024 * 1024; // 10MB
 export const getStatusColor = (status: string) => {
   const colorMap: Record<string, string> = {
     paid: 'blue',
@@ -17,6 +19,7 @@ export const getStatus = (status: string) => {
   const colorMap: Record<string, string> = {
     active: 'green',
     inactive: 'red',
+    expired: 'purple',
   };
   return colorMap[status] || 'default';
 };
@@ -42,3 +45,21 @@ export function formatBalance(balance: number | string, decimals = 2, fallbackCu
     maximumFractionDigits: decimals,
   }).format(balanceNumber);
 }
+
+
+export const beforeUpload = (file: File) => {
+  const isAccepted = acceptedFileTypes
+    .split(',')
+    .some((type) => file.name.toLowerCase().endsWith(type.toLowerCase()));
+
+  if (!isAccepted) {
+    message.error(`You can only upload ${acceptedFileTypes} files!`);
+  }
+
+  const isLt10M = file.size < maxFileSize;
+  if (!isLt10M) {
+    message.error(`File must be smaller than ${maxFileSize}MB!`);
+  }
+
+  return isAccepted && isLt10M ? false : Upload.LIST_IGNORE;
+};

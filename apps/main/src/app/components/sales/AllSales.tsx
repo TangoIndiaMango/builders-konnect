@@ -1,26 +1,16 @@
-import { Divider } from 'antd';
-import DisplayHeader from '../common/DisplayHeader';
-import TimelineFilter from '../common/filters/TimelineFilter';
-import TableStats from '../common/TableStats';
-import { OrdersTable } from './table/salesTable';
 import { useState } from 'react';
-import TableWrapper from '../common/Table/TableWrapper';
-import { ordersData, tableStatsData } from '../../lib/mockData';
+import { formatBalance } from '../../../utils/helper';
 import { SalesOrder } from '../../pages/sales/types';
 import { PaginatedResponse } from '../../types/paginatedData';
-import { formatBalance } from '../../../utils/helper';
+import DisplayHeader from '../common/DisplayHeader';
+import TimelineFilter from '../common/filters/TimelineFilter';
 import { SkeletonLoader } from '../common/SkeletonLoader';
-
-// Filter data for different tabs
-export const completedOrders = ordersData.filter(
-  (order) => order.orderStatus === 'Completed'
-);
-export const processingOrders = ordersData.filter(
-  (order) => order.orderStatus === 'Processing'
-);
-export const cancelledOrders = ordersData.filter(
-  (order) => order.orderStatus === 'Cancelled'
-);
+import TableWrapper from '../common/Table/TableWrapper';
+import TableStats from '../common/TableStats';
+import { OrdersTable } from './table/salesTable';
+import { Button } from 'antd';
+import { useTableState } from '../../../hooks/useTable';
+import { FilterOption } from '../../store/table';
 
 export interface TabStatsinterface {
   total_sales: number;
@@ -36,23 +26,17 @@ export interface SalesDataInterface {
 export interface SalesProps {
   data: SalesDataInterface;
   isLoading: boolean;
+  setSearchTerm: (searchTerm: string) => void;
+  periodFilter: string;
+  setPeriodFilter: (periodFilter: string) => void;
+  reset: () => void;
+  periodOptions: FilterOption[];
+  title: string;
+  description: string;
 }
-const AllSales = ({ data, isLoading }: SalesProps) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  // const [loading, setLoading] = useState(false);
+const AllSales = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodFilter, reset, periodOptions, title, description }: SalesProps) => {
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    // Handle pagination logic here
-  };
 
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (value: string) => {
-    console.log('Searching for:', value);
-    setSearchQuery(value);
-    // Implement your search logic here
-  };
   const tableStatsData = [
     {
       label: 'Total Sales',
@@ -83,9 +67,18 @@ const AllSales = ({ data, isLoading }: SalesProps) => {
   return (
     <div className="space-y-3">
       <DisplayHeader
-        title="All Sales"
-        description="You're viewing all sales order below."
-        actionButton={<TimelineFilter />}
+        title={title}
+        description={description}
+        actionButton={
+          <div className="flex flex-wrap items-center gap-3">
+            <Button onClick={reset}>Clear</Button>
+            <TimelineFilter
+              value={periodFilter}
+              onChange={setPeriodFilter}
+              options={periodOptions}
+            />
+          </div>
+        }
       />
 
       <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
@@ -102,11 +95,13 @@ const AllSales = ({ data, isLoading }: SalesProps) => {
         </div>
       </SkeletonLoader>
 
-      <TableWrapper onSearch={handleSearch}>
+      <TableWrapper onSearch={setSearchTerm}>
         <OrdersTable
           data={data?.data?.data}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
+          currentPage={1}
+          onPageChange={() => {
+            console.log('page changed');
+          }}
           loading={isLoading}
           showCheckbox={true}
           total={data?.data?.total}

@@ -1,12 +1,12 @@
 import { EyeOutlined } from '@ant-design/icons';
 import { Button, Tag } from 'antd';
+import { ColumnsType } from 'antd/es/table';
+import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 import { useSelection } from '../../../../hooks/useSelection';
-import { PaginatedTable, type DataType } from '../../common/Table/Table';
 import { formatBalance, getStatusColor } from '../../../../utils/helper';
 import { SalesOrder } from '../../../pages/sales/types';
-import { ColumnsType, ColumnType } from 'antd/es/table';
-import { useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
+import { PaginatedTable, type DataType } from '../../common/Table/Table';
 
 
 // Create a type that combines SalesOrder with required key
