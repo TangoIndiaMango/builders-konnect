@@ -1,14 +1,13 @@
-import { useMemo, useState } from 'react';
-import { Button, Tabs, TabsProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { Button, Tabs, TabsProps } from 'antd';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGetExportData } from '../../../hooks/useApis';
+import { useTableState } from '../../../hooks/useTable';
+import { useGetSales } from '../../../service/sales/salesFN';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 import AllSales from '../../components/sales/AllSales';
-import OnlineSales from '../../components/sales/OnlineSales';
-import InstoreSales from '../../components/sales/InstoreSales';
-import ConfirmModal from '../../components/common/ConfirmModal';
-import { useGetSales } from '../../../service/sales/salesFN';
-import { useTableState } from '../../../hooks/useTable';
 
 const tabConfigs = [
   {
@@ -35,54 +34,54 @@ const SalesHome = () => {
   const [pauseSalesOpened, setPauseSalesOpened] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [status, setStatus] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const {
+    searchValue,
+    setSearch,
+    currentPage,
+    pageSize,
+    setPage,
+    sortBy,
+    sortOrder,
+    setSortBy,
+    setSortOrder,
+    status,
+    setStatus,
+    dateFilter,
+    setDateFilter,
+    customFilter,
+    customFilterLabel,
+    setCustomFilter,
+    setCustomFilterLabel,
+    reset,
+    customDateRange,
+    setCustomDateRange,
+    filterKey,
+    filterValue,
+    handleFilterChange,
+    exportType,
+    setExportType,
+  } = useTableState('sales');
 
   const filterOptions = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
   ];
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-  };
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
-
-  const handleFilterChange = (value: string) => {
-    setStatus(value);
-  };
-
-  const handleDateFilterChange = (value: string) => {
-    setDateFilter(value);
-  };
-
-  const handleSortByChange = (value: string) => {
-    setSortBy(value);
-  };
-
-  const handleReset = () => {
-    setSearchQuery('');
-    setDateFilter('');
-    setSortBy('');
-    setStatus('');
-  };
-
   const [tab, setTab] = useState<string>('pos');
-
   const { data: sales, isLoading } = useGetSales({
     paginate: 1,
     limit: 10,
     sales_type: tab === 'all' ? '' : tab,
-    q: searchQuery,
-    date_filter: dateFilter,
+    q: searchValue,
     sort_by: sortBy,
-    payment_status: status,
+    payment_status: filterKey === 'payment_status' ? filterValue : '',
+    order_status: filterKey === 'order_status' ? filterValue : '',
+    date_filter: customDateRange,
   });
+
+  const exportSales = useGetExportData(
+    `/merchants/sales-orders?export=${exportType}`
+  );
 
   const onChange = (key: string) => {
     setTab(key);
@@ -97,13 +96,35 @@ const SalesHome = () => {
           <AllSales
             data={sales?.data}
             isLoading={isLoading}
-            setSearchTerm={handleSearch}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            setPage={(page: number) => setPage(page, pageSize)}
+            searchValue={searchValue}
+            setSearchValue={(value: string) => setSearch(value)}
             periodFilter={dateFilter}
-            setPeriodFilter={handleDateFilterChange}
-            reset={handleReset}
+            setPeriodFilter={(value: string) => setDateFilter(value)}
+            customFilter={customFilter}
+            setCustomFilter={(value: string) => setCustomFilter(value)}
+            customFilterLabel={customFilterLabel}
+            setCustomFilterLabel={(value: string) =>
+              setCustomFilterLabel(value)
+            }
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            setSortBy={(value: string) => setSortBy(value)}
+            setSortOrder={(value: string) => setSortOrder(value)}
+            status={status}
+            setStatus={(value: string) => setStatus(value)}
+            dateFilter={dateFilter}
+            setDateFilter={(value: string) => setDateFilter(value)}
+            reset={reset}
             periodOptions={filterOptions}
             title={tab.title}
             description={tab.description}
+            setCustomDateRange={setCustomDateRange}
+            handleFilterChange={handleFilterChange}
+            filterValue={filterValue}
+            onExport={setExportType}
           />
         ),
       })),

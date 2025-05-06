@@ -18,6 +18,7 @@ interface OrdersTableProps {
   onPageChange: (page: number, pageSize: number) => void;
   loading: boolean;
   total: number;
+  perPage: number;
   showCheckbox?: boolean;
 }
 
@@ -27,6 +28,7 @@ export const OrdersTable = ({
   onPageChange,
   loading,
   total,
+  perPage,
   showCheckbox = true,
 }: OrdersTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
@@ -122,7 +124,7 @@ export const OrdersTable = ({
         total={total}
         showCheckbox={showCheckbox}
         striped={true}
-        pageSize={10}
+        pageSize={perPage}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
