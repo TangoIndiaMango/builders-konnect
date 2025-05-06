@@ -49,6 +49,7 @@ export interface GetSalesParams {
   sales_type?: string;
   payment_status?:string;
   order_status?:string;
+  page?: number;
 }
 
 export const getSales = async (params?: GetSalesParams) => {
@@ -64,6 +65,7 @@ export const getSales = async (params?: GetSalesParams) => {
   if (params?.payment_status) queryParams.append('payment_status', params.payment_status);
   if (params?.order_status) queryParams.append('order_status', params.order_status);
   if (params?.q) queryParams.append('q', params.q);
+  if (params?.page) queryParams.append('page', params.page.toString());
   const queryString = queryParams.toString();
   const finalURL = `${URL}${queryString ? `?${queryString}` : ''}`;
 

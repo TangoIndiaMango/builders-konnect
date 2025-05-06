@@ -1,6 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Tabs, TabsProps } from 'antd';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetExportData } from '../../../hooks/useApis';
 import { useTableState } from '../../../hooks/useTable';
@@ -8,6 +8,7 @@ import { useGetSales } from '../../../service/sales/salesFN';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 import AllSales from '../../components/sales/AllSales';
+import { exportCsvFromString } from '../../../utils/helper';
 
 const tabConfigs = [
   {
@@ -46,12 +47,7 @@ const SalesHome = () => {
     setSortOrder,
     status,
     setStatus,
-    dateFilter,
-    setDateFilter,
-    customFilter,
-    customFilterLabel,
     setCustomFilter,
-    setCustomFilterLabel,
     reset,
     customDateRange,
     setCustomDateRange,
@@ -60,6 +56,8 @@ const SalesHome = () => {
     handleFilterChange,
     exportType,
     setExportType,
+    limitSize,
+    setLimitSize,
   } = useTableState('sales');
 
   const filterOptions = [
@@ -70,18 +68,39 @@ const SalesHome = () => {
   const [tab, setTab] = useState<string>('pos');
   const { data: sales, isLoading } = useGetSales({
     paginate: 1,
-    limit: 10,
+    limit: limitSize,
     sales_type: tab === 'all' ? '' : tab,
     q: searchValue,
     sort_by: sortBy,
     payment_status: filterKey === 'payment_status' ? filterValue : '',
     order_status: filterKey === 'order_status' ? filterValue : '',
     date_filter: customDateRange,
+    page: currentPage,
   });
 
   const exportSales = useGetExportData(
-    `/merchants/sales-orders?export=${exportType}`
+    `merchants/sales-orders?export=${exportType}`
   );
+
+  const handleExport = () => {
+    exportSales.mutate(null as any, {
+      onSuccess: (data) => {
+        exportCsvFromString(data, 'Order Sales');
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      onSettled: () => {
+        setExportType('');
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (exportType) {
+      handleExport();
+    }
+  }, [exportType]);
 
   const onChange = (key: string) => {
     setTab(key);
@@ -101,30 +120,23 @@ const SalesHome = () => {
             setPage={(page: number) => setPage(page, pageSize)}
             searchValue={searchValue}
             setSearchValue={(value: string) => setSearch(value)}
-            periodFilter={dateFilter}
-            setPeriodFilter={(value: string) => setDateFilter(value)}
-            customFilter={customFilter}
-            setCustomFilter={(value: string) => setCustomFilter(value)}
-            customFilterLabel={customFilterLabel}
-            setCustomFilterLabel={(value: string) =>
-              setCustomFilterLabel(value)
-            }
             sortBy={sortBy}
             sortOrder={sortOrder}
             setSortBy={(value: string) => setSortBy(value)}
             setSortOrder={(value: string) => setSortOrder(value)}
             status={status}
             setStatus={(value: string) => setStatus(value)}
-            dateFilter={dateFilter}
-            setDateFilter={(value: string) => setDateFilter(value)}
             reset={reset}
             periodOptions={filterOptions}
+            periodFilter={customDateRange}
+            setPeriodFilter={(value: string) => setCustomFilter(value)}
             title={tab.title}
             description={tab.description}
             setCustomDateRange={setCustomDateRange}
             handleFilterChange={handleFilterChange}
             filterValue={filterValue}
             onExport={setExportType}
+            updateLimitSize={setLimitSize}
           />
         ),
       })),

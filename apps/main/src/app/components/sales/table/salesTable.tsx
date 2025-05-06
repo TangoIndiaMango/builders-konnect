@@ -20,6 +20,7 @@ interface OrdersTableProps {
   total: number;
   perPage: number;
   showCheckbox?: boolean;
+  updateLimitSize?: (page: number, pageSize: number) => void;
 }
 
 export const OrdersTable = ({
@@ -30,6 +31,7 @@ export const OrdersTable = ({
   total,
   perPage,
   showCheckbox = true,
+  updateLimitSize,
 }: OrdersTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as SalesOrderWithKey[],
@@ -120,6 +122,7 @@ export const OrdersTable = ({
         columns={columns}
         currentPage={currentPage}
         onPageChange={onPageChange}
+        updateLimitSize={updateLimitSize}
         loading={loading}
         total={total}
         showCheckbox={showCheckbox}

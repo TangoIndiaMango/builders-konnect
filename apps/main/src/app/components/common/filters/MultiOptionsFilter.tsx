@@ -57,13 +57,13 @@ const MultiOptionsFilter = ({
     >
       <button
         className={`
-          flex items-center justify-between p-2
+          flex items-center justify-between p-2 w-full
           bg-white border border-gray-200 rounded-sm
-          md:min-w-[150px] hover:border-gray-300
+          lg:min-w-[150px] hover:border-gray-300
           transition-colors duration-200 ${className}
         `}
       >
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start h-6">
           <span className="text-sm font-medium">{label}</span>
         </div>
         <DownOutlined

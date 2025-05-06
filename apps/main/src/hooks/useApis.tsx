@@ -33,7 +33,10 @@ export const useGetExportData = (url: string) => {
   const mutation = useMutation({
     mutationFn: async () => {
       const response = await axiosInstance.get(baseUrl + url, {
-        responseType: 'blob',
+        // responseType: 'blob',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
       return response.data;
     },

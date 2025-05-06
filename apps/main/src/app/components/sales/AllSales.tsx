@@ -37,47 +37,32 @@ export interface SalesProps {
   title: string;
   description: string;
   currentPage: number;
-  pageSize: number;
+  pageSize?: number;
   setPage: (page: number) => void;
   status: string;
   setStatus: (status: string) => void;
-  dateFilter: string;
-  setDateFilter: (dateFilter: string) => void;
-  customFilter: string;
-  setCustomFilter: (customFilter: string) => void;
-  customFilterLabel: string;
-  setCustomFilterLabel: (customFilterLabel: string) => void;
   setCustomDateRange: (dates: DateRange, dateStrings: string[]) => void;
   handleFilterChange: (filterKey: string, value: string) => void;
   filterValue: string;
   onExport: (value: string) => void;
+  updateLimitSize: (page: number, pageSize: number) => void;
 }
 const AllSales = ({
   data,
   isLoading,
   searchValue,
   setSearchValue,
-  periodFilter,
-  setPeriodFilter,
-  sortBy,
-  setSortBy,
-  sortOrder,
-  setSortOrder,
   reset,
-  periodOptions,
   title,
   description,
   currentPage,
   pageSize,
   setPage,
-  status,
-  setStatus,
-  dateFilter,
-  setDateFilter,
   setCustomDateRange,
   handleFilterChange,
   filterValue,
   onExport,
+  updateLimitSize,
 }: SalesProps) => {
   const tableStatsData = [
     {
@@ -154,6 +139,7 @@ const AllSales = ({
           showCheckbox={true}
           perPage={data?.data?.per_page}
           total={data?.data?.total}
+          updateLimitSize={updateLimitSize}
         />
       </TableWrapper>
     </div>

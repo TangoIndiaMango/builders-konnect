@@ -19,6 +19,7 @@ export const useTableState = (tableName: string) => {
   const [filterKey, setFilterKey] = useState<string>('');
   const [filterValue, setFilterValue] = useState<string>('');
   const [exportType, setExportType] = useState<string>('');
+  const [limitSize, setLimitSize] = useState<number>(10);
 
   const onRangeChange = (
     dates: null | (Dayjs | null)[],
@@ -107,6 +108,13 @@ export const useTableState = (tableName: string) => {
     [setExportType]
   );
 
+  const handleLimitSizeChange = useCallback(
+    (page: number, pageSize: number) => {
+      setLimitSize(pageSize);
+    },
+    [setLimitSize]
+  );
+
 
   const handleReset = () => {
     setTableState(defaultTableState);
@@ -121,6 +129,7 @@ export const useTableState = (tableName: string) => {
     setFilterKey('');
     setFilterValue('');
     setExportType('');
+    setLimitSize(10);
   };
 
   return {
@@ -176,5 +185,9 @@ export const useTableState = (tableName: string) => {
     // Export
     exportType,
     setExportType: handleExportChange,
+
+    // Limit Size
+    limitSize,
+    setLimitSize: handleLimitSizeChange,
   };
 };

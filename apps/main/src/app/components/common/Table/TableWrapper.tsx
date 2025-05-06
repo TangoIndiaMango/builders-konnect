@@ -77,7 +77,7 @@ const TableWrapper = ({
             placeholder="Search with order no."
             value={searchValue}
             onChange={setSearchValue}
-            className="min-w-[300px]"
+            className="w-full md:min-w-[300px]"
           />
         </div>
 
