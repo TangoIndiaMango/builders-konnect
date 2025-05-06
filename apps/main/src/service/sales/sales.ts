@@ -44,6 +44,7 @@ export interface GetSalesParams {
   status?: string;
   date_filter?: string;
   sort_by?: string;
+  q?: string;
   export?: string;
   sales_type?: string;
   payment_status?:string;

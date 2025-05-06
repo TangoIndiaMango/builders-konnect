@@ -61,6 +61,7 @@ export const OrderItemsTable = ({ items }: OrderItemsTableProps) => {
         columns={columns}
         showPagination={false}
         showCheckbox={false}
+        scroll={{ x: '1000px' }}
       />
     </div>
   );

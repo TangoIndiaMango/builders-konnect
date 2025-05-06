@@ -10,7 +10,6 @@ import TableWrapper from '../../components/common/Table/TableWrapper';
 import { useState } from 'react';
 import TableStats from '../../components/common/TableStats';
 import DisplayHeader from '../../components/common/DisplayHeader';
-import TimelineFilter from '../../components/common/filters/TimelineFilter';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import FilterGroup from '../../components/common/filters/FilterGroup';
@@ -102,7 +101,7 @@ const ProductsPage = () => {
           <Dropdown overlay={menu} trigger={['click']} placement="bottomCenter">
             <Button
               type="primary"
-              className="rounded"s
+              className="rounded"
               size="large"
               icon={<PlusOutlined />}
             >

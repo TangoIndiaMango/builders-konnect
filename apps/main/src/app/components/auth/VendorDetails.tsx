@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFetchData } from '../../../hooks/useApis';
 import { Form, Input, Select, FormInstance } from 'antd';
+import NumericInput from '../common/NumericInput';
 
 const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
   const [state, setState] = useState('');
@@ -44,6 +45,7 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
         rules={[{ required: true, message: 'Please select business category' }]}
       >
         <Select
+          // mode="multiple"
           placeholder="Select business category"
           loading={BusinessCategoryState.isLoading}
           options={BusinessCategoryState?.data?.data?.map((b: any) => ({
@@ -100,7 +102,7 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
         name="phoneNumber"
         rules={[{ required: true, message: 'Please enter phone number' }]}
       >
-        <Input placeholder="Enter phone number" />
+        <NumericInput maxLength={11} placeholder="Enter phone number" />
       </Form.Item>
 
       <Form.Item

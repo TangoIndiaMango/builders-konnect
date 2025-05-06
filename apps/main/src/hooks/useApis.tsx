@@ -5,7 +5,9 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 export const useCreateData = (url: string) => {
   const mutation = useMutation({
     mutationFn: async (arg: any) => {
-      const response = await axiosInstance.post(baseUrl + url, arg);
+      const { data, config } =
+        arg && arg.data !== undefined ? arg : { data: arg, config: {} };
+      const response = await axiosInstance.post(baseUrl + url, data, config);
       return response.data;
     },
   });
@@ -127,6 +129,19 @@ export const useFetchPostData = (url: string, options: any) => {
       const response = await axiosInstance.post(baseUrl + url, options);
       return response.data;
     },
+  });
+
+  return { ...query, isLoading: query.isFetching || query.isLoading };
+};
+
+export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = true) => {
+  const query = useQuery({
+    queryKey: ['fetchSingleData', url],
+    queryFn: async () => {
+      const response = await axiosInstance.get(useBaseUrl ? baseUrl + url : url);
+      return response.data;
+    },
+    enabled: enabled,
   });
 
   return { ...query, isLoading: query.isFetching || query.isLoading };

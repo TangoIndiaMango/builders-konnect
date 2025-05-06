@@ -30,14 +30,14 @@ const StatsCard: React.FC<StatsCardProps> = ({
 
   return (
     <div className={`rounded-sm border-[1.5px] p-4 ${colorStyles[color]}`}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between min-h-10 lg:min-h-0">
         <span className="text-sm text-gray-500">{title}</span>
         <div className={`${textColors[color]}`}>
           {icon}
         </div>
       </div>
       <Divider />
-      <div className={`text-4xl font-semibold mt-2 ${textColors[color]}`}>
+      <div className={`text-xl md:text-xl xl:text-2xl font-semibold mt-2 ${textColors[color]}`}>
         {value}
       </div>
     </div>

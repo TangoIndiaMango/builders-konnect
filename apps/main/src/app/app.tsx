@@ -19,6 +19,10 @@ import { OrderView } from './components/sales/view/OrderView';
 import SalesViewPage from './pages/sales/view';
 import PauseSales from './pages/sales/pause-sales';
 import SalesAnalytics from './pages/sales/analytics';
+import StaffOutlet from './pages/staff/outlet';
+import StaffHome from './pages/staff';
+import ViewStaffDetails from './pages/staff/view-staff';
+import AddRole from './pages/staff/add-role';
 import InventoryOutlet from './pages/inventory/inventory-outlet';
 import InventoryPage from './pages/inventory';
 import ProductsPage from './pages/inventory';
@@ -32,6 +36,11 @@ import CreateProduct from './pages/inventory/createProduct';
 import PreviewPage from './pages/inventory/imagePreview';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
+import AddStaffPassword from './pages/auth/add-staff-password';
+import DiscountOutlet from './pages/discount/outlet';
+import DiscountHome from './pages/discount';
+import DiscountCreate from './pages/discount/create';
+import SingleStoreDetails from './pages/profile/views/single-store';
 import ProductPreview from './pages/inventory/previewProduct';
 import EditProduct from './pages/inventory/EditProduct';
 
@@ -47,6 +56,7 @@ const App = () => {
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="change-password" element={<ChangePassword />} />
         <Route path="multiple-accounts" element={<MultipleAccounts />} />
+        <Route path="add-staff-password" element={<AddStaffPassword />} />
       </Route>
 
       <Route
@@ -69,6 +79,7 @@ const App = () => {
         }
       >
         <Route index element={<VendorProfile />} />
+        <Route path="store/:id" element={<SingleStoreDetails />} />
       </Route>
 
       <Route
@@ -84,6 +95,20 @@ const App = () => {
         <Route path="view/:id" element={<SalesViewPage />} />
         <Route path="pause" element={<PauseSales />} />
         <Route path="analytics" element={<SalesAnalytics />} />
+      </Route>
+
+      <Route
+        path="pos/staff"
+        element={
+          <ProtectedRoute>
+            <StaffOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<StaffHome />} />
+        <Route path="view/:id" element={<ViewStaffDetails />} />
+        <Route path="add-role" element={<AddRole />} />
+        <Route path="role/:id" element={<AddRole />} />
       </Route>
 
       <Route
@@ -109,6 +134,19 @@ const App = () => {
         <Route path="product-preview" element={<ProductPreview/>} /> 
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage/>} />
+      </Route>
+
+      <Route
+        path="pos/discounts"
+        element={
+          <ProtectedRoute>
+            <DiscountOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<DiscountHome />} />
+        <Route path="create" element={<DiscountCreate />} />
+        <Route path="edit/:id" element={<DiscountCreate />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />

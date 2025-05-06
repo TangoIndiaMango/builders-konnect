@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Button, notification, Spin, Typography } from 'antd';
+import { Button, Form, notification, Spin, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import Container from '../../components/common/Container';
 import { SearchInput } from '../../components/common/SearchInput';
@@ -23,6 +23,8 @@ import {
 import PaymentMethodModal from '../../components/sales/PaymentMethodModal';
 import PaymentAmountModal from '../../components/sales/PaymentAmountModal';
 import SuccessModal from '../../components/common/SuccessModal';
+import DiscountModalAdd from '../../components/sales/DiscountModalAdd';
+import { useProductDiscounts } from '../../../hooks/useProductDiscount';
 
 export interface calculateAmountInterface {
   line_items: {
@@ -41,6 +43,7 @@ export interface paymentMethodInterface {
   is_active: string | boolean;
   created_at: string;
   updated_at: string;
+  amount?: number;
 }
 /**
  *
@@ -86,6 +89,7 @@ export interface paymentMethodInterface {
 
 const CreateSales = () => {
   const navigate = useNavigate();
+  const [form] = Form.useForm();
   const [selectedProducts, setSelectedProducts] = useState<ProductType[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(
     null
@@ -95,32 +99,47 @@ const CreateSales = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showAmountModal, setShowAmountModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<paymentMethodInterface | null>(null);
-  const [paymentAmount, setPaymentAmount] = useState<number>(0);
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
+    paymentMethodInterface[]
+  >([]);
+  const [selectedProductDiscount, setSelectedProductDiscount] = useState<
+  string | null
+>(null);
+  const [paymentAmount, setPaymentAmount] = useState<
+    { methodId: string; amount: number; balance: number }[]
+  >([]);
 
   const { mutate: checkOut, isLoading: isCheckingOut } = useCheckOut();
   const { data: customers, isLoading: isLoadingCustomers } = useGetCustomers();
-  const { data: discounts, isLoading: isLoadingDiscounts } = useGetDiscounts();
+  const discounts = useFetchData(
+    'merchants/discounts?paginate=0&category=sales-orders'
+  );
+  const productDiscounts = useFetchData(
+    'merchants/discounts?paginate=0&category=products'
+  );
   const products = useFetchData('merchants/inventory-products');
   const calculateAmount = useCreateData(
     'merchants/sales-orders/amount-breakdown'
   );
   const paymentMethods = useFetchData('shared/sales-payment-methods');
 
-  console.log(paymentMethods?.data);
+  // console.log(paymentMethods?.data);
 
   // console.log(customers);
-  // console.log(discounts);
+  console.log(form.getFieldsValue());
 
   const discountData = discounts?.data as DiscountType[];
-
+  const productDiscountData = productDiscounts?.data?.data as DiscountType[];
   const productData = products?.data?.data as ProductType[];
 
   const customerData = customers?.data as CustomerType[];
 
   const paymentMethodData = paymentMethods?.data
     ?.data as paymentMethodInterface[];
+
+  const { discountedPrices, applyDiscount, removeDiscount } = useProductDiscounts(
+    productDiscountData
+  );
 
   const handleProductSelect = (product: ProductType) => {
     // Check if product already exists
@@ -130,8 +149,8 @@ const CreateSales = () => {
         {
           ...product,
           quantity: 1,
-          totalPrice: Number(product.retail_price)
-        }
+          totalPrice: Number(product.retail_price),
+        },
       ]);
     }
   };
@@ -165,12 +184,18 @@ const CreateSales = () => {
 
   const handleRemoveDiscount = () => {
     setSelectedDiscount(null);
+    setSelectedProductDiscount(null);
+
   };
 
   const handleApplyDiscount = () => {
-    // Implementation for applying discount
+    console.log(selectedProducts);
+    console.log(selectedProductDiscount);
+    if (selectedProducts.length > 0 && selectedProductDiscount) {
+      applyDiscount(selectedProducts[0], selectedProductDiscount);
+      setSelectedProductDiscount(null);
+    }
   };
-
 
   useEffect(() => {
     calculateAmount.mutate(
@@ -178,7 +203,7 @@ const CreateSales = () => {
         line_items: selectedProducts.map((product) => ({
           product_id: product?.id,
           quantity: product?.quantity,
-          discount_id: selectedDiscount,
+          discount_id: discountedPrices[product.id]?.discountId || '',
         })),
         discount_id: selectedDiscount,
       },
@@ -190,19 +215,19 @@ const CreateSales = () => {
     );
   }, [selectedProducts, selectedDiscount]);
 
-  const handlePaymentMethodSelect = (method: paymentMethodInterface) => {
-    setSelectedPaymentMethod(method);
-    setShowPaymentModal(false);
-    setShowAmountModal(true);
+  const handlePaymentMethodSelect = (methods: paymentMethodInterface[]) => {
+    setSelectedPaymentMethods((prev) => [...prev, ...methods]);
   };
 
-  const handlePaymentConfirm = (amount: number) => {
-    setPaymentAmount(amount);
+  const handlePaymentConfirm = (
+    payments: { methodId: string; amount: number; balance: number }[]
+  ) => {
+    setPaymentAmount(payments);
 
     // Determine customer payload based on whether it's an existing customer or new
     const customerPayload = selectedCustomer?.id
       ? {
-          id: selectedCustomer.id
+          id: selectedCustomer.id,
         }
       : {
           name: selectedCustomer?.name || '',
@@ -218,14 +243,12 @@ const CreateSales = () => {
       line_items: selectedProducts.map((product) => ({
         product_id: product.id,
         quantity: product.quantity,
-        discount_id: selectedDiscount || '',
+        discount_id: discountedPrices[product.id]?.discountId || '',
       })),
-      payment_methods: [
-        {
-          id: selectedPaymentMethod?.id,
-          amount: orderSummary?.total?.toString(),
-        },
-      ],
+      payment_methods: selectedPaymentMethods.map((method) => ({
+        id: method.id,
+        amount: Number(form.getFieldValue([method.id, 'amount'])),
+      })),
       discount_id: selectedDiscount || '',
     };
 
@@ -266,6 +289,14 @@ const CreateSales = () => {
     setShowPaymentModal(false);
     setShowAmountModal(false);
   };
+
+  const isLoading =
+    isCheckingOut ||
+    isLoadingCustomers ||
+    discounts?.isLoading ||
+    paymentMethods?.isLoading ||
+    products?.isLoading ||
+    calculateAmount?.isLoading;
 
   return (
     <div className="space-y-5">
@@ -311,6 +342,7 @@ const CreateSales = () => {
               <ProductSearch
                 onSelect={handleProductSelect}
                 data={productData}
+                isLoading={isLoading}
               />
             </div>
           </div>
@@ -319,6 +351,13 @@ const CreateSales = () => {
               products={selectedProducts}
               onQuantityChange={handleQuantityChange}
               onRemove={handleRemoveProduct}
+              handleApplyDiscount={handleApplyDiscount}
+              discountedPrices={discountedPrices}
+              productDiscountData={productDiscountData}
+              isLoading={productDiscounts?.isLoading}
+              selectedProductDiscount={selectedProductDiscount}
+              setSelectedProductDiscount={setSelectedProductDiscount}
+              removeDiscount={removeDiscount}
             />
           )}
         </Container>
@@ -397,6 +436,11 @@ const CreateSales = () => {
         onSelectPaymentMethod={handlePaymentMethodSelect}
         totalAmount={orderSummary?.total || 0}
         customerBalance={2}
+        selectedMethods={selectedPaymentMethods}
+        onContinue={() => {
+          setShowPaymentModal(false);
+          setShowAmountModal(true);
+        }}
       />
 
       <PaymentAmountModal
@@ -406,10 +450,11 @@ const CreateSales = () => {
           setShowAmountModal(false);
           setShowPaymentModal(true);
         }}
-        selectedMethod={selectedPaymentMethod!}
+        selectedMethods={selectedPaymentMethods}
         totalAmount={orderSummary?.total || 0}
-        onConfirmPayment={handlePaymentConfirm}
+        onConfirmPayments={handlePaymentConfirm}
         isLoading={isCheckingOut}
+        form={form}
       />
 
       <SuccessModal

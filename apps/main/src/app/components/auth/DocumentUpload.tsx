@@ -4,7 +4,7 @@ import type { UploadFile } from 'antd/es/upload/interface';
 import { useState } from 'react';
 import NumericInput from '../common/NumericInput';
 
-const acceptedFileTypes = '.pdf,.doc,.docx';
+const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg';
 const maxFileSize = 10 * 1024 * 1024; // 10MB
 
 const DocumentUpload = () => {
@@ -41,18 +41,18 @@ const DocumentUpload = () => {
             required: true,
             message: 'Please enter CAC number',
             min: 8,
-            max: 16,
+            max: 8,
           },
         ]}
       >
-        <NumericInput placeholder="Enter registration number" />
+        <Input placeholder="Enter CAC number e.g (RNXXXXXXX or BNXXXXXXX)" maxLength={8} />
       </Form.Item>
 
       <Form.Item
-        label="Certificate"
+        label="CAC Certificate"
         name="cacCertificate"
         required
-        extra="Upload a copy of your Corporate Affairs Commission Certificate"
+        extra={`Upload a copy of your Corporate Affairs Commission Certificate. Accepted file types: ${acceptedFileTypes} with a maximum size of 10MB`}
       >
         <Upload
           accept={acceptedFileTypes}
@@ -74,14 +74,14 @@ const DocumentUpload = () => {
           { required: true, message: 'Please enter TIN', min: 8, max: 16 },
         ]}
       >
-        <Input placeholder="Enter tax identification number" />
+        <Input placeholder="Enter TIN number e.g (XXXXXXXXXX or XXXXXXXX-XXXX)" />
       </Form.Item>
 
       <Form.Item
-        label="Certificate"
+        label="TIN Certificate"
         name="tinCertificate"
         required
-        extra="Upload a copy of your Tax Identification Certificate"
+        extra={`Upload a copy of your Tax Identification Certificate. Accepted file types: ${acceptedFileTypes} with a maximum size of 10MB`}
       >
         <Upload
           accept={acceptedFileTypes}
@@ -100,7 +100,7 @@ const DocumentUpload = () => {
         label="Proof of Address"
         name="proofOfAddress"
         required
-        extra="Upload a copy of your utility bill for proof of address"
+        extra={`Upload a copy of your utility bill for proof of address. Accepted file types: ${acceptedFileTypes} with a maximum size of 10MB`}
       >
         <Upload
           accept={acceptedFileTypes}

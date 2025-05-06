@@ -2,16 +2,18 @@ import React from 'react';
 import { BarConfig, Bar as BarChart } from '@ant-design/plots';
 import useResizeContainer from '../../../../../hooks/useResizeContainer';
 
+interface ReturnRateProps {
+  [key: string]: number;
+}
+
 const Bar = BarChart as unknown as React.FC<BarConfig>;
-const data = [
-  { month: 'January', returns: 186 },
-  { month: 'February', returns: 305 },
-  { month: 'March', returns: 237 },
-  { month: 'April', returns: 73 },
-  { month: 'May', returns: 209 },
-  { month: 'June', returns: 214 },
-];
-const ReturnRateChart = () => {
+
+const ReturnRateChart = ({ returnRateStats }: { returnRateStats: ReturnRateProps }) => {
+
+  const data = Object?.entries(returnRateStats)?.map(([month, returns]) => ({
+    month,
+    returns,
+  }));
   const { containerRef, containerWidth } = useResizeContainer();
 
   const config = {

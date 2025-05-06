@@ -1,7 +1,6 @@
 import { useAtom } from 'jotai';
-import { createTableAtoms, defaultTableState } from '../app/store/table';
-import { FilterOption } from '../app/store/table';
 import { useEffect } from 'react';
+import { createTableAtoms, defaultTableState, FilterOption } from '../app/store/table';
 
 export const useTableState = (
   tableName: string,
@@ -13,18 +12,21 @@ export const useTableState = (
   const atoms = createTableAtoms(tableName);
   const [tableState, setTableState] = useAtom(atoms.tableState);
   const [searchTerm, setSearchTerm] = useAtom(atoms.search);
-  // ... other atoms
 
-  // Initialize with config if provided
   useEffect(() => {
     if (config) {
-      setTableState({
-        ...tableState,
-        customFilterOptions: config.customFilterOptions || [],
-        customFilterLabel: config.customFilterLabel,
-      });
+      if (
+        tableState.customFilterOptions !== config.customFilterOptions ||
+        tableState.customFilterLabel !== config.customFilterLabel
+      ) {
+        setTableState({
+          ...tableState,
+          customFilterOptions: config.customFilterOptions || [],
+          customFilterLabel: config.customFilterLabel,
+        });
+      }
     }
-  }, [config]);
+  }, [config, setTableState, tableState]);
 
   return {
     // Full state

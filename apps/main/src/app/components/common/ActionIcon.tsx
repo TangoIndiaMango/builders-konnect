@@ -8,7 +8,8 @@ const actionIconVariants = cva(
     variants: {
       variant: {
         default: 'bg-[#003399] hover:bg-[#003399] text-white',
-        subtle: ' hover:bg-[#003399]/30 text-[#003399]',
+        subtle: ' hover:bg-[#003399]/10 text-[#003399]',
+        light: 'bg-[#E6F7FF] hover:bg-[#E6F7FF] text-[#003399]',
         outline: 'border-2 border-primary text-primary hover:bg-primary-50',
         transparent: 'bg-transparent hover:bg-gray-100 text-gray-700',
         danger: 'bg-red-600 hover:bg-red-700 text-white',
