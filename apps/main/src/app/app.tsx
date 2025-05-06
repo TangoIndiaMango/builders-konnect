@@ -34,7 +34,6 @@ import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
 import ProductPreview from './pages/inventory/previewProduct';
 import EditProduct from './pages/inventory/EditProduct';
-// import ProductPreview from './pages/inventory/productPreview';
 
 
 const App = () => {

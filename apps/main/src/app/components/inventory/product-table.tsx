@@ -1,30 +1,24 @@
 import { Tag, Button, Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
-import { DataType, PaginatedTable } from '../common/Table/Table';
+import { PaginatedTable } from '../common/Table/Table';
 import { useSelection } from '../../../hooks/useSelection';
 import { EllipsisOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table'; // important!
 
-export interface ProductData extends DataType {
-  id: string;
-  image: string;
-  name: string;
-  description: string;
-  sku: string;
-  dateAdded: string;
-  time: string;
-  price: number;
-  stockLevel: number;
-  status: 'Active' | 'Not Active' | 'Unpublished';
-}
+import type { ProductData as APIProductData } from '../../../service/inventory/inventory.types';
+
+export type ProductTableData = APIProductData & { key: string };
+
+export type ExportType = 'csv' | 'pdf' | null;
 
 interface ProductTableProps {
-  data: ProductData[];
+  data: ProductTableData[];
   currentPage: number;
   onPageChange: (page: number, pageSize: number) => void;
   loading: boolean;
   total: number;
   showCheckbox?: boolean;
+  onExport?: (type: ExportType) => void;
 }
 
 export const ProductTable = ({
@@ -34,8 +28,9 @@ export const ProductTable = ({
   loading,
   total,
   showCheckbox = true,
+  onExport,
 }: ProductTableProps) => {
-  const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
+  const { rowSelection, selectedRowKeys, resetSelection } = useSelection<ProductTableData>({
     data,
   });
 
@@ -45,7 +40,7 @@ export const ProductTable = ({
     { key: '3', label: 'View Details' },
   ];
 
-  const columns: ColumnsType<ProductData> = [
+  const columns: ColumnsType<ProductTableData> = [
     {
       title: 'Product',
       key: 'product',
@@ -53,7 +48,7 @@ export const ProductTable = ({
       render: (_, record) => (
         <div className="flex items-center gap-2">
           <img
-            src={record.image}
+            src={record.primary_media_url || '/placeholder-image.jpg'}
             alt={record.name}
             className="w-10 h-10 rounded-lg object-cover"
           />
@@ -62,7 +57,7 @@ export const ProductTable = ({
               {record.name}
             </div>
             <div className="text-sm text-gray-500 truncate max-w-[150px]">
-              {record.description}
+              {record.description || 'No description'}
             </div>
           </div>
         </div>
@@ -70,19 +65,19 @@ export const ProductTable = ({
     },
     {
       title: 'SKU',
-      dataIndex: 'sku',
-      key: 'sku',
+      dataIndex: 'SKU',
+      key: 'SKU',
       width: 150,
       className: 'hidden sm:table-cell', // Hide SKU on small screens
     },
     {
-      title: 'Date Added',
-      key: 'dateAdded',
+      title: 'Category',
+      key: 'category',
       width: 180,
       render: (_, record) => (
         <div>
-          <div>{record.dateAdded}</div>
-          <div className="text-sm text-gray-500">{record.time}</div>
+          <div>{record.category || 'Uncategorized'}</div>
+          <div className="text-sm text-gray-500">{record.subcategory || 'No subcategory'}</div>
         </div>
       ),
     },
@@ -90,38 +85,26 @@ export const ProductTable = ({
       title: 'Price',
       key: 'price',
       width: 120,
-      render: (_, record) => <span>₦ {record.price.toLocaleString()}</span>,
+      render: (_, record) => <span>₦ {parseFloat(record.retail_price).toLocaleString()}</span>,
     },
     {
       title: 'Stock Level',
-      key: 'stockLevel',
+      key: 'quantity',
       width: 140,
       render: (_, record) => (
         <p>
           <span
             className={`${
-              record.stockLevel <= 0 ? 'text-red-500' : 'text-[#003399]'
+              record.quantity <= 0 ? 'text-red-500' : 'text-[#003399]'
             } font-bold`}
           >
-            {record.stockLevel}
+            {record.quantity}
           </span>{' '}
           Left
         </p>
       ),
     },
-    {
-      title: 'Status',
-      key: 'status',
-      width: 130,
-      render: (_, record) => {
-        const statusColors = {
-          Active: 'success',
-          'Not Active': 'error',
-          Unpublished: 'default',
-        };
-        return <Tag color={statusColors[record.status]}>{record.status}</Tag>;
-      },
-    },
+  
     {
       title: 'Action',
       key: 'action',
@@ -152,7 +135,7 @@ export const ProductTable = ({
         showCheckbox={showCheckbox}
         striped
         pageSize={10}
-        rowSelection={rowSelection as any}
+        rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
         scroll={{ x: '1000px' }} // Add scroll for responsive behavior

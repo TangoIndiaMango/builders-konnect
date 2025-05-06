@@ -161,13 +161,18 @@ export default function ProductPreview() {
                 </div>
               )}
 
-              {product.tags && product.tags.length > 0 && (
+              {product.tags && (
                 <div className="mb-4">
                   <Text strong>Tags: </Text>
                   <div className="flex flex-wrap gap-2 mt-1">
-                    {product.tags.map((tag, index) => (
+                    {(typeof product.tags === 'string' 
+                      ? product.tags.split(',').filter(tag => tag.trim())
+                      : Array.isArray(product.tags) 
+                        ? product.tags 
+                        : []
+                    ).map((tag, index) => (
                       <Tag key={index} color="blue">
-                        {tag}
+                        {tag.trim()}
                       </Tag>
                     ))}
                   </div>

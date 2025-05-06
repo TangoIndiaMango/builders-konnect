@@ -1,7 +1,11 @@
 import { Button, Divider, Dropdown, Menu } from 'antd';
+import { useEffect } from 'react';
+import { getInventoryProducts } from '../../../service/inventory/inventory';
+import { ProductStats } from '../../../service/inventory/inventory.types';
+import { ProductTableData } from '../../components/inventory/product-table';
 import { EmptyInventoryState } from '../../components/inventory/empty-inventory-state';
 import { ProductTable } from '../../components/inventory/product-table';
-import { numbersData, productData } from '../../lib/mockData/productData';
+
 import TableWrapper from '../../components/common/Table/TableWrapper';
 import { useState } from 'react';
 import TableStats from '../../components/common/TableStats';
@@ -9,10 +13,16 @@ import DisplayHeader from '../../components/common/DisplayHeader';
 import TimelineFilter from '../../components/common/filters/TimelineFilter';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import FilterGroup from '../../components/common/filters/FilterGroup';
 
 const ProductsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<ProductTableData[]>([]);
+  const [stats, setStats] = useState<ProductStats | null>(null);
+  const [total, setTotal] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dateFilter, setDateFilter] = useState('7 days');
 
   const menu = (
     <Menu
@@ -35,18 +45,40 @@ const ProductsPage = () => {
     />
   );
 
+  const fetchProducts = async (page = 1, search?: string, exportType?: 'csv' | 'pdf') => {
+    try {
+      setLoading(true);
+      const response = await getInventoryProducts({ 
+        paginate: page, 
+        q: search,
+        date_filter: dateFilter,
+        export: exportType
+      });
+      const productsWithKey = response.data.data.data.map(product => ({ ...product, key: product.id })) as ProductTableData[];
+      setProducts(productsWithKey);
+      setStats(response.data.stats);
+      setTotal(parseInt(response.data.stats.total_products));
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePageChange = (page: number, pageSize: number) => {
     setCurrentPage(page);
   };
 
-  const [searchQuery, setSearchQuery] = useState('');
-
   const handleSearch = (value: string) => {
-    console.log('Searching for:', value);
+    setCurrentPage(1);
     setSearchQuery(value);
   };
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchProducts(currentPage, searchQuery);
+  }, [currentPage, searchQuery, dateFilter]);
 
   return (
     <div className="h-full">
@@ -70,7 +102,7 @@ const ProductsPage = () => {
           <Dropdown overlay={menu} trigger={['click']} placement="bottomCenter">
             <Button
               type="primary"
-              className="rounded"
+              className="rounded"s
               size="large"
               icon={<PlusOutlined />}
             >
@@ -84,11 +116,15 @@ const ProductsPage = () => {
         <DisplayHeader
           title="All Products"
           description="You're viewing all products below."
-          actionButton={<TimelineFilter />}
+          actionButton={<FilterGroup className="space-x-3" />}
         />
 
         <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
-          {numbersData?.map((item) => (
+          {stats && [
+            { label: 'Total Products', value: stats.total_products, valueBgColor: 'bg-[#E6F7FF]', valueColor: 'text-[#003399]' },
+            { label: 'Total Value', value: `₦${stats.total_products_value}`, valueBgColor: 'bg-[#E6FFFB]', valueColor: 'text-[#08979C]' },
+            { label: 'Total Sales', value: stats.total_sales.toString(), valueBgColor: 'bg-[#F9F0FF]', valueColor: 'text-[#722ED1]' }
+          ].map((item) => (
             <TableStats
               label={item?.label}
               value={item?.value}
@@ -98,20 +134,21 @@ const ProductsPage = () => {
           ))}
         </div>
         <Divider />
-        {productData.length === 0 ? (
-          <EmptyInventoryState />
-        ) : (
-          <TableWrapper onSearch={handleSearch}>
+        <TableWrapper onSearch={handleSearch}>
+          {products.length === 0 ? (
+            <EmptyInventoryState />
+          ) : (
             <ProductTable
-              data={productData}
+              onExport={(type) => type && fetchProducts(currentPage, searchQuery, type)}
+              data={products}
               currentPage={currentPage}
               onPageChange={handlePageChange}
               loading={loading}
               showCheckbox={true}
-              total={productData.length}
+              total={total}
             />
-          </TableWrapper>
-        )}
+          )}
+        </TableWrapper>
       </div>
     </div>
   );
