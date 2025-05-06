@@ -31,3 +31,24 @@ export interface ProductFormData {
   description: string
   tags: string[]
 }
+
+export interface ProductData {
+  id: string;
+  name: string;
+  SKU: string;
+  ean: string;
+  category: string | null;
+  subcategory: string | null;
+  product_type: string | null;
+  retail_price: string;
+  cost_price: string;
+  metadata: string | null;
+  description: string | null;
+  tags: string | null;
+  quantity: number;
+  measurement_unit: string | null;
+  reorder_value: string | null;
+  primary_media_url: string;
+  media: string[];
+  totalPrice: number;
+}

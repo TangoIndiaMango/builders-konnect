@@ -9,8 +9,6 @@ import type { ProductData as APIProductData } from '../../../service/inventory/i
 
 export type ProductTableData = APIProductData & { key: string };
 
-export type ExportType = 'csv' | 'pdf' | null;
-
 interface ProductTableProps {
   data: ProductTableData[];
   currentPage: number;
@@ -18,7 +16,6 @@ interface ProductTableProps {
   loading: boolean;
   total: number;
   showCheckbox?: boolean;
-  onExport?: (type: ExportType) => void;
 }
 
 export const ProductTable = ({
@@ -28,7 +25,6 @@ export const ProductTable = ({
   loading,
   total,
   showCheckbox = true,
-  onExport,
 }: ProductTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection<ProductTableData>({
     data,
@@ -104,7 +100,14 @@ export const ProductTable = ({
         </p>
       ),
     },
-  
+    {
+      title: 'Type',
+      key: 'product_type',
+      width: 130,
+      render: (_, record) => {
+        return <Tag color="default">{record.product_type || 'No type'}</Tag>;
+      },
+    },
     {
       title: 'Action',
       key: 'action',

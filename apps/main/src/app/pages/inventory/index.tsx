@@ -138,7 +138,6 @@ const ProductsPage = () => {
             <EmptyInventoryState />
           ) : (
             <ProductTable
-              onExport={(type) => type && fetchProducts(currentPage, searchQuery, type)}
               data={products}
               currentPage={currentPage}
               onPageChange={handlePageChange}
