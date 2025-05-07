@@ -27,7 +27,7 @@ import OrderSuccess from './pages/PaymentSuccessfulPage';
 import FooterOnlyLayout from './components/FooterOnlyLayout';
 import EmptyCart from './pages/EmptyCartPage';
 import CartSummary from './pages/CartSummaryPage';
-import CartPage from './pages/cart';
+import CartPage from './pages/Cart';
 import { CheckoutProvider } from '../hooks/useContext';
 import VendorShop from './pages/VendorStore/VendorPage';
 import ReviewSection from './pages/ReviewSection';
