@@ -1,20 +1,33 @@
 
 import {
-  Form,
-  Input,
-  Select,
-  Button,
-  Typography,
-  Upload,
-  InputNumber,
-  Modal,
-  Table,
-  UploadFile,
+  Form,  Input, Select, Button, Typography, Upload, InputNumber, Modal, UploadFile,
 } from 'antd';
 import { ArrowLeftOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { searchProducts } from '../../../service/inventory/inventory';
+import { useGetCategorizations, useGetMeasuringUnits, useGetInventoryAttributes } from '../../../service/inventory/inventoryFN';
+
+type CategoryResponse = {
+  id: string;
+  name: string;
+  slug: string;
+  is_active: number;
+  table: string;
+  level: string;
+  parent_id: string | null;
+};
+
+type MeasuringUnit = {
+  name: string;
+  symbol: string;
+};
+
+type InventoryAttribute = {
+  id: string;
+  attribute: string;
+  possible_values?: string[];
+  category: string;
+};
 
 const { Title } = Typography;
 
@@ -34,13 +47,14 @@ interface ProductFormData {
   size: string;
   finishType: string;
   shapeType: string;
-  color: string;
+  color: string; 
   costPrice: number;
   sellingPrice: number;
   stockQuantity: number;
   reorderLevel: number;
   description: string;
   tags: string[];
+  measuringUnit: string;
 }
 
 
@@ -50,26 +64,104 @@ const CreateProduct = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Category[]>([]);
   const [productTypes, setProductTypes] = useState<Category[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('');
+
   const [formData, setFormData] = useState<ProductFormData | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [productCode, setProductCode] = useState('');
   const [isVariantModalVisible, setIsVariantModalVisible] = useState(false);
   const [isColorModalVisible, setIsColorModalVisible] = useState(false);
-  const [variants, setVariants] = useState<Array<{
-    size: string;
-    finishType: string;
-    shapeType: string;
-    color: string;
-  }>>([]);
+  const [variants, setVariants] = useState<Array<{ values: Record<string, string>, labels: Record<string, string> }>>([]);
+  const [measuringUnits, setMeasuringUnits] = useState<Array<{ value: string; label: string }>>([]);
+  const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
   const navigate = useNavigate();
 
+  const { data: categoriesData } = useGetCategorizations('category');
+  const { data: subcategoriesData } = useGetCategorizations('subcategory', selectedCategoryId);
+  const { data: productTypesData } = useGetCategorizations('type', selectedSubcategoryId);
+  const { data: measuringUnitsData } = useGetMeasuringUnits();
+  const { data: attributesData } = useGetInventoryAttributes(selectedCategoryId);
+  const { data: variantAttributesData } = useGetInventoryAttributes(selectedCategoryId);
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategoryId(value);
+    setSelectedSubcategoryId(''); // Reset subcategory
+    form.setFieldValue('subcategory', undefined); // Clear subcategory selection
+    form.setFieldValue('productType', undefined); // Clear product type selection
+    
+    // Clear any existing attribute values
+    if (attributesData) {
+      attributesData.forEach((attr: InventoryAttribute) => {
+        form.setFieldValue(attr.id, undefined);
+      });
+      setAttributeValues({});
+    }
+  };
+
+  const handleAttributeChange = (attrId: string, value: string) => {
+    setAttributeValues(prev => ({ ...prev, [attrId]: value }));
+    form.setFieldValue(attrId, value);
+  };
+
   useEffect(() => {
-    // TODO: Fetch categories from API
-    setCategories([
-      { value: 'tiles', label: 'Tiles' },
-      { value: 'building', label: 'Building Materials' },
-    ]);
-  }, []);
+    if (categoriesData) {
+      const mappedCategories = categoriesData.map((category: CategoryResponse) => ({
+        value: category.id,
+        label: category.name
+      }));
+      setCategories(mappedCategories);
+    }
+  }, [categoriesData]);
+
+  useEffect(() => {
+    if (subcategoriesData) {
+      const mappedSubcategories = subcategoriesData.map((subcategory: CategoryResponse) => ({
+        value: subcategory.id,
+        label: subcategory.name
+      }));
+      setSubcategories(mappedSubcategories);
+    }
+  }, [subcategoriesData]);
+
+  useEffect(() => {
+    if (productTypesData) {
+      const mappedProductTypes = productTypesData.map((productType: CategoryResponse) => ({
+        value: productType.id,
+        label: productType.name
+      }));
+      setProductTypes(mappedProductTypes);
+    }
+  }, [productTypesData]);
+
+  useEffect(() => {
+    if (measuringUnitsData) {
+      const mappedUnits = measuringUnitsData.map((unit: MeasuringUnit) => ({
+        value: unit.symbol,
+        label: `${unit.name} (${unit.symbol})`
+      }));
+      setMeasuringUnits(mappedUnits);
+    }
+  }, [measuringUnitsData]);
+
+  const handleMeasuringUnitChange = (value: string) => {
+    const selectedUnit = measuringUnitsData?.find(unit => unit.symbol === value);
+    if (selectedUnit) {
+      setMeasuringUnits([{ value: selectedUnit.symbol, label: selectedUnit.name }]);
+    }
+  };
+
+  const handleEditVariant = (index: number) => {
+    const variant = variants[index];
+    form.setFieldsValue(variant.values);
+    setIsVariantModalVisible(true);
+  };
+
+  const handleDeleteVariant = (index: number) => {
+    const newVariants = [...variants];
+    newVariants.splice(index, 1);
+    setVariants(newVariants);
+  };
 
   const handleCancel = (): void => {
     window.history.back();
@@ -99,52 +191,43 @@ const CreateProduct = () => {
 
 
   const handleNext = (): void => {
-    setCurrentStep(prev => Math.min(prev + 1, 2));
+    setCurrentStep(prev => Math.min(prev + 1, 1));
   };
 
   const handlePrevious = (): void => {
     setCurrentStep(prev => Math.max(prev - 1, 0));
   };
 
-  const handleCategoryChange = (selectedCategory: string) => {
-    // TODO: Fetch subcategories based on selected category
-    console.log('Selected category:', selectedCategory);
-    setSubcategories([
-      { value: 'wall-tiles', label: 'Wall Tiles' },
-      { value: 'floor-tiles', label: 'Floor Tiles' },
-    ]);
-    form.setFieldsValue({ subcategory: undefined, productType: undefined });
-  };
 
-  const handleSubcategoryChange = (selectedSubcategory: string) => {
-    // TODO: Fetch product types based on selected subcategory
-    console.log('Selected subcategory:', selectedSubcategory);
-    setProductTypes([
-      { value: 'ceramic', label: 'Ceramic' },
-      { value: 'porcelain', label: 'Porcelain' },
-    ]);
-    form.setFieldsValue({ productType: undefined });
+
+  const handleSubcategoryChange = (value: string) => {
+    setSelectedSubcategoryId(value);
+    setProductTypes([]); // Clear existing product types
+    form.setFieldValue('productType', undefined); // Clear product type selection
   };
 
   return (
     <>
       <div className="p-3 h-fit bg-gray-50">
         <div className="mb-4 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
-        <div className="flex items-center gap-4">
-          <Button
-            type="text"
-            icon={<ArrowLeftOutlined />}
-            onClick={handleCancel}
-          >
-            Back
-          </Button>
-          <Title level={4} className="!m-0">
-            Add Product
-          </Title>
+          <div>
+            <div className="flex items-center gap-4">
+              <Button
+                type="text"
+                icon={<ArrowLeftOutlined />}
+                onClick={handleCancel}
+              >
+                Back
+              </Button>
+              <Title level={4} className="!m-0">
+                Request to Add Product
+              </Title>
+            </div>
+          <p className="text-sm text-gray-500">Fill the form below to add a new product</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={handleCancel}>Cancel</Button>
-          {currentStep === 2 ? (
+          {currentStep === 1 ? (
             <Button type="primary" onClick={() => form.submit()}>
               Save
             </Button>
@@ -164,7 +247,7 @@ const CreateProduct = () => {
             </Button>
           )}
           <span className="text-gray-500">
-            Step {currentStep + 1} of 3
+            Step {currentStep + 1} of 2
           </span>
         </div>
 
@@ -212,9 +295,10 @@ const CreateProduct = () => {
                 rules={[{ required: true, message: 'Required' }]}
               >
                 <Select
-                  placeholder="Select sub category"
+                  placeholder={!selectedCategoryId ? "Select a category first" : "Select sub category"}
                   options={subcategories}
                   onChange={handleSubcategoryChange}
+                  disabled={!selectedCategoryId}
                 />
               </Form.Item>
 
@@ -224,8 +308,9 @@ const CreateProduct = () => {
                 rules={[{ required: true, message: 'Required' }]}
               >
                 <Select
-                  placeholder="Select product type"
+                  placeholder={!selectedSubcategoryId ? "Select a sub category first" : "Select product type"}
                   options={productTypes}
+                  disabled={!selectedSubcategoryId}
                 />
               </Form.Item>
 
@@ -274,33 +359,35 @@ const CreateProduct = () => {
 
               {variants.length > 0 && (
                 <div className="mt-4">
-                  <Table
-                    dataSource={variants}
-                    columns={[
-                      { title: 'Size', dataIndex: 'size' },
-                      { title: 'Finish Type', dataIndex: 'finishType' },
-                      { title: 'Shape Type', dataIndex: 'shapeType' },
-                      { title: 'Color', dataIndex: 'color' },
-                      {
-                        title: 'Action',
-                        key: 'action',
-                        render: (_, record, index) => (
-                          <Button 
-                            type="link" 
-                            danger 
-                            onClick={() => {
-                              const newVariants = [...variants];
-                              newVariants.splice(index, 1);
-                              setVariants(newVariants);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        ),
-                      },
-                    ]}
-                    pagination={false}
-                  />
+                  {variants.map((variant, index) => (
+                <div key={index} className="mb-4 p-4 border rounded-lg">
+                  <div className="grid grid-cols-2 gap-4">
+                    {variant.values && Object.entries(variant.values).map(([key, value]) => (
+                      <div key={key} className="flex gap-2">
+                        <span className="font-medium">{variant.labels?.[key] || key}:</span>
+                        <span className="px-2 py-1 bg-blue-50 rounded text-sm">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex gap-3">
+                    <Button 
+                      type="link" 
+                      className="text-blue-600 flex items-center gap-1"
+                      onClick={() => handleEditVariant(index)}
+                    >
+                      <span className="text-sm">Edit product variant</span>
+                    </Button>
+                    <Button 
+                      type="link" 
+                      danger 
+                      className="flex items-center gap-1"
+                      onClick={() => handleDeleteVariant(index)}
+                    >
+                      <span className="text-sm">Delete product variant</span>
+                    </Button>
+                  </div>
+                </div>
+              ))}
                 </div>
               )}
             </div>
@@ -309,53 +396,49 @@ const CreateProduct = () => {
           {currentStep === 1 && (
             <div>
               <Form.Item
-                label="Size"
-                name="size"
+                label="Unit Type"
+                name="measuringUnit"
                 rules={[{ required: true, message: 'Required' }]}
               >
-                <Input placeholder="Enter size" />
+                <Select
+                  placeholder="Select measuring unit"
+                  options={measuringUnits}
+                  onChange={handleMeasuringUnitChange}
+                  style={{ width: '100%' }}
+                />
               </Form.Item>
 
-              <Form.Item
-                label="Finish Type"
-                name="finishType"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Input placeholder="Enter finish type" />
-              </Form.Item>
+              {attributesData && attributesData.map((attr: InventoryAttribute) => (
+                <Form.Item
+                  key={attr.id}
+                  label={attr.attribute}
+                  name={attr.id}
+                  rules={[{ required: true, message: 'Required' }]}
+                >
+                  {attr.possible_values ? (
+                    <Select
+                      placeholder={`Select ${attr.attribute}`}
+                      options={attr.possible_values.map(value => ({ value, label: value }))}
+                      style={{ width: '100%' }}
+                      value={attributeValues[attr.id]}
+                      onChange={(value) => handleAttributeChange(attr.id, value)}
+                    />
+                  ) : (
+                    <Input 
+                      placeholder={`Enter ${attr.attribute}`}
+                      value={attributeValues[attr.id]}
+                      onChange={(e) => handleAttributeChange(attr.id, e.target.value)}
+                    />
+                  )}
+                </Form.Item>
+              ))}
 
-              <Form.Item
-                label="Shape Type"
-                name="shapeType"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Input placeholder="Enter shape type" />
-              </Form.Item>
-
-              <Form.Item
-                label="Color"
-                name="color"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Input placeholder="Enter color" />
-              </Form.Item>
-            </div>
-          )}
-
-          {currentStep === 2 && (
-            <div>
               <Form.Item
                 label="Cost Price"
                 name="costPrice"
                 rules={[{ required: true, message: 'Required' }]}
               >
-                <InputNumber
-                  min={0}
-                  className="w-full"
-                  placeholder="Enter cost price"
-                  formatter={(value) => (value ? `₦ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '')}
-                  parser={(value) => value?.replace(/₦\s?|(,*)/g, '') || '0'}
-                />
+                <Input placeholder="₦ Enter cost price" />
               </Form.Item>
 
               <Form.Item
@@ -363,61 +446,47 @@ const CreateProduct = () => {
                 name="sellingPrice"
                 rules={[{ required: true, message: 'Required' }]}
               >
-                <InputNumber
-                  min={0}
-                  className="w-full"
-                  placeholder="Enter selling price"
-                  formatter={(value) => (value ? `₦ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '')}
-                  parser={(value) => value?.replace(/₦\s?|(,*)/g, '') || '0'}
-                />
+                <Input placeholder="₦ Enter selling price" />
               </Form.Item>
 
               <Form.Item
                 label="Stock Quantity"
-                name="stockQuantity"
-                rules={[{ required: true, message: 'Required' }]}
+                name="quantity"
+                rules={[
+                  { required: true, message: 'Please enter the stock quantity' },
+                ]}
               >
-                <InputNumber
-                  min={0}
-                  className="w-full"
-                  placeholder="Enter stock quantity"
-                />
+                <InputNumber min={0} style={{ width: '100%' }} />
               </Form.Item>
 
               <Form.Item
                 label="Reorder Level"
                 name="reorderLevel"
-                rules={[{ required: true, message: 'Required' }]}
+                rules={[
+                  { required: true, message: 'Please enter the reorder level' },
+                ]}
               >
-                <InputNumber
-                  min={0}
-                  className="w-full"
-                  placeholder="Enter reorder level"
-                />
+                <InputNumber min={0} style={{ width: '100%' }} />
               </Form.Item>
 
               <Form.Item
                 label="Description"
                 name="description"
+                rules={[{ required: true, message: 'Please enter a description' }]}
               >
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Enter product description"
-                />
+                <Input.TextArea rows={3} />
               </Form.Item>
 
               <Form.Item
                 label="Product Tags"
                 name="tags"
+                rules={[{ required: true, message: 'Please enter tags' }]}
               >
-                <Select
-                  mode="tags"
-                  placeholder="Enter tags"
-                  style={{ width: '100%' }}
-                />
+                <Input placeholder="e.g cement, building, bag" />
               </Form.Item>
             </div>
           )}
+
         </Form>
         </div>
       </div>
@@ -441,73 +510,61 @@ const CreateProduct = () => {
       >
         <Form
           onFinish={(values) => {
-            setVariants([...variants, values]);
+            // Create a mapping of IDs to attribute names
+            const labels = variantAttributesData?.reduce((acc, attr) => ({
+              ...acc,
+              [attr.id]: attr.attribute
+            }), {}) || {};
+            
+            setVariants([...variants, { 
+              values: values || {},
+              labels: labels
+            }]);
             setIsVariantModalVisible(false);
           }}
           layout="vertical"
         >
-          <Form.Item
-            label="Size"
-            name="size"
-            rules={[{ required: true, message: 'Required' }]}
-          >
-            <Select placeholder="Select size">
-              <Select.Option value="60x60 cm">60x60 cm</Select.Option>
-              <Select.Option value="30x30 cm">30x30 cm</Select.Option>
-              <Select.Option value="45x45 cm">45x45 cm</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Finish Type"
-            name="finishType"
-          >
-            <Select placeholder="Select finish type">
-              <Select.Option value="Matte">Matte</Select.Option>
-              <Select.Option value="Glossy">Glossy</Select.Option>
-              <Select.Option value="Polished">Polished</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Shape Type"
-            name="shapeType"
-          >
-            <Select placeholder="Select shape type">
-              <Select.Option value="Square">Square</Select.Option>
-              <Select.Option value="Rectangle">Rectangle</Select.Option>
-              <Select.Option value="Hexagon">Hexagon</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Color"
-            name="color"
-          >
-            <Select
-              placeholder="Select color"
-              dropdownRender={(menu) => (
-                <div>
-                  {menu}
-                  <div className="p-2 border-t">
-                    <Button 
-                      type="link" 
-                      className="w-full text-left p-0"
-                      onClick={() => setIsColorModalVisible(true)}
-                    >
-                      + Add Color
-                    </Button>
-                  </div>
-                </div>
+          {!selectedCategoryId ? (
+            <div className="text-center p-4">
+              <p className="text-red-500 mb-2">Please select a product category in the main form first.</p>
+              <Button onClick={() => setIsVariantModalVisible(false)}>Close</Button>
+            </div>
+          ) : (
+            variantAttributesData && variantAttributesData.map((attr: InventoryAttribute) => (
+              <Form.Item
+                key={attr.id}
+                label={attr.attribute}
+                name={attr.id}
+                rules={[{ required: true, message: 'Required' }]}
+              >
+              {attr.possible_values ? (
+                <Select
+                  placeholder={`Select ${attr.attribute}`}
+                  options={attr.possible_values.map(value => ({ value, label: value }))}
+                  style={{ width: '100%' }}
+                  dropdownRender={menu => (
+                    <div>
+                      {menu}
+                      {attr.attribute.toLowerCase() === 'color' && (
+                        <div className="p-2 border-t">
+                          <Button 
+                            type="link" 
+                            className="w-full text-left p-0"
+                            onClick={() => setIsColorModalVisible(true)}
+                          >
+                            + Add Color
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                />
+              ) : (
+                <Input placeholder={`Enter ${attr.attribute}`} />
               )}
-            >
-              <Select.Option value="White">White</Select.Option>
-              <Select.Option value="Black">Black</Select.Option>
-              <Select.Option value="Cream">Cream</Select.Option>
-              <Select.Option value="Brown">Brown</Select.Option>
-              <Select.Option value="Grey">Grey</Select.Option>
-            </Select>
-          </Form.Item>
+              </Form.Item>
+            ))
+          )}
 
           <div className="flex justify-end gap-2">
             <Button onClick={() => setIsVariantModalVisible(false)}>Cancel</Button>
