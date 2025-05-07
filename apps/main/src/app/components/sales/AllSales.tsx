@@ -9,6 +9,9 @@ import TableWrapper from '../common/Table/TableWrapper';
 import TableStats from '../common/TableStats';
 import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
 import { OrdersTable } from './table/salesTable';
+import { FilterCategory } from '../common/filters/MultiOptionsFilter';
+import { useMemo } from 'react';
+import { FilterState } from '../../types/table';
 
 export interface TabStatsinterface {
   total_sales: number;
@@ -21,31 +24,11 @@ export interface SalesDataInterface {
   data: PaginatedResponse<SalesOrder>;
   stats: TabStatsinterface;
 }
-export interface SalesProps {
+export interface SalesProps extends FilterState {
   data: SalesDataInterface;
   isLoading: boolean;
-  searchValue: string;
-  setSearchValue: (searchValue: string) => void;
-  periodFilter: string;
-  setPeriodFilter: (periodFilter: string) => void;
-  sortBy: string;
-  setSortBy: (sortBy: string) => void;
-  sortOrder: string;
-  setSortOrder: (sortOrder: string) => void;
-  reset: () => void;
-  periodOptions: FilterOption[];
   title: string;
   description: string;
-  currentPage: number;
-  pageSize?: number;
-  setPage: (page: number) => void;
-  status: string;
-  setStatus: (status: string) => void;
-  setCustomDateRange: (dates: DateRange, dateStrings: string[]) => void;
-  handleFilterChange: (filterKey: string, value: string) => void;
-  filterValue: string;
-  onExport: (value: string) => void;
-  updateLimitSize: (page: number, pageSize: number) => void;
 }
 const AllSales = ({
   data,
@@ -56,40 +39,43 @@ const AllSales = ({
   title,
   description,
   currentPage,
-  pageSize,
   setPage,
   setCustomDateRange,
   handleFilterChange,
   filterValue,
   onExport,
   updateLimitSize,
+  filterOptions,
 }: SalesProps) => {
-  const tableStatsData = [
-    {
-      label: 'Total Sales',
-      value: `${data?.stats?.total_sales ?? 0}`,
-      valueBgColor: '#E6F7FF',
-      valueColor: '#003399',
-    },
-    {
-      label: 'Total Sales Value',
-      value: `${formatBalance(data?.stats?.total_sales_value ?? 0)}`,
-      valueBgColor: '#E6FFFB',
-      valueColor: '#08979C',
-    },
-    {
-      label: 'Online Sales',
-      value: `${formatBalance(data?.stats?.online_sales ?? 0)}`,
-      valueBgColor: '#F9F0FF',
-      valueColor: '#722ED1',
-    },
-    {
-      label: 'Offline Saless',
-      value: `${formatBalance(data?.stats?.offline_sales ?? 0)}`,
-      valueBgColor: '#FFFBE6',
-      valueColor: '#D48806',
-    },
-  ];
+  const tableStatsData = useMemo(
+    () => [
+      {
+        label: 'Total Sales',
+        value: `${data?.stats?.total_sales ?? 0}`,
+        valueBgColor: '#E6F7FF',
+        valueColor: '#003399',
+      },
+      {
+        label: 'Total Sales Value',
+        value: `${formatBalance(data?.stats?.total_sales_value ?? 0)}`,
+        valueBgColor: '#E6FFFB',
+        valueColor: '#08979C',
+      },
+      {
+        label: 'Online Sales',
+        value: `${formatBalance(data?.stats?.online_sales ?? 0)}`,
+        valueBgColor: '#F9F0FF',
+        valueColor: '#722ED1',
+      },
+      {
+        label: 'Offline Saless',
+        value: `${formatBalance(data?.stats?.offline_sales ?? 0)}`,
+        valueBgColor: '#FFFBE6',
+        valueColor: '#D48806',
+      },
+    ],
+    [data?.stats]
+  );
 
   return (
     <div className="space-y-3">
@@ -130,6 +116,7 @@ const AllSales = ({
         onFilterChange={handleFilterChange}
         selectedFilter={filterValue}
         onExport={onExport}
+        filterOptions={filterOptions}
       >
         <OrdersTable
           data={data?.data?.data}

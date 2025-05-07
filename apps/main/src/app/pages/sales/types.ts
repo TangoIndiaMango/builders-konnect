@@ -1,3 +1,8 @@
+import { FilterCategory } from "../../components/common/filters/MultiOptionsFilter";
+import { SalesDataInterface } from "../../components/sales/AllSales";
+import { FilterOption } from "../../store/table";
+import { DateRange } from '../../components/date/DatePickerrComp';
+
 export interface DiscountType {
   all_products: number;
   category: number | null;
@@ -126,4 +131,33 @@ export interface CustomerType {
   export interface Fees {
     tax: number;
     service_fee: number;
+  }
+
+
+  export interface SalesProps {
+    data: SalesDataInterface;
+    isLoading: boolean;
+    searchValue: string;
+    setSearchValue: (searchValue: string) => void;
+    periodFilter: string;
+    setPeriodFilter: (periodFilter: string) => void;
+    sortBy: string;
+    setSortBy: (sortBy: string) => void;
+    sortOrder: string;
+    setSortOrder: (sortOrder: string) => void;
+    reset: () => void;
+    periodOptions: FilterOption[];
+    title: string;
+    description: string;
+    currentPage: number;
+    pageSize?: number;
+    setPage: (page: number) => void;
+    status: string;
+    setStatus: (status: string) => void;
+    setCustomDateRange: (dates: DateRange, dateStrings: string[]) => void;
+    handleFilterChange: (filterKey: string, value: string) => void;
+    filterValue: string;
+    onExport: (value: string) => void;
+    updateLimitSize: (page: number, pageSize: number) => void;
+    filterOptions: FilterCategory[];
   }

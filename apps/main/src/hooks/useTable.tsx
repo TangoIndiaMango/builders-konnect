@@ -1,25 +1,34 @@
+/**
+ * This hook is used to manage various states. But you can also use the atom directly.
+ * e.g you want only search
+ * const {searchValue, setSearch} = useTableState('tableName')
+ * pass it into the SearchInput component
+ * <SearchInput value={searchValue} onChange={setSearch} />
+ * =====******======
+ * using the atom directly
+ * const [search, setSearch] = useAtom(atoms.search);
+ * <Input value={search} onChange={(e) => setSearch(e.target.value)} />
+ */
+
+
 import { useAtom } from 'jotai';
 import { createTableAtoms, defaultTableState } from '../app/store/table';
 import useDebounce from './useDebounce';
 import { useCallback, useMemo, useState } from 'react';
 import type { Dayjs } from 'dayjs';
+
 export const useTableState = (tableName: string) => {
   const atoms = useMemo(() => createTableAtoms(tableName), [tableName]);
   const [tableState, setTableState] = useAtom(atoms.tableState);
   const [searchTerm, setSearchTerm] = useAtom(atoms.search);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortBy, setSortBy] = useState('');
-  const [sortOrder, setSortOrder] = useState('');
   const [status, setStatus] = useState('');
   const [dateFilter, setDateFilter] = useState('');
   const [customFilter, setCustomFilter] = useState('');
   const [customFilterLabel, setCustomFilterLabel] = useState('');
-  const [dateRange, setDateRange] = useState<string>('');
-  const [filterKey, setFilterKey] = useState<string>('');
-  const [filterValue, setFilterValue] = useState<string>('');
-  const [exportType, setExportType] = useState<string>('');
-  const [limitSize, setLimitSize] = useState<number>(10);
+  const [dateRange, setDateRange] = useAtom(atoms.customDateRange);
+  const [filterKey, setFilterKey] = useAtom(atoms.filterKey);
+  const [filterValue, setFilterValue] = useAtom(atoms.filterValue);
+  const [exportType, setExportType] = useAtom(atoms.exportType);
 
   const onRangeChange = (
     dates: null | (Dayjs | null)[],
@@ -28,7 +37,7 @@ export const useTableState = (tableName: string) => {
     if (dates) {
       // console.log('From: ', dates[0], ', to: ', dates[1]);
       // console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
-      setDateRange(dateStrings[0]+'|'+dateStrings[1]);
+      setDateRange(dateStrings[0] + '|' + dateStrings[1]);
     } else {
       setDateRange('');
     }
@@ -44,25 +53,24 @@ export const useTableState = (tableName: string) => {
   );
 
   const handlePageChange = useCallback(
-    (page: number, pageSize: number) => {
-      setCurrentPage(page);
-      setPageSize(pageSize);
+    (page: number) => {
+      setTableState({ ...tableState, page });
     },
-    [setCurrentPage, setPageSize]
+    [setTableState]
   );
 
   const handleSortChange = useCallback(
     (value: string) => {
-      setSortBy(value);
+      setTableState({ ...tableState, sortBy: value });
     },
-    [setSortBy]
+    [setTableState]
   );
 
   const handleSortOrderChange = useCallback(
     (value: string) => {
-      setSortOrder(value);
+      setTableState({ ...tableState, sortOrder: value });
     },
-    [setSortOrder]
+    [setTableState]
   );
 
   const handleStatusChange = useCallback(
@@ -110,18 +118,13 @@ export const useTableState = (tableName: string) => {
 
   const handleLimitSizeChange = useCallback(
     (page: number, pageSize: number) => {
-      setLimitSize(pageSize);
+      setTableState({ ...tableState, page, pageSize });
     },
-    [setLimitSize]
+    [setTableState]
   );
-
 
   const handleReset = () => {
     setTableState(defaultTableState);
-    setCurrentPage(1);
-    setPageSize(10);
-    setSortBy('');
-    setSortOrder('');
     setStatus('');
     setDateFilter('');
     setCustomFilter('');
@@ -129,7 +132,6 @@ export const useTableState = (tableName: string) => {
     setFilterKey('');
     setFilterValue('');
     setExportType('');
-    setLimitSize(10);
   };
 
   return {
@@ -150,14 +152,14 @@ export const useTableState = (tableName: string) => {
     customFilterOptions: tableState.customFilterOptions,
 
     // Pagination
-    currentPage,
-    pageSize,
+    currentPage: tableState.page,
+    pageSize: tableState.pageSize,
     setPage: handlePageChange,
 
     // Sorting
-    sortBy,
+    sortBy: tableState.sortBy,
     setSortBy: handleSortChange,
-    sortOrder,
+    sortOrder: tableState.sortOrder,
     setSortOrder: handleSortOrderChange,
     // Status
     status,
@@ -166,7 +168,6 @@ export const useTableState = (tableName: string) => {
     // Date Filter
     dateFilter,
     setDateFilter: handleDateFilterChange,
-
 
     // Filter
     filterKey,
@@ -187,7 +188,7 @@ export const useTableState = (tableName: string) => {
     setExportType: handleExportChange,
 
     // Limit Size
-    limitSize,
+    limitSize: tableState.limitSize,
     setLimitSize: handleLimitSizeChange,
   };
 };

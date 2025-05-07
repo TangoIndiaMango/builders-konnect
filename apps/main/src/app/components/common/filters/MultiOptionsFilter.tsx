@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
 import { Dropdown } from 'antd';
 
-interface Option {
+export interface Option {
   label: string;
   value: string;
 }
 
-interface FilterCategory {
+export interface FilterCategory {
   label: string;
   key: string;
   options: Option[];

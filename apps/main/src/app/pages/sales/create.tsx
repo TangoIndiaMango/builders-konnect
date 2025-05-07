@@ -1,30 +1,24 @@
-import { ArrowLeftOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Button, Form, notification, Spin, Typography } from 'antd';
+import { Button, Form, notification } from 'antd';
 import { useEffect, useState } from 'react';
-import Container from '../../components/common/Container';
-import { SearchInput } from '../../components/common/SearchInput';
-import { CustomerSection } from '../../components/sales/CustomerSection';
-import { ProductSearch } from '../../components/sales/ProductSearch';
-import { ProductTable } from '../../components/sales/ProductTable';
-import { Customer, Product } from '../../lib/mockData';
-import { DiscountSection } from '../../components/sales/DiscountSection';
 import { useNavigate } from 'react-router';
-import NavigationBack from '../../components/common/NavigationBack';
-import { useCheckOut } from '../../../service/sales/salesFN';
-import { useGetCustomers } from '../../../service/customer/customerFN';
-import { useGetDiscounts } from '../../../service/discount/discountsFN';
-import { CustomerType, DiscountType, OrderSummary, ProductType } from './types';
-import { formatBalance } from '../../../utils/helper';
 import {
   useCreateData,
-  useFetchData,
-  useFetchPostData,
+  useFetchData
 } from '../../../hooks/useApis';
-import PaymentMethodModal from '../../components/sales/PaymentMethodModal';
-import PaymentAmountModal from '../../components/sales/PaymentAmountModal';
-import SuccessModal from '../../components/common/SuccessModal';
-import DiscountModalAdd from '../../components/sales/DiscountModalAdd';
 import { useProductDiscounts } from '../../../hooks/useProductDiscount';
+import { useGetCustomers } from '../../../service/customer/customerFN';
+import { useCheckOut } from '../../../service/sales/salesFN';
+import { formatBalance } from '../../../utils/helper';
+import Container from '../../components/common/Container';
+import NavigationBack from '../../components/common/NavigationBack';
+import SuccessModal from '../../components/common/SuccessModal';
+import { CustomerSection } from '../../components/sales/CustomerSection';
+import { DiscountSection } from '../../components/sales/DiscountSection';
+import PaymentAmountModal from '../../components/sales/PaymentAmountModal';
+import PaymentMethodModal from '../../components/sales/PaymentMethodModal';
+import { ProductSearch } from '../../components/sales/ProductSearch';
+import { ProductTable } from '../../components/sales/ProductTable';
+import { CustomerType, DiscountType, OrderSummary, ProductType } from './types';
 
 export interface calculateAmountInterface {
   line_items: {

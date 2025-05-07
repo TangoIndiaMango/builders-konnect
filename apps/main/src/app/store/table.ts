@@ -1,3 +1,9 @@
+
+/**
+ * This is the table atom/store.
+ * We have some atoms destructured because we want to be able to call them independently in components without getting the whole table state.
+ */
+
 export interface FilterOption {
   label: string;
   value: string;
@@ -10,11 +16,20 @@ export interface TableStateData {
   startDate: Date | null;
   endDate: Date | null;
   page: number;
-
+  pageSize: number;
   // For configurable options
   periodOptions: FilterOption[];
   customFilterOptions: FilterOption[]; // store/order options
   customFilterLabel?: string; // "Store" or "Order" etc
+
+  // Need to add
+  filterKey?: string;
+  filterValue?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  limitSize?: number;
+  exportType?: string;
+  customDateRange?: string;
 }
 
 // atoms.ts
@@ -28,6 +43,14 @@ export const defaultTableState: TableStateData = {
   startDate: null,
   endDate: null,
   page: 1,
+  pageSize: 10,
+  filterKey: '',
+  filterValue: '',
+  sortBy: '',
+  sortOrder: '',
+  limitSize: 10,
+  exportType: '',
+  customDateRange: '',
   periodOptions: [
     { label: 'This Month', value: 'this_month' },
     { label: 'Last Month', value: 'last_month' },
@@ -72,12 +95,43 @@ export const createTableAtoms = (tableName: string) => {
     }
   );
 
-  // ... other specific atoms
+  const filterKeyAtom = atom(
+    (get) => get(tableStateAtom).filterKey,
+    (get, set, newValue: string) => {
+      set(tableStateAtom, { filterKey: newValue });
+    }
+  );
+
+  const filterValueAtom = atom(
+    (get) => get(tableStateAtom).filterValue,
+    (get, set, newValue: string) => {
+      set(tableStateAtom, { filterValue: newValue });
+    }
+  );
+
+  const exportTypeAtom = atom(
+    (get) => get(tableStateAtom).exportType,
+    (get, set, newValue: string) => {
+      set(tableStateAtom, { exportType: newValue });
+    }
+  );
+
+  const customDateRangeAtom = atom(
+    (get) => get(tableStateAtom).customDateRange,
+    (get, set, newValue: string) => {
+      set(tableStateAtom, { customDateRange: newValue });
+    }
+  );
+
 
   return {
     tableState: tableStateAtom,
     search: searchAtom,
     periodFilter: periodFilterAtom,
+    filterKey: filterKeyAtom,
+    filterValue: filterValueAtom,
+    exportType: exportTypeAtom,
+    customDateRange: customDateRangeAtom,
     // ... other atoms
   };
 };

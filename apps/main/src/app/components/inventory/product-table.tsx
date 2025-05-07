@@ -8,17 +8,12 @@ import type { ColumnsType } from 'antd/es/table'; // important!
 import type { ProductData as APIProductData } from '../../../service/inventory/inventory.types';
 import { formatBalance } from '../../../utils/helper';
 import dayjs from 'dayjs';
+import { DataTableProps } from '../../types/table';
 
 export type ProductTableData = APIProductData & { key: string };
 
-interface ProductTableProps {
+interface ProductTableProps extends DataTableProps {
   data: ProductTableData[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  per_page: number;
-  showCheckbox?: boolean;
 }
 
 export const ProductTable = ({
@@ -27,8 +22,9 @@ export const ProductTable = ({
   onPageChange,
   loading,
   total,
-  per_page,
   showCheckbox = true,
+  perPage,
+  updateLimitSize,
 }: ProductTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } =
     useSelection<ProductTableData>({
@@ -55,7 +51,7 @@ export const ProductTable = ({
                 ? record.primary_media_url
                 : `https://placehold.co/150x150/E6F7FF/black?text=${record.name
                     ?.split(' ')
-                    .map((word) => word[0])
+                    .map((word) => word[0]?.toUpperCase())
                     .join('')}`
             }
             alt={record.name}
@@ -160,10 +156,11 @@ export const ProductTable = ({
         total={total}
         showCheckbox={showCheckbox}
         striped
-        pageSize={per_page}
+        pageSize={perPage}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
+        updateLimitSize={updateLimitSize}
         scroll={{ x: '1000px' }} // Add scroll for responsive behavior
       />
     </div>

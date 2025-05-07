@@ -1,13 +1,17 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  useFetchData
+  useFetchData,
+  useGetExportData
 } from '../../../hooks/useApis';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 import DiscountList from '../../components/discount/DiscountList';
 import { DiscountListResponse } from './types';
+import { exportCsvFromString } from '../../../utils/helper';
+import { useTableState } from '../../../hooks/useTable';
+import { StaffFilterOptions } from '../staff/constant';
 /**
  * paginate
 1
@@ -34,39 +38,59 @@ export interface Role {
 const DiscountHome = () => {
   const navigate = useNavigate();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [status, setStatus] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const {
+    searchValue,
+    setSearch,
+    currentPage,
+    pageSize,
+    setPage,
+    reset,
+    customDateRange,
+    setCustomDateRange,
+    filterKey,
+    filterValue,
+    handleFilterChange,
+    exportType,
+    setExportType,
+    limitSize,
+    setLimitSize,
+  } = useTableState('discount');
+  const exportDiscount = useGetExportData(`merchants/discounts?export=${exportType}`);
+
+  const handleExport = () => {
+    exportDiscount.mutate(null as any, {
+      onSuccess: (data) => {
+        exportCsvFromString(data, 'Discounts');
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      onSettled: () => {
+        setExportType('');
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (exportType) {
+      handleExport();
+    }
+  }, [exportType]);
+
 
   const filterOptions = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
   ];
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-  };
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
-
-  const handleFilterChange = (value: string) => {
-    setStatus(value);
-  };
-
-  const handleDateFilterChange = (value: string) => {
-    setDateFilter(value);
-  };
-
-  const handleSortByChange = (value: string) => {
-    setSortBy(value);
-  };
 
   const [tab, setTab] = useState('staff');
   const discount = useFetchData(
-    `merchants/discounts?paginate=1&page=${currentPage}&status=${status}&date_filter=${dateFilter}&sort_by=${sortBy}&q=${searchQuery}`
+    `merchants/discounts?paginate=1&page=${currentPage}&status=${
+      filterKey === 'status' ? filterValue : ''
+    }&date_filter=${customDateRange ?? ''}&sort_by=${
+      filterKey === 'sort_by' ? filterValue : ''
+    }&q=${searchValue ?? ''}&limit=${limitSize ?? 10}`
   );
 
   const discountListResponse: DiscountListResponse = discount?.data?.data;
@@ -113,13 +137,17 @@ const DiscountHome = () => {
           data={discountListResponse}
           isLoading={discount?.isLoading}
           currentPage={currentPage}
-          handlePageChange={handlePageChange}
-          handleSearch={handleSearch}
+          setPage={setPage}
+          setSearchValue={setSearch}
           handleFilterChange={handleFilterChange}
-          filterOptions={filterOptions}
-          selectedFilter={status}
-          handleDateFilterChange={handleDateFilterChange}
-          selectedDateFilter={dateFilter}
+          filterOptions={StaffFilterOptions}
+          onExport={handleExport}
+          filterValue={filterValue ?? ''}
+          setCustomDateRange={setCustomDateRange}
+          pageSize={pageSize}
+          reset={reset}
+          updateLimitSize={setLimitSize}
+          searchValue={searchValue}
         />
       </div>
 

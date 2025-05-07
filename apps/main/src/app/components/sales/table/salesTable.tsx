@@ -7,20 +7,13 @@ import { useSelection } from '../../../../hooks/useSelection';
 import { formatBalance, getStatusColor } from '../../../../utils/helper';
 import { SalesOrder } from '../../../pages/sales/types';
 import { PaginatedTable, type DataType } from '../../common/Table/Table';
-
+import { DataTableProps } from '../../../types/table';
 
 // Create a type that combines SalesOrder with required key
 type SalesOrderWithKey = SalesOrder & DataType;
 
-interface OrdersTableProps {
+interface OrdersTableProps extends DataTableProps {
   data: SalesOrder[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  perPage: number;
-  showCheckbox?: boolean;
-  updateLimitSize?: (page: number, pageSize: number) => void;
 }
 
 export const OrdersTable = ({

@@ -9,27 +9,7 @@ import ConfirmModal from '../../components/common/ConfirmModal';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 import AllSales from '../../components/sales/AllSales';
 import { exportCsvFromString } from '../../../utils/helper';
-
-const tabConfigs = [
-  {
-    key: 'all',
-    label: 'All Sales',
-    title: 'All Sales',
-    description: "You're viewing all sales order below.",
-  },
-  {
-    key: 'mop',
-    label: 'Online Sales',
-    title: 'Online Sales',
-    description: "You're viewing all online sales order below.",
-  },
-  {
-    key: 'pos',
-    label: 'In-store Sales',
-    title: 'In-store Sales',
-    description: "You're viewing all in-store sales order below.",
-  },
-];
+import { SalesFilterOptions, SalesTabConfigs } from './constant';
 
 const SalesHome = () => {
   const [pauseSalesOpened, setPauseSalesOpened] = useState<boolean>(false);
@@ -41,13 +21,6 @@ const SalesHome = () => {
     currentPage,
     pageSize,
     setPage,
-    sortBy,
-    sortOrder,
-    setSortBy,
-    setSortOrder,
-    status,
-    setStatus,
-    setCustomFilter,
     reset,
     customDateRange,
     setCustomDateRange,
@@ -60,18 +33,14 @@ const SalesHome = () => {
     setLimitSize,
   } = useTableState('sales');
 
-  const filterOptions = [
-    { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' },
-  ];
-
   const [tab, setTab] = useState<string>('pos');
+
   const { data: sales, isLoading } = useGetSales({
     paginate: 1,
     limit: limitSize,
     sales_type: tab === 'all' ? '' : tab,
     q: searchValue,
-    sort_by: sortBy,
+    sort_by: filterKey === 'sort_by' ? filterValue : '',
     payment_status: filterKey === 'payment_status' ? filterValue : '',
     order_status: filterKey === 'order_status' ? filterValue : '',
     date_filter: customDateRange,
@@ -108,7 +77,7 @@ const SalesHome = () => {
 
   const items: TabsProps['items'] = useMemo(
     () =>
-      tabConfigs.map((tab) => ({
+      SalesTabConfigs.map((tab) => ({
         key: tab.key,
         label: tab.label,
         children: (
@@ -117,24 +86,16 @@ const SalesHome = () => {
             isLoading={isLoading}
             currentPage={currentPage}
             pageSize={pageSize}
-            setPage={(page: number) => setPage(page, pageSize)}
+            setPage={setPage}
             searchValue={searchValue}
-            setSearchValue={(value: string) => setSearch(value)}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            setSortBy={(value: string) => setSortBy(value)}
-            setSortOrder={(value: string) => setSortOrder(value)}
-            status={status}
-            setStatus={(value: string) => setStatus(value)}
+            setSearchValue={setSearch}
             reset={reset}
-            periodOptions={filterOptions}
-            periodFilter={customDateRange}
-            setPeriodFilter={(value: string) => setCustomFilter(value)}
+            filterOptions={SalesFilterOptions}
             title={tab.title}
             description={tab.description}
             setCustomDateRange={setCustomDateRange}
             handleFilterChange={handleFilterChange}
-            filterValue={filterValue}
+            filterValue={filterValue ?? ''}
             onExport={setExportType}
             updateLimitSize={setLimitSize}
           />

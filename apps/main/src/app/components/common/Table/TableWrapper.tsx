@@ -1,13 +1,10 @@
 import { FilterOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Menu } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { ExportDropdown } from '../ExportDropdown';
 import { SearchInput } from '../SearchInput';
-import FilterDropdown from '../filters/FilterDropdown';
 import MultiOptionsFilter from '../filters/MultiOptionsFilter';
 
 interface TableFiltersProps {
-  onSearch?: (value: string) => void;
   showTimeline?: boolean;
   children: React.ReactNode;
   filterOptions?: any;
@@ -15,47 +12,19 @@ interface TableFiltersProps {
   selectedFilter?: string;
   searchValue: string;
   setSearchValue: (value: string) => void;
-  onExport: (value: string) => void;
+  onExport?: (value: string) => void;
 }
-
-const filterOpts = [
-  {
-    label: 'Payment Status',
-    key: 'payment_status',
-    options: [
-      { label: 'Paid', value: 'paid' },
-      { label: 'Unpaid', value: 'unpaid' },
-      { label: 'Refunded', value: 'refunded' },
-    ],
-  },
-  {
-    label: 'Order Status',
-    key: 'order_status',
-    options: [
-      { label: 'Pending', value: 'pending' },
-      { label: 'Processing', value: 'processing' },
-      { label: 'Completed', value: 'completed' },
-      { label: 'Cancelled', value: 'cancelled' },
-    ],
-  },
-];
 
 const TableWrapper = ({
   children,
-  filterOptions = filterOpts,
+  filterOptions = [],
   onFilterChange,
   selectedFilter = 'Filter by',
   searchValue,
   setSearchValue,
   onExport,
 }: TableFiltersProps) => {
-  // const handleFilterChange = (filterKey: string, value: string) => {
-  //   // Do something with filterKey and value
-  //   console.log(filterKey, "filterKey");
-  //   console.log(value, "value");
-  // };
-
-  console.log(selectedFilter, 'onFilterChange');
+  // console.log(selectedFilter, 'onFilterChange');
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
@@ -70,8 +39,6 @@ const TableWrapper = ({
               </span>
             }
           />
-
-
 
           <SearchInput
             placeholder="Search with order no."
