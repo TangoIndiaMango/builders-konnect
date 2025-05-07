@@ -1,33 +1,32 @@
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Divider, Menu } from 'antd';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTableState } from '../../../hooks/useTable';
+import DisplayHeader from '../../components/common/DisplayHeader';
+import DateFilter from '../../components/common/filters/DateFilter';
+import TableWrapper from '../../components/common/Table/TableWrapper';
+import TableStats from '../../components/common/TableStats';
 import { EmptyInventoryState } from '../../components/inventory/empty-inventory-state';
 import { InventoryTable } from '../../components/inventory/inventoryTable';
 import {
   productData,
   productNumbersData,
 } from '../../lib/mockData/productData';
-import TableWrapper from '../../components/common/Table/Inventory';
-import { useState } from 'react';
-import TableStats from '../../components/common/TableStats';
-import DisplayHeader from '../../components/common/DisplayHeader';
-import DateFilter from '../../components/common/filters/DateFilter';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { filterOptions } from '../../lib/constant';
 
 const Inventory = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  // const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-
-  const handleSearch = (value: string) => {
-    console.log('Searching for:', value);
-    setSearchQuery(value);
-    // Implement your search logic here
-  };
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-  };
+  const {
+    searchValue,
+    setSearch,
+    filterValue,
+    handleFilterChange,
+    currentPage,
+    setPage,
+  } = useTableState('products');
 
   const menu = (
     <Menu
@@ -53,22 +52,22 @@ const Inventory = () => {
   return (
     <div className="h-full">
       {/* HEADER */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white mb-2 p-4 sm:p-6">
+      <div className="flex flex-col gap-4 p-4 mb-2 bg-white sm:flex-row sm:items-center sm:justify-between sm:p-6">
         {/* Title & Description */}
         <div>
           <div className="flex items-center gap-3">
             <div onClick={() => navigate(-1)} className="cursor-pointer">
-              <ArrowLeftOutlined className="text-xl mt-1 text-black font-medium" />
+              <ArrowLeftOutlined className="mt-1 text-xl font-medium text-black" />
             </div>
             <h1 className="text-2xl font-semibold">Inventory</h1>
           </div>
-          <p className="text-gray-500 text-sm">
+          <p className="text-sm text-gray-500">
             Track and measure stock levels here
           </p>
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-5">
           <Button
             className="rounded !bg-[#CF1322] text-white"
             size="large"
@@ -88,7 +87,7 @@ const Inventory = () => {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="space-y-3 bg-white p-4 sm:p-10">
+      <div className="p-4 space-y-3 bg-white sm:p-10">
         {/* Header + Filter */}
         <DisplayHeader
           title="All Products"
@@ -97,7 +96,7 @@ const Inventory = () => {
         />
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {productNumbersData?.map((item, index) => (
             <TableStats
               key={index}
@@ -115,11 +114,17 @@ const Inventory = () => {
         {productData.length === 0 ? (
           <EmptyInventoryState />
         ) : (
-          <TableWrapper onSearch={handleSearch}>
+          <TableWrapper
+            searchValue={searchValue}
+            setSearchValue={setSearch}
+            filterOptions={filterOptions}
+            selectedFilter={filterValue}
+            onFilterChange={handleFilterChange}
+          >
             <InventoryTable
               data={productData}
               currentPage={currentPage}
-              onPageChange={handlePageChange}
+              onPageChange={setPage}
               loading={loading}
               showCheckbox={true}
               total={productData.length}

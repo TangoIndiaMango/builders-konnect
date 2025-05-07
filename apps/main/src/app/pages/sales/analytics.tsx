@@ -6,9 +6,12 @@ import SalesAnalyticsStats from '../../components/sales/analytics/Stats';
 import ReturnRate from '../../components/sales/analytics/ReturnRate';
 import TopSellingProducts from '../../components/sales/analytics/TopSellingProducts';
 import RevenueAnalytics from '../../components/sales/analytics/RevenueAnalytics';
+import { useFetchData } from '../../../hooks/useApis';
 
-const data = []
+
+
 const SalesAnalytics = () => {
+
   return (
     <div className="space-y-5">
       <PageIntroBanner

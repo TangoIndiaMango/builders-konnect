@@ -1,26 +1,30 @@
 import { Route, Routes } from 'react-router-dom';
-import RegisterVendor from './pages/auth/register-vendor';
-import AuthOutlet from './pages/auth/auth-outlets';
-import Login from './pages/auth/login';
-import ForgotPassword from './pages/auth/forgot-password';
-import CreatePassword from './pages/auth/create-vendor-account';
-import ChangePassword from './pages/auth/change-password';
-import MultipleAccounts from './pages/auth/multiple-accounts';
-import DashboardHome from './pages/home';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
+import AuthOutlet from './pages/auth/auth-outlets';
+import ChangePassword from './pages/auth/change-password';
+import CreatePassword from './pages/auth/create-vendor-account';
+import ForgotPassword from './pages/auth/forgot-password';
+import Login from './pages/auth/login';
+import MultipleAccounts from './pages/auth/multiple-accounts';
+import RegisterVendor from './pages/auth/register-vendor';
+import DiscountHome from './pages/discount';
+import DiscountCreate from './pages/discount/create';
+import DiscountOutlet from './pages/discount/outlet';
+import DashboardHome from './pages/home';
+import VendorHomeOutlet from './pages/home/dashboard-outlet';
+import EditProduct from './pages/inventory/EditProduct';
 import NotFound from './pages/NotFound';
 import VendorProfile from './pages/profile';
 import VendorProfileOutlet from './pages/profile/profile-outlet';
-import VendorHomeOutlet from './pages/home/dashboard-outlet';
-import SalesOutlet from './pages/sales/outlet';
+import SingleStoreDetails from './pages/profile/views/single-store';
 import SalesHome from './pages/sales';
-import CreateSales from './pages/sales/create';
-import { OrderView } from './components/sales/view/OrderView';
-import SalesViewPage from './pages/sales/view';
-import PauseSales from './pages/sales/pause-sales';
 import SalesAnalytics from './pages/sales/analytics';
-import StaffOutlet from './pages/staff/outlet';
+import CreateSales from './pages/sales/create';
+import SalesOutlet from './pages/sales/outlet';
+import PauseSales from './pages/sales/pause-sales';
+import SalesViewPage from './pages/sales/view';
 import StaffHome from './pages/staff';
+import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
 import AddRole from './pages/staff/add-role';
 import InventoryOutlet from './pages/inventory/inventory-outlet';
@@ -38,11 +42,6 @@ import ProductPreview from './pages/inventory/previewProduct';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
 import AddStaffPassword from './pages/auth/add-staff-password';
-import CustomersList from './pages/customers/customers-list';
-import CustomersOutlet from './pages/customers/customer-outlet';
-import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
-import ViewReview from './components/customers/VeiwReview';
-
 const App = () => {
   return (
     <>
@@ -79,6 +78,7 @@ const App = () => {
         }
       >
         <Route index element={<VendorProfile />} />
+        <Route path="store/:id" element={<SingleStoreDetails />} />
       </Route>
 
       <Route
@@ -122,6 +122,7 @@ const App = () => {
         <Route path="inventories" element={<Inventory />} />
         <Route path="edit" element={<EditInventoryPage />} />
         <Route path="edit/:id" element={<EditInventoryById />} />
+        <Route path="edit-product/:id" element={<EditProduct />} />
         <Route path="trigger-reorder" element={<TriggerReorder />} />
         <Route
           path="create-product-by-search"
@@ -129,24 +130,24 @@ const App = () => {
         />
         <Route path="add-product" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
-        <Route path=" " element={<ProductPreview />} />
+        <Route path="product-preview" element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
-        <Route path="add-bulk-product" element={<AddBulkProductPage/>} />
+        <Route path="add-bulk-product" element={<AddBulkProductPage />} />
       </Route>
 
       <Route
-        path="pos/customers"
+        path="pos/discounts"
         element={
           <ProtectedRoute>
-            <CustomersOutlet />
+            <DiscountOutlet />
           </ProtectedRoute>
         }
       >
-        <Route path="list" element={<CustomersList />} />
-        <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
-        <Route path="product-review/view/:id" element={<ViewReview />} />
+        <Route index element={<DiscountHome />} />
+        <Route path="create" element={<DiscountCreate />} />
+        <Route path="edit/:id" element={<DiscountCreate />} />
       </Route>
-  
+
       <Route path="*" element={<NotFound />} />
     </Routes>
     </>

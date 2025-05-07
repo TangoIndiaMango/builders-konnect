@@ -33,7 +33,10 @@ export const useGetExportData = (url: string) => {
   const mutation = useMutation({
     mutationFn: async () => {
       const response = await axiosInstance.get(baseUrl + url, {
-        responseType: 'blob',
+        // responseType: 'blob',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
       return response.data;
     },
@@ -129,6 +132,19 @@ export const useFetchPostData = (url: string, options: any) => {
       const response = await axiosInstance.post(baseUrl + url, options);
       return response.data;
     },
+  });
+
+  return { ...query, isLoading: query.isFetching || query.isLoading };
+};
+
+export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = true) => {
+  const query = useQuery({
+    queryKey: ['fetchSingleData', url],
+    queryFn: async () => {
+      const response = await axiosInstance.get(useBaseUrl ? baseUrl + url : url);
+      return response.data;
+    },
+    enabled: enabled,
   });
 
   return { ...query, isLoading: query.isFetching || query.isLoading };

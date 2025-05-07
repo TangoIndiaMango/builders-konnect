@@ -1,24 +1,19 @@
 import { EyeOutlined } from '@ant-design/icons';
 import { Button, Tag } from 'antd';
+import { ColumnsType } from 'antd/es/table';
+import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 import { useSelection } from '../../../../hooks/useSelection';
-import { PaginatedTable, type DataType } from '../../common/Table/Table';
 import { formatBalance, getStatusColor } from '../../../../utils/helper';
 import { SalesOrder } from '../../../pages/sales/types';
-import { ColumnsType, ColumnType } from 'antd/es/table';
-import { useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-
+import { PaginatedTable, type DataType } from '../../common/Table/Table';
+import { DataTableProps } from '../../../types/table';
 
 // Create a type that combines SalesOrder with required key
 type SalesOrderWithKey = SalesOrder & DataType;
 
-interface OrdersTableProps {
+interface OrdersTableProps extends DataTableProps {
   data: SalesOrder[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  showCheckbox?: boolean;
 }
 
 export const OrdersTable = ({
@@ -27,7 +22,9 @@ export const OrdersTable = ({
   onPageChange,
   loading,
   total,
+  perPage,
   showCheckbox = true,
+  updateLimitSize,
 }: OrdersTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as SalesOrderWithKey[],
@@ -118,11 +115,12 @@ export const OrdersTable = ({
         columns={columns}
         currentPage={currentPage}
         onPageChange={onPageChange}
+        updateLimitSize={updateLimitSize}
         loading={loading}
         total={total}
         showCheckbox={showCheckbox}
         striped={true}
-        pageSize={10}
+        pageSize={perPage}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}

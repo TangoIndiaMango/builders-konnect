@@ -1,9 +1,9 @@
-import { Role } from '@/app/pages/staff';
-import { PaginatedResponse } from '@/app/types/paginatedData';
 import { message } from 'antd';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePutData } from '../../../hooks/useApis';
+import { useTableState } from '../../../hooks/useTable';
+import { Role } from '../../pages/staff';
+import { PaginatedResponse } from '../../types/paginatedData';
 import DisplayHeader from '../common/DisplayHeader';
 import { SearchInput } from '../common/SearchInput';
 import { SkeletonLoader } from '../common/SkeletonLoader';
@@ -20,7 +20,7 @@ const RolesAndPermission = ({
   isLoading,
   refetch,
 }: RolesAndPermissionProps) => {
-  const [search, setSearch] = useState('');
+  const { searchValue, setSearch } = useTableState('roles');
   const updateRole = usePutData('merchants/roles');
   const navigate = useNavigate();
 
@@ -45,7 +45,11 @@ const RolesAndPermission = ({
         actionButton={<></>}
       />
       <div className="w-full md:max-w-sm">
-        <SearchInput onSearch={setSearch} placeholder="Search" />
+        <SearchInput
+          onChange={setSearch}
+          value={searchValue}
+          placeholder="Search"
+        />
       </div>
       <SkeletonLoader active={isLoading} type="card">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -54,7 +58,7 @@ const RolesAndPermission = ({
               key={role.id}
               role={role}
               handleToggleRole={handleToggleRole}
-              isLoading={updateRole.isLoading}
+              isLoading={updateRole.isPending}
               onClick={() => navigate(`/pos/staff/role/${role.id}`)}
             />
           ))}

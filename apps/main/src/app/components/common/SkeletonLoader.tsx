@@ -1,9 +1,10 @@
 import { Skeleton } from 'antd';
+import { LabelValue } from '../../pages/sales/create';
 
 interface SkeletonLoaderProps {
   rows?: number;
   columns?: number;
-  type?: 'table' | 'card' | 'list' | 'simple';
+  type?: 'table' | 'card' | 'list' | 'simple' | 'form';
   className?: string;
   hasHeader?: boolean;
   active: boolean;
@@ -81,6 +82,20 @@ export const SkeletonLoader = ({
                 <Skeleton active paragraph={{ rows: 1 }} />
               </div>
             ))}
+          </div>
+        );
+      case 'form':
+        return (
+          <div className="space-y-4">
+             {Array.from({ length: rows }).map((_, index) => (
+               <div className="flex items-center justify-center gap-2">
+               <Skeleton.Input active  />
+               <Skeleton.Input active style={{ width: 150 }}/>
+              </div>
+            ))}
+          <div className="flex items-center justify-between">
+            <Skeleton active paragraph={{ rows: 5 }} />
+          </div>
           </div>
         );
 

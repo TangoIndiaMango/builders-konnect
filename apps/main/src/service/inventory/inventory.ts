@@ -1,5 +1,5 @@
 import { axiosInstance } from "../../utils/axios-instance"
-import { Product, ProductSearchParams } from "./inventory.types"
+import { Product, ProductSearchParams, ProductResponse } from "./inventory.types"
 
 const INVENTORY_URL = "/merchants/inventory-products"
 const SEARCH_URL = "/super_admin/catalogues"
@@ -43,6 +43,13 @@ export const updateProduct = async (id: string, data: Partial<Product>) => {
   const response = await axiosInstance.put(INVENTORY_URL + inventoryURLs.updateProduct.replace(':id', id), data)
   return response.data
 }
+
+export const getInventoryProducts = async (params?: ProductSearchParams) => {
+  const response = await axiosInstance.get<ProductResponse>('/merchants/inventory-products', {
+    params
+  });
+  return response.data;
+};
 
 export const deleteProduct = async (id: string) => {
   const response = await axiosInstance.delete(INVENTORY_URL + inventoryURLs.deleteProduct.replace(':id', id))

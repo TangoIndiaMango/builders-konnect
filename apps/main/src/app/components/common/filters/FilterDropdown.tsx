@@ -66,7 +66,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       >
         <div className="flex flex-col items-start">
           {label && <span className="text-sm text-gray-500">{label}</span>}
-          <span className="">{activeOption?.label}</span>
+          <span className="text-sm text-gray-500">{activeOption?.label ?? label}</span>
         </div>
         <DownOutlined
           size={20}

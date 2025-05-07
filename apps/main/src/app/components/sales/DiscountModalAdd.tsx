@@ -26,7 +26,7 @@ const DiscountModalAdd = ({
   //   (d) => d.value === selectedDiscount
   // );
 
-  const discountOptions = discountData?.map((discount) => ({
+  const discountOptions = discountData?.length > 0 ? discountData?.map((discount) => ({
     label: (
       <div className="flex flex-col py-1">
         <p className="font-medium">{discount?.name}</p>
@@ -39,7 +39,7 @@ const DiscountModalAdd = ({
     value: discount?.id,
     discount: discount,
     name: discount?.name,
-  }));
+  })) : [];
 
   return (
     <Modal

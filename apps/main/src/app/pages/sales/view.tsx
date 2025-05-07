@@ -6,40 +6,6 @@ import { useFetchData, useGetData } from '../../../hooks/useApis';
 import { SingleSalesOrder } from './types';
 import { getStatusColor } from '../../../utils/helper';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
-// const orderData = {
-//   customer: {
-//     name: 'Oluwawolemi *******',
-//     phone: '0904556****',
-//     email: '******************',
-//   },
-//   items: [
-//     {
-//       key: '1',
-//       image: '/product-images/cement.png',
-//       name: 'Premium Cement',
-//       variant: '10kg Smooth',
-//       unitPrice: 25000.0,
-//       quantity: 2,
-//       totalPrice: 50000.0,
-//     },
-//     {
-//       key: '2',
-//       image: '/product-images/cement.png',
-//       name: 'Premium Cement',
-//       variant: '10 kg Coarse',
-//       unitPrice: 25000.0,
-//       quantity: 5,
-//       totalPrice: 150000.0,
-//     },
-//   ],
-//   paymentStatus: 'Paid',
-//   orderStatus: 'Pending',
-//   paymentMethod: 'Bank Transfer',
-//   subtotal: 60000,
-//   tax: 60000,
-//   serviceFee: 1000,
-//   total: 63250,
-// };
 
 type MenuItem = Required<MenuProps>['items'][number];
 const orderStatusOptions = [
