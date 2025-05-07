@@ -24,8 +24,6 @@ import SalesOutlet from './pages/sales/outlet';
 import PauseSales from './pages/sales/pause-sales';
 import SalesViewPage from './pages/sales/view';
 import StaffHome from './pages/staff';
-import StaffOutlet from './pages/staff/outlet';
-import ViewStaffDetails from './pages/staff/view-staff';
 import AddRole from './pages/staff/add-role';
 import InventoryOutlet from './pages/inventory/inventory-outlet';
 import InventoryPage from './pages/inventory';
@@ -42,6 +40,16 @@ import ProductPreview from './pages/inventory/previewProduct';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
 import AddStaffPassword from './pages/auth/add-staff-password';
+import CustomersList from './pages/customers/customers-list';
+import CustomersOutlet from './pages/customers/customer-outlet';
+import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
+import ViewReview from './components/customers/VeiwReview';
+import StaffOutlet from './pages/staff/outlet';
+import ViewStaffDetails from './pages/staff/view-staff';
+import ReturnsOutlet from './pages/returns/outlet';
+import ReturnsPage from './pages/returns';
+import ReturnsViewPage from './pages/returns/view';
+
 const App = () => {
   return (
     <>
@@ -136,6 +144,20 @@ const App = () => {
       </Route>
 
       <Route
+        path="pos/customers"
+        element={
+          <ProtectedRoute>
+            <CustomersOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="list" element={<CustomersList />} />
+        <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
+        <Route path="product-review/view/:id" element={<ViewReview />} />
+      </Route>
+  
+
+      <Route
         path="pos/discounts"
         element={
           <ProtectedRoute>
@@ -148,6 +170,17 @@ const App = () => {
         <Route path="edit/:id" element={<DiscountCreate />} />
       </Route>
 
+      <Route
+        path="pos/returns"
+        element={
+          <ProtectedRoute>
+            <ReturnsOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ReturnsPage />} />
+        <Route path="view/:id" element={<ReturnsViewPage />} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
     </>
