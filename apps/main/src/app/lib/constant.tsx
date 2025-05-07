@@ -77,9 +77,9 @@ export const POSMenus: MenuItem[] = [
         <OrderedListOutlined />
       ),
       getItem(
-        'Customer Groups',
-        'customer-groups',
-        '/pos/customers/groups',
+        'Reviews and Feedback',
+        'reviews-and-feedback',
+        '/pos/customers/reviews-and-feedback',
         <TeamOutlined />
       ),
     ]

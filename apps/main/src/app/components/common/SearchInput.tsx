@@ -25,7 +25,9 @@ export const SearchInput = ({
   }, [value]);
 
   useEffect(() => {
-    onChange(debouncedValue);
+    if (typeof onChange === 'function') {
+        onChange(debouncedValue);
+    }
   }, [debouncedValue]);
 
   return (
