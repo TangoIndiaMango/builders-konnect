@@ -1,25 +1,20 @@
-import { EyeOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Tag } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
+import { Tag } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useSelection } from '../../../../hooks/useSelection';
 import { formatBalance, getStatus } from '../../../../utils/helper';
-import { Staff } from '../../../pages/staff/types';
-import { PaginatedTable, type DataType } from '../../common/Table/Table';
-import ActionIcon from '../../common/ActionIcon';
 import { Discount } from '../../../pages/discount/types';
+import { DataTableProps } from '../../../types/table';
+import ActionIcon from '../../common/ActionIcon';
+import { PaginatedTable, type DataType } from '../../common/Table/Table';
 
 // Create a type that combines SalesOrder with required key
 type DiscountListWithKey = Discount & DataType;
 
-interface DiscountTableProps {
+interface DiscountTableProps extends DataTableProps {
   data: Discount[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  showCheckbox?: boolean;
 }
 
 export const DiscountTable = ({
@@ -29,6 +24,8 @@ export const DiscountTable = ({
   loading,
   total,
   showCheckbox = true,
+  perPage,
+  updateLimitSize,
 }: DiscountTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as DiscountListWithKey[],
@@ -150,11 +147,12 @@ export const DiscountTable = ({
         total={total}
         showCheckbox={showCheckbox}
         striped={true}
-        pageSize={10}
+        pageSize={perPage}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
         scroll={{ x: '1000px' }}
+        updateLimitSize={updateLimitSize}
       />
     </div>
   );

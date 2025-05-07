@@ -1,22 +1,48 @@
 import { Tag, Button, Dropdown, Avatar } from 'antd';
 import type { MenuProps } from 'antd';
-import { PaginatedTable } from '../common/Table/Table';
-import { useSelection } from '../../../hooks/useSelection';
-import { EllipsisOutlined } from '@ant-design/icons';
+
+import { EllipsisOutlined, EyeOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table'; // important!
-
-import type { ProductData as APIProductData } from '../../../service/inventory/inventory.types';
-import { formatBalance } from '../../../utils/helper';
+import { DataTableProps } from '../../../types/table';
+import { useSelection } from '../../../../hooks/useSelection';
+import { DataType, PaginatedTable } from '../../common/Table/Table';
+import { SalesOrder } from '../../../pages/sales/types';
+import { ProductTableData } from '../../inventory/product-table';
 import dayjs from 'dayjs';
-import { DataTableProps } from '../../types/table';
+import { formatBalance } from '../../../../utils/helper';
+import ActionIcon from '../../common/ActionIcon';
+import { useNavigate } from 'react-router';
 
-export type ProductTableData = APIProductData & { key: string };
-
-interface ProductTableProps extends DataTableProps {
-  data: ProductTableData[];
+export interface ReturnsData {
+  id: string;
+  export?: 'csv' | 'pdf'; // Added for table compatibility
+  name: string;
+  SKU: string;
+  ean: string;
+  category: string | null;
+  subcategory: string | null;
+  product_type: string | null;
+  retail_price: string;
+  cost_price: string;
+  metadata: Record<string, unknown> | null; // Fixed any type
+  description: string | null;
+  tags: string | null;
+  quantity: number;
+  measurement_unit: string;
+  reorder_value: string | null;
+  primary_media_url: string;
+  media: string[];
+  status: string;
+  date_added: string;
 }
 
-export const ProductTable = ({
+type ReturnsDataWithKey = ReturnsData & DataType;
+
+interface ReturnsTableProps extends DataTableProps {
+  data: ReturnsDataWithKey[];
+}
+
+export const ReturnsTable = ({
   data,
   currentPage,
   onPageChange,
@@ -25,19 +51,14 @@ export const ProductTable = ({
   showCheckbox = true,
   perPage,
   updateLimitSize,
-}: ProductTableProps) => {
+}: ReturnsTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } =
-    useSelection<ProductTableData>({
+    useSelection<ReturnsDataWithKey>({
       data,
     });
 
-  const actionItems: MenuProps['items'] = [
-    { key: '1', label: 'Edit' },
-    { key: '2', label: 'Delete' },
-    { key: '3', label: 'View Details' },
-  ];
-
-  const columns: ColumnsType<ProductTableData> = [
+  const navigate = useNavigate();
+  const columns: ColumnsType<ReturnsDataWithKey> = [
     {
       title: 'Product',
       key: 'product',
@@ -69,17 +90,8 @@ export const ProductTable = ({
       ),
     },
     {
-      title: 'SKU',
-      dataIndex: 'SKU',
-      key: 'SKU',
-      width: 150,
-      className: 'hidden sm:table-cell',
-      render: (_, record) => <span>#{record.SKU || 'No SKU'}</span>,
-    },
-    {
-      title: 'Date Added',
+      title: 'Date Returned',
       key: 'date_added',
-      width: 180,
       render: (_, record) => (
         <div>
           <div>{dayjs(record.date_added).format('DD MMM YYYY')}</div>
@@ -90,32 +102,35 @@ export const ProductTable = ({
       ),
     },
     {
-      title: 'Price',
-      key: 'price',
-      width: 120,
+      title: 'Order Id',
+      dataIndex: 'order_id',
+      key: 'SKU',
+      render: (_, record) => <span>#{record.SKU || 'No order id'}</span>,
+    },
+
+    {
+      title: 'Amount',
+      key: 'amount',
       render: (_, record) => <span>{formatBalance(record.retail_price)}</span>,
     },
     {
-      title: 'Stock Level',
-      key: 'quantity',
-      width: 140,
-      render: (_, record) => (
-        <p>
-          <span
-            className={`${
-              record.quantity <= 0 ? 'text-red-500' : 'text-[#003399]'
-            } font-bold`}
-          >
-            {record.quantity}
-          </span>{' '}
-          left
-        </p>
+      title: 'Customer ',
+      dataIndex: 'customer',
+      width: 150,
+      render: (_, record: ReturnsDataWithKey) => (
+        <div>
+          <div className="font-medium">
+            {record?.customer?.name ?? 'Milacia Florence'}
+          </div>
+          <div className="text-sm text-gray-500">
+            {record?.customer?.email ?? 'milaciaflorence@gmail.com'}
+          </div>
+        </div>
       ),
     },
     {
       title: 'Status',
       key: 'status',
-      width: 130,
       render: (_, record) => {
         return (
           <Tag
@@ -131,16 +146,14 @@ export const ProductTable = ({
       title: 'Action',
       key: 'action',
       fixed: 'right',
-      width: 80,
-      render: () => (
-        <Dropdown menu={{ items: actionItems }} trigger={['click']}>
-          <Button
-            type="text"
-            className="w-8 h-8 flex items-center justify-center bg-[#E6F7FF] hover:opacity-80 rounded-lg"
-          >
-            <EllipsisOutlined rotate={90} className="text-[#1890FF]" />
-          </Button>
-        </Dropdown>
+      render: (_, record) => (
+        <ActionIcon
+          variant="light"
+          icon={<EyeOutlined className="text-[#1890FF]" />}
+          onClick={() => {
+            navigate(`/pos/returns/view/${record.id}`);
+          }}
+        />
       ),
     },
   ];

@@ -8,17 +8,13 @@ import { getStatus } from '../../../../utils/helper';
 import { Staff } from '../../../pages/staff/types';
 import { PaginatedTable, type DataType } from '../../common/Table/Table';
 import ActionIcon from '../../common/ActionIcon';
+import { DataTableProps } from '../../../types/table';
 
 // Create a type that combines SalesOrder with required key
 type StaffListWithKey = Staff & DataType;
 
-interface StaffTableProps {
+interface StaffTableProps extends DataTableProps {
   data: Staff[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  showCheckbox?: boolean;
 }
 
 export const StaffTable = ({
@@ -28,6 +24,8 @@ export const StaffTable = ({
   loading,
   total,
   showCheckbox = true,
+  perPage,
+  updateLimitSize,
 }: StaffTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as StaffListWithKey[],
@@ -46,16 +44,18 @@ export const StaffTable = ({
       title: 'Name',
       dataIndex: 'name',
       render: (_, record: StaffListWithKey) => (
-        <div className='flex items-center gap-2'>
+        <div className="flex items-center gap-2">
           <Avatar
             src={record?.avatar}
             size={30}
             style={{ backgroundColor: '#E6F7FF' }}
-            icon={<UserOutlined className='text-blue-600' />}
+            icon={<UserOutlined className="text-blue-600" />}
           />
-          <div className='max-w-[150px]'>
+          <div className="max-w-[150px]">
             <div className="font-medium">{record.name}</div>
-            <div className="text-xs text-gray-500">ID: <span className='text-xs text-blue-600'>{record.id}</span></div>
+            <div className="text-xs text-gray-500">
+              ID: <span className="text-xs text-blue-600">{record.id}</span>
+            </div>
           </div>
         </div>
       ),
@@ -64,7 +64,7 @@ export const StaffTable = ({
       title: 'Email',
       dataIndex: 'email',
       render: (_, record: StaffListWithKey) => (
-        <div className='max-w-[150px]'>
+        <div className="max-w-[150px]">
           <div className="font-medium">{record.email}</div>
         </div>
       ),
@@ -90,8 +90,16 @@ export const StaffTable = ({
       dataIndex: 'last_active',
       render: (_, record: StaffListWithKey) => (
         <div>
-          <p>{record.last_active ? dayjs(record.last_active).format('DD-MM-YYYY') : '--'}</p>
-          <p>{record.last_active ? dayjs(record.last_active).format('h:mm A') : ''}</p>
+          <p>
+            {record.last_active
+              ? dayjs(record.last_active).format('DD-MM-YYYY')
+              : '--'}
+          </p>
+          <p>
+            {record.last_active
+              ? dayjs(record.last_active).format('h:mm A')
+              : ''}
+          </p>
         </div>
       ),
     },
@@ -99,7 +107,9 @@ export const StaffTable = ({
       title: 'Status',
       dataIndex: 'status',
       render: (_, record: StaffListWithKey) => (
-        <Tag color={getStatus(record.status)} className='capitalize'>{record.status}</Tag>
+        <Tag color={getStatus(record.status)} className="capitalize">
+          {record.status}
+        </Tag>
       ),
     },
     {
@@ -107,8 +117,8 @@ export const StaffTable = ({
       key: 'action',
       render: (_, record: StaffListWithKey) => (
         <ActionIcon
-          variant='light'
-          icon={<EyeOutlined className='text-blue-600' />}
+          variant="light"
+          icon={<EyeOutlined className="text-blue-600" />}
           onClick={() => navigate(`/pos/staff/view/${record.id}`)}
           className="text-gray-600 hover:text-blue-600"
         />
@@ -123,11 +133,12 @@ export const StaffTable = ({
         columns={columns}
         currentPage={currentPage}
         onPageChange={onPageChange}
+        updateLimitSize={updateLimitSize}
         loading={loading}
         total={total}
         showCheckbox={showCheckbox}
         striped={true}
-        pageSize={10}
+        pageSize={perPage}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}

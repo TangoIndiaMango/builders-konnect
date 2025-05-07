@@ -1,24 +1,19 @@
 import { EyeOutlined } from '@ant-design/icons';
-import { Button, Tag } from 'antd';
+import { Tag } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useSelection } from '../../../../hooks/useSelection';
+import { getStatus } from '../../../../utils/helper';
 import { Store } from '../../../pages/profile/types';
-import { PaginatedTable, type DataType } from '../../common/Table/Table';
-import { getStatus, getStatusColor } from '../../../../utils/helper';
+import { DataTableProps } from '../../../types/table';
 import ActionIcon from '../../common/ActionIcon';
-
+import { PaginatedTable, type DataType } from '../../common/Table/Table';
 // Create a type that combines SalesOrder with required key
 type StoreWithKey = Store & DataType;
 
-interface StoreTableProps {
+interface StoreTableProps extends DataTableProps {
   data: Store[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  showCheckbox?: boolean;
 }
 
 export const StoreTable = ({
@@ -28,6 +23,8 @@ export const StoreTable = ({
   loading,
   total,
   showCheckbox = true,
+  perPage,
+  updateLimitSize,
 }: StoreTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as StoreWithKey[],
@@ -124,11 +121,12 @@ export const StoreTable = ({
         total={total}
         showCheckbox={showCheckbox}
         striped={true}
-        pageSize={10}
+        pageSize={perPage}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
         scroll={{ x: '1000px' }}
+        updateLimitSize={updateLimitSize}
       />
     </div>
   );

@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { Button } from 'antd';
 import { formatBalance } from '../../../utils/helper';
 import { SalesOrder } from '../../pages/sales/types';
+import { FilterOption } from '../../store/table';
 import { PaginatedResponse } from '../../types/paginatedData';
 import DisplayHeader from '../common/DisplayHeader';
-import TimelineFilter from '../common/filters/TimelineFilter';
 import { SkeletonLoader } from '../common/SkeletonLoader';
 import TableWrapper from '../common/Table/TableWrapper';
 import TableStats from '../common/TableStats';
+import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
 import { OrdersTable } from './table/salesTable';
-import { Button } from 'antd';
-import { useTableState } from '../../../hooks/useTable';
-import { FilterOption } from '../../store/table';
+import { FilterCategory } from '../common/filters/MultiOptionsFilter';
+import { useMemo } from 'react';
+import { FilterState } from '../../types/table';
 
 export interface TabStatsinterface {
   total_sales: number;
@@ -23,46 +24,58 @@ export interface SalesDataInterface {
   data: PaginatedResponse<SalesOrder>;
   stats: TabStatsinterface;
 }
-export interface SalesProps {
+export interface SalesProps extends FilterState {
   data: SalesDataInterface;
   isLoading: boolean;
-  setSearchTerm: (searchTerm: string) => void;
-  periodFilter: string;
-  setPeriodFilter: (periodFilter: string) => void;
-  reset: () => void;
-  periodOptions: FilterOption[];
   title: string;
   description: string;
 }
-const AllSales = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodFilter, reset, periodOptions, title, description }: SalesProps) => {
-
-
-  const tableStatsData = [
-    {
-      label: 'Total Sales',
-      value: `${data?.stats?.total_sales}`,
-      valueBgColor: '#E6F7FF',
-      valueColor: '#003399',
-    },
-    {
-      label: 'Total Sales Value',
-      value: `${formatBalance(data?.stats?.total_sales_value)}`,
-      valueBgColor: '#E6FFFB',
-      valueColor: '#08979C',
-    },
-    {
-      label: 'Online Sales',
-      value: `${formatBalance(data?.stats?.online_sales)}`,
-      valueBgColor: '#F9F0FF',
-      valueColor: '#722ED1',
-    },
-    {
-      label: 'Offline Saless',
-      value: `${formatBalance(data?.stats?.offline_sales)}`,
-      valueBgColor: '#FFFBE6',
-      valueColor: '#D48806',
-    },
-  ];
+const AllSales = ({
+  data,
+  isLoading,
+  searchValue,
+  setSearchValue,
+  reset,
+  title,
+  description,
+  currentPage,
+  setPage,
+  setCustomDateRange,
+  handleFilterChange,
+  filterValue,
+  onExport,
+  updateLimitSize,
+  filterOptions,
+}: SalesProps) => {
+  const tableStatsData = useMemo(
+    () => [
+      {
+        label: 'Total Sales',
+        value: `${data?.stats?.total_sales ?? 0}`,
+        valueBgColor: '#E6F7FF',
+        valueColor: '#003399',
+      },
+      {
+        label: 'Total Sales Value',
+        value: `${formatBalance(data?.stats?.total_sales_value ?? 0)}`,
+        valueBgColor: '#E6FFFB',
+        valueColor: '#08979C',
+      },
+      {
+        label: 'Online Sales',
+        value: `${formatBalance(data?.stats?.online_sales ?? 0)}`,
+        valueBgColor: '#F9F0FF',
+        valueColor: '#722ED1',
+      },
+      {
+        label: 'Offline Saless',
+        value: `${formatBalance(data?.stats?.offline_sales ?? 0)}`,
+        valueBgColor: '#FFFBE6',
+        valueColor: '#D48806',
+      },
+    ],
+    [data?.stats]
+  );
 
   return (
     <div className="space-y-3">
@@ -72,11 +85,13 @@ const AllSales = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodFilte
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            <TimelineFilter
+            {/* <TimelineFilter
               value={periodFilter}
               onChange={setPeriodFilter}
               options={periodOptions}
-            />
+            /> */}
+
+            <DatePickerComp onRangeChange={setCustomDateRange} />
           </div>
         }
       />
@@ -95,16 +110,23 @@ const AllSales = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodFilte
         </div>
       </SkeletonLoader>
 
-      <TableWrapper onSearch={setSearchTerm}>
+      <TableWrapper
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        onFilterChange={handleFilterChange}
+        selectedFilter={filterValue}
+        onExport={onExport}
+        filterOptions={filterOptions}
+      >
         <OrdersTable
           data={data?.data?.data}
-          currentPage={1}
-          onPageChange={() => {
-            console.log('page changed');
-          }}
+          currentPage={currentPage}
+          onPageChange={setPage}
           loading={isLoading}
           showCheckbox={true}
+          perPage={data?.data?.per_page}
           total={data?.data?.total}
+          updateLimitSize={updateLimitSize}
         />
       </TableWrapper>
     </div>

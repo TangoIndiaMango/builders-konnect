@@ -1,35 +1,36 @@
-import { Divider } from 'antd';
-import { useMemo, useState } from 'react';
+import { Button, Divider } from 'antd';
+import { useMemo } from 'react';
 import { formatBalance } from '../../../../utils/helper';
 import { SingleStoreResponse } from '../../../pages/profile/types';
+import { FilterState } from '../../../types/table';
 import DisplayHeader from '../../common/DisplayHeader';
-import TimelineFilter from '../../common/filters/TimelineFilter';
 import { SkeletonLoader } from '../../common/SkeletonLoader';
 import TableWrapper from '../../common/Table/TableWrapper';
 import TableStats from '../../common/TableStats';
+import DatePickerComp from '../../date/DatePickerrComp';
 import { OrdersTable } from '../../sales/table/salesTable';
+
+interface OrderDetailsProps extends FilterState {
+  data: SingleStoreResponse;
+  isLoading: boolean;
+}
 
 const SalesOverview = ({
   data,
   isLoading,
-}: {
-  data: SingleStoreResponse;
-  isLoading: boolean;
-}) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    // Handle pagination logic here
-  };
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (value: string) => {
-    console.log('Searching for:', value);
-    setSearchQuery(value);
-    // Implement your search logic here
-  };
+  currentPage,
+  pageSize,
+  setPage,
+  setCustomDateRange,
+  handleFilterChange,
+  filterValue,
+  onExport,
+  updateLimitSize,
+  filterOptions,
+  searchValue,
+  setSearchValue,
+  reset,
+}: OrderDetailsProps) => {
 
   const tableStatsData = useMemo(
     () => [
@@ -72,7 +73,16 @@ const SalesOverview = ({
       <DisplayHeader
         title="Sales Overview"
         description="You're viewing all sales order below."
-        actionButton={<TimelineFilter />}
+        actionButton={ <div className="flex flex-wrap items-center justify-end gap-3">
+          <Button
+            onClick={reset}
+          >
+            Clear
+          </Button>
+          <DatePickerComp
+            onRangeChange={setCustomDateRange}
+          />
+        </div>}
       />
 
       <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
@@ -90,14 +100,21 @@ const SalesOverview = ({
       </SkeletonLoader>
       <Divider />
 
-      <TableWrapper onSearch={handleSearch}>
+      <TableWrapper filterOptions={filterOptions}
+        onFilterChange={handleFilterChange}
+        selectedFilter={filterValue}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        onExport={onExport}>
         <OrdersTable
           data={data?.sales_overview?.data}
           currentPage={currentPage}
-          onPageChange={handlePageChange}
+          onPageChange={setPage}
           loading={isLoading}
           showCheckbox={true}
           total={data?.sales_overview?.total}
+          perPage={data?.sales_overview?.per_page}
+          updateLimitSize={updateLimitSize}
         />
       </TableWrapper>
     </div>

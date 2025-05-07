@@ -1,88 +1,75 @@
-import { useMemo, useState } from 'react';
-import { Button, Tabs, TabsProps } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { Button, Tabs, TabsProps } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGetExportData } from '../../../hooks/useApis';
+import { useTableState } from '../../../hooks/useTable';
+import { useGetSales } from '../../../service/sales/salesFN';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 import AllSales from '../../components/sales/AllSales';
-import OnlineSales from '../../components/sales/OnlineSales';
-import InstoreSales from '../../components/sales/InstoreSales';
-import ConfirmModal from '../../components/common/ConfirmModal';
-import { useGetSales } from '../../../service/sales/salesFN';
-import { useTableState } from '../../../hooks/useTable';
-
-const tabConfigs = [
-  {
-    key: 'all',
-    label: 'All Sales',
-    title: 'All Sales',
-    description: "You're viewing all sales order below.",
-  },
-  {
-    key: 'mop',
-    label: 'Online Sales',
-    title: 'Online Sales',
-    description: "You're viewing all online sales order below.",
-  },
-  {
-    key: 'pos',
-    label: 'In-store Sales',
-    title: 'In-store Sales',
-    description: "You're viewing all in-store sales order below.",
-  },
-];
+import { exportCsvFromString } from '../../../utils/helper';
+import { SalesFilterOptions, SalesTabConfigs } from './constant';
 
 const SalesHome = () => {
   const [pauseSalesOpened, setPauseSalesOpened] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [status, setStatus] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
-  const [sortBy, setSortBy] = useState('');
-
-  const filterOptions = [
-    { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' },
-  ];
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-  };
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
-
-  const handleFilterChange = (value: string) => {
-    setStatus(value);
-  };
-
-  const handleDateFilterChange = (value: string) => {
-    setDateFilter(value);
-  };
-
-  const handleSortByChange = (value: string) => {
-    setSortBy(value);
-  };
-
-  const handleReset = () => {
-    setSearchQuery('');
-    setDateFilter('');
-    setSortBy('');
-    setStatus('');
-  };
+  const {
+    searchValue,
+    setSearch,
+    currentPage,
+    pageSize,
+    setPage,
+    reset,
+    customDateRange,
+    setCustomDateRange,
+    filterKey,
+    filterValue,
+    handleFilterChange,
+    exportType,
+    setExportType,
+    limitSize,
+    setLimitSize,
+  } = useTableState('sales');
 
   const [tab, setTab] = useState<string>('pos');
 
   const { data: sales, isLoading } = useGetSales({
     paginate: 1,
-    limit: 10,
+    limit: limitSize,
     sales_type: tab === 'all' ? '' : tab,
-    q: searchQuery,
-    date_filter: dateFilter,
-    sort_by: sortBy,
-    payment_status: status,
+    q: searchValue,
+    sort_by: filterKey === 'sort_by' ? filterValue : '',
+    payment_status: filterKey === 'payment_status' ? filterValue : '',
+    order_status: filterKey === 'order_status' ? filterValue : '',
+    date_filter: customDateRange,
+    page: currentPage,
   });
+
+  const exportSales = useGetExportData(
+    `merchants/sales-orders?export=${exportType}`
+  );
+
+  const handleExport = () => {
+    exportSales.mutate(null as any, {
+      onSuccess: (data) => {
+        exportCsvFromString(data, 'Order Sales');
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      onSettled: () => {
+        setExportType('');
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (exportType) {
+      handleExport();
+    }
+  }, [exportType]);
 
   const onChange = (key: string) => {
     setTab(key);
@@ -90,20 +77,27 @@ const SalesHome = () => {
 
   const items: TabsProps['items'] = useMemo(
     () =>
-      tabConfigs.map((tab) => ({
+      SalesTabConfigs.map((tab) => ({
         key: tab.key,
         label: tab.label,
         children: (
           <AllSales
             data={sales?.data}
             isLoading={isLoading}
-            setSearchTerm={handleSearch}
-            periodFilter={dateFilter}
-            setPeriodFilter={handleDateFilterChange}
-            reset={handleReset}
-            periodOptions={filterOptions}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            setPage={setPage}
+            searchValue={searchValue}
+            setSearchValue={setSearch}
+            reset={reset}
+            filterOptions={SalesFilterOptions}
             title={tab.title}
             description={tab.description}
+            setCustomDateRange={setCustomDateRange}
+            handleFilterChange={handleFilterChange}
+            filterValue={filterValue ?? ''}
+            onExport={setExportType}
+            updateLimitSize={setLimitSize}
           />
         ),
       })),

@@ -2,11 +2,12 @@ import ErrorModal from '../../components/common/ErrorModal';
 import SuccessModal from '../../components/common/SuccessModal';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Tabs, TabsProps } from 'antd';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   useCreateData,
   useFetchData,
+  useGetExportData,
   usePutData,
 } from '../../../hooks/useApis';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
@@ -15,6 +16,9 @@ import RolesAndPermission from '../../components/staff/RolesAndPermission';
 import StaffList from '../../components/staff/StaffList';
 import { Roles, Staff, StaffListResponse, Stores } from './types';
 import { PaginatedResponse } from '../../types/paginatedData';
+import { exportCsvFromString } from '../../../utils/helper';
+import { useTableState } from '../../../hooks/useTable';
+import { StaffFilterOptions } from './constant';
 /**
  * paginate
 1
@@ -41,39 +45,53 @@ export interface Role {
 const StaffHome = () => {
   const navigate = useNavigate();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [status, setStatus] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const {
+    searchValue,
+    setSearch,
+    currentPage,
+    pageSize,
+    setPage,
+    reset,
+    customDateRange,
+    setCustomDateRange,
+    filterKey,
+    filterValue,
+    handleFilterChange,
+    exportType,
+    setExportType,
+    limitSize,
+    setLimitSize,
+  } = useTableState('staff');
+  const exportStaff = useGetExportData(`merchants/staff?export=${exportType}`);
 
-  const filterOptions = [
-    { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' },
-  ];
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-  };
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
-
-  const handleFilterChange = (value: string) => {
-    setStatus(value);
+  const handleExport = () => {
+    exportStaff.mutate(null as any, {
+      onSuccess: (data) => {
+        exportCsvFromString(data, 'Staff');
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      onSettled: () => {
+        setExportType('');
+      },
+    });
   };
 
-  const handleDateFilterChange = (value: string) => {
-    setDateFilter(value);
-  };
+  useEffect(() => {
+    if (exportType) {
+      handleExport();
+    }
+  }, [exportType]);
 
-  const handleSortByChange = (value: string) => {
-    setSortBy(value);
-  };
 
   const [tab, setTab] = useState('staff');
   const staff = useFetchData(
-    `merchants/staff?paginate=1&page=${currentPage}&status=${status}&date_filter=${dateFilter}&sort_by=${sortBy}&q=${searchQuery}`
+    `merchants/staff?paginate=1&page=${currentPage ?? 1}&status=${
+      filterKey === 'status' ? filterValue : ''
+    }&date_filter=${customDateRange ?? ''}&sort_by=${
+      filterKey === 'sort_by' ? filterValue : ''
+    }&q=${searchValue ?? ''}&limit=${limitSize ?? 10}`
   );
   const stores = useFetchData('merchants/locations?q&sort_by=alphabetically');
   const roles = useFetchData('merchants/roles?q&sort_by=alphabetically');
@@ -102,14 +120,13 @@ const StaffHome = () => {
   const onChange = (key: string) => {
     setTab(key);
   };
-
+  const baseUrl = window.location.origin;
   const handleStaffSubmit = (values: any) => {
     if (modalMode === 'add') {
       createStaff.mutate(
         {
           ...values,
-          callback_url:
-            'https://builders-konnect-app.netlify.app/auth/add-staff-password',
+          callback_url: `${baseUrl}/auth/add-staff-password`,
         },
         {
           onSuccess: () => {
@@ -168,13 +185,17 @@ const StaffHome = () => {
             data={staffListResponse}
             isLoading={staff?.isLoading}
             currentPage={currentPage}
-            handlePageChange={handlePageChange}
-            handleSearch={handleSearch}
+            setPage={setPage}
+            setSearchValue={setSearch}
             handleFilterChange={handleFilterChange}
-            filterOptions={filterOptions}
-            selectedFilter={status}
-            handleDateFilterChange={handleDateFilterChange}
-            selectedDateFilter={dateFilter}
+            filterOptions={StaffFilterOptions}
+            onExport={handleExport}
+            filterValue={filterValue ?? ''}
+            setCustomDateRange={setCustomDateRange}
+            pageSize={pageSize}
+            reset={reset}
+            updateLimitSize={setLimitSize}
+            searchValue={searchValue}
           />
         ),
       },

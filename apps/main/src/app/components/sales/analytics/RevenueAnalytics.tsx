@@ -13,22 +13,6 @@ export interface Revenue {
   period: string
 }
 const RevenueAnalytics = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    // Handle pagination logic here
-  };
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (value: string) => {
-    console.log('Searching for:', value);
-    setSearchQuery(value);
-    // Implement your search logic here
-  };
-
   const revenue = useFetchData(`merchants/sales-orders/analytics/revenue`)
   const revenueStats = revenue?.data?.data as Revenue[]
 

@@ -1,31 +1,53 @@
-import { Button, Divider, Dropdown, Menu, MenuProps } from 'antd';
-import { useEffect } from 'react';
-import { getInventoryProducts } from '../../../service/inventory/inventory';
-import { ProductStats } from '../../../service/inventory/inventory.types';
-import { ProductTableData } from '../../components/inventory/product-table';
-import { EmptyInventoryState } from '../../components/inventory/empty-inventory-state';
-import { ProductTable } from '../../components/inventory/product-table';
-
-import TableWrapper from '../../components/common/Table/TableWrapper';
-import { useState } from 'react';
-import TableStats from '../../components/common/TableStats';
-import DisplayHeader from '../../components/common/DisplayHeader';
 import { PlusOutlined } from '@ant-design/icons';
+import { Button, Divider, Dropdown, MenuProps } from 'antd';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FilterGroup from '../../components/common/filters/FilterGroup';
+import { useFetchData, useGetExportData } from '../../../hooks/useApis';
+import { useTableState } from '../../../hooks/useTable';
+import { ProductStats } from '../../../service/inventory/inventory.types';
+import { exportCsvFromString, formatBalance } from '../../../utils/helper';
+import DisplayHeader from '../../components/common/DisplayHeader';
 import TimelineFilter from '../../components/common/filters/DateFilter';
-import { formatBalance } from '../../../utils/helper';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
+import TableStats from '../../components/common/TableStats';
+import { EmptyInventoryState } from '../../components/inventory/empty-inventory-state';
+import {
+  ProductTable,
+  ProductTableData,
+} from '../../components/inventory/product-table';
+import { PaginatedResponse } from '../../types/paginatedData';
+import TableWrapper from '../../components/common/Table/TableWrapper';
+import { filterOptions } from '../../lib/constant';
+import DatePickerComp from '../../components/date/DatePickerrComp';
 
 const ProductsPage = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState<ProductTableData[]>([]);
-  const [stats, setStats] = useState<ProductStats | null>(null);
-  const [total, setTotal] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [dateFilter, setDateFilter] = useState('7 days');
-  const [perPage, setPerPage] = useState(10);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [loading, setLoading] = useState(true);
+  // const [products, setProducts] = useState<ProductTableData[]>([]);
+  // const [stats, setStats] = useState<ProductStats | null>(null);
+  // const [total, setTotal] = useState(0);
+  // const [searchQuery, setSearchQuery] = useState('');
+  // const [dateFilter, setDateFilter] = useState('7 days');
+  // const [perPage, setPerPage] = useState(10);
+
+  const {
+    searchValue,
+    setSearch,
+    currentPage,
+    pageSize,
+    setPage,
+    reset,
+    customDateRange,
+    setCustomDateRange,
+    filterKey,
+    filterValue,
+    handleFilterChange,
+    exportType,
+    setExportType,
+    limitSize,
+    setLimitSize,
+  } = useTableState('products');
+
   const menu: MenuProps = {
     items: [
       {
@@ -45,48 +67,90 @@ const ProductsPage = () => {
     ],
   };
 
-  const fetchProducts = async (
-    page = 1,
-    search?: string,
-    exportType?: 'csv' | 'pdf'
-  ) => {
-    try {
-      const response = await getInventoryProducts({
-        paginate: page,
-        q: search,
-        date_filter: dateFilter,
-        export: exportType,
-      });
-      const productsWithKey = response.data.data.data.map((product) => ({
-        ...product,
-        key: product.id,
-      })) as ProductTableData[];
-      setProducts(productsWithKey);
-      setStats(response.data.stats);
-      setTotal(parseInt(response.data.stats.total_products));
-      setPerPage(response.data.data.per_page);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
+  const exportProducts = useGetExportData(
+    `merchants/products?export=${exportType}`
+  );
+
+  const handleExport = () => {
+    exportProducts.mutate(null as any, {
+      onSuccess: (data) => {
+        exportCsvFromString(data, 'Products');
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      onSettled: () => {
+        setExportType('');
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (exportType) {
+      handleExport();
     }
-  };
+  }, [exportType]);
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    setPerPage(pageSize);
-  };
+  const products = useFetchData(
+    `merchants/inventory-products?paginate=1&page=${
+      currentPage ?? 1
+    }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
+      limitSize ?? 10
+    }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
+      filterKey === 'status' ? filterValue : ''
+    }`
+  );
 
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
+  const stats = products?.data?.stats as ProductStats;
+  const productsData = products?.data?.data
+    ?.data as PaginatedResponse<ProductTableData>;
+  // console.log(productsData);
+  // const fetchProducts = async (
+  //   page = 1,
+  //   search?: string,
+  //   exportType?: 'csv' | 'pdf'
+  // ) => {
+  //   try {
+  //     const response = await getInventoryProducts({
+  //       paginate: 1,
+  //       q: searchValue,
+  //       date_filter: customDateRange,
+  //       sort_by: filterKey === 'sort_by' ? filterValue : '',
+  //       status: filterKey === 'status' ? filterValue : '',
+  //       limit: limitSize,
+  //       page: currentPage,
+  //       // export: exportType,
+  //     });
+  //     const productsWithKey = response.data.data.data.map((product) => ({
+  //       ...product,
+  //       key: product.id,
+  //     })) as ProductTableData[];
+  //     setProducts(productsWithKey);
+  //     setStats(response.data.stats);
+  //     setTotal(parseInt(response.data.stats.total_products));
+  //     setPerPage(response.data.data.per_page);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error fetching products:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const handlePageChange = (page: number, pageSize: number) => {
+  //   setCurrentPage(page);
+  //   setPerPage(pageSize);
+  // };
+
+  // const handleSearch = (value: string) => {
+  //   setSearchQuery(value);
+  // };
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchProducts(currentPage, searchQuery);
-  }, [currentPage, searchQuery, dateFilter]);
+  // useEffect(() => {
+  //   fetchProducts(currentPage, searchQuery);
+  // }, [currentPage, searchQuery, dateFilter]);
 
   return (
     <div className="h-full">
@@ -107,7 +171,7 @@ const ProductsPage = () => {
             View Inventory
           </Button>
 
-          <Dropdown menu={menu} trigger={['click']} placement="bottomCenter">
+          <Dropdown menu={menu} trigger={['click']} placement="bottom">
             <Button
               type="primary"
               className="rounded"
@@ -124,56 +188,72 @@ const ProductsPage = () => {
         <DisplayHeader
           title="All Products"
           description="You're viewing all products below."
-          actionButton={<TimelineFilter />}
+          actionButton={
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <Button onClick={reset}>Clear</Button>
+              <DatePickerComp onRangeChange={setCustomDateRange} />
+            </div>
+          }
         />
 
-        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
-          {stats &&
-            [
-              {
-                label: 'Total Products',
-                value: stats.total_products?.toString(),
-                valueBgColor: '#FEF3F2',
-                valueColor: '#F04438',
-              },
-              {
-                label: 'Total Value',
-                value: formatBalance(stats.total_products_value),
-                valueBgColor: '#F8F9FC',
-                valueColor: '#003399',
-              },
-              {
-                label: 'Total Sales',
-                value: formatBalance(stats.total_sales),
-                valueBgColor: '#ECFDF3',
-                valueColor: '#12B76A',
-              },
-            ].map((item) => (
-              <TableStats
-                label={item?.label}
-                value={item?.value}
-                valueBgColor={item?.valueBgColor}
-                valueColor={item?.valueColor}
-              />
-            ))}
-        </div>
+        <SkeletonLoader
+          active={products?.isLoading}
+          type="table"
+          columns={4}
+          rows={1}
+        >
+          <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
+            {stats &&
+              [
+                {
+                  label: 'Total Products',
+                  value: stats.total_products?.toString(),
+                  valueBgColor: '#FEF3F2',
+                  valueColor: '#F04438',
+                },
+                {
+                  label: 'Total Value',
+                  value: formatBalance(stats.total_products_value),
+                  valueBgColor: '#F8F9FC',
+                  valueColor: '#003399',
+                },
+                {
+                  label: 'Total Sales',
+                  value: formatBalance(stats.total_sales),
+                  valueBgColor: '#ECFDF3',
+                  valueColor: '#12B76A',
+                },
+              ].map((item, key) => (
+                <TableStats
+                  key={key}
+                  label={item?.label}
+                  value={item?.value}
+                  valueBgColor={item?.valueBgColor}
+                  valueColor={item?.valueColor}
+                />
+              ))}
+          </div>
+        </SkeletonLoader>
         <Divider />
-        <TableWrapper onSearch={handleSearch}>
-          {!loading && products.length === 0 ? (
-            <EmptyInventoryState />
-          ) : (
-            <SkeletonLoader active={loading} type="table" columns={4} rows={1}>
-              <ProductTable
-                data={products}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-                loading={loading}
-                showCheckbox={true}
-                total={total}
-                per_page={perPage}
-              />
-            </SkeletonLoader>
-          )}
+
+        <TableWrapper
+          filterOptions={filterOptions}
+          onFilterChange={handleFilterChange}
+          selectedFilter={filterValue}
+          searchValue={searchValue}
+          setSearchValue={setSearch}
+          onExport={handleExport}
+        >
+          <ProductTable
+            data={productsData?.data}
+            currentPage={currentPage}
+            onPageChange={setPage}
+            loading={products?.isLoading}
+            showCheckbox={true}
+            total={productsData?.total}
+            perPage={productsData?.per_page}
+            updateLimitSize={setLimitSize}
+          />
         </TableWrapper>
       </div>
     </div>

@@ -23,11 +23,11 @@ const DocumentsSection = ({ documents, isLoading }: DocumentsSectionProps) => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm">
+    <div className="grid grid-cols-1 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm md:grid-cols-2">
       <h3 className="mb-4 text-lg font-semibold">DOCUMENTS</h3>
 
       <SkeletonLoader active={isLoading} type="list">
-        <div className="grid grid-cols-2 gap-x-24 gap-y-6">
+        <div className="grid grid-cols-1 gap-x-24 gap-y-6 md:grid-cols-2">
           <div>
             <Text className="block mb-1 text-gray-500">CAC no.</Text>
             <Text className="text-gray-900">
@@ -75,7 +75,7 @@ const DocumentsSection = ({ documents, isLoading }: DocumentsSectionProps) => {
               <span className="text-gray-400">N/A</span>
             )}
           </div>
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <Text className="block mb-1 text-gray-500">Proof of address</Text>
             {documents?.proof_of_address?.file ? (
               <div className="flex items-center gap-2">
