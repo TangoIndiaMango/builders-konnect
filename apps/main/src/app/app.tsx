@@ -40,6 +40,9 @@ import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
+import ReturnsOutlet from './pages/returns/outlet';
+import ReturnsPage from './pages/returns';
+import ReturnsViewPage from './pages/returns/view';
 
 const App = () => {
   return (
@@ -145,6 +148,17 @@ const App = () => {
         <Route path="edit/:id" element={<DiscountCreate />} />
       </Route>
 
+      <Route
+        path="pos/returns"
+        element={
+          <ProtectedRoute>
+            <ReturnsOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ReturnsPage />} />
+        <Route path="view/:id" element={<ReturnsViewPage />} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
