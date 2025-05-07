@@ -1,6 +1,7 @@
 import React from 'react';
 import { BarConfig, Bar as BarChart } from '@ant-design/plots';
 import useResizeContainer from '../../../../../hooks/useResizeContainer';
+import { SkeletonLoader } from '../../../common/SkeletonLoader';
 
 interface ReturnRateProps {
   [key: string]: number;
@@ -8,7 +9,16 @@ interface ReturnRateProps {
 
 const Bar = BarChart as unknown as React.FC<BarConfig>;
 
-const ReturnRateChart = ({ returnRateStats }: { returnRateStats: ReturnRateProps }) => {
+const ReturnRateChart = ({
+  returnRateStats,
+  isLoading,
+}: {
+  returnRateStats: ReturnRateProps;
+  isLoading: boolean;
+}) => {
+  if (isLoading && !returnRateStats) {
+    return <SkeletonLoader active={isLoading} type="card" />;
+  }
 
   const data = Object?.entries(returnRateStats)?.map(([month, returns]) => ({
     month,

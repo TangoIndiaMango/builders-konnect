@@ -53,7 +53,7 @@ const ReturnRate = () => {
       }
     >
       <div>
-        <ReturnRateChart returnRateStats={returnRateStats} />
+        <ReturnRateChart returnRateStats={returnRateStats} isLoading={returnRate?.isLoading} />
       </div>
     </CardWithFilter>
   );

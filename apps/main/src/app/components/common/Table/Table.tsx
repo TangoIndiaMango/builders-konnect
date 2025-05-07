@@ -22,6 +22,7 @@ export interface CustomTableProps<T> extends TableProps<T> {
   rowSelection?: TableProps<T>['rowSelection'];
   selectedRowKeys?: React.Key[];
   resetSelection?: () => void;
+  updateLimitSize?: (page: number, pageSize: number) => void;
 }
 
 export const PaginatedTable = <T extends DataType>({
@@ -38,6 +39,7 @@ export const PaginatedTable = <T extends DataType>({
   rowSelection,
   selectedRowKeys,
   resetSelection,
+  updateLimitSize,
   ...rest // Spread remaining props for further customization (including scroll)
 }: CustomTableProps<T>) => {
   return (
@@ -71,6 +73,7 @@ export const PaginatedTable = <T extends DataType>({
                   showSizeChanger: true,
                   showQuickJumper: true,
                   showTotal: (total) => `Total ${total} items`,
+                  onShowSizeChange: updateLimitSize,
                 }
               : false
           }

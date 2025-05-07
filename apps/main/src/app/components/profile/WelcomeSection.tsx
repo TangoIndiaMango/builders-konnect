@@ -49,9 +49,11 @@ const WelcomeSection = ({
   return (
     <div className="p-8 mb-6 bg-white rounded-lg shadow-sm">
       <SkeletonLoader active={isLoadingProfile} type="card" rows={1}>
-        <div className="flex items-center gap-6">
-          <div className="w-24 h-24 overflow-hidden rounded-full">
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="">
             <Avatar
+              shape="circle"
+              size={100}
               src={
                 data?.logo ??
                 fileRes?.url ??

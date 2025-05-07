@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs, Button } from 'antd';
 import type { TabsProps } from 'antd';
 import WelcomeSection from '../../components/profile/WelcomeSection';
 import BusinessProfile from '../../components/profile/BusinessProfile';
 import FinanceSection from '../../components/profile/FinanceSection';
 import DocumentsSection from '../../components/profile/DocumentsSection';
-import { useFetchData } from '../../../hooks/useApis';
+import { useFetchData, useGetExportData } from '../../../hooks/useApis';
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { StoreListResponse, VendorProfile } from './types';
 import StoreList from '../../components/profile/store/StoreList';
 import { useNavigate } from 'react-router-dom';
-
+import { exportCsvFromString } from '../../../utils/helper';
+import { useTableState } from '../../../hooks/useTable';
+import { filterOptions } from '../../lib/constant';
 
 const ProfilePage: React.FC = () => {
   const onChange = (key: string) => {
@@ -23,39 +25,54 @@ const ProfilePage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [status, setStatus] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const {
+    searchValue,
+    setSearch,
+    currentPage,
+    pageSize,
+    setPage,
+    reset,
+    customDateRange,
+    setCustomDateRange,
+    filterKey,
+    filterValue,
+    handleFilterChange,
+    exportType,
+    setExportType,
+    limitSize,
+    setLimitSize,
+  } = useTableState('profile');
+  const exportStore = useGetExportData(
+    `merchants/profile?export=${exportType}`
+  );
 
-  const filterOptions = [
-    { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' },
-  ];
-
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-  };
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
-
-  const handleFilterChange = (value: string) => {
-    setStatus(value);
+  const handleExport = () => {
+    exportStore.mutate(null as any, {
+      onSuccess: (data) => {
+        exportCsvFromString(data, 'Stores');
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      onSettled: () => {
+        setExportType('');
+      },
+    });
   };
 
-  const handleDateFilterChange = (value: string) => {
-    setDateFilter(value);
-  };
-
-  const handleSortByChange = (value: string) => {
-    setSortBy(value);
-  };
+  useEffect(() => {
+    if (exportType) {
+      handleExport();
+    }
+  }, [exportType]);
 
   const [tab, setTab] = useState('staff');
   const stores = useFetchData(
-    `merchants/locations?paginate=1&page=${currentPage}&status=${status}&date_filter=${dateFilter}&sort_by=${sortBy}&q=${searchQuery}`
+    `merchants/locations?paginate=1&page=${currentPage ?? 1}&status=${
+      filterKey === 'status' ? filterValue : ''
+    }&date_filter=${customDateRange ?? ''}&sort_by=${
+      filterKey === 'sort_by' ? filterValue : ''
+    }&q=${searchValue ?? ''}&limit=${limitSize ?? 10}`
   );
 
   const storeListResponse = stores?.data?.data as StoreListResponse;
@@ -90,13 +107,17 @@ const ProfilePage: React.FC = () => {
           data={storeListResponse}
           isLoading={stores?.isLoading}
           currentPage={currentPage}
-          handlePageChange={handlePageChange}
-          handleSearch={handleSearch}
+          setPage={setPage}
+          setSearchValue={setSearch}
           handleFilterChange={handleFilterChange}
           filterOptions={filterOptions}
-          selectedFilter={status}
-          handleDateFilterChange={handleDateFilterChange}
-          selectedDateFilter={dateFilter}
+          onExport={handleExport}
+          filterValue={filterValue ?? ''}
+          setCustomDateRange={setCustomDateRange}
+          pageSize={pageSize}
+          reset={reset}
+          updateLimitSize={setLimitSize}
+          searchValue={searchValue}
           refetch={stores?.refetch}
         />
       ),

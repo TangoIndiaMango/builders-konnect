@@ -1,43 +1,39 @@
-import { Button, Form, notification } from 'antd';
-import DisplayHeader from '../../common/DisplayHeader';
-import TimelineFilter from '../../common/filters/TimelineFilter';
-import { SkeletonLoader } from '../../common/SkeletonLoader';
-import TableWrapper from '../../common/Table/TableWrapper';
-import TableStats from '../../common/TableStats';
-import { StoreTable } from '../table/StoreTable';
 import { PlusOutlined } from '@ant-design/icons';
+import { Button, Form, notification } from 'antd';
+import { useMemo, useState } from 'react';
 import {
   useCreateData,
   useFetchData,
   useFetchSingleData,
 } from '../../../../hooks/useApis';
-import { useMemo, useState } from 'react';
-import StoreFormModal from './AddStoreForm';
+import { FilterState } from '../../../types/table';
+import DisplayHeader from '../../common/DisplayHeader';
+import { SkeletonLoader } from '../../common/SkeletonLoader';
 import SuccessModal from '../../common/SuccessModal';
-interface StoreListProps {
+import TableWrapper from '../../common/Table/TableWrapper';
+import TableStats from '../../common/TableStats';
+import { StoreTable } from '../table/StoreTable';
+import StoreFormModal from './AddStoreForm';
+interface StoreListProps extends FilterState {
   data: any;
   isLoading: boolean;
-  currentPage: number;
-  handlePageChange: (page: number, pageSize: number) => void;
-  handleSearch: (value: string) => void;
-  handleDateFilterChange: (value: string) => void;
-  filterOptions: any;
-  handleFilterChange: (value: string) => void;
-  selectedFilter: string;
-  selectedDateFilter: string;
   refetch: () => void;
 }
 const StoreList = ({
   data,
   isLoading,
   currentPage,
-  handlePageChange,
-  handleSearch,
-  handleDateFilterChange,
-  filterOptions,
+  pageSize,
+  setPage,
+  setCustomDateRange,
   handleFilterChange,
-  selectedFilter,
-  selectedDateFilter,
+  filterValue,
+  onExport,
+  updateLimitSize,
+  filterOptions,
+  searchValue,
+  setSearchValue,
+  reset,
   refetch,
 }: StoreListProps) => {
   const [form] = Form.useForm();
@@ -112,13 +108,7 @@ const StoreList = ({
         description="You're viewing all stores below."
         actionButton={
           <div className="flex flex-wrap items-center justify-end gap-3">
-            <Button
-              onClick={() => {
-                handleFilterChange('');
-              }}
-            >
-              Clear
-            </Button>
+            <Button onClick={reset}>Clear</Button>
             <Button
               type="primary"
               onClick={() => {
@@ -148,18 +138,22 @@ const StoreList = ({
       </SkeletonLoader>
 
       <TableWrapper
-        onSearch={handleSearch}
         filterOptions={filterOptions}
         onFilterChange={handleFilterChange}
-        selectedFilter={selectedFilter}
+        selectedFilter={filterValue}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        onExport={onExport}
       >
         <StoreTable
           data={data?.data?.data}
           currentPage={currentPage}
-          onPageChange={handlePageChange}
+          onPageChange={setPage}
           loading={isLoading}
           showCheckbox={true}
           total={data?.data?.total}
+          perPage={data?.data?.per_page}
+          updateLimitSize={updateLimitSize}
         />
       </TableWrapper>
 

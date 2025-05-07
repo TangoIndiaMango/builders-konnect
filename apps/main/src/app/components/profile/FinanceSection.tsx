@@ -13,12 +13,12 @@ interface FinanceSectionProps {
 
 const FinanceSection = ({ financeInfo, isLoading }: FinanceSectionProps) => {
   return (
-    <div className="grid grid-cols-2 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm">
+    <div className="grid grid-cols-1 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm md:grid-cols-2">
       <div className="">
         <h3 className="mb-4 text-lg font-semibold">FINANCE</h3>
       </div>
       <SkeletonLoader active={isLoading} type="list">
-      <div className="grid grid-cols-2 gap-x-24 gap-y-6">
+      <div className="grid grid-cols-1 gap-x-24 gap-y-6 md:grid-cols-2">
         <div>
           <Text className="block mb-1 text-gray-500">Bank name</Text>
           <Text className="text-gray-900">{financeInfo?.bank_name}</Text>
@@ -27,7 +27,7 @@ const FinanceSection = ({ financeInfo, isLoading }: FinanceSectionProps) => {
           <Text className="block mb-1 text-gray-500">Account Number</Text>
           <Text className="text-gray-900">{financeInfo?.account_number}</Text>
         </div>
-        <div className="col-span-2">
+        <div className="md:col-span-2">
           <Text className="block mb-1 text-gray-500">Account name</Text>
           <Text className="text-gray-900">{financeInfo?.account_name}</Text>
         </div>

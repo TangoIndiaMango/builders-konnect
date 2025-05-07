@@ -1,17 +1,20 @@
-import { FilterOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
 import React, { useState } from 'react';
 import { ExportDropdown } from '../ExportDropdown';
 import { SearchInput } from '../SearchInput';
 import FilterDropdown from '../filters/FilterDropdown';
 
 interface TableFiltersProps {
-  onSearch: (value: string) => void;
   showTimeline?: boolean;
   children: React.ReactNode;
+  searchValue: string;
+  setSearchValue: (value: string) => void;
 }
 
-const TableWrapper = ({ onSearch, children }: TableFiltersProps) => {
+const InventoryTableWrapper = ({
+  children,
+  searchValue,
+  setSearchValue,
+}: TableFiltersProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState('category');
 
   const periodOptions = [
@@ -31,7 +34,8 @@ const TableWrapper = ({ onSearch, children }: TableFiltersProps) => {
           />
           <SearchInput
             placeholder="input search text"
-            onSearch={onSearch}
+            onChange={setSearchValue}
+            value={searchValue}
             className="min-w-[300px]"
           />
         </div>
@@ -45,4 +49,4 @@ const TableWrapper = ({ onSearch, children }: TableFiltersProps) => {
   );
 };
 
-export default TableWrapper;
+export default InventoryTableWrapper;

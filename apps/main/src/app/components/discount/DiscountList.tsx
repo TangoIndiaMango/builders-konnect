@@ -6,30 +6,28 @@ import { SkeletonLoader } from '../common/SkeletonLoader';
 import TableWrapper from '../common/Table/TableWrapper';
 import TableStats from '../common/TableStats';
 import { DiscountTable } from './table/discountTable';
+import { FilterState } from '../../types/table';
+import DatePickerComp from '../date/DatePickerrComp';
 
-interface DiscountListProps {
+interface DiscountListProps extends FilterState {
   data: DiscountListResponse;
   isLoading: boolean;
-  currentPage: number;
-  handlePageChange: (page: number, pageSize: number) => void;
-  handleSearch: (value: string) => void;
-  handleDateFilterChange: (value: string) => void;
-  filterOptions: any;
-  handleFilterChange: (value: string) => void;
-  selectedFilter: string;
-  selectedDateFilter: string;
 }
 const DiscountList = ({
   data,
   isLoading,
   currentPage,
-  handlePageChange,
-  handleSearch,
-  handleDateFilterChange,
-  filterOptions,
+  pageSize,
+  setPage,
+  setCustomDateRange,
   handleFilterChange,
-  selectedFilter,
-  selectedDateFilter,
+  filterValue,
+  onExport,
+  updateLimitSize,
+  filterOptions,
+  searchValue,
+  setSearchValue,
+  reset,
 }: DiscountListProps) => {
   const tableStatsData = [
     {
@@ -72,15 +70,12 @@ const DiscountList = ({
         actionButton={
           <div className="flex flex-wrap items-center justify-end gap-3">
             <Button
-              onClick={() => {
-                handleFilterChange('');
-              }}
+              onClick={reset}
             >
               Clear
             </Button>
-            <TimelineFilter
-              onChange={handleDateFilterChange}
-              value={selectedDateFilter}
+            <DatePickerComp
+              onRangeChange={setCustomDateRange}
             />
           </div>
         }
@@ -101,18 +96,22 @@ const DiscountList = ({
       </SkeletonLoader>
 
       <TableWrapper
-        onSearch={handleSearch}
         filterOptions={filterOptions}
         onFilterChange={handleFilterChange}
-        selectedFilter={selectedFilter}
+        selectedFilter={filterValue}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        onExport={onExport}
       >
         <DiscountTable
           data={data?.data?.data}
           currentPage={currentPage}
-          onPageChange={handlePageChange}
+          onPageChange={setPage}
           loading={isLoading}
           showCheckbox={true}
           total={data?.data?.total}
+          perPage={data?.data?.per_page}
+          updateLimitSize={updateLimitSize}
         />
       </TableWrapper>
     </div>
