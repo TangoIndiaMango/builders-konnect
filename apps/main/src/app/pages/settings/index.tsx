@@ -13,6 +13,7 @@ const SettingPage: React.FC = () => {
   };
 
   const profileData = useFetchData(`merchants/profile/view`);
+
   const profile = profileData?.data?.data as VendorProfile;
 
 
@@ -22,7 +23,7 @@ const SettingPage: React.FC = () => {
       label: 'Profile Information',
       children: (
         <div className="py-6 space-y-6">
-          <WelcomeSection data={profile} isLoading={profileData.isLoading} />
+          <WelcomeSection data={profile} isLoading={profileData.isLoading} isProfile={true} />
           <ProfileInfoSection data={profile} isLoading={profileData.isLoading} />
         </div>
       ),
