@@ -1,12 +1,12 @@
-import { DownOutlined } from '@ant-design/icons';
-
-import { BellOutlined } from '@ant-design/icons';
-
-import { MenuFoldOutlined } from '@ant-design/icons';
-
-import { MenuUnfoldOutlined } from '@ant-design/icons';
+import {
+  DownOutlined,
+  BellOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from '@ant-design/icons';
 import { Avatar, Badge, Tag } from 'antd';
 import { Header } from 'antd/es/layout/layout';
+import NotificationPanel from './NotificationPanel';
 
 interface MainHeaderProps {
   isMobile: boolean;
@@ -45,19 +45,13 @@ const MainHeader: React.FC<MainHeaderProps> = ({
         <div className="flex items-center gap-3">
           {isMobile && (
             <div onClick={toggleSidebar} className="text-xl cursor-pointer">
-              {showMobileSidebar ? (
-                <MenuUnfoldOutlined />
-              ) : (
-                <MenuFoldOutlined />
-              )}
+              {showMobileSidebar ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </div>
           )}
 
           <div className="flex items-center max-w-full gap-2">
-            <h2 className="text-base font-medium text-gray-800">
-              {storeName}
-            </h2>
-            <Tag className="inline-flex items-center flex-shrink-0 text-xs text-sky-700 bg-sky-50 border border-sky-200 px-3 py-0.5 rounded-full">
+            <h2 className="text-base font-medium text-gray-800">{storeName}</h2>
+            <Tag className="inline-flex items-center text-xs text-sky-700 bg-sky-50 border border-sky-200 px-3 py-0.5 rounded-full">
               {storeType}
             </Tag>
           </div>
@@ -65,10 +59,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({
 
         <div className="flex items-center justify-end gap-3 cursor-pointer">
           <Badge count={notificationCount} size="small">
-            <BellOutlined
-              color="#000000D9"
-              className="text-xl cursor-pointer "
-            />
+            <BellOutlined className="text-xl" />
           </Badge>
           <Avatar
             src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"

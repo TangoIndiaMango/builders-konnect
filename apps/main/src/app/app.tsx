@@ -18,6 +18,12 @@ import VendorProfile from './pages/profile';
 import VendorProfileOutlet from './pages/profile/profile-outlet';
 import SingleStoreDetails from './pages/profile/views/single-store';
 import SalesHome from './pages/sales';
+<<<<<<< HEAD
+import CreateSales from './pages/sales/create';
+import SalesViewPage from './pages/sales/view';
+import PauseSales from './pages/sales/pause-sales';
+=======
+>>>>>>> fd195cb7fbe7fec01ddeea7830ce0d37dab90252
 import SalesAnalytics from './pages/sales/analytics';
 import CreateSales from './pages/sales/create';
 import SalesOutlet from './pages/sales/outlet';
@@ -26,9 +32,7 @@ import SalesViewPage from './pages/sales/view';
 import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import InventoryOutlet from './pages/inventory/inventory-outlet';
-import InventoryPage from './pages/inventory';
 import ProductsPage from './pages/inventory';
-import Inventories from './pages/inventory/inventories';
 import Inventory from './pages/inventory/inventories';
 import EditInventoryPage from './pages/inventory/editInventorybySearch';
 import EditInventoryById from './pages/inventory/editInventory';
@@ -39,6 +43,12 @@ import PreviewPage from './pages/inventory/imagePreview';
 import ProductPreview from './pages/inventory/previewProduct';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
+<<<<<<< HEAD
+import ProductPreview from './pages/inventory/previewProduct';
+import EditProduct from './pages/inventory/EditProduct';
+import SettingOutlet from './pages/settings/setting-outlet';
+import SettingPage from './pages/settings';
+=======
 import AddStaffPassword from './pages/auth/add-staff-password';
 import CustomersList from './pages/customers/customers-list';
 import CustomersOutlet from './pages/customers/customer-outlet';
@@ -49,6 +59,7 @@ import ViewStaffDetails from './pages/staff/view-staff';
 import ReturnsOutlet from './pages/returns/outlet';
 import ReturnsPage from './pages/returns';
 import ReturnsViewPage from './pages/returns/view';
+>>>>>>> fd195cb7fbe7fec01ddeea7830ce0d37dab90252
 
 const App = () => {
   return (
@@ -56,7 +67,6 @@ const App = () => {
     <Routes>
       <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
-
         <Route path="create-password" element={<CreatePassword />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
@@ -132,10 +142,7 @@ const App = () => {
         <Route path="edit/:id" element={<EditInventoryById />} />
         <Route path="edit-product/:id" element={<EditProduct />} />
         <Route path="trigger-reorder" element={<TriggerReorder />} />
-        <Route
-          path="create-product-by-search"
-          element={<CreateProductBySearch />}
-        />
+        <Route path="create-product-by-search" element={<CreateProductBySearch />} />
         <Route path="add-product" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
         <Route path="product-preview" element={<ProductPreview />} />
@@ -144,6 +151,17 @@ const App = () => {
       </Route>
 
       <Route
+<<<<<<< HEAD
+        path="pos/settings"
+        element={
+          <ProtectedRoute>
+            <SettingOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<SettingPage />} />
+      </Route>
+=======
         path="pos/customers"
         element={
           <ProtectedRoute>
@@ -182,6 +200,7 @@ const App = () => {
         <Route path="view/:id" element={<ReturnsViewPage />} />
       </Route>
       <Route path="*" element={<NotFound />} />
+>>>>>>> fd195cb7fbe7fec01ddeea7830ce0d37dab90252
     </Routes>
     </>
   );
