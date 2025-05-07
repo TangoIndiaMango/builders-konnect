@@ -1,11 +1,12 @@
 
 import {
-  Form,  Input, Select, Button, Typography, Upload, InputNumber, Modal, UploadFile,
+  Form,  Input, Select, Button, Typography, Upload, InputNumber, Modal, UploadFile, message,
 } from 'antd';
 import { ArrowLeftOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetCategorizations, useGetMeasuringUnits, useGetInventoryAttributes } from '../../../service/inventory/inventoryFN';
+import { createProduct } from '../../../service/inventory/inventory';
 
 type CategoryResponse = {
   id: string;
@@ -45,9 +46,6 @@ interface ProductFormData {
   brand: string;
   productImages: UploadFile[];
   size: string;
-  finishType: string;
-  shapeType: string;
-  color: string; 
   costPrice: number;
   sellingPrice: number;
   stockQuantity: number;
@@ -55,6 +53,7 @@ interface ProductFormData {
   description: string;
   tags: string[];
   measuringUnit: string;
+  attributes: Record<string, string>;
 }
 
 
@@ -67,14 +66,12 @@ const CreateProduct = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('');
 
-  const [formData, setFormData] = useState<ProductFormData | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [productCode, setProductCode] = useState('');
   const [isVariantModalVisible, setIsVariantModalVisible] = useState(false);
   const [isColorModalVisible, setIsColorModalVisible] = useState(false);
   const [variants, setVariants] = useState<Array<{ values: Record<string, string>, labels: Record<string, string> }>>([]);
   const [measuringUnits, setMeasuringUnits] = useState<Array<{ value: string; label: string }>>([]);
-  const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
   const navigate = useNavigate();
 
   const { data: categoriesData } = useGetCategorizations('category');
@@ -95,14 +92,9 @@ const CreateProduct = () => {
       attributesData.forEach((attr: InventoryAttribute) => {
         form.setFieldValue(attr.id, undefined);
       });
-      setAttributeValues({});
     }
   };
 
-  const handleAttributeChange = (attrId: string, value: string) => {
-    setAttributeValues(prev => ({ ...prev, [attrId]: value }));
-    form.setFieldValue(attrId, value);
-  };
 
   useEffect(() => {
     if (categoriesData) {
@@ -167,28 +159,10 @@ const CreateProduct = () => {
     window.history.back();
   };
 
-  const handleFinish = (values: ProductFormData): void => {
-    const generatedCode = Math.random().toString(36).substr(2, 9).toUpperCase();
-    setProductCode(generatedCode);
-    setFormData(values);
-    setIsModalVisible(true);
-  };
-
-  const handleOk = (): void => {
+  const handleModalOk = (): void => {
     setIsModalVisible(false);
-
-    if (formData) {
-      navigate('/pos/inventory/product-preview', {
-        state: {
-          ...formData,
-          productCode,
-          imageUrl: formData?.productImages?.[0]?.thumbUrl || '',
-        },
-      });
-    }
+    navigate('/inventory');
   };
-
-
 
   const handleNext = (): void => {
     setCurrentStep(prev => Math.min(prev + 1, 1));
@@ -198,15 +172,59 @@ const CreateProduct = () => {
     setCurrentStep(prev => Math.max(prev - 1, 0));
   };
 
-
-
   const handleSubcategoryChange = (value: string) => {
     setSelectedSubcategoryId(value);
     setProductTypes([]); // Clear existing product types
     form.setFieldValue('productType', undefined); // Clear product type selection
   };
 
-  return (
+  const handleSubmit = async (values: ProductFormData) => {
+    try {
+      const metadata: Record<string, { [key: string]: string[] }> = {};
+      
+      // Handle attributes
+      if (values.attributes) {
+        metadata.attributes = {};
+        for (const [key, value] of Object.entries(values.attributes)) {
+          metadata.attributes[key] = [value];
+        }
+      }
+
+      const productData = {
+        name: values.name,
+        SKU: values.sku,
+        category: values.category,
+        subcategory: values.subcategory,
+        product_type: values.productType,
+        unit_cost_price: values.costPrice,
+        unit_retail_price: values.sellingPrice || 0,
+        quantity: values.stockQuantity || 0,
+        reorder_value: values.reorderLevel || 0,
+        description: values.description || '',
+        measurement_unit: values.measuringUnit || '',
+        tags: typeof values.tags === 'string' ? values.tags : Array.isArray(values.tags) ? values.tags.join(', ') : '',
+        product_creation_format: 'single' as const,
+        images: values.productImages?.map(file => ({
+          url: URL.createObjectURL(file.originFileObj as Blob),
+          file: file.originFileObj as Blob
+        })) || [],
+        ...(Object.keys(metadata).length > 0 ? { metadata } : {})
+      };
+
+      const response = await createProduct(productData as any);
+      
+      if (response) {
+        const generatedCode = Math.random().toString(36).substr(2, 9).toUpperCase();
+        setProductCode(generatedCode);
+        setIsModalVisible(true);
+      }
+    } catch (error) {
+      console.error('Error creating product:', error);
+      message.error('Failed to create product. Please try again.');
+    }
+  };
+
+  return (  
     <>
       <div className="p-3 h-fit bg-gray-50">
         <div className="mb-4 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
@@ -254,8 +272,8 @@ const CreateProduct = () => {
         <Form
           form={form}
           layout="horizontal"
-          onFinish={handleFinish}
-          className="max-w-3xl mx-auto"
+          className="w-full max-w-3xl mx-auto"
+          onFinish={handleSubmit}
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 18 }}
         >
@@ -408,30 +426,7 @@ const CreateProduct = () => {
                 />
               </Form.Item>
 
-              {attributesData && attributesData.map((attr: InventoryAttribute) => (
-                <Form.Item
-                  key={attr.id}
-                  label={attr.attribute}
-                  name={attr.id}
-                  rules={[{ required: true, message: 'Required' }]}
-                >
-                  {attr.possible_values ? (
-                    <Select
-                      placeholder={`Select ${attr.attribute}`}
-                      options={attr.possible_values.map(value => ({ value, label: value }))}
-                      style={{ width: '100%' }}
-                      value={attributeValues[attr.id]}
-                      onChange={(value) => handleAttributeChange(attr.id, value)}
-                    />
-                  ) : (
-                    <Input 
-                      placeholder={`Enter ${attr.attribute}`}
-                      value={attributeValues[attr.id]}
-                      onChange={(e) => handleAttributeChange(attr.id, e.target.value)}
-                    />
-                  )}
-                </Form.Item>
-              ))}
+            
 
               <Form.Item
                 label="Cost Price"
@@ -493,11 +488,11 @@ const CreateProduct = () => {
       <Modal
         title="Product Successfully Added"
         open={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleOk}
+        onOk={handleModalOk}
+        onCancel={handleModalOk}
       >
         <p className="text-sm text-[#000000D9]">
-          A Product Code has been generated for this product.
+          Product has been created successfully!
         </p>
         <p className="font-bold text-sm mt-2 text-[#003399]">{productCode}</p>
       </Modal>
@@ -580,8 +575,7 @@ const CreateProduct = () => {
         footer={null}
       >
         <Form
-          onFinish={(values) => {
-            // TODO: Add new color to options
+          onFinish={() => {
             setIsColorModalVisible(false);
           }}
           layout="vertical"
