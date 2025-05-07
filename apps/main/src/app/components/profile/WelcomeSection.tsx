@@ -45,7 +45,7 @@ const WelcomeSection = ({
       );
     }
   };
-  const isLoadingProfile = updateprofile.isPending || isLoading;
+  const isLoadingProfile = updateprofile.isLoading || isLoading;
   return (
     <div className="p-8 mb-6 bg-white rounded-lg shadow-sm">
       <SkeletonLoader active={isLoadingProfile} type="card" rows={1}>

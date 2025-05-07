@@ -132,3 +132,16 @@ export const exportToExcel = (data: BlobPart, prefix: string) => {
   const blob = new Blob([data], { type: mimeType });
   saveAs(blob, filename);
 };
+
+export const handleCopy = (val: string, successTitle: string) => {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard
+      .writeText(val)
+      .then(() =>
+        message.success(successTitle)
+      )
+      .catch((err) =>
+        message.error('Failed to copy')
+      );
+  }
+};

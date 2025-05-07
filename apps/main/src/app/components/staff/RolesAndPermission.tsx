@@ -58,7 +58,7 @@ const RolesAndPermission = ({
               key={role.id}
               role={role}
               handleToggleRole={handleToggleRole}
-              isLoading={updateRole.isPending}
+              isLoading={updateRole.isLoading}
               onClick={() => navigate(`/pos/staff/role/${role.id}`)}
             />
           ))}

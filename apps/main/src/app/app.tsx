@@ -1,5 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
+import ViewReview from './components/customers/VeiwReview';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
+import AddStaffPassword from './pages/auth/add-staff-password';
 import AuthOutlet from './pages/auth/auth-outlets';
 import ChangePassword from './pages/auth/change-password';
 import CreatePassword from './pages/auth/create-vendor-account';
@@ -7,60 +9,46 @@ import ForgotPassword from './pages/auth/forgot-password';
 import Login from './pages/auth/login';
 import MultipleAccounts from './pages/auth/multiple-accounts';
 import RegisterVendor from './pages/auth/register-vendor';
+import CustomersOutlet from './pages/customers/customer-outlet';
+import CustomersList from './pages/customers/customers-list';
+import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
 import DiscountHome from './pages/discount';
 import DiscountCreate from './pages/discount/create';
 import DiscountOutlet from './pages/discount/outlet';
 import DashboardHome from './pages/home';
 import VendorHomeOutlet from './pages/home/dashboard-outlet';
+import ProductsPage from './pages/inventory';
+import AddBulkProductPage from './pages/inventory/addBulkProduct';
+import ScanProductPage from './pages/inventory/barcodeProductAdd';
+import CreateProduct from './pages/inventory/createProduct';
+import CreateProductBySearch from './pages/inventory/createProductBySearch';
+import EditInventoryById from './pages/inventory/editInventory';
+import EditInventoryPage from './pages/inventory/editInventorybySearch';
 import EditProduct from './pages/inventory/EditProduct';
+import PreviewPage from './pages/inventory/imagePreview';
+import Inventory from './pages/inventory/inventories';
+import InventoryOutlet from './pages/inventory/inventory-outlet';
+import ProductPreview from './pages/inventory/previewProduct';
+import TriggerReorder from './pages/inventory/triggerReorder';
 import NotFound from './pages/NotFound';
 import VendorProfile from './pages/profile';
 import VendorProfileOutlet from './pages/profile/profile-outlet';
 import SingleStoreDetails from './pages/profile/views/single-store';
+import ReturnsPage from './pages/returns';
+import ReturnsOutlet from './pages/returns/outlet';
+import ReturnsViewPage from './pages/returns/view';
 import SalesHome from './pages/sales';
-<<<<<<< HEAD
-import CreateSales from './pages/sales/create';
-import SalesViewPage from './pages/sales/view';
-import PauseSales from './pages/sales/pause-sales';
-=======
->>>>>>> fd195cb7fbe7fec01ddeea7830ce0d37dab90252
 import SalesAnalytics from './pages/sales/analytics';
 import CreateSales from './pages/sales/create';
 import SalesOutlet from './pages/sales/outlet';
 import PauseSales from './pages/sales/pause-sales';
 import SalesViewPage from './pages/sales/view';
+import SettingPage from './pages/settings';
+import SettingOutlet from './pages/settings/setting-outlet';
 import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
-import InventoryOutlet from './pages/inventory/inventory-outlet';
-import ProductsPage from './pages/inventory';
-import Inventory from './pages/inventory/inventories';
-import EditInventoryPage from './pages/inventory/editInventorybySearch';
-import EditInventoryById from './pages/inventory/editInventory';
-import TriggerReorder from './pages/inventory/triggerReorder';
-import CreateProductBySearch from './pages/inventory/createProductBySearch';
-import CreateProduct from './pages/inventory/createProduct';
-import PreviewPage from './pages/inventory/imagePreview';
-import ProductPreview from './pages/inventory/previewProduct';
-import ScanProductPage from './pages/inventory/barcodeProductAdd';
-import AddBulkProductPage from './pages/inventory/addBulkProduct';
-<<<<<<< HEAD
-import ProductPreview from './pages/inventory/previewProduct';
-import EditProduct from './pages/inventory/EditProduct';
-import SettingOutlet from './pages/settings/setting-outlet';
-import SettingPage from './pages/settings';
-=======
-import AddStaffPassword from './pages/auth/add-staff-password';
-import CustomersList from './pages/customers/customers-list';
-import CustomersOutlet from './pages/customers/customer-outlet';
-import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
-import ViewReview from './components/customers/VeiwReview';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
-import ReturnsOutlet from './pages/returns/outlet';
-import ReturnsPage from './pages/returns';
-import ReturnsViewPage from './pages/returns/view';
->>>>>>> fd195cb7fbe7fec01ddeea7830ce0d37dab90252
-
 const App = () => {
   return (
     <>
@@ -84,7 +72,7 @@ const App = () => {
         }
       >
         <Route index element={<DashboardHome />} />
-        
+
       </Route>
 
       <Route
@@ -151,7 +139,6 @@ const App = () => {
       </Route>
 
       <Route
-<<<<<<< HEAD
         path="pos/settings"
         element={
           <ProtectedRoute>
@@ -161,8 +148,7 @@ const App = () => {
       >
         <Route index element={<SettingPage />} />
       </Route>
-=======
-        path="pos/customers"
+       <Route path="pos/customers"
         element={
           <ProtectedRoute>
             <CustomersOutlet />
@@ -173,7 +159,7 @@ const App = () => {
         <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
         <Route path="product-review/view/:id" element={<ViewReview />} />
       </Route>
-  
+
 
       <Route
         path="pos/discounts"
@@ -200,7 +186,6 @@ const App = () => {
         <Route path="view/:id" element={<ReturnsViewPage />} />
       </Route>
       <Route path="*" element={<NotFound />} />
->>>>>>> fd195cb7fbe7fec01ddeea7830ce0d37dab90252
     </Routes>
     </>
   );
