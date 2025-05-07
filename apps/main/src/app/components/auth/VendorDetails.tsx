@@ -36,7 +36,7 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
         name="businessName"
         rules={[{ required: true, message: 'Please enter business name' }]}
       >
-        <Input placeholder="Enter product name" />
+        <Input placeholder="Enter business name" />
       </Form.Item>
 
       <Form.Item

@@ -74,7 +74,7 @@ const DiscountCreate = () => {
           <Button
             type="primary"
             onClick={handleSubmit}
-            loading={id ? updateDiscount.isPending : createDiscount.isPending}
+            loading={id ? updateDiscount.isLoading : createDiscount.isLoading}
           >
             {id ? 'Update Discount' : 'Add Discount'}
           </Button>
@@ -87,7 +87,7 @@ const DiscountCreate = () => {
             form={form}
             onFinish={handleSubmit}
             loading={
-              id ? updateDiscount.isPending : createDiscount.isPending ||
+              id ? updateDiscount.isLoading : createDiscount.isLoading ||
               getDiscount.isLoading
             }
             allProductsValue={allProductsValue}
