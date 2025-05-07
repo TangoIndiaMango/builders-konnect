@@ -145,6 +145,8 @@ export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = tr
       return response.data;
     },
     enabled: enabled,
+    retry: false,
+    staleTime: 0,
   });
 
   return { ...query, isLoading: query.isFetching || query.isLoading };

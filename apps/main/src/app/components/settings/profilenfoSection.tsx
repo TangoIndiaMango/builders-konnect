@@ -21,7 +21,7 @@ const ProfileInfoSection = ({
         </div>
 
         {/* Right content */}
-        <SkeletonLoader active={isLoading} type="list">
+        <SkeletonLoader active={isLoading} type="list" rows={1}>
           <div className="grid grid-cols-2 col-span-5 gap-y-5">
             {/* Left Sub-Column */}
             <div className="space-y-2">
