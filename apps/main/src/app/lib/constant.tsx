@@ -51,7 +51,7 @@ export const POSMenus: MenuItem[] = [
   getItem('Returns and Refunds', 'returns', '/pos/returns', <RollbackOutlined />),
   getItem('Customers', 'customers', '/pos/customers', <UsergroupAddOutlined />, [
     getItem('Customer List', 'customer-list', '/pos/customers/list', <OrderedListOutlined />),
-    getItem('Customer Groups', 'customer-groups', '/pos/customers/groups', <TeamOutlined />),
+    getItem('Reviews and Feedback', 'reviews-and-feedback', '/pos/customers/reviews-and-feedback', <TeamOutlined />),
   ]),
   getItem('Discounts', 'discounts', '/pos/discounts', <PercentageOutlined />),
   getItem('Staff Management', 'staff', '/pos/staff', <TeamOutlined />),

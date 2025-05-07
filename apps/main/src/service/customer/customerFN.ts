@@ -13,13 +13,13 @@ export const useGetCustomer = (id: string) => {
 }
 
 
-// export const useGetCustomers = (params?: CustomerOverviewParams) => {
-//   return useQuery({
-//     queryKey: ['customers', params],
-//     queryFn: () => getCustomerOverview(params),
-//     retry: false,
-//   })
-// }
+export const useGetOverviewCustomers = (params?: CustomerOverviewParams) => {
+  return useQuery({
+    queryKey: ['customers', params],
+    queryFn: () => getCustomerOverview(params),
+    retry: false,
+  })
+}
 
 export const useGetCustomers = () => {
   return useQuery({

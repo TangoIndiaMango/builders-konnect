@@ -32,6 +32,8 @@ node_modules
 npm-debug.log
 yarn-error.log
 testem.log
+pnpm-lock.yaml
+pnpm-workspace.yaml
 /typings
 
 # System Files

@@ -38,8 +38,14 @@ import ProductPreview from './pages/inventory/previewProduct';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
 import AddStaffPassword from './pages/auth/add-staff-password';
+import CustomersList from './pages/customers/customers-list';
+import CustomersOutlet from './pages/customers/customer-outlet';
+import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
+import ViewReview from './components/customers/VeiwReview';
+
 const App = () => {
   return (
+    <>
     <Routes>
       <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
@@ -61,6 +67,7 @@ const App = () => {
         }
       >
         <Route index element={<DashboardHome />} />
+        
       </Route>
 
       <Route
@@ -82,7 +89,7 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<SalesHome />} />
+        <Route index element={<SalesHome /> } />
         <Route path="create" element={<CreateSales />} />
         <Route path="view/:id" element={<SalesViewPage />} />
         <Route path="pause" element={<PauseSales />} />
@@ -127,8 +134,22 @@ const App = () => {
         <Route path="add-bulk-product" element={<AddBulkProductPage/>} />
       </Route>
 
+      <Route
+        path="pos/customers"
+        element={
+          <ProtectedRoute>
+            <CustomersOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="list" element={<CustomersList />} />
+        <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
+        <Route path="product-review/view/:id" element={<ViewReview />} />
+      </Route>
+  
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </>
   );
 };
 
