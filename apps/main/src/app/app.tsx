@@ -15,14 +15,11 @@ import VendorHomeOutlet from './pages/home/dashboard-outlet';
 import SalesOutlet from './pages/sales/outlet';
 import SalesHome from './pages/sales';
 import CreateSales from './pages/sales/create';
-import { OrderView } from './components/sales/view/OrderView';
 import SalesViewPage from './pages/sales/view';
 import PauseSales from './pages/sales/pause-sales';
 import SalesAnalytics from './pages/sales/analytics';
 import InventoryOutlet from './pages/inventory/inventory-outlet';
-import InventoryPage from './pages/inventory';
 import ProductsPage from './pages/inventory';
-import Inventories from './pages/inventory/inventories';
 import Inventory from './pages/inventory/inventories';
 import EditInventoryPage from './pages/inventory/editInventorybySearch';
 import EditInventoryById from './pages/inventory/editInventory';
@@ -34,15 +31,14 @@ import ScanProductPage from './pages/inventory/barcodeProductAdd';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
 import ProductPreview from './pages/inventory/previewProduct';
 import EditProduct from './pages/inventory/EditProduct';
-// import ProductPreview from './pages/inventory/productPreview';
-
+import SettingOutlet from './pages/settings/setting-outlet';
+import SettingPage from './pages/settings';
 
 const App = () => {
   return (
     <Routes>
       <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
-
         <Route path="create-password" element={<CreatePassword />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
@@ -101,18 +97,24 @@ const App = () => {
         <Route path="edit/:id" element={<EditInventoryById />} />
         <Route path="edit-product/:id" element={<EditProduct />} />
         <Route path="trigger-reorder" element={<TriggerReorder />} />
-        <Route
-          path="create-product-by-search"
-          element={<CreateProductBySearch />}
-        />
+        <Route path="create-product-by-search" element={<CreateProductBySearch />} />
         <Route path="add-product" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
-        <Route path="product-preview" element={<ProductPreview/>} /> 
+        <Route path="product-preview" element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
-        <Route path="add-bulk-product" element={<AddBulkProductPage/>} />
+        <Route path="add-bulk-product" element={<AddBulkProductPage />} />
       </Route>
 
-      <Route path="*" element={<NotFound />} />
+      <Route
+        path="pos/settings"
+        element={
+          <ProtectedRoute>
+            <SettingOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<SettingPage />} />
+      </Route>
     </Routes>
   );
 };
