@@ -18,10 +18,12 @@ const WelcomeSection = ({
   data,
   isLoading,
   isProfile,
+  refetch,
 }: {
   data: VendorProfile;
   isLoading: boolean;
   isProfile?: boolean;
+  refetch: () => void;
 }) => {
   const [fileRes, setFileRes] = useState<UploadedResInterface | null>(null);
   const { user, updateUser } = useSessionStorage();
@@ -67,6 +69,7 @@ const WelcomeSection = ({
               ? 'Your avatar has been uploaded successfully'
               : 'Your logo has been uploaded successfully',
           });
+          refetch();
         },
       });
     }
