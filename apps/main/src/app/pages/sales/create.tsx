@@ -210,7 +210,14 @@ const CreateSales = () => {
   }, [selectedProducts, selectedDiscount]);
 
   const handlePaymentMethodSelect = (methods: paymentMethodInterface[]) => {
-    setSelectedPaymentMethods((prev) => [...prev, ...methods]);
+    setSelectedPaymentMethods((prev) => {
+      const method = methods[0]
+      const alreadySelected = prev.find((p) => p.id === method.id)
+      if(alreadySelected){
+        return prev.filter((p) => p.id !== method.id)
+      }
+      return [...prev, method]
+    });
   };
 
   const handlePaymentConfirm = (

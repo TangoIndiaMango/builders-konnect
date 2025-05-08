@@ -2,7 +2,11 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Form, notification, Typography } from 'antd';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useCreateData, useFetchSingleData, usePutData } from '../../../hooks/useApis';
+import {
+  useCreateData,
+  useFetchSingleData,
+  usePutData,
+} from '../../../hooks/useApis';
 import SuccessModal from '../../components/common/SuccessModal';
 import DiscountForm from '../../components/discount/DiscountForm';
 import ErrorModal from '../../components/common/ErrorModal';
@@ -86,10 +90,7 @@ const DiscountCreate = () => {
             initialValues={getDiscount?.data?.data}
             form={form}
             onFinish={handleSubmit}
-            loading={
-              id ? updateDiscount.isLoading : createDiscount.isLoading ||
-              getDiscount.isLoading
-            }
+            loading={id ? getDiscount.isLoading : false}
             allProductsValue={allProductsValue}
           />
         </div>
