@@ -49,6 +49,7 @@ export const ProductSearch = ({
       ),
       value: product.name,
       product: product,
+      key: product.id,
     }));
 
     setOptions(searchOptions);

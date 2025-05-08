@@ -20,6 +20,7 @@ import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import { exportCsvFromString, formatBalance } from '../../../utils/helper';
 import { useGetExportData, useFetchData } from '../../../hooks/useApis';
 import { ProductStats } from '../../../service/inventory/inventory.types';
+import DatePickerComp from '../../components/date/DatePickerrComp';
 
 const Inventory = () => {
   // const [currentPage, setCurrentPage] = useState(1);
@@ -61,7 +62,7 @@ const Inventory = () => {
        },
      ],
    };
- 
+
 const exportProducts = useGetExportData(
     `merchants/products?export=${exportType}`
   );
@@ -96,22 +97,22 @@ const exportProducts = useGetExportData(
     }`
   );
 
-  const stats = products?.data?.stats as ProductStats;
+  const stats = products?.data?.data?.stats as ProductStats;
   const productsData = products?.data?.data
     ?.data as PaginatedResponse<ProductTableData>;
 
      const navigate = useNavigate();
-    
+
       const handleEdit = (record: ProductTableData) => {
         navigate(`/pos/inventory/edit-product/${record.id}`, { state: record });
       };
-    
-     
-    
+
+
+
       const handleViewDetails = (record: ProductTableData) => {
         navigate(`/pos/inventory/preview-product/${record.id}`, { state: record });
       };
-    
+
   return (
     <div className="h-full">
       {/* HEADER */}
@@ -132,7 +133,8 @@ const exportProducts = useGetExportData(
         {/* Buttons */}
         <div className="flex flex-col gap-3 sm:flex-row sm:gap-5">
           <Button
-            className="rounded !bg-[#CF1322] text-white"
+            type="primary"
+            danger
             size="large"
             onClick={() => navigate('/pos/inventory/trigger-reorder')}
           >
@@ -155,7 +157,10 @@ const exportProducts = useGetExportData(
         <DisplayHeader
           title="All Products"
           description="You're viewing all products below."
-          actionButton={<DateFilter />}
+          actionButton={ <div className="flex flex-wrap items-center justify-end gap-3">
+            <Button onClick={reset}>Clear</Button>
+            <DatePickerComp onRangeChange={setCustomDateRange} />
+          </div>}
         />
 
         {/* Stats */}
@@ -200,7 +205,7 @@ const exportProducts = useGetExportData(
                <Divider />
 
         {/* Table or Empty State */}
-       
+
         <TableWrapper
                   filterOptions={filterOptions}
                   onFilterChange={handleFilterChange}
@@ -222,7 +227,7 @@ const exportProducts = useGetExportData(
              onViewDetails={handleViewDetails}
             />
           </TableWrapper>
-      
+
       </div>
     </div>
   );

@@ -1,41 +1,50 @@
-import { Button, Input, Table, Form, Typography, Space, message } from 'antd';
+import {
+  Button,
+  Input,
+  Table,
+  Form,
+  Typography,
+  Space,
+  message,
+  Avatar,
+} from 'antd';
 import { ArrowLeftOutlined, SearchOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ProductSearch } from '../../components/sales/ProductSearch';
+import { useFetchData, usePutData } from '../../../hooks/useApis';
+import { ProductType } from '../sales/types';
+import { formatBalance } from '../../../utils/helper';
 
 const { Title, Text } = Typography;
 
-interface Product {
-  key: string;
-  name: string;
-  description: string;
-  unitPrice: number;
-  quantity: number;
-  reorderLevel: number;
-}
-
-const sampleProduct: Product = {
-  key: '1',
-  name: 'Premium Cement',
-  description: '10 kg Coarse',
-  unitPrice: 25000,
-  quantity: 10,
-  reorderLevel: 250000,
-};
-
 export default function EditInventoryPage() {
   const [form] = Form.useForm();
-  const [product] = useState<Product>(sampleProduct);
-  const [products, setProducts] = useState<Product[]>([sampleProduct]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-
-  const handleCancel = () => {
-    window.history.back();
-  };
+  const navigate = useNavigate();
+  const [selectedProducts, setSelectedProducts] = useState<ProductType | null>(
+    null
+  );
+  const products = useFetchData('merchants/inventory-products');
+  const editInvetoryLevel = usePutData(
+    `merchants/inventory-products/${selectedProducts?.id}/edit-quantity`
+  );
 
   const handleSave = (values: any) => {
     console.log('Saved values:', values);
-    message.success('Inventory updated successfully!');
-    form.resetFields(); // Reset the form to empty values
+    const payload = {
+      new_quantity: values.new_quantity,
+      reorder_value: values.reorder_value,
+    };
+    editInvetoryLevel.mutate(payload, {
+      onSuccess: () => {
+        message.success('Inventory updated successfully!');
+        form.resetFields();
+        navigate(-1);
+      },
+      onError: (error: any) => {
+        message.error(error.response.data.message);
+      },
+    });
   };
 
   const columns = [
@@ -43,12 +52,22 @@ export default function EditInventoryPage() {
       title: 'Product Name & Number',
       dataIndex: 'name',
       key: 'name',
-      render: (_: string, record: Product) => (
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-black rounded" />
+      render: (_: string, record: ProductType) => (
+        <div className="flex items-center gap-3">
+          <Avatar
+            shape="square"
+            size={40}
+            className="bg-gray-200"
+            src={
+              record?.primary_media_url ||
+              'https://api.dicebear.com/7.x/miniavs/svg?seed=2'
+            }
+          />
           <div>
-            <Text strong>{record.name}</Text>
-            <div className="text-gray-400 text-xs">{record.description}</div>
+            <div className="font-medium">{record.name}</div>
+            <div className="text-sm text-gray-500">
+              {record?.ean ? record.ean : record.SKU}
+            </div>
           </div>
         </div>
       ),
@@ -57,40 +76,57 @@ export default function EditInventoryPage() {
       title: 'Unit Price',
       dataIndex: 'unitPrice',
       key: 'unitPrice',
-      render: (price: number) => `₦ ${price.toLocaleString()}`,
+      render: (_: string, record: ProductType) =>
+        ` ${formatBalance(record?.retail_price)}`,
     },
     {
       title: 'Quantity',
       dataIndex: 'quantity',
       key: 'quantity',
-      render: (qty: number) => (
-        <Text type={qty <= 10 ? 'danger' : undefined}>{qty} left</Text>
+      render: (_: string, record: ProductType) => (
+        <Text type={record.quantity <= 10 ? 'danger' : undefined}>
+          {record.quantity} left
+        </Text>
       ),
     },
     {
       title: 'Reorder Level',
       dataIndex: 'reorderLevel',
       key: 'reorderLevel',
-      render: (price: number) => `₦ ${price.toLocaleString()}`,
+      render: (_: string, record: ProductType) =>
+        ` ${formatBalance(record?.retail_price)}`,
     },
   ];
+  const productData = products?.data?.data as ProductType[];
+
+  const handleProductSelect = (product: ProductType) => {
+    setSelectedProducts(product);
+    form.setFieldsValue({
+      current_stock: product?.quantity ?? 0,
+    });
+  };
 
   return (
-    <div className="p-6 bg-white min-h-screen">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="min-h-screen p-6 space-y-5 bg-white">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
-            onClick={handleCancel}
+            onClick={() => navigate(-1)}
           />
           <Title level={4} className="!m-0">
             Edit Inventory Level
           </Title>
         </div>
         <div className="flex justify-end gap-2 mt-4 sm:mt-6">
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button type="primary" htmlType="submit" form="inventoryForm">
+          <Button onClick={() => navigate(-1)}>Cancel</Button>
+          <Button
+            type="primary"
+            htmlType="submit"
+            form="inventoryForm"
+            loading={editInvetoryLevel.isLoading}
+          >
             Save
           </Button>
         </div>
@@ -101,40 +137,44 @@ export default function EditInventoryPage() {
         forms are common in scenarios where there are fewer data items.
       </Text>
 
-      <div className="border rounded-lg p-4 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="font-medium text-base">Search Product</h1>
-          <Input
-            placeholder="Search by product name, code etc."
-            prefix={<SearchOutlined />}
-            className="max-w-sm"
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      <div className="p-4 space-y-4 border rounded-lg min-h-40">
+        <div className="flex flex-wrap items-center justify-between w-full gap-5">
+          <div>
+            <h3 className="font-medium md:text-lg">Search Product</h3>
+          </div>
+          <div className="justify-end w-full md:w-1/2">
+            <ProductSearch
+              onSelect={handleProductSelect}
+              data={productData}
+              isLoading={products?.isLoading}
+            />
+          </div>
         </div>
-        {searchTerm && products.length > 0 && (
-          <Table dataSource={products} columns={columns} pagination={false} />
+        {selectedProducts && (
+          <Table
+            dataSource={[selectedProducts]}
+            columns={columns}
+            pagination={false}
+          />
         )}
       </div>
 
-      <div className="border rounded-lg p-6">
+      <div className="p-6 border rounded-lg">
         <Title level={5}>Inventory Details</Title>
         <Form
           id="inventoryForm"
           form={form}
           layout="vertical"
-          initialValues={{
-            currentStock: product.quantity,
-          }}
           onFinish={handleSave}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Form.Item label="Current Stock Level" name="currentStock">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Form.Item label="Current Stock Level" name="current_stock">
               <Input disabled />
             </Form.Item>
 
             <Form.Item
               label="Added Stock Level"
-              name="addedStock"
+              name="new_quantity"
               rules={[
                 {
                   required: true,
@@ -147,7 +187,7 @@ export default function EditInventoryPage() {
 
             <Form.Item
               label="New Reorder level (optional)"
-              name="newReorderLevel"
+              name="reorder_value"
             >
               <Input placeholder="Enter reorder level" />
             </Form.Item>

@@ -1,130 +1,65 @@
 import {
-  Button,
-  Input,
-  Table,
-  Form,
-  Typography,
-  Space,
-  message,
-  Modal,
-  Checkbox,
-} from 'antd';
-import {
   ArrowLeftOutlined,
-  SearchOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
+import { Button, Empty, message, Modal, Table, Typography, Avatar } from 'antd';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCreateData, useFetchData } from '../../../hooks/useApis';
+import { formatBalance } from '../../../utils/helper';
+import { ProductSearch } from '../../components/sales/ProductSearch';
+import { ProductType } from '../sales/types';
 
 const { Title, Text } = Typography;
 const { confirm } = Modal;
 
-interface Product {
-  key: string;
-  name: string;
-  description: string;
-  unitPrice: number;
-  quantity: number;
-  reorderLevel: number;
-}
-
-const sampleProducts: Product[] = [
-  {
-    key: '1',
-    name: 'Premium Cement',
-    description: '10kg Smooth',
-    unitPrice: 25000,
-    quantity: 11,
-    reorderLevel: 10,
-  },
-  {
-    key: '2',
-    name: 'Premium Cement',
-    description: '10kg Coarse',
-    unitPrice: 25000,
-    quantity: 15,
-    reorderLevel: 10,
-  },
-];
-
 export default function TriggerReorder() {
-  const [form] = Form.useForm();
-  const [products] = useState<Product[]>(sampleProducts);
+  // const [form] = Form.useForm();
+  const [selectedProducts, setSelectedProducts] = useState<ProductType[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [loading, setLoading] = useState(false);
+  const [reorderModalOpen, setReorderModalOpen] = useState(false);
 
-  const handleCancel = () => {
-    window.history.back();
-  };
+  const products = useFetchData('merchants/inventory-products');
+  const triggerReorder = useCreateData(
+    `merchants/inventory-products/trigger-reorder`
+  );
 
+  const navigate = useNavigate();
   const handleTriggerReorder = () => {
     if (selectedRowKeys.length === 0) {
       message.warning('Please select at least one product to reorder.');
       return;
     }
-
-    confirm({
-      title: 'Trigger Reorder',
-      icon: <ExclamationCircleOutlined />,
-      content:
-        'Are you sure you want to trigger reorder for selected products? Procurement will be notified.',
-      okText: 'Yes, trigger reorder',
-      okButtonProps: {
-        style: { backgroundColor: '#1890ff', borderColor: '#1890ff' },
-      },
-      cancelText: 'Cancel',
-      onOk() {
-        setLoading(true);
-        setTimeout(() => {
-          message.success('Reorder triggered successfully!');
-          setLoading(false);
-        }, 1000);
-      },
-    });
+    setReorderModalOpen(true);
   };
 
-  const columns = [
-    {
-      title: 'Product Name & Number',
-      dataIndex: 'name',
-      key: 'name',
-      render: (_: string, record: Product) => (
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-black rounded" />
-          <div>
-            <Text strong>{record.name}</Text>
-            <div className="text-gray-400 text-xs">{record.description}</div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: 'Unit Price',
-      dataIndex: 'unitPrice',
-      key: 'unitPrice',
-      render: (price: number) => `₦ ${price.toLocaleString()}`,
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
-      render: (qty: number) => (
-        <Text type={qty <= 10 ? 'danger' : undefined}>{qty} left</Text>
-      ),
-    },
-    {
-      title: 'Reorder Level',
-      dataIndex: 'reorderLevel',
-      key: 'reorderLevel',
-    },
-  ];
+  const handleConfirm = () => {
+    const formData = new FormData();
+    selectedRowKeys.forEach((id) => {
+      formData.append('ids[]', id.toString());
+    });
+    triggerReorder.mutate(formData, {
+      onSuccess: () => {
+        message.success('Reorder triggered successfully!');
+      },
+      onError: (error: any) => {
+        message.error(error.message);
+        setReorderModalOpen(false);
+      },
+      onSettled: () => {
+        setReorderModalOpen(false);
+      },
+    });
 
-  const filteredProducts = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  };
+
+  const productData = products?.data?.data as ProductType[];
+
+  const handleProductSelect = (product: ProductType) => {
+    if (!selectedProducts.some((p) => p.id === product.id)) {
+      setSelectedProducts((prev) => [...prev, product]);
+    }
+  };
 
   const rowSelection = {
     selectedRowKeys,
@@ -133,22 +68,73 @@ export default function TriggerReorder() {
     },
   };
 
+  const columns = [
+    {
+      title: 'Product Name & Number',
+      dataIndex: 'name',
+      key: 'name',
+      render: (_: string, record: ProductType) => (
+        <div className="flex items-center gap-3">
+          <Avatar
+            shape="square"
+            size={40}
+            className="bg-gray-200"
+            src={
+              record?.primary_media_url ||
+              'https://api.dicebear.com/7.x/miniavs/svg?seed=2'
+            }
+          />
+          <div>
+            <div className="font-medium">{record.name}</div>
+            <div className="text-sm text-gray-500">
+              {record?.ean ? record.ean : record.SKU}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Unit Price',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
+      render: (_: string, record: ProductType) =>
+        ` ${formatBalance(record?.retail_price)}`,
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+      key: 'quantity',
+      render: (_: string, record: ProductType) => (
+        <Text type={record.quantity <= 10 ? 'danger' : undefined}>
+          {record.quantity} left
+        </Text>
+      ),
+    },
+    {
+      title: 'Reorder Level',
+      dataIndex: 'reorderLevel',
+      key: 'reorderLevel',
+      render: (_: string, record: ProductType) =>
+        ` ${formatBalance(record?.retail_price)}`,
+    },
+  ];
+
   return (
-    <div className="p-4 md:p-6 bg-white min-h-screen">
+    <div className="min-h-screen p-4 bg-white md:p-6">
       {/* Header */}
-      <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col gap-4 mb-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center">
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
-            onClick={handleCancel}
+            onClick={() => navigate(-1)}
           />
           <Title level={4} className="!m-0 ml-2">
             Trigger Reorder
           </Title>
         </div>
-        <div className="flex flex-col sm:flex-row justify-end gap-2">
-          <Button onClick={handleCancel} className="w-full sm:w-auto">
+        <div className="flex flex-col justify-end gap-2 sm:flex-row">
+          <Button onClick={() => navigate(-1)} className="w-full sm:w-auto">
             Cancel
           </Button>
           <Button
@@ -156,7 +142,7 @@ export default function TriggerReorder() {
             type="primary"
             htmlType="button"
             onClick={handleTriggerReorder}
-            loading={loading}
+            loading={triggerReorder.isLoading}
           >
             Trigger Reorder
           </Button>
@@ -168,27 +154,53 @@ export default function TriggerReorder() {
       </Text>
 
       {/* Search and Table */}
-      <div className="border rounded-lg p-4 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-          <h1 className="font-medium text-base">Search Product(s)</h1>
-          <Input
-            placeholder="Input search text"
-            prefix={<SearchOutlined />}
-            className="w-full md:max-w-sm"
-            onChange={(e) => setSearchTerm(e.target.value)}
-            allowClear
-          />
+      <div className="p-4 space-y-4 border rounded-lg min-h-40">
+        <div className="flex flex-wrap items-center justify-between w-full gap-5">
+          <div>
+            <h3 className="font-medium md:text-lg">Search Product</h3>
+          </div>
+          <div className="justify-end w-full md:w-1/2">
+            <ProductSearch
+              onSelect={handleProductSelect}
+              data={productData}
+              isLoading={products?.isLoading}
+            />
+          </div>
         </div>
-
-        <Table
-          rowSelection={rowSelection}
-          dataSource={filteredProducts}
-          columns={columns}
-          pagination={false}
-          rowKey="key"
-          scroll={{ x: 'max-content' }} // makes table scrollable on small devices
-        />
+        {selectedProducts.length > 0 ? (
+          <Table
+            rowKey="id"
+            rowSelection={rowSelection as any}
+            dataSource={selectedProducts}
+            columns={columns}
+            pagination={false}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <Empty description="Search for products to trigger reorder" />
+          </div>
+        )}
       </div>
+
+      <Modal
+        open={reorderModalOpen}
+        onCancel={() => setReorderModalOpen(false)}
+        onOk={handleConfirm}
+        centered
+        width={400}
+        title={
+          <span>
+            <ExclamationCircleOutlined className="mr-2 text-yellow-500" />
+            Trigger Reorder
+          </span>
+        }
+        okText="Yes, trigger reorder"
+        cancelText="Cancel"
+        confirmLoading={triggerReorder.isLoading}
+        okButtonProps={{ style: { borderRadius: 0 } }}
+      >
+        Are you sure you want to trigger reorder for selected products? Procurement will be notified.
+      </Modal>
     </div>
   );
 }
