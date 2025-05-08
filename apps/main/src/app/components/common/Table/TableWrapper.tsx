@@ -41,7 +41,7 @@ const TableWrapper = ({
           />
 
           <SearchInput
-            placeholder="Search with order no."
+            placeholder="Search..."
             value={searchValue}
             onChange={setSearchValue}
             className="w-full md:min-w-[300px]"
