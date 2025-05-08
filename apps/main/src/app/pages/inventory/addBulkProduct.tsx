@@ -3,22 +3,63 @@ import { useNavigate } from 'react-router-dom';
 import { InboxOutlined, DownloadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import Papa from 'papaparse';
 import { useState } from 'react';
+import { useGetExportData, useUploadData } from '../../../hooks/useApis';
+import type { UploadFile } from 'antd/es/upload/interface';
+
+interface ProductData {
+  [key: string]: string | number;
+}
+
+interface Column {
+  title: string;
+  dataIndex: string;
+  key: string;
+}
 
 const { Dragger } = Upload;
 const { Title, Text } = Typography;
 
 export default function AddBulkProductPage() {
   const navigate = useNavigate();
-  const [parsedData, setParsedData] = useState<any[]>([]);
-  const [columns, setColumns] = useState<any[]>([]);
+  const [parsedData, setParsedData] = useState<ProductData[]>([]);
+  const [columns, setColumns] = useState<Column[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  // Download template mutation
+  const downloadTemplate = useGetExportData('merchants/inventory-products/download/template');
+
+  // Upload mutation
+  const uploadMutation = useUploadData('merchants/inventory-products/upload/bulk');
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await downloadTemplate.mutateAsync();
+      if (!response) {
+        throw new Error('No response received');
+      }
+      
+      const url = window.URL.createObjectURL(new Blob([response]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'inventory_template.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      message.success('Template downloaded successfully!');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to download template';
+      message.error(errorMessage);
+    }
+  };
 
   // Handle CSV upload and parsing
-  const handleCSVUpload = (file: File) => {
-    Papa.parse(file, {
+  const handleCSVUpload = (file: UploadFile) => {
+    if (!file) return false;
+    Papa.parse(file.originFileObj as File, {
       header: true,
       skipEmptyLines: true,
-      complete: (results) => {
-        const data = results.data as any[];
+      complete: async (results) => {
+        const data = results.data as ProductData[];
 
         if (data.length > 0) {
           const cols = Object.keys(data[0]).map((key) => ({
@@ -43,35 +84,26 @@ export default function AddBulkProductPage() {
     window.history.back();
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     if (parsedData.length === 0) {
-      message.error('Please upload a CSV file first!');
+      message.error('Please upload a CSV file first');
       return;
     }
 
-    const firstProduct = parsedData[0];
-
-    const sizes = firstProduct.sizes
-      ? firstProduct.sizes.split(',').map((s: string) => ({
-          label: s.trim(),
-          value: s.trim(),
-        }))
-      : [{ label: "Default", value: "Default" }];
-
-    navigate("/pos/inventory/product-preview", {
-      state: {
-        id: firstProduct.id || "N/A",
-        name: firstProduct.name || "Unnamed Product",
-        price: Number(firstProduct.price) || 0,
-        currency: firstProduct.currency || "₦",
-        description: firstProduct.description || "No description provided.",
-        seller: firstProduct.seller || "Unknown seller",
-        sizes: sizes,
-        imageUrl: firstProduct.imageUrl || "/Previewimg.png",
-      },
-    });
-
-    message.success('Navigating to preview...');
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append('file', new Blob([Papa.unparse(parsedData)], { type: 'text/csv' }));
+      
+      await uploadMutation.mutateAsync(formData);
+      message.success('Products uploaded successfully!');
+      navigate('/pos/inventory');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload products';
+      message.error(errorMessage);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -82,8 +114,22 @@ export default function AddBulkProductPage() {
           <Title level={4} className="!m-0">Add Bulk Product</Title>
         </div>
         <div className="space-x-2">
-          <Button onClick={() => message.info('Cancelled')}>Cancel</Button>
-          <Button type="primary" onClick={handleFinish}>Finish</Button>
+          <Button 
+            icon={<DownloadOutlined />} 
+            onClick={handleDownloadTemplate}
+            loading={downloadTemplate.isLoading}
+          >
+            Download Template
+          </Button>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button 
+            type="primary" 
+            onClick={handleFinish} 
+            loading={uploading}
+            disabled={parsedData.length === 0}
+          >
+            {uploading ? 'Uploading...' : 'Save'}
+          </Button>
         </div>
       </div>
 
@@ -102,13 +148,9 @@ export default function AddBulkProductPage() {
           </ol>
           <Button
             icon={<DownloadOutlined />}
+            onClick={handleDownloadTemplate}
             className="mt-4"
-            onClick={() => {
-              const link = document.createElement('a');
-              link.href = '/templates/product-template.csv';
-              link.download = 'product-template.csv';
-              link.click();
-            }}
+            loading={downloadTemplate.isLoading}
           >
             Download Template
           </Button>
