@@ -11,41 +11,54 @@ interface ExportOption {
   label: string;
   value: string;
   icon: React.ReactNode;
-  onClick: () => void;
 }
 
-export const ExportDropdown = () => {
+interface ExportDropdownProps {
+  options?: ExportOption[];
+  onExport?: (value: string) => void;
+}
+
+const exportOptions: ExportOption[] = [
+  {
+    label: 'Export as CSV',
+    value: 'csv',
+    icon: <FileTextOutlined size={16} />,
+  },
+  {
+    label: 'Export as PDF',
+    value: 'pdf',
+    icon: <FilePdfOutlined size={16} />,
+  },
+];
+
+export const ExportDropdown = ({
+  options = exportOptions,
+  onExport,
+}: ExportDropdownProps) => {
   const [open, setOpen] = useState(false);
 
-  const exportOptions: ExportOption[] = [
-    {
-      label: 'Export as CSV',
-      value: 'csv',
-      icon: <FileTextOutlined size={16} />,
-      onClick: () => {
+  // Default handler if none is provided
+  const handleExport = (value: string) => {
+    if (onExport) {
+      onExport(value);
+    } else {
+      // Default actions
+      if (value === 'csv') {
         console.log('Exporting as CSV');
-      },
-    },
-    {
-      label: 'Export as PDF',
-      value: 'pdf',
-      icon: <FilePdfOutlined size={16} />,
-      onClick: () => {
+      } else if (value === 'pdf') {
         console.log('Exporting as PDF');
-      },
-    },
-  ];
+      }
+    }
+    setOpen(false);
+  };
 
   const content = (
     <div className="w-40 py-1">
-      {exportOptions.map((option) => (
+      {options?.map((option) => (
         <div
           key={option.value}
           className="flex items-center gap-2 px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-50"
-          onClick={() => {
-            option.onClick();
-            setOpen(false);
-          }}
+          onClick={() => handleExport(option.value)}
         >
           {option.icon}
           <span>{option.label}</span>
@@ -61,7 +74,6 @@ export const ExportDropdown = () => {
       open={open}
       onOpenChange={setOpen}
       placement="bottom"
-
     >
       <Button icon={<DownloadOutlined size={18} />} size="large">
         Export

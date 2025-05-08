@@ -7,10 +7,13 @@
     }
   ],
   "compilerOptions": {
+    "types": ["react", "react-dom", "node"],
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*", "./app/*"]
-    }
+    },
+    
+
   },
   "extends": "../../tsconfig.base.json"
 }

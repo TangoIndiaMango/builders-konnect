@@ -6,28 +6,35 @@ import { SearchOutlined } from '@ant-design/icons';
 
 interface SearchInputProps {
   placeholder?: string;
-  onSearch: (value: string) => void;
+  value: string;
+  onChange: (value: string) => void;
   className?: string;
 }
 
 export const SearchInput = ({
   placeholder = 'Search',
-  onSearch,
+  value,
+  onChange,
   className = '',
 }: SearchInputProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const [localValue, setLocalValue] = useState(value);
+  const debouncedValue = useDebounce(localValue, 500);
 
-  // Effect to handle debounced search
   useEffect(() => {
-    onSearch(debouncedSearchTerm);
-  }, [debouncedSearchTerm, onSearch]);
+    setLocalValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    if (typeof onChange === 'function') {
+        onChange(debouncedValue);
+    }
+  }, [debouncedValue]);
 
   return (
     <Input
       placeholder={placeholder}
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
       suffix={
         <div className="flex items-center gap-1">
           <Divider type="vertical" className="h-8" />

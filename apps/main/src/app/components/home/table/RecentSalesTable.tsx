@@ -111,6 +111,7 @@ export const RecentSalesTable = ({
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
         showPagination={false}
+        scroll={{ x: '1000px' }}
       />
     </div>
   );

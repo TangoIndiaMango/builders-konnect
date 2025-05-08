@@ -84,7 +84,10 @@ const RegisterVendor = () => {
         };
 
         setData({ ...payload });
-        const res = await validateBusinessState.mutateAsync(payload);
+        const res = await validateBusinessState.mutateAsync({
+          data: payload,
+          config: { tenant_id: false },
+        });
         setCurrentStep(currentStep + 1);
         notification.success({
           message: 'Business Details Saved',
@@ -102,7 +105,10 @@ const RegisterVendor = () => {
         };
 
         setData((prev: any) => ({ ...prev, ...payload }));
-        const res = await validateBankState.mutateAsync(payload);
+        const res = await validateBankState.mutateAsync({
+          data: payload,
+          config: { tenant_id: false },
+        });
         setCurrentStep(currentStep + 1);
         notification.success({
           message: 'Bank Details Saved',
@@ -184,7 +190,10 @@ const RegisterVendor = () => {
           : [],
       };
 
-      const res = await createVendorState.mutateAsync(payload);
+      const res = await createVendorState.mutateAsync({
+        data: payload,
+        config: { tenant_id: false },
+      });
       setConfirmModalOpen(false);
       setSuccessModalOpen(true);
       notification.success({
@@ -224,7 +233,7 @@ const RegisterVendor = () => {
       <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
         <Form
           form={form}
-          className="flex flex-col w-full min-h-[600px]"
+          className="flex flex-col w-full min-h-[300px]"
           layout="horizontal"
           // onFinish={onFinish}
           labelCol={{ span: 6 }}
@@ -258,8 +267,8 @@ const RegisterVendor = () => {
                   size="large"
                   className="w-[114px]"
                   loading={
-                    validateBusinessState.isLoading ||
-                    validateBankState.isLoading
+                    validateBusinessState.isPending ||
+                    validateBankState.isPending
                   }
                 >
                   Next
@@ -270,7 +279,7 @@ const RegisterVendor = () => {
                   onClick={documentUpload}
                   size="large"
                   className="w-[114px]"
-                  loading={MediaState.isLoading}
+                  loading={MediaState.isPending}
                 >
                   Submit
                 </Button>
@@ -284,7 +293,7 @@ const RegisterVendor = () => {
         open={confirmModalOpen}
         onCancel={() => setConfirmModalOpen(false)}
         onConfirm={handleSubmit}
-        pending={createVendorState.isLoading}
+        pending={createVendorState.isPending}
       />
 
       <SuccessModal

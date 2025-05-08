@@ -30,7 +30,7 @@ export const InventoryTable = ({
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data,
   });
-  
+
 const navigate = useNavigate();
   const columns = [
     {
@@ -41,7 +41,7 @@ const navigate = useNavigate();
           <img
             src={record.image}
             alt={record.name}
-            className="w-10 h-10 rounded-lg object-cover"
+            className="object-cover w-10 h-10 rounded-lg"
           />
           <div>
             <div className="font-medium">{record.name}</div>
@@ -107,7 +107,7 @@ const navigate = useNavigate();
         <div className="flex gap-2">
           <Button
             type="text"
-            className="w-8 h-8 flex items-center justify-center bg-white hover:opacity-80 rounded-lg"
+            className="flex items-center justify-center w-8 h-8 bg-white rounded-lg hover:opacity-80"
             onClick={() => {
               // Go to Edit page
               window.location.href = `/pos/inventory/edit/${record.id}`;
@@ -147,6 +147,7 @@ const navigate = useNavigate();
            rowSelection={rowSelection as any}
            selectedRowKeys={selectedRowKeys}
            resetSelection={resetSelection}
+           scroll={{ x: '1000px' }}
          />
        </div>
   );

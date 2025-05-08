@@ -29,7 +29,10 @@ const ChangePassword = () => {
         entity: 'merchant',
       };
       // API call to submit form
-      const res = await RecoverPasswordState.mutateAsync(payload);
+      const res = await RecoverPasswordState.mutateAsync({
+        data: payload,
+        config: { tenant_id: false },
+      });
 
       notification.success({
         message: 'Password Changed Successfully',

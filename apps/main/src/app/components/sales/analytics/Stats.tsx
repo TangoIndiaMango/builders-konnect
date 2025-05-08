@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import CardWithFilter from '../../common/CardWithFilter';
 import FilterDropdown from '../../common/filters/FilterDropdown';
 import FilterGroup from '../../common/filters/FilterGroup';
@@ -9,33 +9,56 @@ import {
   ShoppingOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
-const statsData = [
-  {
-    title: 'Total Orders',
-    value: 0,
-    color: 'blue' as const,
-    icon: <ShoppingCartOutlined style={{ fontSize: 16 }} />,
-  },
-  {
-    title: 'Total Order Value',
-    value: 0,
-    color: 'pink' as const,
-    icon: <DollarOutlined style={{ fontSize: 16 }} />,
-  },
-  {
-    title: 'Total Items Sold',
-    value: 0,
-    color: 'purple' as const,
-    icon: <ShoppingOutlined style={{ fontSize: 16 }} />,
-  },
-  {
-    title: 'Total Return Rate',
-    value: 0,
-    color: 'yellow' as const,
-    icon: <TeamOutlined style={{ fontSize: 16 }} />,
-  },
-];
+import { useFetchData } from '../../../../hooks/useApis';
+import { formatBalance } from '../../../../utils/helper';
+
+export interface DashboardMetrics {
+  orders: MetricValue<number>;
+  order_value: MetricValue<string>;
+  items_sold: MetricValue<string>;
+  returns_rate: MetricValue<number>;
+}
+
+export interface MetricValue<T> {
+  total: T;
+  shift: string;
+}
+
 const SalesAnalyticsStats = () => {
+  const stats = useFetchData(`merchants/sales-orders/analytics/stats`);
+
+  const salesStats = stats?.data?.data as DashboardMetrics;
+
+  const statsData = useMemo(() => [
+    {
+      title: 'Total Orders',
+      value: salesStats?.orders?.total,
+      color: 'blue' as const,
+      icon: <ShoppingCartOutlined style={{ fontSize: 16 }} />,
+    },
+    {
+      title: 'Total Order Value',
+      value: formatBalance(salesStats?.order_value?.total),
+      color: 'pink' as const,
+      icon: <DollarOutlined style={{ fontSize: 16 }} />,
+    },
+    {
+      title: 'Total Items Sold',
+      value: salesStats?.items_sold?.total,
+      color: 'purple' as const,
+      icon: <ShoppingOutlined style={{ fontSize: 16 }} />,
+    },
+    {
+      title: 'Total Return Rate',
+      value: salesStats?.returns_rate?.total,
+      color: 'yellow' as const,
+        icon: <TeamOutlined style={{ fontSize: 16 }} />,
+      },
+    ],
+    [salesStats]
+  );
+
+  console.log('salesStats', salesStats);
   const [selectedPeriod, setSelectedPeriod] = useState<string>('this_month');
 
   const periodOptions = [
@@ -57,7 +80,7 @@ const SalesAnalyticsStats = () => {
         />
       }
     >
-      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {statsData.map((stat, index) => (
           <StatsCard
             key={index}

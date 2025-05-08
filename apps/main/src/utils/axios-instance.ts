@@ -14,7 +14,11 @@ const attachTokenAndTenantID = (config: any) => {
   const tenantId = sessionStorage.getItem('tenant_id');
 
   if (token) config.headers.Authorization = `Bearer ${token}`;
-  if (tenantId) config.headers['X-Tenant-ID'] = tenantId;
+  if (config.tenant_id !== false && tenantId) {
+    config.headers['X-Tenant-ID'] = tenantId;
+  }else{
+    delete config.headers['X-Tenant-ID'] ;
+  }
 
   return config;
 };
