@@ -1,12 +1,27 @@
 import { Product } from '../../../service/inventory/inventory.types';
-import { useSearchProducts, useCreateProduct } from "../../../service/inventory/inventoryFN";
-import { ArrowLeftOutlined, BarcodeOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Select, Form, Input, InputNumber, Upload, Typography, Modal, Spin, message } from 'antd';
+import {
+  useSearchProducts,
+  useCreateProduct,
+} from '../../../service/inventory/inventoryFN';
+import {
+  ArrowLeftOutlined,
+  BarcodeOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
+import {
+  Button,
+  Select,
+  Form,
+  Input,
+  InputNumber,
+  Upload,
+  Typography,
+  Modal,
+  message,
+} from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import React from 'react';
-import type { FormInstance } from 'antd/es/form';
-
+import { ProductType } from '../sales/types';
 const { Title, Text } = Typography;
 
 interface ProductFormData {
@@ -27,11 +42,14 @@ const CreateProductBySearch = () => {
   const [form] = Form.useForm<ProductFormData>();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const { data: searchResults, isLoading: isSearching } = useSearchProducts({ q: searchQuery });
+  const { data: searchResults, isLoading: isSearching } = useSearchProducts({
+    q: searchQuery,
+  });
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { mutate: createProduct, isLoading: isCreating } = useCreateProduct();
   const [productCode, setProductCode] = useState('');
   const [formData, setFormData] = useState<ProductFormData | null>(null);
+  const [productData, setProductData] = useState<ProductType | null>(null);
 
   const navigate = useNavigate();
 
@@ -49,7 +67,7 @@ const CreateProductBySearch = () => {
         form.setFieldsValue({
           name: found.name,
           SKU: found.SKU || '',
-          catalogue_id: found.identifier_no
+          catalogue_id: found.identifier_no,
         });
         // Set initial values for the form fields
         form.setFieldValue('name', found.name);
@@ -70,32 +88,29 @@ const CreateProductBySearch = () => {
       description: values.description,
       tags: values.tags,
       size: values.measurement_unit,
-      catalogue_id : selectedProduct?.identifier_no,
-
+      catalogue_id: selectedProduct?.identifier_no,
     };
 
     createProduct(productData, {
-      onSuccess: (response: { code?: string }) => {
-        const generatedCode = response?.code || Math.random().toString(36).substr(2, 9).toUpperCase();
+      onSuccess: (response: any) => {
+        console.log('response', response?.data);
+        setProductData(response?.data);
+        const generatedCode = response?.data?.id;
         setProductCode(generatedCode);
         setFormData(values);
         setIsModalVisible(true);
       },
       onError: () => {
         message.error('Failed to create product. Please try again.');
-      }
+      },
     });
   };
-console.log("generatedCode", productCode)
+  // console.log("generatedCode", productCode)
   const handleOk = () => {
     setIsModalVisible(false);
     if (formData) {
-      navigate('/pos/inventory/product-preview', {
-        state: {
-          ...formData,
-          productCode,
-          imageUrl: formData?.images?.[0]?.thumbUrl || '',
-        },
+      navigate(`/pos/inventory/preview-product/${productData?.id}`, {
+        state: productData,
       });
     }
   };
@@ -111,8 +126,8 @@ console.log("generatedCode", productCode)
 
   return (
     <div className="p-3 h-fit">
-      <div className="bg-white p-3">
-        <div className="mb-2 flex items-center justify-between">
+      <div className="p-3 bg-white">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
             <Button
               type="text"
@@ -126,20 +141,29 @@ console.log("generatedCode", productCode)
           {selectedProduct && (
             <div className="flex gap-2">
               <Button onClick={handleCancel}>Cancel</Button>
-              <Button type="primary" onClick={() => form.submit()} loading={isCreating}>Submit</Button>
+              <Button
+                type="primary"
+                onClick={() => form.submit()}
+                loading={isCreating}
+              >
+                Submit
+              </Button>
             </div>
           )}
         </div>
         <Text type="secondary" className="block mb-6">
-          Search products to add a product or scan product barcode to add product
+          Search products to add a product or scan product barcode to add
+          product
         </Text>
       </div>
 
-      <div className="bg-white p-6 m-1">
+      <div className="p-6 m-1 bg-white">
         {!selectedProduct ? (
           <div>
-            <div className="flex flex-col items-center justify-center mb-4 w-full">
-              <h1 className="font-medium text-base mb-5">Search here to add product</h1>
+            <div className="flex flex-col items-center justify-center w-full mb-4">
+              <h1 className="mb-5 text-base font-medium">
+                Search here to add product
+              </h1>
               <Select
                 showSearch
                 placeholder="Search product by name or sku"
@@ -153,21 +177,33 @@ console.log("generatedCode", productCode)
                 options={[
                   {
                     value: 'add-new',
-                    label: <div>
-                      <Text onClick={() => navigate('/pos/inventory/add-product')} className='text-[12px]'>Can't find the product you want to add?  <span className="text-[#003399] cursor-pointer" >Request to add product</span></Text>
-                    </div>
+                    label: (
+                      <div>
+                        <Text
+                          onClick={() => navigate('/pos/inventory/add-product')}
+                          className="text-[12px]"
+                        >
+                          Can't find the product you want to add?{' '}
+                          <span className="text-[#003399] cursor-pointer">
+                            Request to add product
+                          </span>
+                        </Text>
+                      </div>
+                    ),
                   },
                   ...(searchResults?.data?.map((product) => ({
                     value: product.id.toString(),
                     label: `${product.name} - ${product.sku}`,
-                  })) || [])
+                  })) || []),
                 ]}
               />
             </div>
-           
+
             <div className="flex gap-3 cursor-pointer w-fit mx-auto px-4 items-center text-sm text-[#000000] py-2 bg-[#D9D9D9] rounded-md">
               <BarcodeOutlined />
-              <p onClick={() => navigate('/pos/inventory/scan-product')}>Click here to scan product barcode to add product</p>
+              <p onClick={() => navigate('/pos/inventory/scan-product')}>
+                Click here to scan product barcode to add product
+              </p>
             </div>
           </div>
         ) : (
@@ -183,7 +219,9 @@ console.log("generatedCode", productCode)
               <Form.Item
                 label="Product Name"
                 name="name"
-                rules={[{ required: true, message: 'Please enter the product name' }]}
+                rules={[
+                  { required: true, message: 'Please enter the product name' },
+                ]}
               >
                 <Input disabled />
               </Form.Item>
@@ -204,14 +242,16 @@ console.log("generatedCode", productCode)
                 <Input />
               </Form.Item>
 
-
               <Form.Item
                 label="Product Images"
                 name="images"
                 valuePropName="fileList"
                 getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
                 rules={[
-                  { required: true, message: 'Please upload at least one image' },
+                  {
+                    required: true,
+                    message: 'Please upload at least one image',
+                  },
                 ]}
               >
                 <Upload
@@ -227,7 +267,9 @@ console.log("generatedCode", productCode)
               <Form.Item
                 label="Cost Price"
                 name="costPrice"
-                rules={[{ required: true, message: 'Please enter the cost price' }]}
+                rules={[
+                  { required: true, message: 'Please enter the cost price' },
+                ]}
               >
                 <InputNumber min={0} style={{ width: '100%' }} />
               </Form.Item>
@@ -246,7 +288,10 @@ console.log("generatedCode", productCode)
                 label="Stock Quantity"
                 name="quantity"
                 rules={[
-                  { required: true, message: 'Please enter the stock quantity' },
+                  {
+                    required: true,
+                    message: 'Please enter the stock quantity',
+                  },
                 ]}
               >
                 <InputNumber min={0} style={{ width: '100%' }} />
@@ -265,7 +310,9 @@ console.log("generatedCode", productCode)
               <Form.Item
                 label="Description"
                 name="description"
-                rules={[{ required: true, message: 'Please enter a description' }]}
+                rules={[
+                  { required: true, message: 'Please enter a description' },
+                ]}
               >
                 <Input.TextArea rows={3} />
               </Form.Item>
@@ -282,12 +329,13 @@ console.log("generatedCode", productCode)
         )}
       </div>
 
-  
       <Modal
         title="Product Successfully Added"
         open={isModalVisible}
         onOk={handleOk}
         onCancel={handleOk}
+        centered
+        width={400}
       >
         <div>
           <p className="text-sm text-[#000000D9]">

@@ -9,7 +9,7 @@ import { EyeTwoTone } from '@ant-design/icons';
 const Login = () => {
   const { notification } = App.useApp();
   const navigate = useNavigate();
-  const { mutateAsync, isPending } = useCreateData('auth/signin');
+  const { mutateAsync, isLoading } = useCreateData('auth/signin');
 
   const getMerchantDetailState = useGetData('merchants/profile/all');
 
@@ -115,7 +115,7 @@ const Login = () => {
                 Forgot Password?
               </Button>
               <Button
-                loading={isPending}
+                loading={isLoading}
                 type="primary"
                 htmlType="submit"
                 size="large"
