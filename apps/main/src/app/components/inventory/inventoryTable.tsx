@@ -1,11 +1,11 @@
-import { Tag, Button, Dropdown, Menu, Avatar } from "antd";
-import { DataType, PaginatedTable } from "../common/Table/Table";
-import { useSelection } from "../../../hooks/useSelection";
-import { EditOutlined, EllipsisOutlined, EyeOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { Tag, Button, Dropdown, Menu, Avatar } from 'antd';
+import { DataType, PaginatedTable } from '../common/Table/Table';
+import { useSelection } from '../../../hooks/useSelection';
+import { EditOutlined, EllipsisOutlined, EyeOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import type { ProductData as APIProductData } from '../../../service/inventory/inventory.types';
 import { DataTableProps } from '../../types/table';
-import { formatBalance } from "../../../utils/helper";
+import { formatBalance } from '../../../utils/helper';
 import dayjs from 'dayjs';
 
 export type ProductTableData = APIProductData & { key: string };
@@ -16,9 +16,6 @@ interface ProductTableProps extends DataTableProps {
   onDelete?: (record: ProductTableData) => void;
   onViewDetails?: (record: ProductTableData) => void;
 }
-
-
-
 
 export const InventoryTable = ({
   data,
@@ -38,7 +35,7 @@ export const InventoryTable = ({
       data,
     });
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const columns = [
     // {
     //   title: 'Product',
@@ -94,57 +91,57 @@ const navigate = useNavigate();
       dataIndex: 'category',
       key: 'category',
     },
-   {
-         title: 'Date Added',
-         key: 'date_added',
-         width: 180,
-         render: (_, record) => (
-           <div>
-             <div>{dayjs(record.date_added).format('DD MMM YYYY')}</div>
-             <div className="text-xs text-gray-500">
-               {dayjs(record.date_added).format('hh:mm A')}
-             </div>
-           </div>
-         ),
-       },
     {
-         title: 'Price',
-         key: 'price',
-         width: 120,
-         render: (_, record) => <span>{formatBalance(record.retail_price)}</span>,
-       },
-       {
-        title: 'Stock Level',
-        key: 'quantity',
-        width: 140,
-        render: (_, record) => (
-          <p>
-            <span
-              className={`${
-                record.quantity <= 0 ? 'text-red-500' : 'text-[#003399]'
-              } font-bold`}
-            >
-              {record.quantity}
-            </span>{' '}
-            left
-          </p>
-        ),
+      title: 'Date Added',
+      key: 'date_added',
+      width: 180,
+      render: (_, record) => (
+        <div>
+          <div>{dayjs(record.date_added).format('DD MMM YYYY')}</div>
+          <div className="text-xs text-gray-500">
+            {dayjs(record.date_added).format('hh:mm A')}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Price',
+      key: 'price',
+      width: 120,
+      render: (_, record) => <span>{formatBalance(record.retail_price)}</span>,
+    },
+    {
+      title: 'Stock Level',
+      key: 'quantity',
+      width: 140,
+      render: (_, record) => (
+        <p>
+          <span
+            className={`${
+              record.quantity <= 0 ? 'text-red-500' : 'text-[#003399]'
+            } font-bold`}
+          >
+            {record.quantity}
+          </span>{' '}
+          left
+        </p>
+      ),
+    },
+    {
+      title: 'Status',
+      key: 'status',
+      width: 130,
+      render: (_, record) => {
+        return (
+          <Tag
+            color={record.status === 'active' ? 'green' : 'red'}
+            className="capitalize"
+          >
+            {record.status || 'No status'}
+          </Tag>
+        );
       },
-      {
-        title: 'Status',
-        key: 'status',
-        width: 130,
-        render: (_, record) => {
-          return (
-            <Tag
-              color={record.status === 'active' ? 'green' : 'red'}
-              className="capitalize"
-            >
-              {record.status || 'No status'}
-            </Tag>
-          );
-        },
-      },
+    },
     {
       title: 'Action',
       key: 'action',
@@ -155,7 +152,7 @@ const navigate = useNavigate();
             className="flex items-center justify-center w-8 h-8 bg-white rounded-lg hover:opacity-80"
             onClick={() => {
               // Go to Edit page
-              window.location.href = `/pos/inventory/edit/${record.id}`;
+              navigate(`/pos/inventory/edit/${record.id}`);
             }}
           >
             <EditOutlined className="text-black" />
@@ -165,7 +162,9 @@ const navigate = useNavigate();
             type="text"
             className="w-8 h-8 flex items-center justify-center bg-[#E6F7FF] hover:opacity-80 rounded-lg"
             onClick={() => {
-           navigate(`/pos/inventory/product-preview/${record.id}`, { state: record }); // record holds your product details
+              navigate(`/pos/inventory/preview-product/${record.id}`, {
+                state: record,
+              });
             }}
           >
             <EyeOutlined className="text-[#1890FF]" />
@@ -175,26 +174,24 @@ const navigate = useNavigate();
     },
   ];
 
-
-
   return (
     <div>
-         <PaginatedTable
-           data={data}
-           columns={columns}
-           currentPage={currentPage}
-           onPageChange={onPageChange}
-           loading={loading}
-           total={total}
-           showCheckbox={showCheckbox}
-           striped={true}
-           pageSize={10}
-           rowSelection={rowSelection as any}
-           selectedRowKeys={selectedRowKeys}
-           resetSelection={resetSelection}
-           updateLimitSize={updateLimitSize}
-           scroll={{ x: '1000px' }}
-         />
-       </div>
+      <PaginatedTable
+        data={data}
+        columns={columns}
+        currentPage={currentPage}
+        onPageChange={onPageChange}
+        loading={loading}
+        total={total}
+        showCheckbox={showCheckbox}
+        striped={true}
+        pageSize={10}
+        rowSelection={rowSelection as any}
+        selectedRowKeys={selectedRowKeys}
+        resetSelection={resetSelection}
+        updateLimitSize={updateLimitSize}
+        scroll={{ x: '1000px' }}
+      />
+    </div>
   );
 };

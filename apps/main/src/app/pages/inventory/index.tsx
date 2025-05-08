@@ -101,7 +101,7 @@ const ProductsPage = () => {
     }`
   );
 
-  const stats = products?.data?.stats as ProductStats;
+  const stats = products?.data?.data?.stats as ProductStats;
   const productsData = products?.data?.data
     ?.data as PaginatedResponse<ProductTableData>;
   // console.log(productsData);
