@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import ViewReview from './components/customers/VeiwReview';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
 import AddStaffPassword from './pages/auth/add-staff-password';
 import AuthOutlet from './pages/auth/auth-outlets';
@@ -8,6 +9,9 @@ import ForgotPassword from './pages/auth/forgot-password';
 import Login from './pages/auth/login';
 import MultipleAccounts from './pages/auth/multiple-accounts';
 import RegisterVendor from './pages/auth/register-vendor';
+import CustomersOutlet from './pages/customers/customer-outlet';
+import CustomersList from './pages/customers/customers-list';
+import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
 import DiscountHome from './pages/discount';
 import DiscountCreate from './pages/discount/create';
 import DiscountOutlet from './pages/discount/outlet';
@@ -30,26 +34,27 @@ import NotFound from './pages/NotFound';
 import VendorProfile from './pages/profile';
 import VendorProfileOutlet from './pages/profile/profile-outlet';
 import SingleStoreDetails from './pages/profile/views/single-store';
+import ReturnsPage from './pages/returns';
+import ReturnsOutlet from './pages/returns/outlet';
+import ReturnsViewPage from './pages/returns/view';
 import SalesHome from './pages/sales';
 import SalesAnalytics from './pages/sales/analytics';
 import CreateSales from './pages/sales/create';
 import SalesOutlet from './pages/sales/outlet';
 import PauseSales from './pages/sales/pause-sales';
 import SalesViewPage from './pages/sales/view';
+import SettingPage from './pages/settings';
+import SettingOutlet from './pages/settings/setting-outlet';
 import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
-import ReturnsOutlet from './pages/returns/outlet';
-import ReturnsPage from './pages/returns';
-import ReturnsViewPage from './pages/returns/view';
-
 const App = () => {
   return (
+    <>
     <Routes>
       <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
-
         <Route path="create-password" element={<CreatePassword />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
@@ -67,6 +72,7 @@ const App = () => {
         }
       >
         <Route index element={<DashboardHome />} />
+
       </Route>
 
       <Route
@@ -89,7 +95,7 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<SalesHome />} />
+        <Route index element={<SalesHome /> } />
         <Route path="create" element={<CreateSales />} />
         <Route path="view/:id" element={<SalesViewPage />} />
         <Route path="pause" element={<PauseSales />} />
@@ -124,16 +130,36 @@ const App = () => {
         <Route path="edit/:id" element={<EditInventoryById />} />
         <Route path="edit-product/:id" element={<EditProduct />} />
         <Route path="trigger-reorder" element={<TriggerReorder />} />
-        <Route
-          path="create-product-by-search"
-          element={<CreateProductBySearch />}
-        />
+        <Route path="create-product-by-search" element={<CreateProductBySearch />} />
         <Route path="add-product" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
         <Route path="preview-product/:id" element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage />} />
       </Route>
+
+      <Route
+        path="pos/settings"
+        element={
+          <ProtectedRoute>
+            <SettingOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<SettingPage />} />
+      </Route>
+       <Route path="pos/customers"
+        element={
+          <ProtectedRoute>
+            <CustomersOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="list" element={<CustomersList />} />
+        <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
+        <Route path="product-review/view/:id" element={<ViewReview />} />
+      </Route>
+
 
       <Route
         path="pos/discounts"
@@ -161,6 +187,7 @@ const App = () => {
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
+    </>
   );
 };
 

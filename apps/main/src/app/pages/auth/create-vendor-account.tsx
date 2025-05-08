@@ -4,13 +4,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ErrorModal from '../../components/common/ErrorModal';
 import SuccessModal from '../../components/common/SuccessModal';
 import { useCreateData } from '../../../hooks/useApis';
+import { EyeInvisibleOutlined } from '@ant-design/icons';
+import { EyeTwoTone } from '@ant-design/icons';
+import Password from 'antd/es/input/Password';
 
 const CreatePassword = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState('');
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const PasswordState = useCreateData('merchants/onboarding/add-password');
@@ -30,12 +33,13 @@ const CreatePassword = () => {
         entity: 'merchant',
       };
       // API call to submit form
-      const res = await PasswordState.mutateAsync(payload);
+      await PasswordState.mutateAsync(payload);
 
       setSuccessModalOpen(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Form validation error:', error);
-
+      console.log(error?.message);
+      setErrorMessage(error?.message);
       setErrorModalOpen(true);
     }
   };
@@ -63,7 +67,12 @@ const CreatePassword = () => {
               name="password"
               rules={[{ required: true, message: 'Please enter password' }]}
             >
-              <Input placeholder="Enter password" />
+              <Password
+                placeholder="Enter password"
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
 
             <Form.Item
@@ -71,9 +80,22 @@ const CreatePassword = () => {
               name="confirmPassword"
               rules={[
                 { required: true, message: 'Please enter confirm password' },
+                {
+                  validator: (_, value) => {
+                    if (value !== form.getFieldValue('password')) {
+                      return Promise.reject(new Error('Passwords do not match'));
+                    }
+                    return Promise.resolve();
+                  },
+                },
               ]}
             >
-              <Input placeholder="Confirm password" />
+              <Password
+                placeholder="Confirm password"
+                iconRender={(visible) =>
+                  visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
           </div>
 
@@ -104,6 +126,7 @@ const CreatePassword = () => {
       <ErrorModal
         open={errorModalOpen}
         onClose={() => setErrorModalOpen(false)}
+        message={errorMessage}
       />
     </div>
   );

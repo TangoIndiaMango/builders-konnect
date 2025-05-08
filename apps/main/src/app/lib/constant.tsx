@@ -21,6 +21,7 @@ import {
 } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 
+
 type MenuItem = Required<MenuProps>['items'][number];
 
 function getItem(
@@ -77,9 +78,9 @@ export const POSMenus: MenuItem[] = [
         <OrderedListOutlined />
       ),
       getItem(
-        'Customer Groups',
-        'customer-groups',
-        '/pos/customers/groups',
+        'Reviews and Feedback',
+        'reviews-and-feedback',
+        '/pos/customers/reviews-and-feedback',
         <TeamOutlined />
       ),
     ]

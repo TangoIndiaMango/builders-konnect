@@ -1,3 +1,4 @@
+import axios from "axios"
 import { axiosInstance } from "../../utils/axios-instance"
 
 const URL = "/merchants/customers"
@@ -47,6 +48,7 @@ export const deleteCustomer = async (id: string) => {
 export interface CustomerOverviewParams {
   paginate?: number;
   limit?: number;
+  q?: string;
   type?: string;
   date_filter?: string;
   sort_by?: string;
@@ -54,20 +56,31 @@ export interface CustomerOverviewParams {
 }
 
 export const getCustomerOverview = async (params?: CustomerOverviewParams) => {
+  try {
   const queryParams = new URLSearchParams();
 
   if (params?.paginate !== undefined) queryParams.append('paginate', params.paginate.toString());
   if (params?.limit !== undefined) queryParams.append('limit', params.limit.toString());
+  if (params?.q) queryParams.append('q', params.q);
   if (params?.type) queryParams.append('type', params.type);
   if (params?.date_filter) queryParams.append('date_filter', params.date_filter);
   if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
   if (params?.export) queryParams.append('export', params.export);
 
   const queryString = queryParams.toString();
-  const finalURL = `${URL}/${queryString ? `?${queryString}` : ''}`;
+  const finalURL = `${URL}${queryString ? `?${queryString}` : ''}`;
 
   const response = await axiosInstance.get(finalURL);
   return response.data;
+} catch (error) {
+  if (axios.isAxiosError(error)) {
+    if (error.response?.status === 403) {
+      throw new Error('Access forbidden - CORS issue detected');
+    }
+    throw new Error(error.response?.data?.message || error.message);
+  }
+  throw error;
+}
 }
 
 
