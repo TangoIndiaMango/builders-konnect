@@ -1,7 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
+import ViewReview from './components/customers/VeiwReview';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
-
 // Auth Pages
+import AddStaffPassword from './pages/auth/add-staff-password';
+>>>>>>> 1f40636b43b2269bb84f794c7b18aacfe8896aa8
 import AuthOutlet from './pages/auth/auth-outlets';
 import ChangePassword from './pages/auth/change-password';
 import CreatePassword from './pages/auth/create-vendor-account';
@@ -29,6 +31,43 @@ import VendorProfileOutlet from './pages/profile/profile-outlet';
 import SingleStoreDetails from './pages/profile/views/single-store';
 
 // Staff
+import CustomersOutlet from './pages/customers/customer-outlet';
+import CustomersList from './pages/customers/customers-list';
+import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
+import DiscountHome from './pages/discount';
+import DiscountCreate from './pages/discount/create';
+import DiscountOutlet from './pages/discount/outlet';
+import DashboardHome from './pages/home';
+import VendorHomeOutlet from './pages/home/dashboard-outlet';
+import ProductsPage from './pages/inventory';
+import AddBulkProductPage from './pages/inventory/addBulkProduct';
+import ScanProductPage from './pages/inventory/barcodeProductAdd';
+import CreateProduct from './pages/inventory/createProduct';
+import CreateProductBySearch from './pages/inventory/createProductBySearch';
+import EditInventoryById from './pages/inventory/editInventory';
+import EditInventoryPage from './pages/inventory/editInventorybySearch';
+import EditProduct from './pages/inventory/EditProduct';
+import PreviewPage from './pages/inventory/imagePreview';
+import Inventory from './pages/inventory/inventories';
+import InventoryOutlet from './pages/inventory/inventory-outlet';
+import ProductPreview from './pages/inventory/previewProduct';
+import TriggerReorder from './pages/inventory/triggerReorder';
+import NotFound from './pages/NotFound';
+import VendorProfile from './pages/profile';
+import VendorProfileOutlet from './pages/profile/profile-outlet';
+import SingleStoreDetails from './pages/profile/views/single-store';
+import ReturnsPage from './pages/returns';
+import ReturnsOutlet from './pages/returns/outlet';
+import ReturnsViewPage from './pages/returns/view';
+import SalesHome from './pages/sales';
+import SalesAnalytics from './pages/sales/analytics';
+import CreateSales from './pages/sales/create';
+import SalesOutlet from './pages/sales/outlet';
+import PauseSales from './pages/sales/pause-sales';
+import SalesViewPage from './pages/sales/view';
+import SettingPage from './pages/settings';
+import SettingOutlet from './pages/settings/setting-outlet';
+>>>>>>> 1f40636b43b2269bb84f794c7b18aacfe8896aa8
 import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
@@ -71,7 +110,6 @@ import ReturnsViewPage from './pages/returns/view';
 
 // Not Found
 import NotFound from './pages/NotFound';
-
 const App = () => {
   return (
     <Routes>
@@ -160,7 +198,7 @@ const App = () => {
         <Route path="create-product-by-search" element={<CreateProductBySearch />} />
         <Route path="add-product" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
-        <Route path="product-preview" element={<ProductPreview />} />
+        <Route path="preview-product/:id" element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage />} />
       </Route>
@@ -175,11 +213,11 @@ const App = () => {
         }
       >
         <Route index element={<SettingPage />} />
-      </Route>
-
+  
       {/* Customers */}
       <Route
         path="pos/customers"
+       <Route path="pos/customers"
         element={
           <ProtectedRoute>
             <CustomersOutlet />

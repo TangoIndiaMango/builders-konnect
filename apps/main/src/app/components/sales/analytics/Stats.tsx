@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons';
 import { useFetchData } from '../../../../hooks/useApis';
 import { formatBalance } from '../../../../utils/helper';
+import { Skeleton } from 'antd';
 
 export interface DashboardMetrics {
   orders: MetricValue<number>;
@@ -81,15 +82,21 @@ const SalesAnalyticsStats = () => {
       }
     >
       <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statsData.map((stat, index) => (
-          <StatsCard
-            key={index}
-            title={stat.title}
-            value={stat.value}
-            color={stat.color}
+        {stats.isLoading ? (
+        <>
+          {[1,2,3,4].map((_,i) => (<Skeleton.Node active key={i} style={{width: 160}}/>))}
+        </>
+        ) : (
+          statsData.map((stat, index) => (
+            <StatsCard
+              key={index}
+              title={stat.title}
+              value={stat.value}
+              color={stat.color}
             icon={stat.icon}
-          />
-        ))}
+            />
+          ))
+        )}
       </div>
     </CardWithFilter>
   );

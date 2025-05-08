@@ -67,7 +67,7 @@ const handleSearch = (value: string) => {
 //   setSearchQuery('');
 //   setDateFilter('');
 //   setSortBy('');
-// }; 
+// };
 
 
 const data = productData?.data?.data?.data
@@ -113,18 +113,18 @@ const data = productData?.data?.data?.data
 
   return (
     <div className="space-y-3">
-      <div className="mb-4 bg-white p-4 space-y-2">
+      <div className="p-4 mb-4 space-y-2 bg-white">
         <div className="flex items-center gap-3">
           <div onClick={() => navigate(-1)} className="cursor-pointer">
-            <ArrowLeftOutlined className="text-md mt-1 text-black font-medium" />
+            <ArrowLeftOutlined className="mt-1 font-medium text-black text-md" />
           </div>
           <h1 className="text-xl font-semibold">View Product Review</h1>
         </div>
-        <p className="text-gray-500 text-sm">
+        <p className="text-sm text-gray-500">
           Track and measure stock levels here
         </p>
       </div>
-      <section className="bg-white p-4 mx-4 space-y-4">
+      <section className="p-4 mx-4 space-y-4 bg-white">
         {inventoryLoading ? (
           <SkeletonLoader active={true} type="table" columns={4} rows={1} />
         ) : (

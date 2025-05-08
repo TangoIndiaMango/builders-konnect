@@ -83,7 +83,7 @@ const ProfilePage: React.FC = () => {
       label: 'Profile Information',
       children: (
         <div className="py-6 space-y-6">
-          <WelcomeSection data={profile} isLoading={profileData?.isLoading} />
+          <WelcomeSection data={profile} isLoading={profileData?.isLoading} refetch={profileData?.refetch} />
           <BusinessProfile
             businessInfo={profile?.business}
             isLoading={profileData?.isLoading}

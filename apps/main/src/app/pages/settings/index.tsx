@@ -4,20 +4,25 @@ import type { TabsProps } from 'antd';
 import ProfileInfoSection from '../../components/settings/profilenfoSection';
 import NotificationList from './views/NotificationList';
 import WelcomeSection from '../../components/profile/WelcomeSection';
+import { VendorProfile } from '../profile/types';
+import { useFetchData } from '../../../hooks/useApis';
 
 const SettingPage: React.FC = () => {
   const onChange = (key: string) => {
     console.log('Selected tab:', key);
-  };  
+  };
+
+  const profileData = useFetchData(`merchants/profile/view`);
+  const profile = profileData?.data?.data as VendorProfile;
 
   const items: TabsProps['items'] = [
     {
       key: 'profile',
       label: 'Profile Information',
       children: (
-        <div className="space-y-6 py-6">
-          <WelcomeSection/>
-          <ProfileInfoSection/>
+        <div className="py-6 space-y-6">
+          <WelcomeSection data={profile} isLoading={profileData.isLoading} isProfile={true} />
+          <ProfileInfoSection data={profile} isLoading={profileData.isLoading} />
         </div>
       ),
     },
@@ -25,19 +30,21 @@ const SettingPage: React.FC = () => {
       key: 'Notification',
       label: 'Notification',
       children: (
-        <div className="p-6">
-          <NotificationList/>
+        <div className="">
+          <NotificationList />
         </div>
       ),
     },
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="bg-white px-6 py-4 flex justify-between items-center border-b">
+    <div className="min-h-screen bg-gray-100">
+      <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
         <div>
           <h1 className="text-2xl font-semibold">Settings</h1>
-          <p className="text-gray-500 text-sm">Track and measure store performance and analytics here</p>
+          <p className="text-sm text-gray-500">
+            Track and measure store performance and analytics here
+          </p>
         </div>
         <Button type="default">View Storefront</Button>
       </div>

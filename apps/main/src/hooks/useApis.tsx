@@ -33,7 +33,7 @@ export const useGetExportData = (url: string) => {
   const mutation = useMutation({
     mutationFn: async () => {
       const response = await axiosInstance.get(baseUrl + url, {
-        // responseType: 'blob',
+        responseType: 'blob',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -145,6 +145,8 @@ export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = tr
       return response.data;
     },
     enabled: enabled,
+    retry: false,
+    staleTime: 0,
   });
 
   return { ...query, isLoading: query.isFetching || query.isLoading };

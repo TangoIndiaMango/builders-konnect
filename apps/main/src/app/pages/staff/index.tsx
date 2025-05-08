@@ -259,7 +259,7 @@ const StaffHome = () => {
         stores={storeList || []}
         roles={roleList || []}
         loading={
-          modalMode === 'add' ? createStaff.isPending : updateStaff.isPending
+          modalMode === 'add' ? createStaff.isLoading : updateStaff.isLoading
         }
         onSubmit={handleStaffSubmit}
         mode={modalMode}
