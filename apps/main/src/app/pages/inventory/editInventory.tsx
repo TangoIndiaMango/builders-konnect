@@ -1,38 +1,81 @@
 import { Button, Input, Table, Form, Typography, Space, message } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useFetchData, usePutData } from '../../../hooks/useApis';
 
 const { Title, Text } = Typography;
 
 interface Product {
-  key: string;
+  id: string;
   name: string;
   description: string;
-  unitPrice: number;
+  cost_price: string; // API returns this as string
   quantity: number;
-  reorderLevel: number;
+  reorder_value: number;
+  product_type: string;
+  category: string;
 }
-
-const sampleProduct: Product = {
-  key: '1',
-  name: 'Premium Cement',
-  description: '10 kg Coarse',
-  unitPrice: 25000,
-  quantity: 10,
-  reorderLevel: 250000,
-};
 
 export default function EditInventoryById() {
   const [form] = Form.useForm();
-  const [product] = useState<Product>(sampleProduct);
+  const location = useLocation();
+  const productId = location.pathname.split('/').pop() || '';
+
+  // Fetch product details
+  const productQuery = useFetchData(
+    productId ? `merchants/inventory-products/${productId}` : ''
+  );
+
+  // Extract product from the response
+  const product = productQuery.data?.data;
+
+  // Update inventory mutation
+  const updateInventory = usePutData(productId ? `merchants/inventory-products/${productId}/edit-quantity` : '');
 
   const handleCancel = () => {
     window.history.back();
   };
 
-  const handleSave = (values: any) => {
-    console.log('Saved values:', values);
-    message.success('Inventory updated successfully!');
+  interface FormValues {
+    currentStock: number;
+    addedStock: number;
+    newReorderLevel?: number;
+  }
+
+  const handleSave = async (values: FormValues) => {
+    // Convert form values to numbers
+    const addedStock = Number(values.addedStock);
+    const newReorderLevel = values.newReorderLevel ? Number(values.newReorderLevel) : undefined;
+
+    // Additional validation
+    if (isNaN(addedStock) || addedStock <= 0) {
+      message.error('Please enter a valid positive number for stock level');
+      return;
+    }
+
+    if (newReorderLevel !== undefined && (isNaN(newReorderLevel) || newReorderLevel < 0)) {
+      message.error('Please enter a valid non-negative number for reorder level');
+      return;
+    }
+    if (!product) {
+      message.error('Product not found');
+      return;
+    }
+
+    try {
+      const payload = {
+        new_quantity: Number(values.addedStock) + Number(product.quantity),
+        reorder_value: values.newReorderLevel ? Number(values.newReorderLevel) : product.reorder_value
+      };
+
+      await updateInventory.mutateAsync(payload);
+      message.success('Inventory updated successfully!');
+      form.resetFields(['addedStock', 'newReorderLevel']);
+      productQuery.refetch();
+    } catch (err) {
+      console.error('Failed to update inventory:', err);
+      message.error('Failed to update inventory');
+    }
   };
 
   const columns = [
@@ -52,23 +95,23 @@ export default function EditInventoryById() {
     },
     {
       title: 'Unit Price',
-      dataIndex: 'unitPrice',
-      key: 'unitPrice',
-      render: (price: number) => `₦ ${price.toLocaleString()}`,
+      dataIndex: 'cost_price',
+      key: 'costPrice',
+      render: (price: string) => price ? `₦ ${Number(price).toLocaleString()}` : '-',
     },
     {
       title: 'Stock Level',
       dataIndex: 'quantity',
       key: 'quantity',
       render: (qty: number) => (
-        <Text type={qty <= 10 ? 'danger' : undefined}>{qty} left</Text>
+        qty ? <Text type={qty <= 10 ? 'danger' : undefined}>{qty} left</Text> : '-'
       ),
     },
     {
       title: 'Reorder Level',
-      dataIndex: 'reorderLevel',
-      key: 'reorderLevel',
-      render: (price: number) => `₦ ${price.toLocaleString()}`,
+      dataIndex: 'reorder_value',
+      key: 'reorderValue',
+      render: (value: number) => value ? value.toLocaleString() : '-',
     },
   ];
 
@@ -86,11 +129,8 @@ export default function EditInventoryById() {
             Edit Inventory Level
           </Title>
         </div>
-        <div className="flex flex-wrap justify-end gap-2">
+        <div className="flex items-center gap-2">
           <Button onClick={handleCancel}>Cancel</Button>
-          <Button type="primary" htmlType="submit">
-            Save
-          </Button>
         </div>
       </div>
 
@@ -105,7 +145,8 @@ export default function EditInventoryById() {
           <h1 className="font-medium text-base">Product Inventory</h1>
         </div>
         <Table
-          dataSource={[product]}
+          dataSource={product ? [product] : []}
+          loading={productQuery.isLoading}
           columns={columns}
           pagination={false}
           scroll={{ x: 'max-content' }}
@@ -119,32 +160,75 @@ export default function EditInventoryById() {
           form={form}
           layout="vertical"
           initialValues={{
-            currentStock: product.quantity,
             addedStock: '',
-            newReorderLevel: '',
+            newReorderLevel: product?.reorder_value || '',
           }}
           onFinish={handleSave}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Form.Item label="Current Stock Level" name="currentStock">
-              <Input disabled />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <Form.Item label="Current Stock Level">
+              <Input 
+                value={product?.quantity ? product.quantity.toLocaleString() : '0'} 
+                disabled 
+                style={{ width: '100%' }} 
+              />
             </Form.Item>
 
             <Form.Item
-              label="Added Stock Level"
+              label="Add Stock"
               name="addedStock"
               rules={[
-                { required: true, message: 'Please input added stock level!' },
+                { required: true, message: 'Stock level is required' },
+                { 
+                  validator: async (_, value) => {
+                    if (value && (isNaN(value) || value <= 0)) {
+                      throw new Error('Please enter a positive number');
+                    }
+                  }
+                }
               ]}
+              validateTrigger={['onChange', 'onBlur']}
             >
-              <Input placeholder="Enter stock level" />
+              <Input 
+                placeholder="Enter stock level" 
+                type="number" 
+                min={1}
+                style={{ width: '100%' }}
+              />
             </Form.Item>
 
             <Form.Item
               label="New Reorder level (optional)"
               name="newReorderLevel"
+              rules={[
+                { 
+                  validator: async (_, value) => {
+                    if (value && (isNaN(value) || value < 0)) {
+                      throw new Error('Please enter a non-negative number');
+                    }
+                  }
+                }
+              ]}
+              validateTrigger={['onChange', 'onBlur']}
             >
-              <Input placeholder="Enter reorder level" />
+              <Input 
+                placeholder="Enter reorder level" 
+                type="number" 
+                min={0}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+          </div>
+
+          <div className="flex justify-end gap-2">
+            <Form.Item className="mb-0">
+              <Button 
+                type="primary" 
+                htmlType="submit"
+                loading={updateInventory.isLoading}
+              >
+                Save
+              </Button>
             </Form.Item>
           </div>
         </Form>

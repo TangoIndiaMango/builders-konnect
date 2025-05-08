@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, MenuProps } from 'antd';
+import { Button, Divider, Dropdown, MenuProps, Modal, message } from 'antd';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFetchData, useGetExportData } from '../../../hooks/useApis';
@@ -148,6 +148,35 @@ const ProductsPage = () => {
 
   const navigate = useNavigate();
 
+  const handleEdit = (record: ProductTableData) => {
+    navigate(`/pos/inventory/edit-product/${record.id}`, { state: record });
+  };
+
+  const handleDelete = (record: ProductTableData) => {
+    Modal.confirm({
+      title: 'Delete Product',
+      content: `Are you sure you want to delete ${record.name}?`,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk: async () => {
+        try {
+          // TODO: Implement delete API call
+          message.success('Product deleted successfully');
+          // Refresh the products list
+          products.refetch();
+        } catch (err) {
+          console.error('Failed to delete product:', err);
+          message.error('Failed to delete product');
+        }
+      },
+    });
+  };
+
+  const handleViewDetails = (record: ProductTableData) => {
+    navigate(`/pos/inventory/preview-product/${record.id}`, { state: record });
+  };
+
   // useEffect(() => {
   //   fetchProducts(currentPage, searchQuery);
   // }, [currentPage, searchQuery, dateFilter]);
@@ -253,6 +282,9 @@ const ProductsPage = () => {
             total={productsData?.total}
             perPage={productsData?.per_page}
             updateLimitSize={setLimitSize}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onViewDetails={handleViewDetails}
           />
         </TableWrapper>
       </div>

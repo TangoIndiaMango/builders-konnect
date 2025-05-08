@@ -1,18 +1,58 @@
-import { useState, useEffect } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
-import { Button, Typography, message, Modal, Tag, Row, Col, Card } from "antd"
-import { ArrowLeftOutlined } from "@ant-design/icons"
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Typography, message, Modal, Tag, Row, Col, Card } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import React from "react";
 
-const { Title, Text, Paragraph } = Typography
+const { Title, Text, Paragraph } = Typography;
 
-export default function ProductPreview() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const product = location.state
-  const [imageUrl, setImageUrl] = useState<string>("")
+interface Props {}
 
-  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false)
-  const [productCode, setProductCode] = useState(product?.productCode || "")
+const ProductPreview: React.FC<Props> = () => {
+
+type Variant = {
+  size?: string;
+  color?: string;
+  price?: number;
+  quantity?: number;
+  finishType?: string;
+  shapeType?: string;
+};
+
+interface ProductTableData {
+  id: string;
+  name: string;
+  brand?: string;
+  sellingPrice?: number;
+  size?: string;
+  quantity?: number;
+  color?: string;
+  category?: string;
+  description?: string;
+  status?: string;
+  price?: number;
+  images?: string[];
+  stockQuantity?: number;
+  reorderLevel?: number;
+  tags?: string[] | string;
+  variants?: Variant[];
+  productImages?: Array<{
+    url?: string;
+    thumbUrl?: string;
+    originFileObj?: File;
+  }>;
+  imageUrl?: string;
+  productCode?: string;
+}
+
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const product = location.state as ProductTableData;
+  
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+  const [productCode, setProductCode] = useState(product?.productCode || "");
 
   useEffect(() => {
     if (product) {
@@ -36,10 +76,12 @@ export default function ProductPreview() {
   }
 
   const handleContinueEditing = () => {
-    navigate(`/pos/inventory/edit-product/${product.id}`, {
-      state: product,
-    })
-  }
+    if (product?.id) {
+      navigate(`/pos/inventory/edit-product/${product.id}`, {
+        state: product,
+      });
+    }
+  };
 
   const handleAddProduct = () => {
     const generatedCode = Math.random().toString(36).substr(2, 9).toUpperCase()
@@ -72,7 +114,7 @@ export default function ProductPreview() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" key="product-preview">
       {/* Header */}
       <div className="border-b p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div className="flex items-center">
@@ -83,7 +125,7 @@ export default function ProductPreview() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button onClick={handleContinueEditing}>Continue Editing</Button>
-          <Button type="primary" onClick={handleAddProduct}>
+          <Button type="primary"  onClick={handleAddProduct}>
             Submit Product
           </Button>
         </div>
@@ -156,14 +198,18 @@ export default function ProductPreview() {
 
               {product.reorderLevel && (
                 <div className="mb-2">
-                  <Text strong>Reorder Level: </Text>
-                  <Text>{product.reorderLevel}</Text>
+                  <div>
+                    <Text strong>Reorder Level: </Text>
+                    <Text>{product.reorderLevel}</Text>
+                  </div>
                 </div>
               )}
 
               {product.tags && (
                 <div className="mb-4">
-                  <Text strong>Tags: </Text>
+                  <div>
+                    <Text strong>Tags: </Text>
+                  </div>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {(typeof product.tags === 'string' 
                       ? product.tags.split(',').filter(tag => tag.trim())
@@ -181,7 +227,9 @@ export default function ProductPreview() {
 
               {product.variants && product.variants.length > 0 && (
                 <div className="mt-4">
-                  <Text strong>Product Variants:</Text>
+                  <div>
+                    <Text strong>Product Variants:</Text>
+                  </div>
                   <Card className="mt-2 p-0 overflow-x-auto">
                     <div style={{ overflowX: "auto" }}>
                       <table style={{ width: "100%", minWidth: "400px" }}>
@@ -224,7 +272,9 @@ export default function ProductPreview() {
 
               {product.description && (
                 <div className="mt-4">
-                  <Text strong>Description:</Text>
+                  <div>
+                    <Text strong>Description:</Text>
+                  </div>
                   <Paragraph style={{ fontSize: "14px", marginTop: "8px" }}>
                     {product.description}
                   </Paragraph>
@@ -253,3 +303,5 @@ export default function ProductPreview() {
     </div>
   )
 }
+
+export default ProductPreview
