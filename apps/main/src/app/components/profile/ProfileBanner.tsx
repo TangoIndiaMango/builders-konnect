@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Tabs, Button } from 'antd';
-import type { TabsProps } from 'antd';
+// import type { TabsProps } from 'antd';
 import PageIntroBanner from '../common/PageIntroBanner';
 
 const ProfilePage: React.FC = () => {

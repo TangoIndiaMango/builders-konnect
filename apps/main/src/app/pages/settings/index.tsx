@@ -1,9 +1,9 @@
 import React from 'react';
 import { Tabs, Button } from 'antd';
 import type { TabsProps } from 'antd';
-import WelcomeSection from '../../components/profile/WelcomeSection';
 import ProfileInfoSection from '../../components/settings/profilenfoSection';
 import NotificationList from './views/NotificationList';
+import WelcomeSection from '../../components/profile/WelcomeSection';
 
 const SettingPage: React.FC = () => {
   const onChange = (key: string) => {
@@ -16,7 +16,7 @@ const SettingPage: React.FC = () => {
       label: 'Profile Information',
       children: (
         <div className="space-y-6 py-6">
-          <WelcomeSection />
+          <WelcomeSection/>
           <ProfileInfoSection/>
         </div>
       ),
