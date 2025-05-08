@@ -1,9 +1,9 @@
 import React from 'react';
 import { Tabs, Button } from 'antd';
 import type { TabsProps } from 'antd';
-import WelcomeSection from '../../components/profile/WelcomeSection';
 import ProfileInfoSection from '../../components/settings/profilenfoSection';
 import NotificationList from './views/NotificationList';
+import WelcomeSection from '../../components/profile/WelcomeSection';
 import { VendorProfile } from '../profile/types';
 import { useFetchData } from '../../../hooks/useApis';
 
@@ -13,9 +13,7 @@ const SettingPage: React.FC = () => {
   };
 
   const profileData = useFetchData(`merchants/profile/view`);
-
   const profile = profileData?.data?.data as VendorProfile;
-
 
   const items: TabsProps['items'] = [
     {
