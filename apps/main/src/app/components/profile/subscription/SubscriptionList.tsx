@@ -14,12 +14,16 @@ import TableWrapper from '../../common/Table/TableWrapper';
 import TableStats from '../../common/TableStats';
 import { StoreTable } from '../table/StoreTable';
 import StoreFormModal from './AddStoreForm';
-interface StoreListProps extends FilterState {
+import { SubscriptionTable } from '../table/SubscriptionTable';
+import SubscriptionModal from './SubscriptionModal';
+import dayjs from 'dayjs';
+
+interface SubscriptionListProps extends FilterState {
   data: any;
   isLoading: boolean;
   refetch: () => void;
 }
-const StoreList = ({
+const SubscriptionList = ({
   data,
   isLoading,
   currentPage,
@@ -35,13 +39,15 @@ const StoreList = ({
   setSearchValue,
   reset,
   refetch,
-}: StoreListProps) => {
+}: SubscriptionListProps) => {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<'add' | 'edit'>('add');
   const [initialValues, setInitialValues] = useState<any>(null);
   const [state, setState] = useState('');
   const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
   const StatesState = useFetchData('shared/states?paginate=0&country_id=161');
   const CitiesState = useFetchSingleData(
     `shared/cities?paginate=0&country_id=161&state_id=${state}`,
@@ -101,24 +107,19 @@ const StoreList = ({
     });
   };
 
+  const handleViewSubscription = (record: any) => {
+    setSelectedSubscription(record);
+    setShowSubscriptionModal(true);
+  };
+
   return (
     <div className="space-y-3">
       <DisplayHeader
-        title="All Stores"
-        description="You're viewing all stores below."
+        title="Subscription Plans"
+        description="This shows the vendors billing history overtime"
         actionButton={
           <div className="flex flex-wrap items-center justify-end gap-3">
             <Button onClick={reset}>Clear</Button>
-            <Button
-              type="primary"
-              onClick={() => {
-                setMode('add');
-                setOpen(true);
-              }}
-              icon={<PlusOutlined />}
-            >
-              New Store
-            </Button>
           </div>
         }
       />
@@ -145,7 +146,7 @@ const StoreList = ({
         setSearchValue={setSearchValue}
         onExport={onExport}
       >
-        <StoreTable
+        <SubscriptionTable
           data={data?.data?.data}
           currentPage={currentPage}
           onPageChange={setPage}
@@ -154,30 +155,35 @@ const StoreList = ({
           total={data?.data?.total}
           perPage={data?.data?.per_page}
           updateLimitSize={updateLimitSize}
+          handleViewSubscription={handleViewSubscription}
         />
       </TableWrapper>
 
-      <StoreFormModal
-        open={open}
-        onClose={() => setOpen(false)}
-        state={StatesState?.data?.data}
-        city={CitiesState?.data?.data}
-        handleStateChange={handleStateChange}
-        form={form}
-        isLoading={isLoading}
-        mode={mode}
-        initialValues={initialValues}
-        onSubmit={onSubmit}
+      <SubscriptionModal
+        open={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        planName={selectedSubscription?.planName || 'Free Plan'}
+        isActive={selectedSubscription?.isActive ?? true}
+        price={selectedSubscription?.price ?? 3000}
+        endDate={
+          selectedSubscription?.endDate
+            ? dayjs(selectedSubscription.endDate).format('DD MMM, YYYY')
+            : '12 Jun, 2025'
+        }
+        features={[
+          { label: 'List up to 20 products' },
+          { label: '1 User Seat' },
+          { label: 'Standard Support' },
+          // ...add more features as needed
+        ]}
+        onCancelSubscription={() => {
+          // TODO: implement cancel logic
+          setShowSubscriptionModal(false);
+        }}
       />
 
-      <SuccessModal
-        open={successModalOpen}
-        onClose={() => setSuccessModalOpen(false)}
-        title="Store created successfully"
-        message="Your store has been created successfully. You can now view it in the list of stores."
-      />
     </div>
   );
 };
 
-export default StoreList;
+export default SubscriptionList;

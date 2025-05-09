@@ -1,4 +1,4 @@
-import { Upload, Button, Avatar, notification } from 'antd';
+import { Upload, Button, Avatar, notification, Spin } from 'antd';
 import { EditOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { useFetchData, usePutData } from '../../../hooks/useApis';
@@ -17,11 +17,13 @@ const acceptedFileTypes = '.jpg,.png,.jpeg';
 const WelcomeSection = ({
   data,
   isLoading,
+  isFetching,
   isProfile,
   refetch,
 }: {
   data: VendorProfile;
   isLoading: boolean;
+  isFetching: boolean;
   isProfile?: boolean;
   refetch: () => void;
 }) => {
@@ -30,6 +32,7 @@ const WelcomeSection = ({
   const updateprofile = usePutData('merchants/profile');
   const { handleFileUpload } = useUploadFileMedia();
   const uploadRef = useRef<any>(null);
+  const [uploading, setUploading] = useState(false);
 
   const avatarSrc = isProfile
     ? data?.personal?.avatar ??
@@ -43,8 +46,8 @@ const WelcomeSection = ({
     !!(isProfile ? data?.personal?.avatar : data?.logo) || !!fileRes?.url;
 
   const handleUpload: UploadProps['onChange'] = async (fileInfo) => {
-    console.log(fileInfo);
     if (fileInfo.file) {
+      setUploading(true);
       const uploadRes = await handleFileUpload(fileInfo.file);
       setFileRes(uploadRes[0]);
 
@@ -72,16 +75,24 @@ const WelcomeSection = ({
           refetch();
         },
       });
+      setUploading(false);
     }
   };
 
-  const isLoadingProfile = updateprofile.isLoading;
+
+  if (isLoading) {
+    return (
+      <div className="p-8 mb-6 bg-white rounded-lg shadow-sm">
+        <SkeletonLoader active type="card" rows={1} />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 mb-6 bg-white rounded-lg shadow-sm">
-      <SkeletonLoader active={isLoadingProfile} type="card" rows={1}>
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="relative">
+      <div className="flex flex-wrap items-center gap-6">
+        <div className="relative">
+          <Spin spinning={uploading || isFetching}>
             <Avatar
               shape="circle"
               size={100}
@@ -107,45 +118,45 @@ const WelcomeSection = ({
                  <EditOutlined style={{ color: '#003399', fontSize: 18 }} />
               </Upload>
             )}
-          </div>
-          {hasAvatar ? (
-            <div className="flex flex-col gap-2">
-              <h2 className="text-xl font-semibold text-blue-900">
-                {isProfile ? data?.personal?.name : data?.business?.name}
-              </h2>
-              <p className="text-gray-600">
-                <MailOutlined className="text-blue-600" />{' '}
-                {isProfile ? data?.personal?.email : data?.business?.email}
-              </p>
-              <p className="text-gray-600">
-                <PhoneOutlined className="text-blue-600" />{' '}
-                {isProfile ? data?.business?.phone : data?.business?.phone}
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <h2 className="text-xl font-semibold text-blue-900">
-                Welcome Onboard!
-              </h2>
-              <p className="text-gray-600">
-                Complete your {isProfile ? 'profile' : 'business profile'} by
-                uploading your {isProfile ? 'avatar' : 'business logo'}
-              </p>
-              <Upload
-                onChange={handleUpload}
-                showUploadList={false}
-                beforeUpload={beforeUpload}
-                accept={acceptedFileTypes}
-                maxCount={1}
-              >
-                <Button type="primary" className="w-fit">
-                  Upload {isProfile ? 'Avatar' : 'Logo'}
-                </Button>
-              </Upload>
-            </div>
-          )}
+          </Spin>
         </div>
-      </SkeletonLoader>
+        {hasAvatar ? (
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-semibold text-blue-900">
+              {isProfile ? data?.personal?.name : data?.business?.name}
+            </h2>
+            <p className="text-gray-600">
+              <MailOutlined className="text-blue-600" />{' '}
+              {isProfile ? data?.personal?.email : data?.business?.email}
+            </p>
+            <p className="text-gray-600">
+              <PhoneOutlined className="text-blue-600" />{' '}
+              {isProfile ? data?.business?.phone : data?.business?.phone}
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-semibold text-blue-900">
+              Welcome Onboard!
+            </h2>
+            <p className="text-gray-600">
+              Complete your {isProfile ? 'profile' : 'business profile'} by
+              uploading your {isProfile ? 'avatar' : 'business logo'}
+            </p>
+            <Upload
+              onChange={handleUpload}
+              showUploadList={false}
+              beforeUpload={beforeUpload}
+              accept={acceptedFileTypes}
+              maxCount={1}
+            >
+              <Button type="primary" className="w-fit">
+                Upload {isProfile ? 'Avatar' : 'Logo'}
+              </Button>
+            </Upload>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

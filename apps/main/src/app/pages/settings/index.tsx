@@ -1,18 +1,21 @@
-import React from 'react';
-import { Tabs, Button } from 'antd';
 import type { TabsProps } from 'antd';
-import ProfileInfoSection from '../../components/settings/profilenfoSection';
-import NotificationList from './views/NotificationList';
+import { Button, Tabs } from 'antd';
+import React from 'react';
+import {
+  useFetchDataSeperateLoading
+} from '../../../hooks/useApis';
 import WelcomeSection from '../../components/profile/WelcomeSection';
+import ProfileInfoSection from '../../components/settings/profilenfoSection';
 import { VendorProfile } from '../profile/types';
-import { useFetchData } from '../../../hooks/useApis';
+import NotificationList from './views/NotificationList';
 
 const SettingPage: React.FC = () => {
   const onChange = (key: string) => {
     console.log('Selected tab:', key);
   };
 
-  const profileData = useFetchData(`merchants/profile/view`);
+  const profileData = useFetchDataSeperateLoading(`merchants/profile/view`);
+
   const profile = profileData?.data?.data as VendorProfile;
 
   const items: TabsProps['items'] = [
@@ -20,9 +23,18 @@ const SettingPage: React.FC = () => {
       key: 'profile',
       label: 'Profile Information',
       children: (
-        <div className="py-6 space-y-6">
-          <WelcomeSection data={profile} isLoading={profileData.isLoading} isProfile={true} />
-          <ProfileInfoSection data={profile} isLoading={profileData.isLoading} />
+        <div className=" space-y-6">
+          <WelcomeSection
+            data={profile}
+            isLoading={profileData.isLoading}
+            isFetching={profileData.isFetching}
+            isProfile={true}
+            refetch={profileData.refetch}
+          />
+          <ProfileInfoSection
+            data={profile}
+            isLoading={profileData.isLoading}
+          />
         </div>
       ),
     },
@@ -39,7 +51,7 @@ const SettingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
+      <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
         <div>
           <h1 className="text-2xl font-semibold">Settings</h1>
           <p className="text-sm text-gray-500">

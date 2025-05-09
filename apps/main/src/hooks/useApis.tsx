@@ -151,3 +151,19 @@ export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = tr
 
   return { ...query, isLoading: query.isFetching || query.isLoading };
 };
+
+
+export const useFetchDataSeperateLoading = (url: string) => {
+  const query = useQuery({
+    queryKey: ['fetchData', url],
+    queryFn: async () => {
+      if (!url) return null;
+      const response = await axiosInstance.get(baseUrl + url);
+      return response.data;
+    },
+    enabled: !!url,
+  });
+
+  // Expose both isLoading (first load) and isFetching (background refetch)
+  return { ...query, isLoading: query.isLoading, isFetching: query.isFetching };
+};

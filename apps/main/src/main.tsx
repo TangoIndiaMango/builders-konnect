@@ -1,4 +1,5 @@
 
+import '@ant-design/v5-patch-for-react-19';
 import * as ReactDOM from 'react-dom/client';
 import App from './app/app';
 import { ConfigProvider, App as AntApp } from 'antd';

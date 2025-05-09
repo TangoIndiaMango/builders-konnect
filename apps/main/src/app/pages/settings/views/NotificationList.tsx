@@ -35,7 +35,7 @@ const notifications = [
 
 const NotificationList = () => {
   return (
-    <div className="bg-white p-6 rounded-md shadow-sm border">
+    <div className="bg-white p-6 rounded-md shadow-sm border border-gray-50">
       {/* TODAY heading with line */}
       <div className="flex items-center space-x-2 text-gray-400 text-xs font-semibold mb-4">
         <span>📅</span>

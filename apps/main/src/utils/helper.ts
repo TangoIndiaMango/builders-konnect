@@ -1,8 +1,9 @@
-import { message, Upload } from 'antd';
+import { GetProp, message, Upload, UploadProps } from 'antd';
 import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg';
+export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg,.gif,.webp,.csv,.xls,.xlsx';
 export const maxFileSize = 10 * 1024 * 1024; // 10MB
 export const getStatusColor = (status: string) => {
   const colorMap: Record<string, string> = {
@@ -145,3 +146,11 @@ export const handleCopy = (val: string, successTitle: string) => {
       );
   }
 };
+
+export const getBase64 = (file: FileType): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });

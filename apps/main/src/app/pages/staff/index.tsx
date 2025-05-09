@@ -246,8 +246,10 @@ const StaffHome = () => {
         }
       />
 
-      <div className="px-5 bg-white">
+      <div className='p-5'>
+      <div className="p-5 bg-white">
         <Tabs defaultActiveKey="all-sales" onChange={onChange} items={items} />
+      </div>
       </div>
 
       <AddStaffModal
@@ -259,7 +261,7 @@ const StaffHome = () => {
         stores={storeList || []}
         roles={roleList || []}
         loading={
-          modalMode === 'add' ? createStaff.isLoading : updateStaff.isLoading
+          modalMode === 'add' ? createStaff.isPending : updateStaff.isPending
         }
         onSubmit={handleStaffSubmit}
         mode={modalMode}

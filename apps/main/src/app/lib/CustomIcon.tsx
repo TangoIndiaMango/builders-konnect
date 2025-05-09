@@ -1,4 +1,4 @@
-import Icon from "@ant-design/icons";
+import Icon from '@ant-design/icons';
 // import type { GetProps } from 'antd';
 
 // type CustomIconComponentProps = GetProps<typeof Icon>
@@ -21,3 +21,24 @@ const DiscountSvg = () => (
 export const DiscountIcon = (props: any) => (
   <Icon component={DiscountSvg} {...props} />
 );
+
+const CopySvg = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M10.6663 8.60016V11.4002C10.6663 13.7335 9.73301 14.6668 7.39967 14.6668H4.59967C2.26634 14.6668 1.33301 13.7335 1.33301 11.4002V8.60016C1.33301 6.26683 2.26634 5.3335 4.59967 5.3335H7.39967C9.73301 5.3335 10.6663 6.26683 10.6663 8.60016Z"
+      fill="#1171F9"
+    />
+    <path
+      d="M11.3998 1.3335H8.59984C6.67914 1.3335 5.71152 1.97043 5.42907 3.49277C5.32748 4.04033 5.79484 4.50016 6.35175 4.50016H7.39984C10.1998 4.50016 11.4998 5.80016 11.4998 8.60016V9.64826C11.4998 10.2052 11.9597 10.6725 12.5072 10.5709C14.0296 10.2885 14.6665 9.32086 14.6665 7.40016V4.60016C14.6665 2.26683 13.7332 1.3335 11.3998 1.3335Z"
+      fill="#1171F9"
+    />
+  </svg>
+);
+
+export const CopyIcon = (props: any) => <Icon component={CopySvg} {...props} />;

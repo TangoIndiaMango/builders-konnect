@@ -1,29 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import { Tabs, Button } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Tabs, Button, message } from 'antd';
 import type { TabsProps } from 'antd';
 import WelcomeSection from '../../components/profile/WelcomeSection';
 import BusinessProfile from '../../components/profile/BusinessProfile';
 import FinanceSection from '../../components/profile/FinanceSection';
 import DocumentsSection from '../../components/profile/DocumentsSection';
-import { useFetchData, useGetExportData } from '../../../hooks/useApis';
+import {
+  useFetchData,
+  useFetchDataSeperateLoading,
+  useGetExportData,
+  usePutData,
+  useUploadData,
+} from '../../../hooks/useApis';
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { StoreListResponse, VendorProfile } from './types';
 import StoreList from '../../components/profile/store/StoreList';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
 import { exportCsvFromString } from '../../../utils/helper';
 import { useTableState } from '../../../hooks/useTable';
 import { filterOptions } from '../../lib/constant';
+import SubscriptionList from '../../components/profile/subscription/SubscriptionList';
+import { UploadedResInterface } from '../../../hooks/useUpload';
 
 const ProfilePage: React.FC = () => {
-  const onChange = (key: string) => {
-    console.log('Selected tab:', key);
-  };
   const { user } = useSessionStorage();
 
-  const profileData = useFetchData(`merchants/profile/view`);
+  const profileData = useFetchDataSeperateLoading(`merchants/profile/view`);
   const profile = profileData?.data?.data as VendorProfile;
+  const updateProfile = usePutData(`merchants/profile/update`);
 
   const navigate = useNavigate();
+  const MediaState = useUploadData('shared/media/upload');
+  const [tab, setTab] = useState('profile');
+  const [isEditRequested, setIsEditRequested] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<{
+    CAC?: any;
+    TIN?: any;
+    proof_of_address?: any;
+  }>({});
+  const [fieldValues, setFieldValues] = useState<{
+    CAC?: string;
+    TIN?: string;
+    proof_of_address?: string;
+  }>({});
 
   const {
     searchValue,
@@ -66,7 +85,6 @@ const ProfilePage: React.FC = () => {
     }
   }, [exportType]);
 
-  const [tab, setTab] = useState('staff');
   const stores = useFetchData(
     `merchants/locations?paginate=1&page=${currentPage ?? 1}&status=${
       filterKey === 'status' ? filterValue : ''
@@ -75,75 +93,211 @@ const ProfilePage: React.FC = () => {
     }&q=${searchValue ?? ''}&limit=${limitSize ?? 10}`
   );
 
+  const handleUpdateProfile = async (data: any) => {
+    try {
+      const formData = new FormData();
+      const documentTypes = ['CAC', 'TIN', 'proof_of_address'];
+      const selectedDocs = documentTypes.filter(
+        (docType) => selectedFiles[docType]
+      );
+      selectedDocs.forEach((docType) => {
+        if (selectedFiles[docType]) {
+          formData.append('media[]', selectedFiles[docType]?.file);
+        }
+      });
+
+      let uploadedUrls: string[] = [];
+      let mediaData: UploadedResInterface[] = [];
+      if (formData.has('media[]')) {
+        const uploadRes = await MediaState.mutateAsync(formData);
+        const uploadResponse = uploadRes as UploadedResInterface[];
+        uploadedUrls = uploadResponse?.map((res) => res.url) || [];
+        mediaData = uploadResponse;
+      }
+      console.log('Media', mediaData);
+
+      console.log('Field', fieldValues);
+
+      const newMediaData = selectedDocs.map((docType, index) => ({
+        name: docType.toLowerCase(),
+        url: uploadedUrls[index],
+        metadata: {
+          identification_number: fieldValues[docType] || '',
+        },
+      }));
+      console.log('New Media', newMediaData);
+      // Construct the final payload
+      const finalPayload = {
+        ...fieldValues,
+        media: newMediaData,
+        documents: {
+          ...data.documents,
+          ...Object.entries(selectedFiles).reduce(
+            (acc, [docType, file], index) => {
+              if (file && uploadedUrls[index]) {
+                acc[docType] = {
+                  ...data.documents[docType],
+                  file: uploadedUrls[index],
+                };
+              }
+              return acc;
+            },
+            {}
+          ),
+        },
+      };
+      console.log(finalPayload);
+      return;
+      // Update profile with the complete payload
+      updateProfile.mutate(finalPayload, {
+        onSuccess: () => {
+          setIsEditRequested(false);
+          setSelectedFiles({});
+          message.success('Profile updated successfully');
+        },
+        onError: () => {
+          message.error('Failed to update profile');
+        },
+      });
+    } catch (error) {
+      message.error('Failed to update profile');
+    }
+  };
+
+  const handleChange = (field: string, value: string) => {
+    setFieldValues((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   const storeListResponse = stores?.data?.data as StoreListResponse;
 
-  const items: TabsProps['items'] = [
-    {
-      key: 'profile',
-      label: 'Profile Information',
-      children: (
-        <div className="py-6 space-y-6">
-          <WelcomeSection data={profile} isLoading={profileData?.isLoading} refetch={profileData?.refetch} />
-          <BusinessProfile
-            businessInfo={profile?.business}
-            isLoading={profileData?.isLoading}
+  const items: TabsProps['items'] = useMemo(
+    () => [
+      {
+        key: 'profile',
+        label: 'Profile Information',
+        children: (
+          <div className="py-6 space-y-6">
+            <WelcomeSection
+              data={profile}
+              isLoading={profileData?.isLoading}
+              isFetching={profileData?.isFetching}
+              refetch={profileData?.refetch}
+            />
+            <BusinessProfile
+              businessInfo={profile?.business}
+              isLoading={profileData?.isLoading}
+              isEditRequested={isEditRequested}
+              handleChange={handleChange}
+            />
+            <FinanceSection
+              financeInfo={profile?.finance}
+              isLoading={profileData?.isLoading}
+              isEditRequested={isEditRequested}
+              handleChange={handleChange}
+            />
+            <DocumentsSection
+              documents={profile?.documents}
+              isLoading={profileData?.isLoading}
+              isEditRequested={isEditRequested}
+              setSelectedFiles={setSelectedFiles}
+              handleChange={handleChange}
+            />
+          </div>
+        ),
+      },
+      {
+        key: 'stores',
+        label: 'Stores',
+        children: (
+          <StoreList
+            data={storeListResponse}
+            isLoading={stores?.isLoading}
+            currentPage={currentPage}
+            setPage={setPage}
+            setSearchValue={setSearch}
+            handleFilterChange={handleFilterChange}
+            filterOptions={filterOptions}
+            onExport={handleExport}
+            filterValue={filterValue ?? ''}
+            setCustomDateRange={setCustomDateRange}
+            pageSize={pageSize}
+            reset={reset}
+            updateLimitSize={setLimitSize}
+            searchValue={searchValue}
+            refetch={stores?.refetch}
           />
-          <FinanceSection
-            financeInfo={profile?.finance}
-            isLoading={profileData?.isLoading}
+        ),
+      },
+      {
+        key: 'subscription',
+        label: 'Subscription',
+        children: (
+          <SubscriptionList
+            data={storeListResponse}
+            isLoading={stores?.isLoading}
+            currentPage={currentPage}
+            setPage={setPage}
+            setSearchValue={setSearch}
+            handleFilterChange={handleFilterChange}
+            filterOptions={filterOptions}
+            onExport={handleExport}
+            filterValue={filterValue ?? ''}
+            setCustomDateRange={setCustomDateRange}
+            pageSize={pageSize}
+            reset={reset}
+            updateLimitSize={setLimitSize}
+            searchValue={searchValue}
+            refetch={stores?.refetch}
           />
-          <DocumentsSection
-            documents={profile?.documents}
-            isLoading={profileData?.isLoading}
-          />
-        </div>
-      ),
-    },
-    {
-      key: 'stores',
-      label: 'Stores',
-      children: (
-        <StoreList
-          data={storeListResponse}
-          isLoading={stores?.isLoading}
-          currentPage={currentPage}
-          setPage={setPage}
-          setSearchValue={setSearch}
-          handleFilterChange={handleFilterChange}
-          filterOptions={filterOptions}
-          onExport={handleExport}
-          filterValue={filterValue ?? ''}
-          setCustomDateRange={setCustomDateRange}
-          pageSize={pageSize}
-          reset={reset}
-          updateLimitSize={setLimitSize}
-          searchValue={searchValue}
-          refetch={stores?.refetch}
-        />
-      ),
-    },
-    {
-      key: 'subscription',
-      label: 'Subscription',
-      children: (
-        <div className="p-6">
-          <h2 className="text-lg font-semibold">Subscription</h2>
-          <p>This is where the subscription details will go.</p>
-        </div>
-      ),
-    },
-  ];
+        ),
+      },
+    ],
+    [
+      stores,
+      profile,
+    ]
+  );
+
+  const onChange = (key: string) => {
+    setTab(key);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
+      <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
         <div>
           <h1 className="text-2xl font-semibold">My Profile</h1>
           <p className="text-sm text-gray-500">
             Track and measure store performance and analytics here
           </p>
         </div>
-        <Button type="default">View Storefront</Button>
+        {tab === 'profile' && (
+          <>
+            {isEditRequested ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  type="default"
+                  onClick={() => setIsEditRequested(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => handleUpdateProfile(profile)}
+                >
+                  Submit Request
+                </Button>
+              </div>
+            ) : (
+              <Button type="default" onClick={() => setIsEditRequested(true)}>
+                Request Edit
+              </Button>
+            )}
+          </>
+        )}
       </div>
 
       {/* Tabs */}

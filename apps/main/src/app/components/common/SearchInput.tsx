@@ -37,7 +37,7 @@ export const SearchInput = ({
       onChange={(e) => setLocalValue(e.target.value)}
       suffix={
         <div className="flex items-center gap-1">
-          <Divider type="vertical" className="h-8" />
+          <Divider type="vertical" className="!h-8" />
           <SearchOutlined size={18} className="text-gray-400" />
         </div>
       }

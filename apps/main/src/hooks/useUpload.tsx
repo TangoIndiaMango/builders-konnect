@@ -18,5 +18,5 @@ export const useUploadFileMedia = () => {
     const uploadRes = await uploadMedia.mutateAsync(formData);
     return uploadRes;
   }
-  return { handleFileUpload };
+  return { handleFileUpload, isUploading: uploadMedia.isPending };
 }
