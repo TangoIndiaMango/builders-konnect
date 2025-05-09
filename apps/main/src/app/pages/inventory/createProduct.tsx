@@ -1,12 +1,37 @@
-
 import {
-  Form,  Input, Select, Button, Typography, Upload, InputNumber, Modal, UploadFile, message,
+  Form,
+  Input,
+  Select,
+  Button,
+  Typography,
+  Upload,
+  InputNumber,
+  Modal,
+  UploadFile,
+  message,
 } from 'antd';
-import { ArrowLeftOutlined, UploadOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  ArrowLeftOutlined,
+  UploadOutlined,
+  PlusOutlined,
+} from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetCategorizations, useGetMeasuringUnits, useGetInventoryAttributes } from '../../../service/inventory/inventoryFN';
-import { createProduct } from '../../../service/inventory/inventory';
+import {
+  useGetCategorizations,
+  useGetMeasuringUnits,
+  useGetInventoryAttributes,
+} from '../../../service/inventory/inventoryFN';
+import {
+  createProduct,
+  useCreateProduct,
+} from '../../../service/inventory/inventory';
+import VariantList from './createInventory/VariantList';
+import { useUploadFileMedia } from '../../../hooks/useUpload';
+import { beforeUpload, acceptedFileTypes } from '../../../utils/helper';
+import CreateStepOne from './createInventory/CreateStepOne';
+import CreateStepTwo from './createInventory/CreateStepTwo';
+import ProductOptionModal from './createInventory/ProductOptionModal';
 
 type CategoryResponse = {
   id: string;
@@ -56,7 +81,6 @@ interface ProductFormData {
   attributes: Record<string, string>;
 }
 
-
 const CreateProduct = () => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
@@ -64,29 +88,48 @@ const CreateProduct = () => {
   const [subcategories, setSubcategories] = useState<Category[]>([]);
   const [productTypes, setProductTypes] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
-  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string>('');
-
+  const [selectedSubcategoryId, setSelectedSubcategoryId] =
+    useState<string>('');
+  const [selectedProductTypeId, setSelectedProductTypeId] =
+    useState<string>('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [productCode, setProductCode] = useState('');
   const [isVariantModalVisible, setIsVariantModalVisible] = useState(false);
   const [isColorModalVisible, setIsColorModalVisible] = useState(false);
-  const [variants, setVariants] = useState<Array<{ values: Record<string, string>, labels: Record<string, string> }>>([]);
-  const [measuringUnits, setMeasuringUnits] = useState<Array<{ value: string; label: string }>>([]);
+  const [variants, setVariants] = useState<
+    Array<{ values: Record<string, string>; labels: Record<string, string> }>
+  >([]);
+  const [measuringUnits, setMeasuringUnits] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+  const [fieldsData, setFieldsData] = useState<any>([]);
+  const [editingVariantIndex, setEditingVariantIndex] = useState<number | null>(
+    null
+  );
   const navigate = useNavigate();
+  const { handleFileUpload, isUploading } = useUploadFileMedia();
+  const { mutate: createProduct, isPending: isCreateProductLoading } =
+    useCreateProduct();
 
-  const { data: categoriesData } = useGetCategorizations('category');
-  const { data: subcategoriesData } = useGetCategorizations('subcategory', selectedCategoryId);
-  const { data: productTypesData } = useGetCategorizations('type', selectedSubcategoryId);
-  const { data: measuringUnitsData } = useGetMeasuringUnits();
-  const { data: attributesData } = useGetInventoryAttributes(selectedCategoryId);
-  const { data: variantAttributesData } = useGetInventoryAttributes(selectedCategoryId);
+  const { data: categoriesData, isLoading: isCategoriesLoading } =
+    useGetCategorizations('category');
+  const { data: subcategoriesData, isLoading: isSubcategoriesLoading } =
+    useGetCategorizations('subcategory', selectedCategoryId);
+  const { data: productTypesData, isLoading: isProductTypesLoading } =
+    useGetCategorizations('type', selectedSubcategoryId);
+  const { data: measuringUnitsData, isLoading: isMeasuringUnitsLoading } =
+    useGetMeasuringUnits();
+  const { data: attributesData, isLoading: isAttributesLoading } =
+    useGetInventoryAttributes(selectedCategoryId);
+  const { data: variantAttributesData, isLoading: isVariantAttributesLoading } =
+    useGetInventoryAttributes(selectedCategoryId);
 
   const handleCategoryChange = (value: string) => {
     setSelectedCategoryId(value);
     setSelectedSubcategoryId(''); // Reset subcategory
     form.setFieldValue('subcategory', undefined); // Clear subcategory selection
     form.setFieldValue('productType', undefined); // Clear product type selection
-    
+
     // Clear any existing attribute values
     if (attributesData) {
       attributesData.forEach((attr: InventoryAttribute) => {
@@ -95,33 +138,38 @@ const CreateProduct = () => {
     }
   };
 
-
   useEffect(() => {
     if (categoriesData) {
-      const mappedCategories = categoriesData.map((category: CategoryResponse) => ({
-        value: category.id,
-        label: category.name
-      }));
+      const mappedCategories = categoriesData.map(
+        (category: CategoryResponse) => ({
+          value: category.id,
+          label: category.name,
+        })
+      );
       setCategories(mappedCategories);
     }
   }, [categoriesData]);
 
   useEffect(() => {
     if (subcategoriesData) {
-      const mappedSubcategories = subcategoriesData.map((subcategory: CategoryResponse) => ({
-        value: subcategory.id,
-        label: subcategory.name
-      }));
+      const mappedSubcategories = subcategoriesData.map(
+        (subcategory: CategoryResponse) => ({
+          value: subcategory.id,
+          label: subcategory.name,
+        })
+      );
       setSubcategories(mappedSubcategories);
     }
   }, [subcategoriesData]);
 
   useEffect(() => {
     if (productTypesData) {
-      const mappedProductTypes = productTypesData.map((productType: CategoryResponse) => ({
-        value: productType.id,
-        label: productType.name
-      }));
+      const mappedProductTypes = productTypesData.map(
+        (productType: CategoryResponse) => ({
+          value: productType.id,
+          label: productType.name,
+        })
+      );
       setProductTypes(mappedProductTypes);
     }
   }, [productTypesData]);
@@ -129,23 +177,28 @@ const CreateProduct = () => {
   useEffect(() => {
     if (measuringUnitsData) {
       const mappedUnits = measuringUnitsData.map((unit: MeasuringUnit) => ({
-        value: unit.symbol,
-        label: `${unit.name} (${unit.symbol})`
+        value: unit.name,
+        label: `${unit.name} (${unit.symbol})`,
       }));
       setMeasuringUnits(mappedUnits);
     }
   }, [measuringUnitsData]);
 
   const handleMeasuringUnitChange = (value: string) => {
-    const selectedUnit = measuringUnitsData?.find(unit => unit.symbol === value);
+    const selectedUnit = measuringUnitsData?.find(
+      (unit) => unit.name === value
+    );
     if (selectedUnit) {
-      setMeasuringUnits([{ value: selectedUnit.symbol, label: selectedUnit.name }]);
+      setMeasuringUnits([
+        { value: selectedUnit.name, label: selectedUnit.name },
+      ]);
     }
   };
 
   const handleEditVariant = (index: number) => {
     const variant = variants[index];
     form.setFieldsValue(variant.values);
+    setEditingVariantIndex(index);
     setIsVariantModalVisible(true);
   };
 
@@ -156,20 +209,23 @@ const CreateProduct = () => {
   };
 
   const handleCancel = (): void => {
-    window.history.back();
+    navigate(-1);
   };
 
   const handleModalOk = (): void => {
     setIsModalVisible(false);
-    navigate('/inventory');
+    navigate('/pos/inventory');
   };
 
-  const handleNext = (): void => {
-    setCurrentStep(prev => Math.min(prev + 1, 1));
+  const handleNext = async (): Promise<void> => {
+    const values = await form.validateFields();
+    console.log('Form values', values);
+    setFieldsData({ ...values });
+    setCurrentStep((prev) => Math.min(prev + 1, 1));
   };
 
   const handlePrevious = (): void => {
-    setCurrentStep(prev => Math.max(prev - 1, 0));
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
   const handleSubcategoryChange = (value: string) => {
@@ -178,62 +234,128 @@ const CreateProduct = () => {
     form.setFieldValue('productType', undefined); // Clear product type selection
   };
 
-  const handleSubmit = async (values: ProductFormData) => {
+  const handleSubmit = async () => {
     try {
-      const metadata: Record<string, { [key: string]: string[] }> = {};
-      
-      // Handle attributes
-      if (values.attributes) {
-        metadata.attributes = {};
-        for (const [key, value] of Object.entries(values.attributes)) {
-          metadata.attributes[key] = [value];
-        }
-      }
+      const values = await form.validateFields();
+      const submittedData = { ...values, ...fieldsData };
 
-      const productData = {
-        name: values.name,
-        SKU: values.sku,
-        category: values.category,
-        subcategory: values.subcategory,
-        product_type: values.productType,
-        unit_cost_price: values.costPrice,
-        unit_retail_price: values.sellingPrice || 0,
-        quantity: values.stockQuantity || 0,
-        reorder_value: values.reorderLevel || 0,
-        description: values.description || '',
-        measurement_unit: values.measuringUnit || '',
-        tags: typeof values.tags === 'string' ? values.tags : Array.isArray(values.tags) ? values.tags.join(', ') : '',
-        product_creation_format: 'single' as const,
-        images: values.productImages?.map(file => ({
-          url: URL.createObjectURL(file.originFileObj as Blob),
-          file: file.originFileObj as Blob
-        })) || [],
-        ...(Object.keys(metadata).length > 0 ? { metadata } : {})
+      console.log('Fields', submittedData);
+      // Handle variants as metadata attributes
+      const metadata: Record<string, { [key: string]: string[] }> = {
+        attributes: {},
       };
 
-      const response = await createProduct(productData as any);
-      
-      if (response) {
-        const generatedCode = Math.random().toString(36).substr(2, 9).toUpperCase();
-        setProductCode(generatedCode);
-        setIsModalVisible(true);
+      // Process variants into metadata attributes
+      variants.forEach((variant) => {
+        Object.entries(variant.values)
+          .filter(([_, value]) => value !== undefined && value !== '')
+          .forEach(([attrId, value]) => {
+            const attrName = variant.labels[attrId];
+            if (!metadata.attributes[attrName]) {
+              metadata.attributes[attrName] = [];
+            }
+            // Handle both single values and arrays
+            if (Array.isArray(value)) {
+              metadata.attributes[attrName].push(...value);
+            } else {
+              metadata.attributes[attrName].push(value as string);
+            }
+          });
+      });
+
+      // Handle media uploads
+      let media: string[] = [];
+      if (submittedData.productImages) {
+        const uploadPromises = submittedData?.productImages?.map(
+          async (file: string) => {
+            if (file) {
+              const uploadRes = await handleFileUpload(file);
+              return uploadRes[0].url;
+            }
+          }
+        );
+        media = await Promise.all(uploadPromises);
       }
-    } catch (error) {
+
+      // Construct the final payload
+      const payload = {
+        name: submittedData.name,
+        SKU: submittedData.SKU,
+        category_id: selectedCategoryId,
+        subcategory_id: selectedSubcategoryId,
+        product_type_id: selectedProductTypeId,
+        brand: submittedData.brand,
+        media: media,
+        metadata: metadata,
+        product_creation_format: 'single',
+        measurement_unit: submittedData.measurement_unit,
+        unit_retail_price: submittedData.unit_retail_price,
+        unit_cost_price: submittedData.unit_cost_price,
+        quantity: submittedData.quantity,
+        reorder_value: submittedData.reorder_value,
+        description: submittedData.description,
+        tags: submittedData.tags,
+      };
+
+      console.log('Final payload:', payload);
+      // return
+      // Create FormData for the request
+      const formData = new FormData();
+
+      // Add all fields to FormData
+      Object.entries(payload).forEach(([key, value]) => {
+        if (key === 'metadata') {
+          // Handle metadata attributes
+          Object.entries(value.attributes).forEach(([attrKey, attrValues]) => {
+            (attrValues as string[]).forEach((val: string) => {
+              formData.append(`metadata[attributes][${attrKey}][]`, val);
+            });
+          });
+        } else if (key === 'media') {
+          formData.append('media', media?.map((file: any) => file).join('|'));
+        } else {
+          formData.append(key, value as string);
+        }
+      });
+
+      createProduct(formData as any, {
+        onSuccess: (data) => {
+          console.log(data?.data);
+          setProductCode(data?.data?.id);
+          setIsModalVisible(true);
+        },
+        onError: (error) => {
+          console.error('Error creating product:', error);
+          message.error(
+            `Failed to create product: ${error?.message} Please try again.`
+          );
+        },
+      });
+    } catch (error: any) {
       console.error('Error creating product:', error);
-      message.error('Failed to create product. Please try again.');
+      message.error(`Failed to create product Please try again.`);
     }
   };
 
-  return (  
+  const isLoading =
+    isCategoriesLoading ||
+    isSubcategoriesLoading ||
+    isProductTypesLoading ||
+    isMeasuringUnitsLoading ||
+    isAttributesLoading ||
+    isVariantAttributesLoading;
+
+  return (
     <>
       <div className="p-3 h-fit bg-gray-50">
-        <div className="mb-4 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
+        <div className="flex items-center justify-between p-4 mb-4 bg-white rounded-lg shadow-sm">
           <div>
             <div className="flex items-center gap-4">
               <Button
                 type="text"
                 icon={<ArrowLeftOutlined />}
                 onClick={handleCancel}
+                disabled={isCreateProductLoading || isUploading}
               >
                 Back
               </Button>
@@ -241,255 +363,77 @@ const CreateProduct = () => {
                 Request to Add Product
               </Title>
             </div>
-          <p className="text-sm text-gray-500">Fill the form below to add a new product</p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={handleCancel}>Cancel</Button>
-          {currentStep === 1 ? (
-            <Button type="primary" onClick={() => form.submit()}>
-              Save
-            </Button>
-          ) : (
-            <Button type="primary" onClick={handleNext}>
-              Next
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-        <div className="flex items-center gap-2 mb-4">
-          {currentStep > 0 && (
-            <Button onClick={handlePrevious}>
-              Previous
-            </Button>
-          )}
-          <span className="text-gray-500">
-            Step {currentStep + 1} of 2
-          </span>
+            <p className="text-sm text-gray-500">
+              Fill the form below to add a new product
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={handleCancel} disabled={isCreateProductLoading || isUploading}>Cancel</Button>
+            {currentStep === 1 ? (
+              <Button type="primary" onClick={() => form.submit()} loading={isCreateProductLoading || isUploading}>
+                Save
+              </Button>
+            ) : (
+              <Button type="primary" onClick={handleNext}>
+                Next
+              </Button>
+            )}
+          </div>
         </div>
 
-        <Form
-          form={form}
-          layout="horizontal"
-          className="w-full max-w-3xl mx-auto"
-          onFinish={handleSubmit}
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 18 }}
-        >
-          {currentStep === 0 && (
-            <div>
-              <Form.Item
-                label="Product Name"
-                name="name"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Input placeholder="Enter product name" />
-              </Form.Item>
+        <div className="p-6 bg-white rounded-lg shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            {currentStep > 0 && (
+              <Button onClick={handlePrevious}>Previous</Button>
+            )}
+            <span className="text-gray-500">Step {currentStep + 1} of 2</span>
+          </div>
 
-              <Form.Item
-                label="Store Keeping Unit (SKU)"
-                name="sku"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Input placeholder="PC-202502-MG" />
-              </Form.Item>
+          <Form
+            form={form}
+            layout="horizontal"
+            className="w-full max-w-3xl mx-auto"
+            onFinish={handleSubmit}
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+          >
+            {currentStep === 0 && (
+              <CreateStepOne
+                form={form}
+                categories={categories}
+                subcategories={subcategories}
+                productTypes={productTypes}
+                selectedCategoryId={selectedCategoryId}
+                selectedSubcategoryId={selectedSubcategoryId}
+                handleCategoryChange={handleCategoryChange}
+                handleSubcategoryChange={handleSubcategoryChange}
+                setSelectedProductTypeId={setSelectedProductTypeId}
+                variants={variants}
+                handleEditVariant={handleEditVariant}
+                handleDeleteVariant={handleDeleteVariant}
+                setIsVariantModalVisible={setIsVariantModalVisible}
+                isLoading={isLoading}
+              />
+            )}
 
-              <Form.Item
-                label="Product Category"
-                name="category"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Select
-                  placeholder="Select category"
-                  options={categories}
-                  onChange={handleCategoryChange}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Sub Category"
-                name="subcategory"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Select
-                  placeholder={!selectedCategoryId ? "Select a category first" : "Select sub category"}
-                  options={subcategories}
-                  onChange={handleSubcategoryChange}
-                  disabled={!selectedCategoryId}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Product Type"
-                name="productType"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Select
-                  placeholder={!selectedSubcategoryId ? "Select a sub category first" : "Select product type"}
-                  options={productTypes}
-                  disabled={!selectedSubcategoryId}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Brand"
-                name="brand"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Input placeholder="Enter brand name" />
-              </Form.Item>
-
-              <Form.Item
-                label="Product Images"
-                name="productImages"
-                rules={[{ required: true, message: 'Required' }]}
-                extra="Recommended file size: 500x500 px. Max file size: 2MB"
-              >
-                <Upload
-                  listType="picture-card"
-                  beforeUpload={() => false}
-                  maxCount={4}
-                >
-                  <div className="text-center">
-                    <UploadOutlined className="text-lg" />
-                    <div className="mt-2">Upload</div>
-                  </div>
-                </Upload>
-              </Form.Item>
-
-
-              <Form.Item
-                label="Product Variant"
-                name="variants"
-                required
-                className="mb-2"
-              >
-                <div className="flex items-center gap-2 text-[#3B43FF] cursor-pointer"      onClick={() => setIsVariantModalVisible(true)}>
-                  
-                    <PlusOutlined /> Add product variant
-    
-                </div>
-                <span className="text-gray-400 text-sm">
-                    Select the product variations of the product you want to add.
-                  </span>
-              </Form.Item>
-
-              {variants.length > 0 && (
-                <div className="mt-4">
-                  {variants.map((variant, index) => (
-                <div key={index} className="mb-4 p-4 border rounded-lg">
-                  <div className="grid grid-cols-2 gap-4">
-                    {variant.values && Object.entries(variant.values).map(([key, value]) => (
-                      <div key={key} className="flex gap-2">
-                        <span className="font-medium">{variant.labels?.[key] || key}:</span>
-                        <span className="px-2 py-1 bg-blue-50 rounded text-sm">{value}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-3 flex gap-3">
-                    <Button 
-                      type="link" 
-                      className="text-blue-600 flex items-center gap-1"
-                      onClick={() => handleEditVariant(index)}
-                    >
-                      <span className="text-sm">Edit product variant</span>
-                    </Button>
-                    <Button 
-                      type="link" 
-                      danger 
-                      className="flex items-center gap-1"
-                      onClick={() => handleDeleteVariant(index)}
-                    >
-                      <span className="text-sm">Delete product variant</span>
-                    </Button>
-                  </div>
-                </div>
-              ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {currentStep === 1 && (
-            <div>
-              <Form.Item
-                label="Unit Type"
-                name="measuringUnit"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Select
-                  placeholder="Select measuring unit"
-                  options={measuringUnits}
-                  onChange={handleMeasuringUnitChange}
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-
-            
-
-              <Form.Item
-                label="Cost Price"
-                name="costPrice"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Input placeholder="₦ Enter cost price" />
-              </Form.Item>
-
-              <Form.Item
-                label="Selling Price"
-                name="sellingPrice"
-                rules={[{ required: true, message: 'Required' }]}
-              >
-                <Input placeholder="₦ Enter selling price" />
-              </Form.Item>
-
-              <Form.Item
-                label="Stock Quantity"
-                name="quantity"
-                rules={[
-                  { required: true, message: 'Please enter the stock quantity' },
-                ]}
-              >
-                <InputNumber min={0} style={{ width: '100%' }} />
-              </Form.Item>
-
-              <Form.Item
-                label="Reorder Level"
-                name="reorderLevel"
-                rules={[
-                  { required: true, message: 'Please enter the reorder level' },
-                ]}
-              >
-                <InputNumber min={0} style={{ width: '100%' }} />
-              </Form.Item>
-
-              <Form.Item
-                label="Description"
-                name="description"
-                rules={[{ required: true, message: 'Please enter a description' }]}
-              >
-                <Input.TextArea rows={3} />
-              </Form.Item>
-
-              <Form.Item
-                label="Product Tags"
-                name="tags"
-                rules={[{ required: true, message: 'Please enter tags' }]}
-              >
-                <Input placeholder="e.g cement, building, bag" />
-              </Form.Item>
-            </div>
-          )}
-
-        </Form>
+            {currentStep === 1 && (
+              <CreateStepTwo
+                measuringUnits={measuringUnits}
+                handleMeasuringUnitChange={handleMeasuringUnitChange}
+              />
+            )}
+          </Form>
         </div>
       </div>
+
+      {/* Add Product Successfully Modal */}
       <Modal
         title="Product Successfully Added"
         open={isModalVisible}
+        width={400}
         onOk={handleModalOk}
         onCancel={handleModalOk}
+        centered
       >
         <p className="text-sm text-[#000000D9]">
           Product has been created successfully!
@@ -497,77 +441,20 @@ const CreateProduct = () => {
         <p className="font-bold text-sm mt-2 text-[#003399]">{productCode}</p>
       </Modal>
 
-      <Modal
-        title="Add Product Option"
-        open={isVariantModalVisible}
-        onCancel={() => setIsVariantModalVisible(false)}
-        footer={null}
-      >
-        <Form
-          onFinish={(values) => {
-            // Create a mapping of IDs to attribute names
-            const labels = variantAttributesData?.reduce((acc, attr) => ({
-              ...acc,
-              [attr.id]: attr.attribute
-            }), {}) || {};
-            
-            setVariants([...variants, { 
-              values: values || {},
-              labels: labels
-            }]);
-            setIsVariantModalVisible(false);
-          }}
-          layout="vertical"
-        >
-          {!selectedCategoryId ? (
-            <div className="text-center p-4">
-              <p className="text-red-500 mb-2">Please select a product category in the main form first.</p>
-              <Button onClick={() => setIsVariantModalVisible(false)}>Close</Button>
-            </div>
-          ) : (
-            variantAttributesData && variantAttributesData.map((attr: InventoryAttribute) => (
-              <Form.Item
-                key={attr.id}
-                label={attr.attribute}
-                name={attr.id}
-                rules={[{ required: true, message: 'Required' }]}
-              >
-              {attr.possible_values ? (
-                <Select
-                  placeholder={`Select ${attr.attribute}`}
-                  options={attr.possible_values.map(value => ({ value, label: value }))}
-                  style={{ width: '100%' }}
-                  dropdownRender={menu => (
-                    <div>
-                      {menu}
-                      {attr.attribute.toLowerCase() === 'color' && (
-                        <div className="p-2 border-t">
-                          <Button 
-                            type="link" 
-                            className="w-full text-left p-0"
-                            onClick={() => setIsColorModalVisible(true)}
-                          >
-                            + Add Color
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                />
-              ) : (
-                <Input placeholder={`Enter ${attr.attribute}`} />
-              )}
-              </Form.Item>
-            ))
-          )}
+      {/* Add Product Option Modal */}
+      <ProductOptionModal
+        isVariantModalVisible={isVariantModalVisible}
+        setIsVariantModalVisible={setIsVariantModalVisible}
+        variantAttributesData={variantAttributesData}
+        setVariants={setVariants}
+        variants={variants}
+        selectedCategoryId={selectedCategoryId}
+        setIsColorModalVisible={setIsColorModalVisible}
+        editingVariantIndex={editingVariantIndex}
+        setEditingVariantIndex={setEditingVariantIndex}
+      />
 
-          <div className="flex justify-end gap-2">
-            <Button onClick={() => setIsVariantModalVisible(false)}>Cancel</Button>
-            <Button type="primary" htmlType="submit">Save</Button>
-          </div>
-        </Form>
-      </Modal>
-
+      {/* Add Colour Modal */}
       <Modal
         title="Add Colour"
         open={isColorModalVisible}
@@ -589,8 +476,12 @@ const CreateProduct = () => {
           </Form.Item>
 
           <div className="flex justify-end gap-2">
-            <Button onClick={() => setIsColorModalVisible(false)}>Cancel</Button>
-            <Button type="primary" htmlType="submit">Save</Button>
+            <Button onClick={() => setIsColorModalVisible(false)}>
+              Cancel
+            </Button>
+            <Button type="primary" htmlType="submit">
+              Save
+            </Button>
           </div>
         </Form>
       </Modal>

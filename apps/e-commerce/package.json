@@ -2,7 +2,12 @@
   "name": "@builders-connect/e-commerce",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "nx": {
     "name": "e-commerce"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.5",
+    "tailwindcss": "^4.1.5"
   }
 }

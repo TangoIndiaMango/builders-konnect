@@ -5,7 +5,7 @@ import WelcomeSection from '../../components/profile/WelcomeSection';
 import BusinessProfile from '../../components/profile/BusinessProfile';
 import FinanceSection from '../../components/profile/FinanceSection';
 import DocumentsSection from '../../components/profile/DocumentsSection';
-import { useFetchData, useGetExportData } from '../../../hooks/useApis';
+import { useFetchData, useFetchDataSeperateLoading, useGetExportData } from '../../../hooks/useApis';
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { StoreListResponse, VendorProfile } from './types';
 import StoreList from '../../components/profile/store/StoreList';
@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { exportCsvFromString } from '../../../utils/helper';
 import { useTableState } from '../../../hooks/useTable';
 import { filterOptions } from '../../lib/constant';
+import SubscriptionList from '../../components/profile/subscription/SubscriptionList';
 
 const ProfilePage: React.FC = () => {
   const onChange = (key: string) => {
@@ -20,7 +21,7 @@ const ProfilePage: React.FC = () => {
   };
   const { user } = useSessionStorage();
 
-  const profileData = useFetchData(`merchants/profile/view`);
+  const profileData = useFetchDataSeperateLoading(`merchants/profile/view`);
   const profile = profileData?.data?.data as VendorProfile;
 
   const navigate = useNavigate();
@@ -83,7 +84,7 @@ const ProfilePage: React.FC = () => {
       label: 'Profile Information',
       children: (
         <div className="py-6 space-y-6">
-          <WelcomeSection data={profile} isLoading={profileData?.isLoading} refetch={profileData?.refetch} />
+          <WelcomeSection data={profile} isLoading={profileData?.isLoading} isFetching={profileData?.isFetching} refetch={profileData?.refetch} />
           <BusinessProfile
             businessInfo={profile?.business}
             isLoading={profileData?.isLoading}
@@ -126,10 +127,23 @@ const ProfilePage: React.FC = () => {
       key: 'subscription',
       label: 'Subscription',
       children: (
-        <div className="p-6">
-          <h2 className="text-lg font-semibold">Subscription</h2>
-          <p>This is where the subscription details will go.</p>
-        </div>
+        <SubscriptionList
+          data={storeListResponse}
+          isLoading={stores?.isLoading}
+          currentPage={currentPage}
+          setPage={setPage}
+          setSearchValue={setSearch}
+          handleFilterChange={handleFilterChange}
+          filterOptions={filterOptions}
+          onExport={handleExport}
+          filterValue={filterValue ?? ''}
+          setCustomDateRange={setCustomDateRange}
+          pageSize={pageSize}
+          reset={reset}
+          updateLimitSize={setLimitSize}
+          searchValue={searchValue}
+          refetch={stores?.refetch}
+        />
       ),
     },
   ];

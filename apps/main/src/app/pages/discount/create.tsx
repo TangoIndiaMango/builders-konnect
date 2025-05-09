@@ -22,6 +22,7 @@ const DiscountCreate = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [form] = Form.useForm();
   const allProductsValue = Form.useWatch('all_products', form);
+  const categoryValue = Form.useWatch('category', form);
 
   // console.log(allProductsValue);
   const handleSubmit = async () => {
@@ -37,7 +38,7 @@ const DiscountCreate = () => {
       end_date: values.end_date.format('YYYY-MM-DD'),
       type: values.type, // "percentage" or "amount"
       value: Number(values.value),
-      all_products: values.all_products,
+      all_products: values.all_products || false,
     };
 
     if (!values.all_products && values.discounted_products?.length) {
@@ -78,7 +79,7 @@ const DiscountCreate = () => {
           <Button
             type="primary"
             onClick={handleSubmit}
-            loading={id ? updateDiscount.isLoading : createDiscount.isLoading}
+            loading={id ? updateDiscount.isPending : createDiscount.isPending}
           >
             {id ? 'Update Discount' : 'Add Discount'}
           </Button>
@@ -90,8 +91,9 @@ const DiscountCreate = () => {
             initialValues={getDiscount?.data?.data}
             form={form}
             onFinish={handleSubmit}
-            loading={id ? getDiscount.isLoading : false}
+            loading={id ? getDiscount.isPending : false}
             allProductsValue={allProductsValue}
+            categoryValue={categoryValue}
           />
         </div>
       </div>

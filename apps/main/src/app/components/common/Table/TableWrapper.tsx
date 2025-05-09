@@ -44,7 +44,7 @@ const TableWrapper = ({
             placeholder="Search..."
             value={searchValue}
             onChange={setSearchValue}
-            className="w-full md:min-w-[300px]"
+            className="!w-full md:!min-w-[300px]"
           />
         </div>
 

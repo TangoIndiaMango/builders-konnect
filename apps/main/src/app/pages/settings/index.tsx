@@ -1,21 +1,22 @@
-import React from 'react';
-import { Tabs, Button } from 'antd';
 import type { TabsProps } from 'antd';
+import { Button, Tabs } from 'antd';
+import React from 'react';
+import {
+  useFetchDataSeperateLoading
+} from '../../../hooks/useApis';
 import WelcomeSection from '../../components/profile/WelcomeSection';
 import ProfileInfoSection from '../../components/settings/profilenfoSection';
-import NotificationList from './views/NotificationList';
 import { VendorProfile } from '../profile/types';
-import { useFetchData } from '../../../hooks/useApis';
+import NotificationList from './views/NotificationList';
 
 const SettingPage: React.FC = () => {
   const onChange = (key: string) => {
     console.log('Selected tab:', key);
   };
 
-  const profileData = useFetchData(`merchants/profile/view`);
+  const profileData = useFetchDataSeperateLoading(`merchants/profile/view`);
 
   const profile = profileData?.data?.data as VendorProfile;
-
 
   const items: TabsProps['items'] = [
     {
@@ -23,8 +24,17 @@ const SettingPage: React.FC = () => {
       label: 'Profile Information',
       children: (
         <div className="py-6 space-y-6">
-          <WelcomeSection data={profile} isLoading={profileData.isLoading} isProfile={true} />
-          <ProfileInfoSection data={profile} isLoading={profileData.isLoading} />
+          <WelcomeSection
+            data={profile}
+            isLoading={profileData.isLoading}
+            isFetching={profileData.isFetching}
+            isProfile={true}
+            refetch={profileData.refetch}
+          />
+          <ProfileInfoSection
+            data={profile}
+            isLoading={profileData.isLoading}
+          />
         </div>
       ),
     },

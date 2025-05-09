@@ -6,7 +6,7 @@ const AuthHeader = () => {
   const { Header: AntHeader } = Layout;
   const navigate = useNavigate();
   return (
-    <AntHeader className="bg-white px-8 h-[80px] flex items-center shadow-sm">
+    <AntHeader className="!bg-white px-8 h-[80px] flex items-center shadow-sm">
       <div className="flex items-center justify-between w-full">
         <div>
           <img

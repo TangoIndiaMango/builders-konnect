@@ -41,6 +41,7 @@ interface DiscountFormProps {
   loading?: boolean;
   form: FormInstance<DiscountFormValues>;
   allProductsValue: boolean;
+  categoryValue: string;
 }
 
 const { Panel } = Collapse;
@@ -50,6 +51,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   loading,
   form,
   allProductsValue,
+  categoryValue,
 }) => {
   const discountedProducts =
     initialValues?.products?.map((product: ProductType) => product.id) || [];
@@ -68,12 +70,14 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         (product: ProductType) => product.id
       );
       setSelectedProducts(discountedProducts);
+      const startDate = initialValues?.start_date
+      const endDate = initialValues?.end_date;
       form.setFieldsValue({
         category: initialValues?.category,
         name: initialValues?.name,
         code: initialValues?.code,
-        start_date: dayjs(initialValues?.start_date, 'YYYY-MM-DD HH:mm:ss'),
-        end_date: dayjs(initialValues?.end_date, 'YYYY-MM-DD HH:mm:ss'),
+        start_date: startDate,
+        end_date: endDate,
         type: initialValues?.type,
         value: initialValues?.value,
         all_products:
@@ -156,6 +160,9 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
           label="Start Date"
           name="start_date"
           rules={[{ required: true, message: 'Please select start date' }]}
+          getValueProps={value => ({
+            value: value ? dayjs(value, 'YYYY-MM-DD HH:mm:ss') : null
+          })}
         >
           <DatePicker
             format="YYYY-MM-DD"
@@ -168,6 +175,9 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
           label="End Date"
           name="end_date"
           rules={[{ required: true, message: 'Please select end date' }]}
+          getValueProps={value => ({
+            value: value ? dayjs(value, 'YYYY-MM-DD HH:mm:ss') : null
+          })}
         >
           <DatePicker
             format="YYYY-MM-DD"
@@ -195,16 +205,18 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
           <Input type="number" placeholder="Enter value" />
         </Form.Item>
 
-        <Form.Item
-          label="Is the discount for all products"
-          name="all_products"
-          rules={[{ required: true, message: 'Please select an option' }]}
+        {categoryValue === 'products' && (
+          <Form.Item
+            label="Is the discount for all products"
+            name="all_products"
+            rules={[{ required: true, message: 'Please select an option' }]}
         >
           <Radio.Group>
             <Radio value={true}>Yes</Radio>
             <Radio value={false}>No</Radio>
-          </Radio.Group>
-        </Form.Item>
+            </Radio.Group>
+          </Form.Item>
+        )}
 
         {/* Only show product selection if not for all products */}
         {allProductsValue === false && (
