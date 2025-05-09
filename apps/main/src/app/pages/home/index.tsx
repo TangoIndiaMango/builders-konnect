@@ -13,8 +13,8 @@ const DashboardHome = () => {
       <PageIntroBanner
         actionButton={
           <Button
+            type="primary"
             icon={<PlusOutlined />}
-            className="px-4 py-2 transition-colors border border-gray-300 rounded h-fit hover:bg-gray-50"
           >
             Add Product
           </Button>

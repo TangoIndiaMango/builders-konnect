@@ -25,8 +25,8 @@ const Banner = () => {
           backgroundImage: `url(${welcomeBanner})`,
           mixBlendMode: 'overlay',
           opacity: '1',
-          backgroundSize: 'contain',
-          backgroundRepeat: 'repeat',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
         }}
       />
 
