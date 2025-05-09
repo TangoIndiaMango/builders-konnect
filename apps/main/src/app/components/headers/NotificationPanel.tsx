@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Badge, Dropdown, Menu } from "antd"; // Ensure Menu is imported
+import { Badge, Dropdown } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 
 interface Notification {
@@ -20,8 +20,8 @@ export default function NotificationPanel() {
 
   const renderNotificationList = () => (
     <div className="bg-white rounded-lg shadow-lg w-80 border border-gray-100">
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <h3 className="text-sm font-semibold text-blue-700">NOTIFICATIONS</h3>
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-[#f8fcff]">
+        <h3 className="text-sm font-semibold text-blue-700">NOTIFICATION</h3>
         <BellOutlined className="text-gray-400" />
       </div>
       <div className="max-h-80 overflow-y-auto">
@@ -29,11 +29,11 @@ export default function NotificationPanel() {
           notifications.map((notification) => (
             <div
               key={notification.id}
-              className="p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{notification.name}</p>
+                  <p className="text-sm font-normal text-gray-900">{notification.name}</p>
                   <p className="text-xs text-gray-500">{notification.email}</p>
                 </div>
                 <span className="text-xs text-gray-500">{notification.time}</span>
@@ -44,15 +44,20 @@ export default function NotificationPanel() {
           <div className="p-4 text-center text-gray-500">No new notifications</div>
         )}
       </div>
-      <div className="p-3 text-center border-t border-gray-100">
-        <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">See all</button>
+      <div className="p-4 text-center border-t border-gray-100 bg-[#f8fcff]">
+        <button className="text-base text-blue-700 hover:text-blue-900 font-medium">See all</button>
       </div>
     </div>
   );
 
   return (
     <div className="p-8">
-      <Dropdown trigger={["click"]} placement="bottomRight" overlay={<Menu>{renderNotificationList()}</Menu>}>
+      <Dropdown
+        trigger={["click"]}
+        placement="top"
+        dropdownRender={renderNotificationList}
+        arrow
+      >
         <Badge count={notifications.length} size="small">
           <button className="p-2 rounded-full hover:bg-gray-100">
             <BellOutlined style={{ fontSize: "20px" }} />

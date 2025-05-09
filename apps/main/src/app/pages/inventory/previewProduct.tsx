@@ -1,14 +1,12 @@
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Typography, message, Modal, Tag, Row, Col, Card } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import React from "react";
+import { Button, Card, Col, message, Modal, Row, Tag, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const { Title, Text, Paragraph } = Typography;
 
-interface Props {}
 
-const ProductPreview: React.FC<Props> = () => {
+const ProductPreview = () => {
 
 type Variant = {
   size?: string;
@@ -49,7 +47,7 @@ interface ProductTableData {
   const navigate = useNavigate();
   const location = useLocation();
   const product = location.state as ProductTableData;
-  
+
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
   const [productCode, setProductCode] = useState(product?.productCode || "");
@@ -211,10 +209,10 @@ interface ProductTableData {
                     <Text strong>Tags: </Text>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-1">
-                    {(typeof product.tags === 'string' 
+                    {(typeof product.tags === 'string'
                       ? product.tags.split(',').filter(tag => tag.trim())
-                      : Array.isArray(product.tags) 
-                        ? product.tags 
+                      : Array.isArray(product.tags)
+                        ? product.tags
                         : []
                     ).map((tag, index) => (
                       <Tag key={index} color="blue">
@@ -254,7 +252,7 @@ interface ProductTableData {
                                       width: "16px",
                                       height: "16px",
                                       borderRadius: "50%",
-                                      backgroundColor: getColorCode(variant.color),
+                                      backgroundColor: getColorCode(variant.color || ""),
                                       marginRight: "8px",
                                     }}
                                   />
