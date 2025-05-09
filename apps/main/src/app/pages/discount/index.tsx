@@ -2,10 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  useFetchData,
-  useGetExportData
-} from '../../../hooks/useApis';
+import { useFetchData, useGetExportData } from '../../../hooks/useApis';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 import DiscountList from '../../components/discount/DiscountList';
 import { DiscountListResponse } from './types';
@@ -55,7 +52,9 @@ const DiscountHome = () => {
     limitSize,
     setLimitSize,
   } = useTableState('discount');
-  const exportDiscount = useGetExportData(`merchants/discounts?export=${exportType}`);
+  const exportDiscount = useGetExportData(
+    `merchants/discounts?export=${exportType}`
+  );
 
   const handleExport = () => {
     exportDiscount.mutate(null as any, {
@@ -77,12 +76,10 @@ const DiscountHome = () => {
     }
   }, [exportType]);
 
-
   const filterOptions = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
   ];
-
 
   const [tab, setTab] = useState('staff');
   const discount = useFetchData(
@@ -95,16 +92,11 @@ const DiscountHome = () => {
 
   const discountListResponse: DiscountListResponse = discount?.data?.data;
 
-
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-
-
 
   const onChange = (key: string) => {
     setTab(key);
   };
-
-
 
   // const handleEditClick = (staffMember: Staff) => {
   //   setModalMode('edit');
@@ -113,45 +105,43 @@ const DiscountHome = () => {
   // };
 
   return (
-    <div>
+    <div className="">
       <PageIntroBanner
         title="Discount Management"
         description="Add discount to your business and control discount status"
         actionButton={
-
-              <Button
-                type="primary"
-                className="rounded"
-                size="large"
-                icon={<PlusOutlined />}
-                onClick={() => navigate('/pos/discounts/create')}
-              >
-                Add Discount
-              </Button>
-
+          <Button
+            type="primary"
+            className="rounded"
+            size="large"
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/pos/discounts/create')}
+          >
+            Add Discount
+          </Button>
         }
       />
 
-      <div className="px-5 bg-white">
-        <DiscountList
-          data={discountListResponse}
-          isLoading={discount?.isLoading}
-          currentPage={currentPage}
-          setPage={setPage}
-          setSearchValue={setSearch}
-          handleFilterChange={handleFilterChange}
-          filterOptions={StaffFilterOptions}
-          onExport={handleExport}
-          filterValue={filterValue ?? ''}
-          setCustomDateRange={setCustomDateRange}
-          pageSize={pageSize}
-          reset={reset}
-          updateLimitSize={setLimitSize}
-          searchValue={searchValue}
-        />
+      <div className='p-5' >
+        <div className="px-5 bg-white">
+          <DiscountList
+            data={discountListResponse}
+            isLoading={discount?.isLoading}
+            currentPage={currentPage}
+            setPage={setPage}
+            setSearchValue={setSearch}
+            handleFilterChange={handleFilterChange}
+            filterOptions={StaffFilterOptions}
+            onExport={handleExport}
+            filterValue={filterValue ?? ''}
+            setCustomDateRange={setCustomDateRange}
+            pageSize={pageSize}
+            reset={reset}
+            updateLimitSize={setLimitSize}
+            searchValue={searchValue}
+          />
+        </div>
       </div>
-
-
     </div>
   );
 };

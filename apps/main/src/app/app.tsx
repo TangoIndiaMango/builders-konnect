@@ -3,7 +3,6 @@ import ViewReview from './components/customers/VeiwReview';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
 // Auth Pages
 import AddStaffPassword from './pages/auth/add-staff-password';
->>>>>>> 1f40636b43b2269bb84f794c7b18aacfe8896aa8
 import AuthOutlet from './pages/auth/auth-outlets';
 import ChangePassword from './pages/auth/change-password';
 import CreatePassword from './pages/auth/create-vendor-account';
@@ -11,7 +10,6 @@ import ForgotPassword from './pages/auth/forgot-password';
 import Login from './pages/auth/login';
 import MultipleAccounts from './pages/auth/multiple-accounts';
 import RegisterVendor from './pages/auth/register-vendor';
-import AddStaffPassword from './pages/auth/add-staff-password';
 
 // Home
 import DashboardHome from './pages/home';
@@ -19,11 +17,11 @@ import VendorHomeOutlet from './pages/home/dashboard-outlet';
 
 // Sales
 import SalesHome from './pages/sales';
-import CreateSales from './pages/sales/create';
-import SalesViewPage from './pages/sales/view';
-import PauseSales from './pages/sales/pause-sales';
 import SalesAnalytics from './pages/sales/analytics';
+import CreateSales from './pages/sales/create';
 import SalesOutlet from './pages/sales/outlet';
+import PauseSales from './pages/sales/pause-sales';
+import SalesViewPage from './pages/sales/view';
 
 // Profile
 import VendorProfile from './pages/profile';
@@ -37,8 +35,6 @@ import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedb
 import DiscountHome from './pages/discount';
 import DiscountCreate from './pages/discount/create';
 import DiscountOutlet from './pages/discount/outlet';
-import DashboardHome from './pages/home';
-import VendorHomeOutlet from './pages/home/dashboard-outlet';
 import ProductsPage from './pages/inventory';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
@@ -53,63 +49,27 @@ import InventoryOutlet from './pages/inventory/inventory-outlet';
 import ProductPreview from './pages/inventory/previewProduct';
 import TriggerReorder from './pages/inventory/triggerReorder';
 import NotFound from './pages/NotFound';
-import VendorProfile from './pages/profile';
-import VendorProfileOutlet from './pages/profile/profile-outlet';
-import SingleStoreDetails from './pages/profile/views/single-store';
 import ReturnsPage from './pages/returns';
 import ReturnsOutlet from './pages/returns/outlet';
 import ReturnsViewPage from './pages/returns/view';
-import SalesHome from './pages/sales';
-import SalesAnalytics from './pages/sales/analytics';
-import CreateSales from './pages/sales/create';
-import SalesOutlet from './pages/sales/outlet';
-import PauseSales from './pages/sales/pause-sales';
-import SalesViewPage from './pages/sales/view';
 import SettingPage from './pages/settings';
 import SettingOutlet from './pages/settings/setting-outlet';
->>>>>>> 1f40636b43b2269bb84f794c7b18aacfe8896aa8
 import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
 
 // Inventory
-import InventoryOutlet from './pages/inventory/inventory-outlet';
-import ProductsPage from './pages/inventory';
-import Inventory from './pages/inventory/inventories';
-import EditInventoryPage from './pages/inventory/editInventorybySearch';
-import EditInventoryById from './pages/inventory/editInventory';
-import TriggerReorder from './pages/inventory/triggerReorder';
-import CreateProductBySearch from './pages/inventory/createProductBySearch';
-import CreateProduct from './pages/inventory/createProduct';
-import PreviewPage from './pages/inventory/imagePreview';
-import ProductPreview from './pages/inventory/previewProduct';
-import EditProduct from './pages/inventory/EditProduct';
-import ScanProductPage from './pages/inventory/barcodeProductAdd';
-import AddBulkProductPage from './pages/inventory/addBulkProduct';
 
 // Discounts
-import DiscountHome from './pages/discount';
-import DiscountCreate from './pages/discount/create';
-import DiscountOutlet from './pages/discount/outlet';
 
 // Customers
-import CustomersList from './pages/customers/customers-list';
-import CustomersOutlet from './pages/customers/customer-outlet';
-import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
-import ViewReview from './components/customers/VeiwReview';
 
 // Settings
-import SettingOutlet from './pages/settings/setting-outlet';
-import SettingPage from './pages/settings';
 
 // Returns
-import ReturnsOutlet from './pages/returns/outlet';
-import ReturnsPage from './pages/returns';
-import ReturnsViewPage from './pages/returns/view';
 
 // Not Found
-import NotFound from './pages/NotFound';
 const App = () => {
   return (
     <Routes>
@@ -195,7 +155,10 @@ const App = () => {
         <Route path="edit/:id" element={<EditInventoryById />} />
         <Route path="edit-product/:id" element={<EditProduct />} />
         <Route path="trigger-reorder" element={<TriggerReorder />} />
-        <Route path="create-product-by-search" element={<CreateProductBySearch />} />
+        <Route
+          path="create-product-by-search"
+          element={<CreateProductBySearch />}
+        />
         <Route path="add-product" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
         <Route path="preview-product/:id" element={<ProductPreview />} />
@@ -213,11 +176,11 @@ const App = () => {
         }
       >
         <Route index element={<SettingPage />} />
-  
+      </Route>
+
       {/* Customers */}
       <Route
         path="pos/customers"
-       <Route path="pos/customers"
         element={
           <ProtectedRoute>
             <CustomersOutlet />

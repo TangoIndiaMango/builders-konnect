@@ -103,7 +103,7 @@ const CreateSales = () => {
     { methodId: string; amount: number; balance: number }[]
   >([]);
 
-  const { mutate: checkOut, isLoading: isCheckingOut } = useCheckOut();
+  const { mutate: checkOut, isPending: isCheckingOut } = useCheckOut();
   const { data: customers, isLoading: isLoadingCustomers } = useGetCustomers();
   const discounts = useFetchData(
     'merchants/discounts?paginate=0&category=sales-orders'
@@ -297,7 +297,7 @@ const CreateSales = () => {
     discounts?.isLoading ||
     paymentMethods?.isLoading ||
     products?.isLoading ||
-    calculateAmount?.isLoading;
+    calculateAmount?.isPending;
 
   return (
     <div className="space-y-5">

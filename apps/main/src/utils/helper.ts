@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg,.gif,.webp';
+export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg,.gif,.webp,.csv,.xls,.xlsx';
 export const maxFileSize = 10 * 1024 * 1024; // 10MB
 export const getStatusColor = (status: string) => {
   const colorMap: Record<string, string> = {
