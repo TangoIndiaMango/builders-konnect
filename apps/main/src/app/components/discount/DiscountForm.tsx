@@ -111,9 +111,10 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   }
 
   return (
-    <>
+    <div className="h-screen">
       <Form
         form={form}
+
         layout="horizontal"
         initialValues={initialValues}
         onFinish={(values) => {
@@ -237,14 +238,14 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         <Form.Item name="discounted_products" noStyle>
           <Input type="hidden" />
         </Form.Item>
-      </Form>
 
-      {/* Selected products collpasable here */}
+        <div className="max-w-2xl mx-auto">
+          {/* Selected products collpasable here */}
       {searchedProducts.length > 0 && (
         <Collapse
           defaultActiveKey={['selected-products']}
           expandIconPosition="end"
-          className="p-4 mx-auto mt-6 rounded-lg bg-[#F5F5F5] md:max-w-2xl"
+          className="rounded-lg bg-[#F5F5F5]"
         >
           <Panel
             header={
@@ -256,19 +257,20 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
           >
             <List
               dataSource={searchedProducts}
+              className="max-h-[400px] overflow-y-auto custom-scrollbar bg-white"
               renderItem={(item) => (
                 <List.Item
                   actions={[
                     <span
                       key="delete"
-                      className="text-red-500 cursor-pointer"
+                      className="text-red-500 cursor-pointer flex items-center justify-end"
                       onClick={() => {
                         setProductToDelete(item);
                         setShowDeleteModal(true);
                       }}
                     >
                       <DeleteOutlined />
-                    </span>,
+                    </span>
                   ]}
                 >
                   <SingleProductItem item={item} />
@@ -278,6 +280,10 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
           </Panel>
         </Collapse>
       )}
+        </div>
+      </Form>
+
+
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -303,7 +309,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         onSelect={handleProductSelect}
         selected={selectedProducts}
       />
-    </>
+    </div>
   );
 };
 
