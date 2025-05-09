@@ -1,8 +1,10 @@
-import React from 'react';
+import { Typography } from 'antd';
+import { handleCopy } from '../../../utils/helper';
+import { CopyIcon } from '../../lib/CustomIcon';
 import { VendorProfile } from '../../pages/profile/types';
 import { SkeletonLoader } from '../common/SkeletonLoader';
-import { handleCopy } from '../../../utils/helper';
-import { CopyOutlined } from '@ant-design/icons';
+
+const Text = Typography;
 const ProfileInfoSection = ({
   data,
   isLoading,
@@ -11,7 +13,7 @@ const ProfileInfoSection = ({
   isLoading: boolean;
 }) => {
   return (
-    <div className="p-6 bg-white border rounded-md shadow-sm">
+    <div className="p-6 bg-white border border-gray-50 rounded-md shadow-sm">
       <div className="grid grid-cols-6 gap-6 text-sm text-gray-700">
         {/* Left label only */}
         <div className="col-span-1">
@@ -47,17 +49,17 @@ const ProfileInfoSection = ({
               </div>
               <div>
                 <p className="text-xs text-gray-400">User ID</p>
-                <button
+                <div
                   onClick={() =>
                     handleCopy(data?.business?.vendorID, 'Vendor ID copied!')
                   }
-                  className="flex items-start gap-3"
+                  className="flex gap-3 hover:text-blue-600 cursor-pointer"
                 >
-                  <CopyOutlined color="blue" />
-                  <h5 className="text-xs text-[#344054]">
+                  <CopyIcon color="blue" />
+                  <Text className="hover:text-blue-600 cursor-pointer">
                     {data?.business?.vendorID}
-                  </h5>
-                </button>
+                  </Text>
+                </div>
               </div>
               <div>
                 <p className="text-xs text-gray-400">Store Assigned</p>

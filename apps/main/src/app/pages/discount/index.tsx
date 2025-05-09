@@ -123,7 +123,7 @@ const DiscountHome = () => {
       />
 
       <div className='p-5' >
-        <div className="px-5 bg-white">
+        <div className="p-5 bg-white">
           <DiscountList
             data={discountListResponse}
             isLoading={discount?.isLoading}

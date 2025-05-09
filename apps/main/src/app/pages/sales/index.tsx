@@ -132,8 +132,14 @@ const SalesHome = () => {
         }
       />
 
-      <div className="px-5 bg-white">
-        <Tabs defaultActiveKey="all-sales" onChange={onChange} items={items} />
+      <div className="p-5">
+        <div className="px-5 bg-white">
+          <Tabs
+            defaultActiveKey="all-sales"
+            onChange={onChange}
+            items={items}
+          />
+        </div>
       </div>
 
       <ConfirmModal
