@@ -3,7 +3,7 @@ import SuccessModal from '../../components/common/SuccessModal';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Tabs, TabsProps } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   useCreateData,
   useFetchData,
@@ -69,7 +69,13 @@ const StaffHome = () => {
   }, [exportType]);
 
 
-  const [tab, setTab] = useState('staff');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialParams = searchParams.get('tab') || 'staff';
+  const [tab, setTab] = useState(initialParams);
+  console.log(tab)
+
+  const searchTabValue = searchValue
+
   const staff = useFetchData(
     `merchants/staff?paginate=1&page=${currentPage ?? 1}&status=${
       filterKey === 'status' ? filterValue : ''
@@ -103,6 +109,7 @@ const StaffHome = () => {
 
   const onChange = (key: string) => {
     setTab(key);
+    setSearchParams({ tab: key });
   };
   const baseUrl = window.location.origin;
   const handleStaffSubmit = (values: any) => {
@@ -234,7 +241,7 @@ const StaffHome = () => {
 
       <div className='p-5'>
       <div className="p-5 bg-white">
-        <Tabs defaultActiveKey="all-sales" onChange={onChange} items={items} />
+        <Tabs defaultActiveKey={tab} onChange={onChange} items={items} />
       </div>
       </div>
 

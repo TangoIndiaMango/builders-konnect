@@ -33,6 +33,8 @@ const ViewStaffDetails = () => {
     lastActive: getStaff?.data?.data?.last_active,
     status: getStaff?.data?.data?.status || '--',
     staffID: getStaff?.data?.data?.staffID || '--',
+    store_id: getStaff?.data?.data?.store_id || '--',
+    role_id: getStaff?.data?.data?.role_id || '--',
   };
 
   const [status, setStatus] = React.useState<'Active' | 'Inactive'>(
