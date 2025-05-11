@@ -37,10 +37,10 @@ const DashboardHome = () => {
     ? `merchants/dashboard/customer-traffic?${queryString}`
     : 'merchants/dashboard/customer-traffic?location_id=l_4XQQZ8I7AJKVdjxc_VgWA';
 
-  const statsData = useFetchSingleData(url, !!selectedStore);
-  const revenueData = useFetchSingleData(revenueUrl, !!selectedStore);
-  const productData = useFetchSingleData(productUrl, !!selectedStore);
-  const customerData = useFetchSingleData(customerUrl, !!selectedStore);
+  const statsData = useFetchData(url);
+  const revenueData = useFetchData(revenueUrl);
+  const productData = useFetchData(productUrl);
+  const customerData = useFetchData(customerUrl);
   // console.log(customerData?.data, 'customerData');
   const handleReset = () => {
     setSelectedStore('');

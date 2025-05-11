@@ -7,7 +7,7 @@ import {
   TeamOutlined,
 } from '@ant-design/icons';
 import { Button, Select, Skeleton } from 'antd';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useFetchData, useFetchSingleData } from '../../../hooks/useApis';
 import CardWithFilter from '../common/CardWithFilter';
 import StatsCard from '../common/StatsCard';
@@ -36,32 +36,35 @@ const Stats = ({
   reset,
   setSelectedStore,
 }: StatsProps) => {
-  const statsListData = [
-    {
-      title: 'Total Products',
-      value: statsData?.data?.data?.total_products ?? 0,
-      color: 'blue' as const,
-      icon: <ShoppingCartOutlined style={{ fontSize: 16 }} />,
-    },
-    {
-      title: 'Revenue Generated',
-      value: formatBalance(statsData?.data?.data?.revenue_generated ?? 0),
-      color: 'pink' as const,
-      icon: <DollarOutlined style={{ fontSize: 16 }} />,
-    },
-    {
-      title: 'Total Sales Order',
-      value: formatBalance(statsData?.data?.data?.total_sales_orders ?? 0),
-      color: 'purple' as const,
-      icon: <ShoppingOutlined style={{ fontSize: 16 }} />,
-    },
-    {
-      title: 'Total Customers',
-      value: statsData?.data?.data?.total_customers ?? 0,
-      color: 'yellow' as const,
-      icon: <TeamOutlined style={{ fontSize: 16 }} />,
-    },
-  ];
+  const statsListData = useMemo(
+    () => [
+      {
+        title: 'Total Products',
+        value: statsData?.data?.data?.total_products ?? 0,
+        color: 'blue' as const,
+        icon: <ShoppingCartOutlined style={{ fontSize: 16 }} />,
+      },
+      {
+        title: 'Revenue Generated',
+        value: statsData?.data?.data?.revenue_generated ?? 0,
+        color: 'pink' as const,
+        icon: <DollarOutlined style={{ fontSize: 16 }} />,
+      },
+      {
+        title: 'Total Sales Order',
+        value: statsData?.data?.data?.total_sales_orders ?? 0,
+        color: 'purple' as const,
+        icon: <ShoppingOutlined style={{ fontSize: 16 }} />,
+      },
+      {
+        title: 'Total Customers',
+        value: statsData?.data?.data?.total_customers ?? 0,
+        color: 'yellow' as const,
+        icon: <TeamOutlined style={{ fontSize: 16 }} />,
+      },
+    ],
+    [statsData]
+  );
 
   return (
     <CardWithFilter

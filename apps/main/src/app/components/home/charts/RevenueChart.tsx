@@ -14,7 +14,7 @@ const RevenueChart = ({ data }: { data: any }) => {
 
     width: containerWidth || undefined, // Use container width
     padding: [40, 20, 40, 40], // [top, right, bottom, left]
-    xField: 'year',
+    xField: 'month',
     yField: 'value',
     smooth: true,
     xAxis: {

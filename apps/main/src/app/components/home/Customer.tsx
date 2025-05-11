@@ -10,6 +10,7 @@ import CustomerTrafficChart from './charts/CustomerTrafficChart';
 import { customerData as dummyData } from './constant';
 import { useNavigate } from 'react-router-dom';
 import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
+import { monthAbbreviation } from '../../../utils/helper';
 const data = [
   { name: 'Cement', sales: 200, value: 30, amount: 4544 },
   { name: 'Paint', sales: 126, value: 25, amount: 4544 },
@@ -70,6 +71,11 @@ const Customer = ({
   setSelectedStore,
   reset,
 }: CustomerProps) => {
+  const customerRes = customerData?.data?.data;
+  const cusData = Object.entries(customerRes).map(([month, value]) => ({
+    month: monthAbbreviation(month),
+    value: value,
+  }));
   const navigate = useNavigate();
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
@@ -102,11 +108,11 @@ const Customer = ({
             </div>
           }
         >
-          {dummyData?.length > 0 ? (
+          {cusData?.length > 0 ? (
             <div className="space-y-5">
               <div>
                 {/* <h3 className="text-lg font-semibold">Customer Traffic</h3> */}
-                <CustomerTrafficChart data={dummyData} />
+                <CustomerTrafficChart data={cusData} />
               </div>
             </div>
           ) : (

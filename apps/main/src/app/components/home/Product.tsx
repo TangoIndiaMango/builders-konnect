@@ -39,21 +39,14 @@ const products = [
   },
 ];
 
-const statsData = [
-  {
-    title: 'Total Products',
-    value: 0,
-    color: 'blue' as const,
-    icon: <ShoppingCartOutlined style={{ fontSize: 16 }} />,
-  },
-  {
-    title: 'Revenue Generated',
-    value: 0,
-    color: 'pink' as const,
-    icon: <DollarOutlined style={{ fontSize: 16 }} />,
-  },
-];
 
+
+export interface ProductOverview {
+  products_count: number;
+  products_value: string;
+  sales: string;
+  top_categories: any;
+}
 interface ProductProps {
   productData: any;
   storeList: any;
@@ -69,7 +62,23 @@ const Product = ({
   setSelectedStore,
   reset,
 }: ProductProps) => {
+  const productOverview = productData?.data?.data as ProductOverview;
   const navigate = useNavigate();
+
+  const statsData = [
+    {
+      title: 'Total Products',
+      value: productOverview?.products_count || 0,
+      color: 'blue' as const,
+      icon: <ShoppingCartOutlined style={{ fontSize: 16 }} />,
+    },
+    {
+      title: 'Revenue Generated',
+      value: productOverview?.products_value || 0,
+      color: 'pink' as const,
+      icon: <DollarOutlined style={{ fontSize: 16 }} />,
+    },
+  ];
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       <div className="md:col-span-2">
