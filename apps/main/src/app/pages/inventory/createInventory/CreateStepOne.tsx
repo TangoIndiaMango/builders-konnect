@@ -24,6 +24,7 @@ interface CreateStepOneProps {
   additionType: string;
   measuringUnits: any[];
   handleMeasuringUnitChange: (value: string) => void;
+  isEdit: boolean;
 }
 
 const CreateStepOne = ({
@@ -44,24 +45,30 @@ const CreateStepOne = ({
   additionType,
   measuringUnits,
   handleMeasuringUnitChange,
+  isEdit,
 }: CreateStepOneProps) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [media, setMedia] = useState<string[]>([]);
+  const [formImages, setFormImages] = useState<any[]>([]);
 
-  // Sync fileList with form value when it changes (e.g., after async setFieldsValue)
+  // Update this effect to properly sync with form
   useEffect(() => {
     const images = form.getFieldValue('productImages');
-    if (images && Array.isArray(images) && images.length > 0) {
-      setFileList(images);
+    setFormImages(images || []);
+  }, [form]);
+
+  // Update this effect to handle fileList
+  useEffect(() => {
+    if (isEdit && formImages && Array.isArray(formImages) && formImages.length > 0) {
+      setFileList(formImages);
     }
-  }, [form.getFieldValue('productImages')]);
+  }, [formImages, isEdit]);
 
   // Handle file changes
   const handleChange = async ({ fileList: newFileList }) => {
     setFileList(newFileList);
-    console.log(newFileList);
     const mediaArr = await Promise.all(
       newFileList.map(async (file) => {
         if (file.url && file.url.startsWith('http')) {
@@ -74,17 +81,26 @@ const CreateStepOne = ({
       })
     );
     setMedia(mediaArr.filter(Boolean));
+
+    // Update form value
+    form.setFieldsValue({
+      productImages: newFileList,
+    });
   };
+
+  console.log(form.getFieldValue("productImages"))
 
   // Keep form in sync with fileList (for submit)
   useEffect(() => {
-    form.setFieldsValue({
-      productImages: fileList,
-    });
-  }, [fileList, form]);
+    if (isEdit) {
+      form.setFieldsValue({
+        productImages: fileList,
+      });
+    }
+  }, [fileList, form, isEdit]);
 
-  console.log('fileList', fileList);
-  console.log('form.getFieldValue(productImages)', form.getFieldValue('productImages'));
+  // console.log('fileList', fileList);
+  // console.log('form.getFieldValue(productImages)', form.getFieldValue('productImages'));
 
   // For preview modal
   const handlePreview = async (file) => {

@@ -11,12 +11,12 @@ type InventoryAttribute = {
   category: string;
 };
 
-interface ProductOptionModalProps {
+export interface ProductOptionModalProps {
   isVariantModalVisible: boolean;
   setIsVariantModalVisible: (value: boolean) => void;
   variantAttributesData: any[];
-  setVariants: (value: any[]) => void;
-  variants: any[];
+  setVariants: (value: any) => void;
+  variants: any;
   selectedCategoryId: string;
   setIsColorModalVisible: (value: boolean) => void;
   editingVariantIndex: number | null;

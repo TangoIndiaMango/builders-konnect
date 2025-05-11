@@ -4,15 +4,27 @@ import { Select } from 'antd';
 
 import { Form } from 'antd';
 import MultiVariants from '../components/MultiVariants';
-interface CreateStepTwoProps {
+import { ProductOptionModalProps } from './ProductOptionModal';
+interface CreateStepTwoProps extends ProductOptionModalProps {
   measuringUnits: any[];
   handleMeasuringUnitChange: (value: string) => void;
   additionType: string; //multiple or single
+  isEdit: boolean;
 }
 const CreateStepTwo = ({
   measuringUnits,
   handleMeasuringUnitChange,
   additionType,
+  isEdit,
+  isVariantModalVisible,
+  setIsVariantModalVisible,
+  variantAttributesData,
+  setVariants,
+  variants,
+  selectedCategoryId,
+  setIsColorModalVisible,
+  editingVariantIndex,
+  setEditingVariantIndex,
 }: CreateStepTwoProps) => {
   return (
     <div>
@@ -94,10 +106,18 @@ const CreateStepTwo = ({
           </Form.Item>
         </>
       ) : (
-        <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-white py-6">
-          <div className="max-w-[1400px] mx-auto">
-            <MultiVariants />
-          </div>
+        <div className="xl:w-[80vw] mx-auto w-full relative">
+          <MultiVariants
+            isVariantModalVisible={isVariantModalVisible}
+            setIsVariantModalVisible={setIsVariantModalVisible}
+            variantAttributesData={variantAttributesData}
+            setVariants={setVariants}
+            variants={variants}
+            selectedCategoryId={selectedCategoryId}
+            setIsColorModalVisible={setIsColorModalVisible}
+            editingVariantIndex={editingVariantIndex}
+            setEditingVariantIndex={setEditingVariantIndex}
+          />
         </div>
       )}
       <Form.Item

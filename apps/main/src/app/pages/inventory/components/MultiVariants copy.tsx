@@ -1,11 +1,4 @@
-import {
-  DeleteOutlined,
-  EyeOutlined,
-  UploadOutlined,
-  EditOutlined,
-  DollarOutlined,
-  NumberOutlined,
-} from '@ant-design/icons';
+import { DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons';
 import {
   Button,
   Image,
@@ -19,9 +12,9 @@ import {
 } from 'antd';
 import { useState } from 'react';
 import { beforeUpload } from '../../../../utils/helper';
-import { DataType } from '../../../components/common/Table/Table';
 import { ProductOptionModalProps } from '../createInventory/ProductOptionModal';
 import ProductOptionModalMulti from '../createInventory/ProductOptionModalMulti';
+import { DataType } from '../../../components/common/Table/Table';
 
 const generateSKU = () => {
   const timestamp = Date.now().toString(36);
@@ -47,26 +40,15 @@ const MultiVariants = ({
   const [priceModal, setPriceModal] = useState({ open: false, value: '' });
   const [qtyModal, setQtyModal] = useState({ open: false, value: '' });
   const [tempImages, setTempImages] = useState<any[]>([]); // For modal editing
+  const [editVariantModal, setEditVariantModal] = useState(false);
   const [multiOptionModalOpen, setMultiOptionModalOpen] = useState(false);
 
   // Handle input change for a specific row/column
   const handleInputChange = (value: string, rowIdx: number, key: string) => {
-    console.log('Value', value);
-    console.log('Row Index', rowIdx);
-    console.log('Key', key);
     const newVariants = [...variants];
-    newVariants[rowIdx][0][key] = value;
-    setVariants(newVariants);
-  };
-
-  const handleAttributeChange = (
-    value: string,
-    rowIdx: number,
-    attrId: string
-  ) => {
-    const newVariants = [...variants];
-    const attr = newVariants[rowIdx][0].attributes.find((a) => a.id === attrId);
-    if (attr) attr.value = value;
+    newVariants[rowIdx][key] = value;
+    // Auto-generate SKU if relevant fields are filled
+    newVariants[rowIdx].sku = generateSKU();
     setVariants(newVariants);
   };
 
@@ -74,7 +56,7 @@ const MultiVariants = ({
   const handleAddVariant = () => {
     // Filter out incomplete rows
     const validVariants = variants.filter(
-      (v) => v[0] && v[0].size && v[0].finishType && v[0].color && v[0].sku
+      (v) => v.size && v.finishType && v.color && v.sku
     );
     if (validVariants.length === 0) {
       message.warning('Please fill in at least one complete variant.');
@@ -89,24 +71,20 @@ const MultiVariants = ({
 
   // Open modal and load current images
   const openImageModal = (rowIdx) => {
-    setTempImages(variants[rowIdx][0]?.images || []);
+    setTempImages(variants[rowIdx]?.images || []);
     setImageModal({ open: true, rowIdx });
   };
 
-  const handleEditVariant = () => {
-    if (selectedRowKeys.length !== 1) {
-      message.warning('Please select exactly one variant to edit.');
-      return;
-    }
-    setEditingVariantIndex(selectedRowKeys[0]);
-    setMultiOptionModalOpen(true);
+  const handleEditVariant = (values) => {
+    setVariants(values);
+    setEditVariantModal(false);
   };
 
   // Save images to variant
   const handleSaveImages = () => {
     setVariants((prev: any) =>
       prev.map((v, idx) =>
-        idx === imageModal.rowIdx ? { ...v[0], images: tempImages } : v
+        idx === imageModal.rowIdx ? { ...v, images: tempImages } : v
       )
     );
     setImageModal({ open: false, rowIdx: null });
@@ -133,123 +111,115 @@ const MultiVariants = ({
 
   // Price and Quantity Modals
   const handleBulkUpdate = (field, value) => {
-    setVariants(variants.map((v, idx) =>
-      selectedRowKeys.includes(idx)
-        ? { ...v, [field]: value, attributes: [...v.attributes] }
-        : v
-    ));
+    setVariants((prev) =>
+      prev.map((v, idx) =>
+        selectedRowKeys.includes(idx) ? { ...v, [field]: value } : v
+      )
+    );
   };
 
-  const handleMultiOptionSave = (updatedVariant) => {
-    if (editingVariantIndex !== null) {
-      // Edit mode: replace the variant at the index
-      setVariants(variants.map((v, idx) =>
-        idx === editingVariantIndex ? updatedVariant[0] : v
-      ));
-    } else {
-      // Add mode: append the new variant
-      setVariants([...variants, updatedVariant[0]]);
-    }
+  // When modal saves, update variants
+  const handleMultiOptionSave = (combinations: any[]) => {
+    // Add default fields to each combination
+    const newVariants = combinations.map((combo) => ({
+      ...combo,
+      sku: generateSKU(),
+      costPrice: '',
+      sellingPrice: '',
+      quantity: '',
+      reorderQty: '',
+      images: [],
+    }));
+    setVariants(newVariants);
     setMultiOptionModalOpen(false);
-    setEditingVariantIndex(null);
   };
 
-  const handleDeleteVariants = () => {
-    setVariants(variants.filter((_, idx) => !selectedRowKeys.includes(idx)));
-    setSelectedRowKeys([]);
-  };
-
-  console.log('Variants', variants);
-
-  // Get attribute columns from the first variant. Just so columns are consistent
-  const attributeColumns =
-    variants[0]?.attributes?.map((attr) => ({
-      key: attr.id,
+  const columns = [
+    // Dynamic attribute columns first
+    ...variantAttributesData.map((attr) => ({
       title: attr.attribute,
       dataIndex: attr.id,
-      render: (_, record, rowIdx) => {
-        const attrObj = record.attributes.find((a) => a.id === attr.id);
-        return (
-          <Input
-            className="w-full"
-            disabled
-            value={attrObj?.value || ''}
-            placeholder={`e.g. ${attr.value || ''}`}
-          />
-        );
+      render: (text, record, rowIdx) => (
+        <Input
+          className="!w-[200px]"
+          value={text}
+          onChange={(e) => handleInputChange(e.target.value, rowIdx, attr.id)}
+          placeholder={`e.g. ${attr.possible_values?.[0] || ''}`}
+        />
+      ),
+    })),
+    // Default columns last
+    ...[
+      {
+        title: 'Generated SKU',
+        dataIndex: 'sku',
+        render: (text) => <Input value={text} readOnly />,
       },
-    })) || [];
-
-  const metaColumns = [
-    {
-      title: 'Generated SKU',
-      dataIndex: 'sku',
-      render: (_, record) => <Input value={record.sku} readOnly />,
-    },
-    {
-      title: 'Cost Price',
-      dataIndex: 'costPrice',
-      render: (_, record, rowIdx) => (
-        <Input
-          value={record.costPrice}
-          onChange={(e) =>
-            handleInputChange(e.target.value, rowIdx, 'costPrice')
-          }
-          placeholder="e.g. 25000"
-        />
-      ),
-    },
-    {
-      title: 'Selling Price',
-      dataIndex: 'sellingPrice',
-      render: (_, record, rowIdx) => (
-        <Input
-          value={record.sellingPrice}
-          onChange={(e) =>
-            handleInputChange(e.target.value, rowIdx, 'sellingPrice')
-          }
-          placeholder="e.g. 25000"
-        />
-      ),
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      render: (_, record, rowIdx) => (
-        <Input
-          value={record.quantity}
-          onChange={(e) =>
-            handleInputChange(e.target.value, rowIdx, 'quantity')
-          }
-          placeholder="e.g. 100"
-        />
-      ),
-    },
-    {
-      title: 'Reorder Quantity',
-      dataIndex: 'reorderQty',
-      render: (_, record, rowIdx) => (
-        <Input
-          value={record.reorderQty}
-          onChange={(e) =>
-            handleInputChange(e.target.value, rowIdx, 'reorderQty')
-          }
-          placeholder="e.g. 10"
-        />
-      ),
-    },
-    {
-      title: 'Option Image',
-      dataIndex: 'images',
-      render: (_, record, rowIdx) => (
-        <Button type="link" onClick={() => openImageModal(rowIdx)}>
-          {(record.images || []).length > 0 ? 'View Images' : 'Add Image'}
-        </Button>
-      ),
-    },
+      {
+        title: 'Cost Price',
+        dataIndex: 'costPrice',
+        render: (text, record, rowIdx) => (
+          <Input
+            value={text}
+            onChange={(e) =>
+              handleInputChange(e.target.value, rowIdx, 'costPrice')
+            }
+            placeholder="e.g. 25000"
+          />
+        ),
+      },
+      {
+        title: 'Selling Price',
+        dataIndex: 'sellingPrice',
+        render: (text, record, rowIdx) => (
+          <Input
+            value={text}
+            onChange={(e) =>
+              handleInputChange(e.target.value, rowIdx, 'sellingPrice')
+            }
+            placeholder="e.g. 25000"
+          />
+        ),
+      },
+      {
+        title: 'Quantity',
+        dataIndex: 'quantity',
+        render: (text, record, rowIdx) => (
+          <Input
+            value={text}
+            onChange={(e) =>
+              handleInputChange(e.target.value, rowIdx, 'quantity')
+            }
+            placeholder="e.g. 100"
+          />
+        ),
+      },
+      {
+        title: 'Reorder Quantity',
+        dataIndex: 'reorderQty',
+        render: (text, record, rowIdx) => (
+          <Input
+            value={text}
+            onChange={(e) =>
+              handleInputChange(e.target.value, rowIdx, 'reorderQty')
+            }
+            placeholder="e.g. 10"
+          />
+        ),
+      },
+      {
+        title: 'Option Image',
+        dataIndex: 'images',
+        render: (_, record, rowIdx) => (
+          <Button type="link" onClick={() => openImageModal(rowIdx)}>
+            {(variants[rowIdx]?.images || []).length > 0
+              ? 'View Images'
+              : 'Add Image'}
+          </Button>
+        ),
+      },
+    ],
   ];
-
-  const columns = [...attributeColumns, ...metaColumns];
 
   const rowSelection: TableProps<DataType>['rowSelection'] = {
     selectedRowKeys,
@@ -262,43 +232,46 @@ const MultiVariants = ({
   };
 
   return (
-    <div className="p-4 w-full mx-auto space-y-4">
-      {/* Bulk Actions */}
-      <div className=" flex flex-wrap gap-2">
+    <div className="p-4 w-full">
+      <Space style={{ marginBottom: 16 }}>
         <Button type="primary" onClick={() => setMultiOptionModalOpen(true)}>
-          Add Variant
+          Edit Variants
         </Button>
+      </Space>
 
+      {/* Bulk Actions */}
+      <Space className="my-4">
         <Button
-          icon={<EditOutlined />}
-          onClick={handleEditVariant}
-          disabled={selectedRowKeys.length !== 1}
+          onClick={() => setMultiOptionModalOpen(true)}
+          // disabled={selectedRowKeys.length === 0}
         >
-          <span className="hidden md:inline">Edit variant</span>
+          Edit variant
         </Button>
         <Button
           danger
-          icon={<DeleteOutlined />}
-          onClick={handleDeleteVariants}
+          onClick={() => {
+            setVariants((prev: any) =>
+              prev.filter((_, idx) => !selectedRowKeys.includes(idx))
+            );
+            setSelectedRowKeys([]);
+          }}
           disabled={selectedRowKeys.length === 0}
         >
-          <span className="hidden md:inline">Delete variant</span>
+          Delete variant
         </Button>
         <Button
-          icon={<DollarOutlined />}
           onClick={() => setPriceModal({ open: true, value: '' })}
           disabled={selectedRowKeys.length === 0}
         >
-          <span className="hidden md:inline">Input price</span>
+          Input price
         </Button>
         <Button
-          icon={<NumberOutlined />}
           onClick={() => setQtyModal({ open: true, value: '' })}
           disabled={selectedRowKeys.length === 0}
         >
-          <span className="hidden md:inline">Input Quantity</span>
+          Input Quantity
         </Button>
-      </div>
+      </Space>
 
       {/* Variants Table */}
       <Table
@@ -306,10 +279,12 @@ const MultiVariants = ({
         columns={columns}
         dataSource={variants}
         pagination={false}
-        scroll={{ x: 'max-content' }}
-        rowKey={(_, idx: any) => idx}
-        className="w-full !min-h-[200px]"
+        scroll={{ x: true }}
+        rowKey={record => record.id || record.sku || record.key}
+        className="w-full"
+
       />
+
       {/* Option Image Modal */}
       <Modal
         open={imageModal.open}

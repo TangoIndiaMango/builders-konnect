@@ -75,6 +75,7 @@ const CreateProduct = () => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
   const { id } = useParams();
+  const isEdit = id ? true : false;
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Category[]>([]);
   const [productTypes, setProductTypes] = useState<Category[]>([]);
@@ -458,6 +459,7 @@ const CreateProduct = () => {
                   additionType === 'multiple' ? measuringUnits : []
                 }
                 handleMeasuringUnitChange={handleMeasuringUnitChange}
+                isEdit={isEdit}
               />
             )}
 
@@ -466,6 +468,16 @@ const CreateProduct = () => {
                 additionType={additionType}
                 measuringUnits={measuringUnits}
                 handleMeasuringUnitChange={handleMeasuringUnitChange}
+                isEdit={isEdit}
+                isVariantModalVisible={isVariantModalVisible}
+                setIsVariantModalVisible={setIsVariantModalVisible}
+                variantAttributesData={variantAttributesData}
+                setVariants={setVariants}
+                variants={variants}
+                selectedCategoryId={selectedCategoryId}
+                setIsColorModalVisible={setIsColorModalVisible}
+                editingVariantIndex={editingVariantIndex}
+                setEditingVariantIndex={setEditingVariantIndex}
               />
             )}
           </Form>
