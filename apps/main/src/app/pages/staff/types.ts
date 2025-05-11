@@ -11,6 +11,8 @@ export interface Staff {
   last_active: string;
   location_ids?: string[];
   role_id?: number;
+  store_id?: any;
+  store?: any;
 }
 
 export interface StaffStats {

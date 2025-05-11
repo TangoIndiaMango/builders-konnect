@@ -100,3 +100,10 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #bfbfbf;
 }
+
+.table-wrapper {
+  width: 80vw;
+  margin-left: -24px;
+  padding-right: 24px;
+  overflow-x: auto;
+}

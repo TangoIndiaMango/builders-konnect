@@ -154,3 +154,22 @@ export const getBase64 = (file: FileType): Promise<string> =>
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = (error) => reject(error);
   });
+
+
+export const monthAbbreviation = (month: string) => {
+  const monthMap = {
+    'January': 'Jan',
+    'February': 'Feb',
+    'March': 'Mar',
+    'April': 'Apr',
+    'May': 'May',
+    'June': 'Jun',
+    'July': 'Jul',
+    'August': 'Aug',
+    'September': 'Sep',
+    'October': 'Oct',
+    'November': 'Nov',
+    'December': 'Dec',
+  };
+  return monthMap[month] || month;
+};

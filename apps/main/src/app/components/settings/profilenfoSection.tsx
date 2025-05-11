@@ -3,13 +3,14 @@ import { handleCopy } from '../../../utils/helper';
 import { CopyIcon } from '../../lib/CustomIcon';
 import { VendorProfile } from '../../pages/profile/types';
 import { SkeletonLoader } from '../common/SkeletonLoader';
+import { StaffProfile } from '../../pages/settings/types';
 
 const Text = Typography;
 const ProfileInfoSection = ({
   data,
   isLoading,
 }: {
-  data: VendorProfile;
+  data: StaffProfile;
   isLoading: boolean;
 }) => {
   return (
@@ -29,15 +30,15 @@ const ProfileInfoSection = ({
             <div className="space-y-2">
               <div>
                 <p className="text-xs text-gray-400">Name</p>
-                <p className="font-medium">{data?.personal?.name}</p>
+                <p className="font-medium">{data?.name}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-400">Phone number</p>
-                <p className="font-medium">{data?.business?.phone}</p>
+                <p className="font-medium">{data?.phone}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-400">Role</p>
-                <p className="font-medium">{data?.business?.category}</p>
+                <p className="font-medium">{data?.role}</p>
               </div>
             </div>
 
@@ -45,26 +46,24 @@ const ProfileInfoSection = ({
             <div className="space-y-2">
               <div>
                 <p className="text-xs text-gray-400">Email</p>
-                <p className="font-medium">{data?.personal?.email}</p>
+                <p className="font-medium">{data?.email}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-400">User ID</p>
                 <div
-                  onClick={() =>
-                    handleCopy(data?.business?.vendorID, 'Vendor ID copied!')
-                  }
+                  onClick={() => handleCopy(data?.staffID, 'Staff ID copied!')}
                   className="flex gap-3 hover:text-blue-600 cursor-pointer"
                 >
                   <CopyIcon color="blue" />
                   <Text className="hover:text-blue-600 cursor-pointer">
-                    {data?.business?.vendorID}
+                    {data?.staffID}
                   </Text>
                 </div>
               </div>
               <div>
                 <p className="text-xs text-gray-400">Store Assigned</p>
                 <span className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full">
-                  {data?.business?.name}
+                  {data?.store}
                 </span>
               </div>
             </div>

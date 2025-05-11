@@ -8,15 +8,16 @@ import WelcomeSection from '../../components/profile/WelcomeSection';
 import ProfileInfoSection from '../../components/settings/profilenfoSection';
 import { VendorProfile } from '../profile/types';
 import NotificationList from './views/NotificationList';
+import { StaffProfile } from './types';
 
 const SettingPage: React.FC = () => {
   const onChange = (key: string) => {
     console.log('Selected tab:', key);
   };
 
-  const profileData = useFetchDataSeperateLoading(`merchants/profile/view`);
+  const profileData = useFetchDataSeperateLoading(`merchants/staff/get/profile`);
 
-  const profile = profileData?.data?.data as VendorProfile;
+  const profile = profileData?.data?.data as StaffProfile;
 
   const items: TabsProps['items'] = [
     {

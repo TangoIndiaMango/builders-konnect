@@ -8,7 +8,7 @@ const CustomerTrafficChart = ({ data }: { data: any }) => {
   const { containerRef, containerWidth } = useResizeContainer();
   const config: ColumnConfig = {
     data,
-    xField: 'year',
+    xField: 'month',
     yField: 'value',
     colorField: 'type',
     // color: ({ type }: { type: string }) => {
@@ -19,7 +19,7 @@ const CustomerTrafficChart = ({ data }: { data: any }) => {
     //   };
     //   return colorMap[type] || '#003399'; // default color if type not found
     // },
-    color: ['#003399', '#2E8AFA', '#8ACCFF'],
+    color: ['#8ACCFF'],
     stack: true,
     tooltip: {
       customContent: (title: any, items: any) => {

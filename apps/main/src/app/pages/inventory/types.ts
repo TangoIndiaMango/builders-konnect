@@ -51,4 +51,27 @@ export interface ProductData {
   primary_media_url: string;
   media: string[];
   totalPrice: number;
+
+}
+
+export interface SingleProductResponse {
+  id: string;
+  name: string;
+  SKU: string;
+  ean: string | null;
+  category: string;
+  subcategory: string;
+  product_type: string;
+  retail_price: string;
+  cost_price: string;
+  metadata: any;
+  date_added: string;
+  description: string;
+  tags: string;
+  status: string;
+  quantity: number;
+  measurement_unit: string;
+  reorder_value: string;
+  primary_media_url: string;
+  media: string[];
 }

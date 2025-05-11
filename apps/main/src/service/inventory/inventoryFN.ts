@@ -97,10 +97,10 @@ export const useUpdateProduct = (id: string, data: Partial<Product>) => {
   })
 }
 
-export const useDeleteProduct = (id: string) => {
+export const useDeleteProduct = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => deleteProduct(id),
+    mutationFn: (id: string) => deleteProduct(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] })
     },

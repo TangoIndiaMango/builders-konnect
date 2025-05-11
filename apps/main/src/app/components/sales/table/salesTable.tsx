@@ -14,6 +14,7 @@ type SalesOrderWithKey = SalesOrder & DataType;
 
 interface OrdersTableProps extends DataTableProps {
   data: SalesOrder[];
+  withPagination?: boolean;
 }
 
 export const OrdersTable = ({
@@ -25,6 +26,7 @@ export const OrdersTable = ({
   perPage,
   showCheckbox = true,
   updateLimitSize,
+  withPagination = true,
 }: OrdersTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as SalesOrderWithKey[],
@@ -125,6 +127,7 @@ export const OrdersTable = ({
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
         scroll={{ x: '1000px' }}
+        showPagination={withPagination}
       />
     </div>
   );

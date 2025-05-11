@@ -58,6 +58,7 @@ import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
+import MultiVariants from './pages/inventory/components/MultiVariants';
 
 // Inventory
 
@@ -160,10 +161,12 @@ const App = () => {
           element={<CreateProductBySearch />}
         />
         <Route path="add-product" element={<CreateProduct />} />
+        <Route path="product-edit/:id" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
         <Route path="preview-product/:id" element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage />} />
+        <Route path="multi" element={<MultiVariants />} />
       </Route>
 
       {/* Settings */}

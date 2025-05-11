@@ -1,8 +1,12 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, Dropdown, MenuProps, Modal, message } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFetchData, useGetExportData } from '../../../hooks/useApis';
+import {
+  useDeleteData,
+  useFetchData,
+  useGetExportData,
+} from '../../../hooks/useApis';
 import { useTableState } from '../../../hooks/useTable';
 import { ProductStats } from '../../../service/inventory/inventory.types';
 import { exportCsvFromString, formatBalance } from '../../../utils/helper';
@@ -19,6 +23,7 @@ import { PaginatedResponse } from '../../types/paginatedData';
 import TableWrapper from '../../components/common/Table/TableWrapper';
 import { filterOptions } from '../../lib/constant';
 import DatePickerComp from '../../components/date/DatePickerrComp';
+import { useDeleteProduct } from '../../../service/inventory/inventoryFN';
 
 const ProductsPage = () => {
   // const [currentPage, setCurrentPage] = useState(1);
@@ -101,6 +106,10 @@ const ProductsPage = () => {
     }`
   );
 
+  const [productId, setProductId] = useState();
+
+  const deleteProduct = useDeleteProduct();
+
   const stats = products?.data?.data?.stats as ProductStats;
   const productsData = products?.data?.data
     ?.data as PaginatedResponse<ProductTableData>;
@@ -149,7 +158,7 @@ const ProductsPage = () => {
   const navigate = useNavigate();
 
   const handleEdit = (record: ProductTableData) => {
-    navigate(`/pos/inventory/edit-product/${record.id}`, { state: record });
+    navigate(`/pos/inventory/product-edit/${record.id}`, { state: record });
   };
 
   const handleDelete = (record: ProductTableData) => {
@@ -159,15 +168,32 @@ const ProductsPage = () => {
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
+      okButtonProps: {
+        loading: deleteProduct.isPending,
+        disabled: deleteProduct.isPending,
+      },
+      centered: true,
+      styles: {
+        content: {
+          minWidth: 400,
+          borderRadius: '0px',
+        },
+      },
       onOk: async () => {
         try {
-          // TODO: Implement delete API call
-          message.success('Product deleted successfully');
-          // Refresh the products list
-          products.refetch();
+          await deleteProduct.mutateAsync(record.id, {
+            onSuccess: () => {
+              message.success('Product deleted successfully');
+              products.refetch();
+            },
+            onError: (error) => {
+              // console.log(error);
+              message.error(error?.message || 'Failed to delete product');
+            },
+          });
         } catch (err) {
           console.error('Failed to delete product:', err);
-          message.error('Failed to delete product');
+          // message.error('Failed to delete product');
         }
       },
     });
@@ -213,7 +239,8 @@ const ProductsPage = () => {
         </div>
       </div>
 
-      <div className="p-10 space-y-3 bg-white">
+     <div className='p-5'>
+     <div className="p-5 space-y-3 bg-white">
         <DisplayHeader
           title="All Products"
           description="You're viewing all products below."
@@ -288,6 +315,7 @@ const ProductsPage = () => {
           />
         </TableWrapper>
       </div>
+     </div>
     </div>
   );
 };

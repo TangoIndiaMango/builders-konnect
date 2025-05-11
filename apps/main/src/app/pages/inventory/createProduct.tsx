@@ -1,37 +1,27 @@
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
+  Button,
   Form,
   Input,
-  Select,
-  Button,
-  Typography,
-  Upload,
-  InputNumber,
   Modal,
+  Typography,
   UploadFile,
   message,
 } from 'antd';
-import {
-  ArrowLeftOutlined,
-  UploadOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useFetchSingleData } from '../../../hooks/useApis';
+import { useUploadFileMedia } from '../../../hooks/useUpload';
+import { useCreateProduct } from '../../../service/inventory/inventory';
 import {
   useGetCategorizations,
-  useGetMeasuringUnits,
   useGetInventoryAttributes,
+  useGetMeasuringUnits,
 } from '../../../service/inventory/inventoryFN';
-import {
-  createProduct,
-  useCreateProduct,
-} from '../../../service/inventory/inventory';
-import VariantList from './createInventory/VariantList';
-import { useUploadFileMedia } from '../../../hooks/useUpload';
-import { beforeUpload, acceptedFileTypes } from '../../../utils/helper';
 import CreateStepOne from './createInventory/CreateStepOne';
 import CreateStepTwo from './createInventory/CreateStepTwo';
 import ProductOptionModal from './createInventory/ProductOptionModal';
+import { SingleProductResponse } from './types';
 
 type CategoryResponse = {
   id: string;
@@ -84,6 +74,8 @@ interface ProductFormData {
 const CreateProduct = () => {
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
+  const { id } = useParams();
+  const isEdit = id ? true : false;
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Category[]>([]);
   const [productTypes, setProductTypes] = useState<Category[]>([]);
@@ -110,6 +102,8 @@ const CreateProduct = () => {
   const { handleFileUpload, isUploading } = useUploadFileMedia();
   const { mutate: createProduct, isPending: isCreateProductLoading } =
     useCreateProduct();
+  const [searchParams] = useSearchParams();
+  const additionType = searchParams.get('type') ?? 'single'; //multiple or single
 
   const { data: categoriesData, isLoading: isCategoriesLoading } =
     useGetCategorizations('category');
@@ -137,6 +131,43 @@ const CreateProduct = () => {
       });
     }
   };
+
+  const { data: singleProduct } = useFetchSingleData(
+    `merchants/inventory-products/${id}`,
+    !!id
+  );
+
+  const singleProductData = singleProduct?.data as SingleProductResponse;
+
+  useEffect(() => {
+    if (id && singleProductData) {
+      form.setFieldsValue({
+        name: singleProductData?.name,
+        SKU: singleProductData?.SKU,
+        category: singleProductData?.category,
+        subcategory: singleProductData?.subcategory,
+        productType: singleProductData?.product_type,
+        // brand: singleProductData?.brand,
+        productImages: singleProductData?.media
+          ? singleProductData?.media.map((url: string, idx: number) => ({
+              uid: String(idx),
+              name: `image-${idx + 1}.jpg`,
+              status: 'done',
+              url,
+            }))
+          : [],
+        size: singleProductData?.metadata?.size,
+        unit_cost_price: singleProductData?.cost_price,
+        unit_retail_price: singleProductData?.retail_price,
+        quantity: singleProductData?.quantity,
+        reorder_value: singleProductData?.reorder_value,
+        description: singleProductData?.description,
+        tags: singleProductData?.tags,
+        measurement_unit: singleProductData?.measurement_unit,
+        variants: singleProductData?.metadata?.attributes,
+      });
+    }
+  }, [id, singleProductData]);
 
   useEffect(() => {
     if (categoriesData) {
@@ -267,11 +298,12 @@ const CreateProduct = () => {
       let media: string[] = [];
       if (submittedData.productImages) {
         const uploadPromises = submittedData?.productImages?.map(
-          async (file: string) => {
-            if (file) {
+          async (file: any) => {
+            if (file && !file?.url?.startsWith('https')) {
               const uploadRes = await handleFileUpload(file);
               return uploadRes[0].url;
             }
+            return file?.url;
           }
         );
         media = await Promise.all(uploadPromises);
@@ -368,9 +400,18 @@ const CreateProduct = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleCancel} disabled={isCreateProductLoading || isUploading}>Cancel</Button>
+            <Button
+              onClick={handleCancel}
+              disabled={isCreateProductLoading || isUploading}
+            >
+              Cancel
+            </Button>
             {currentStep === 1 ? (
-              <Button type="primary" onClick={() => form.submit()} loading={isCreateProductLoading || isUploading}>
+              <Button
+                type="primary"
+                onClick={() => form.submit()}
+                loading={isCreateProductLoading || isUploading}
+              >
                 Save
               </Button>
             ) : (
@@ -413,13 +454,30 @@ const CreateProduct = () => {
                 handleDeleteVariant={handleDeleteVariant}
                 setIsVariantModalVisible={setIsVariantModalVisible}
                 isLoading={isLoading}
+                additionType={additionType}
+                measuringUnits={
+                  additionType === 'multiple' ? measuringUnits : []
+                }
+                handleMeasuringUnitChange={handleMeasuringUnitChange}
+                isEdit={isEdit}
               />
             )}
 
             {currentStep === 1 && (
               <CreateStepTwo
+                additionType={additionType}
                 measuringUnits={measuringUnits}
                 handleMeasuringUnitChange={handleMeasuringUnitChange}
+                isEdit={isEdit}
+                isVariantModalVisible={isVariantModalVisible}
+                setIsVariantModalVisible={setIsVariantModalVisible}
+                variantAttributesData={variantAttributesData}
+                setVariants={setVariants}
+                variants={variants}
+                selectedCategoryId={selectedCategoryId}
+                setIsColorModalVisible={setIsColorModalVisible}
+                editingVariantIndex={editingVariantIndex}
+                setEditingVariantIndex={setEditingVariantIndex}
               />
             )}
           </Form>

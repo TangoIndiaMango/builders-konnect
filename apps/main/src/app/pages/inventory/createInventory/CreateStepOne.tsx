@@ -1,4 +1,4 @@
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import type { FormInstance, GetProp, UploadFile, UploadProps } from 'antd';
 import { Button, Form, Image, Input, Select, Upload } from 'antd';
 import { useEffect, useState } from 'react';
@@ -21,6 +21,10 @@ interface CreateStepOneProps {
   handleDeleteVariant: (index: number) => void;
   setIsVariantModalVisible: (value: boolean) => void;
   isLoading: boolean;
+  additionType: string;
+  measuringUnits: any[];
+  handleMeasuringUnitChange: (value: string) => void;
+  isEdit: boolean;
 }
 
 const CreateStepOne = ({
@@ -38,32 +42,74 @@ const CreateStepOne = ({
   setIsVariantModalVisible,
   isLoading,
   form,
+  additionType,
+  measuringUnits,
+  handleMeasuringUnitChange,
+  isEdit,
 }: CreateStepOneProps) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [media, setMedia] = useState<string[]>([]);
+  const [formImages, setFormImages] = useState<any[]>([]);
 
-  const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as FileType);
+  // Update this effect to properly sync with form
+  useEffect(() => {
+    const images = form.getFieldValue('productImages');
+    setFormImages(images || []);
+  }, [form]);
+
+  // Update this effect to handle fileList
+  useEffect(() => {
+    if (isEdit && formImages && Array.isArray(formImages) && formImages.length > 0) {
+      setFileList(formImages);
     }
+  }, [formImages, isEdit]);
 
-    setPreviewImage(file.url || (file.preview as string));
+  // Handle file changes
+  const handleChange = async ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    const mediaArr = await Promise.all(
+      newFileList.map(async (file) => {
+        if (file.url && file.url.startsWith('http')) {
+          return file.url;
+        }
+        if (file.originFileObj) {
+          return await getBase64(file.originFileObj);
+        }
+        return null;
+      })
+    );
+    setMedia(mediaArr.filter(Boolean));
+
+    // Update form value
+    form.setFieldsValue({
+      productImages: newFileList,
+    });
+  };
+
+  console.log(form.getFieldValue("productImages"))
+
+  // Keep form in sync with fileList (for submit)
+  useEffect(() => {
+    if (isEdit) {
+      form.setFieldsValue({
+        productImages: fileList,
+      });
+    }
+  }, [fileList, form, isEdit]);
+
+  // console.log('fileList', fileList);
+  // console.log('form.getFieldValue(productImages)', form.getFieldValue('productImages'));
+
+  // For preview modal
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
-
-  const handleChange: UploadProps['onChange'] = async ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-    const media = await Promise.all(newFileList.map(async (file) => await getBase64(file.originFileObj as FileType)));
-    setMedia(media);
-  };
-
-  useEffect(() => {
-    form.setFieldsValue({
-      productImages: media,
-    });
-  }, [media]);
 
   const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
@@ -71,6 +117,8 @@ const CreateStepOne = ({
       <div style={{ marginTop: 8 }}>Upload</div>
     </button>
   );
+
+
   return (
     <div>
       <Form.Item
@@ -159,8 +207,9 @@ const CreateStepOne = ({
           accept={'.jpg,.png,.jpeg,.gif,.webp'}
           onPreview={handlePreview}
           onChange={handleChange}
+          fileList={fileList}
         >
-          {fileList.length >= 3 ? null : uploadButton}
+          {fileList.length >= 4 ? null : uploadButton}
         </Upload>
 
         {previewImage && (
@@ -176,34 +225,49 @@ const CreateStepOne = ({
         )}
       </Form.Item>
 
-      <Form.Item
-        label="Product Variant"
-        name="variants"
-        required
-        className="mb-2"
+      {additionType === 'single' ? (
+        <Form.Item
+          label="Product Variant"
+          name="variants"
+          required
+          className="mb-2"
+        >
+          {variants.length > 0 ? (
+            <VariantList
+              variants={variants}
+              handleEditVariant={handleEditVariant}
+              handleDeleteVariant={handleDeleteVariant}
+            />
+          ) : (
+            <div>
+              <Button
+                type="link"
+                className=" text-[#3B43FF] "
+                onClick={() => setIsVariantModalVisible(true)}
+                icon={<PlusOutlined />}
+              >
+                Add product variant
+              </Button>
+              <p className="text-sm text-gray-400">
+                Select the product variations of the product you want to add.
+              </p>
+            </div>
+          )}
+        </Form.Item>
+      ): (
+        <Form.Item
+        label="Unit Type"
+        name="measurement_unit"
+        rules={[{ required: true, message: 'Required' }]}
       >
-        {variants.length > 0 ? (
-          <VariantList
-            variants={variants}
-            handleEditVariant={handleEditVariant}
-            handleDeleteVariant={handleDeleteVariant}
-          />
-        ) : (
-          <div>
-            <Button
-              type="link"
-              className=" text-[#3B43FF] "
-              onClick={() => setIsVariantModalVisible(true)}
-              icon={<PlusOutlined />}
-            >
-              Add product variant
-            </Button>
-            <p className="text-sm text-gray-400">
-              Select the product variations of the product you want to add.
-            </p>
-          </div>
-        )}
+        <Select
+          placeholder="Select measuring unit"
+          options={measuringUnits}
+          onChange={handleMeasuringUnitChange}
+          style={{ width: '100%' }}
+        />
       </Form.Item>
+      )}
     </div>
   );
 };

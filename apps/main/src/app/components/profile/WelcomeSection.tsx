@@ -10,6 +10,7 @@ import {
 import { useState, useRef } from 'react';
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { SkeletonLoader } from '../common/SkeletonLoader';
+import { StaffProfile } from '../../pages/settings/types';
 import { VendorProfile } from '../../pages/profile/types';
 
 const acceptedFileTypes = '.jpg,.png,.jpeg';
@@ -21,7 +22,7 @@ const WelcomeSection = ({
   isProfile,
   refetch,
 }: {
-  data: VendorProfile;
+  data: StaffProfile | VendorProfile;
   isLoading: boolean;
   isFetching: boolean;
   isProfile?: boolean;
@@ -30,20 +31,23 @@ const WelcomeSection = ({
   const [fileRes, setFileRes] = useState<UploadedResInterface | null>(null);
   const { user, updateUser } = useSessionStorage();
   const updateprofile = usePutData('merchants/profile');
+  const updateStaffProfile = usePutData('merchants/staff/update/profile');
   const { handleFileUpload } = useUploadFileMedia();
   const uploadRef = useRef<any>(null);
   const [uploading, setUploading] = useState(false);
 
   const avatarSrc = isProfile
-    ? data?.personal?.avatar ??
+    ? (data as StaffProfile)?.avatar ??
       fileRes?.url ??
       'https://api.dicebear.com/7.x/miniavs/svg?seed=1'
-    : data?.logo ??
+    : (data as VendorProfile)?.logo ??
       fileRes?.url ??
       'https://api.dicebear.com/7.x/miniavs/svg?seed=1';
 
   const hasAvatar =
-    !!(isProfile ? data?.personal?.avatar : data?.logo) || !!fileRes?.url;
+    !!(isProfile
+      ? (data as StaffProfile)?.avatar
+      : (data as VendorProfile)?.logo) || !!fileRes?.url;
 
   const handleUpload: UploadProps['onChange'] = async (fileInfo) => {
     if (fileInfo.file) {
@@ -61,7 +65,8 @@ const WelcomeSection = ({
           logo: uploadRes[0]?.url,
         };
       }
-      await updateprofile.mutateAsync(payload, {
+      const apiCall = isProfile ? updateStaffProfile : updateprofile;
+      await apiCall.mutateAsync(payload, {
         onSuccess: (data) => {
           console.log(data);
           notification.success({
@@ -78,7 +83,6 @@ const WelcomeSection = ({
       setUploading(false);
     }
   };
-
 
   if (isLoading) {
     return (
@@ -113,9 +117,9 @@ const WelcomeSection = ({
                 accept={acceptedFileTypes}
                 maxCount={1}
                 className="absolute w-8 h-8 bg-[#F0F0F0] rounded-full shadow-sm cursor-pointer bottom-1 right-1 flex items-center justify-center hover:bg-[#E0E0E0]"
-                  style={{ zIndex: 2 }}
+                style={{ zIndex: 2 }}
               >
-                 <EditOutlined style={{ color: '#003399', fontSize: 18 }} />
+                <EditOutlined style={{ color: '#003399', fontSize: 18 }} />
               </Upload>
             )}
           </Spin>
@@ -123,15 +127,21 @@ const WelcomeSection = ({
         {hasAvatar ? (
           <div className="flex flex-col gap-2">
             <h2 className="text-xl font-semibold text-blue-900">
-              {isProfile ? data?.personal?.name : data?.business?.name}
+              {isProfile
+                ? (data as StaffProfile)?.name
+                : (data as VendorProfile)?.business?.name}
             </h2>
             <p className="text-gray-600">
               <MailOutlined className="text-blue-600" />{' '}
-              {isProfile ? data?.personal?.email : data?.business?.email}
+              {isProfile
+                ? (data as StaffProfile)?.email
+                : (data as VendorProfile)?.business?.email}
             </p>
             <p className="text-gray-600">
               <PhoneOutlined className="text-blue-600" />{' '}
-              {isProfile ? data?.business?.phone : data?.business?.phone}
+              {isProfile
+                ? (data as StaffProfile)?.phone
+                : (data as VendorProfile)?.business?.phone}
             </p>
           </div>
         ) : (
