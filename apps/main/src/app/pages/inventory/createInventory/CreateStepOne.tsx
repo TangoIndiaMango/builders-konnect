@@ -1,4 +1,4 @@
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import type { FormInstance, GetProp, UploadFile, UploadProps } from 'antd';
 import { Button, Form, Image, Input, Select, Upload } from 'antd';
 import { useEffect, useState } from 'react';
@@ -21,6 +21,9 @@ interface CreateStepOneProps {
   handleDeleteVariant: (index: number) => void;
   setIsVariantModalVisible: (value: boolean) => void;
   isLoading: boolean;
+  additionType: string;
+  measuringUnits: any[];
+  handleMeasuringUnitChange: (value: string) => void;
 }
 
 const CreateStepOne = ({
@@ -38,32 +41,59 @@ const CreateStepOne = ({
   setIsVariantModalVisible,
   isLoading,
   form,
+  additionType,
+  measuringUnits,
+  handleMeasuringUnitChange,
 }: CreateStepOneProps) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [media, setMedia] = useState<string[]>([]);
 
-  const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as FileType);
+  // Sync fileList with form value when it changes (e.g., after async setFieldsValue)
+  useEffect(() => {
+    const images = form.getFieldValue('productImages');
+    if (images && Array.isArray(images) && images.length > 0) {
+      setFileList(images);
     }
+  }, [form.getFieldValue('productImages')]);
 
-    setPreviewImage(file.url || (file.preview as string));
-    setPreviewOpen(true);
-  };
-
-  const handleChange: UploadProps['onChange'] = async ({ fileList: newFileList }) => {
+  // Handle file changes
+  const handleChange = async ({ fileList: newFileList }) => {
     setFileList(newFileList);
-    const media = await Promise.all(newFileList.map(async (file) => await getBase64(file.originFileObj as FileType)));
-    setMedia(media);
+    console.log(newFileList);
+    const mediaArr = await Promise.all(
+      newFileList.map(async (file) => {
+        if (file.url && file.url.startsWith('http')) {
+          return file.url;
+        }
+        if (file.originFileObj) {
+          return await getBase64(file.originFileObj);
+        }
+        return null;
+      })
+    );
+    setMedia(mediaArr.filter(Boolean));
   };
 
+  // Keep form in sync with fileList (for submit)
   useEffect(() => {
     form.setFieldsValue({
-      productImages: media,
+      productImages: fileList,
     });
-  }, [media]);
+  }, [fileList, form]);
+
+  console.log('fileList', fileList);
+  console.log('form.getFieldValue(productImages)', form.getFieldValue('productImages'));
+
+  // For preview modal
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+  };
 
   const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
@@ -71,6 +101,8 @@ const CreateStepOne = ({
       <div style={{ marginTop: 8 }}>Upload</div>
     </button>
   );
+
+
   return (
     <div>
       <Form.Item
@@ -159,8 +191,9 @@ const CreateStepOne = ({
           accept={'.jpg,.png,.jpeg,.gif,.webp'}
           onPreview={handlePreview}
           onChange={handleChange}
+          fileList={fileList}
         >
-          {fileList.length >= 3 ? null : uploadButton}
+          {fileList.length >= 4 ? null : uploadButton}
         </Upload>
 
         {previewImage && (
@@ -176,34 +209,49 @@ const CreateStepOne = ({
         )}
       </Form.Item>
 
-      <Form.Item
-        label="Product Variant"
-        name="variants"
-        required
-        className="mb-2"
+      {additionType === 'single' ? (
+        <Form.Item
+          label="Product Variant"
+          name="variants"
+          required
+          className="mb-2"
+        >
+          {variants.length > 0 ? (
+            <VariantList
+              variants={variants}
+              handleEditVariant={handleEditVariant}
+              handleDeleteVariant={handleDeleteVariant}
+            />
+          ) : (
+            <div>
+              <Button
+                type="link"
+                className=" text-[#3B43FF] "
+                onClick={() => setIsVariantModalVisible(true)}
+                icon={<PlusOutlined />}
+              >
+                Add product variant
+              </Button>
+              <p className="text-sm text-gray-400">
+                Select the product variations of the product you want to add.
+              </p>
+            </div>
+          )}
+        </Form.Item>
+      ): (
+        <Form.Item
+        label="Unit Type"
+        name="measurement_unit"
+        rules={[{ required: true, message: 'Required' }]}
       >
-        {variants.length > 0 ? (
-          <VariantList
-            variants={variants}
-            handleEditVariant={handleEditVariant}
-            handleDeleteVariant={handleDeleteVariant}
-          />
-        ) : (
-          <div>
-            <Button
-              type="link"
-              className=" text-[#3B43FF] "
-              onClick={() => setIsVariantModalVisible(true)}
-              icon={<PlusOutlined />}
-            >
-              Add product variant
-            </Button>
-            <p className="text-sm text-gray-400">
-              Select the product variations of the product you want to add.
-            </p>
-          </div>
-        )}
+        <Select
+          placeholder="Select measuring unit"
+          options={measuringUnits}
+          onChange={handleMeasuringUnitChange}
+          style={{ width: '100%' }}
+        />
       </Form.Item>
+      )}
     </div>
   );
 };

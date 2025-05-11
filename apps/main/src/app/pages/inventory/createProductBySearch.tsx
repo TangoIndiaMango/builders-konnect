@@ -6,6 +6,7 @@ import {
 import {
   ArrowLeftOutlined,
   BarcodeOutlined,
+  PlusOutlined,
   UploadOutlined,
 } from '@ant-design/icons';
 import {
@@ -18,10 +19,13 @@ import {
   Typography,
   Modal,
   message,
+  MenuProps,
+  Dropdown,
 } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProductType } from '../sales/types';
+import useDebounce from '../../../hooks/useDebounce';
 const { Title, Text } = Typography;
 
 interface ProductFormData {
@@ -42,19 +46,40 @@ const CreateProductBySearch = () => {
   const [form] = Form.useForm<ProductFormData>();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const { data: searchResults, isLoading: isSearching } = useSearchProducts({
-    q: searchQuery,
-  });
+
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const { mutate: createProduct, isLoading: isCreating } = useCreateProduct();
+  const { mutate: createProduct, isPending: isCreating } = useCreateProduct();
   const [productCode, setProductCode] = useState('');
   const [formData, setFormData] = useState<ProductFormData | null>(null);
   const [productData, setProductData] = useState<ProductType | null>(null);
-
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const { data: searchResults, isLoading: isSearching } = useSearchProducts({
+    q: debouncedSearchQuery,
+  });
   const navigate = useNavigate();
 
   const handleCancel = () => {
-    window.history.back();
+    // navigate(-1);
+    setSelectedProduct(null);
+  };
+
+  const menu: MenuProps = {
+    items: [
+      {
+        key: '1',
+        label: 'Single Variation',
+        onClick: () => {
+          navigate('/pos/inventory/add-product');
+        },
+      },
+      {
+        key: '2',
+        label: 'Multiple Variation',
+        onClick: () => {
+          navigate('/pos/inventory/add-product');
+        },
+      },
+    ],
   };
 
   const handleSelect = (value: string) => {
@@ -125,9 +150,9 @@ const CreateProductBySearch = () => {
   };
 
   return (
-    <div className="p-3 h-fit">
+    <div className="space-y-5">
       <div className="p-3 bg-white">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Button
               type="text"
@@ -138,7 +163,7 @@ const CreateProductBySearch = () => {
               Add Product
             </Title>
           </div>
-          {selectedProduct && (
+          {selectedProduct ? (
             <div className="flex gap-2">
               <Button onClick={handleCancel}>Cancel</Button>
               <Button
@@ -149,6 +174,18 @@ const CreateProductBySearch = () => {
                 Submit
               </Button>
             </div>
+          ) : (
+            // <Dropdown menu={menu} trigger={['click']} placement="bottom">
+            //   <Button
+            //     type="primary"
+            //     className="rounded"
+            //     size="large"
+            //     icon={<PlusOutlined />}
+            //   >
+            //     Product Type
+            //   </Button>
+            // </Dropdown>
+            <></>
           )}
         </div>
         <Text type="secondary" className="block mb-6">
@@ -157,19 +194,20 @@ const CreateProductBySearch = () => {
         </Text>
       </div>
 
-      <div className="p-6 m-1 bg-white">
+     <div className='p-5'>
+     <div className=" p-5 bg-white">
         {!selectedProduct ? (
           <div>
             <div className="flex flex-col items-center justify-center w-full mb-4">
               <h1 className="mb-5 text-base font-medium">
-                Search here to add product
+                Search to add product from catalogue
               </h1>
               <Select
                 showSearch
                 placeholder="Search product by name or sku"
                 className="w-full max-w-sm"
                 defaultActiveFirstOption={false}
-                showArrow={false}
+                suffixIcon={false}
                 filterOption={false}
                 onSearch={(value: string) => setSearchQuery(value)}
                 onSelect={handleSelect}
@@ -179,21 +217,38 @@ const CreateProductBySearch = () => {
                     value: 'add-new',
                     label: (
                       <div>
-                        <Text
+                        <p
                           onClick={() => navigate('/pos/inventory/add-product')}
-                          className="text-[12px]"
+                          className="text-sm text-wrap"
                         >
                           Can't find the product you want to add?{' '}
                           <span className="text-[#003399] cursor-pointer">
-                            Request to add product
+                            Request to add single variation product
                           </span>
-                        </Text>
+                        </p>
+                      </div>
+                    ),
+                  },
+                  {
+                    value: 'add-multiple',
+                    label: (
+                      <div>
+                        <p
+                          onClick={() => navigate('/pos/inventory/add-product?type=multiple')}
+                          className="text-sm text-wrap"
+                        >
+                          Can't find the product you want to add?{' '}
+                          <span className="text-[#003399] cursor-pointer">
+                            Request to add multiple variation product
+                          </span>
+                        </p>
                       </div>
                     ),
                   },
                   ...(searchResults?.data?.map((product) => ({
+                    key: product.id.toString(),
                     value: product.id.toString(),
-                    label: `${product.name} - ${product.sku}`,
+                    label: `${product.name} - ${product.SKU}`,
                   })) || []),
                 ]}
               />
@@ -328,6 +383,7 @@ const CreateProductBySearch = () => {
           </div>
         )}
       </div>
+     </div>
 
       <Modal
         title="Product Successfully Added"

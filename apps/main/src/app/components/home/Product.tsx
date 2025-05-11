@@ -1,11 +1,13 @@
 import { DollarOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Button, Divider } from 'antd';
+import { Button, Divider, Select } from 'antd';
 import CardWithFilter from '../common/CardWithFilter';
 import EmptyState from '../common/EmptyState';
 import FilterGroup from '../common/filters/FilterGroup';
 import StatsCard from '../common/StatsCard';
 import ProductSalesChart from './charts/ProductSalesChart';
 import CustomerListItem from './customer/CustomerListItem';
+import { useNavigate } from 'react-router-dom';
+import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
 
 const data = [
   { name: 'Cement', sales: 200, value: 30, amount: 4544 },
@@ -52,11 +54,53 @@ const statsData = [
   },
 ];
 
-const Product = () => {
+interface ProductProps {
+  productData: any;
+  storeList: any;
+  onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
+  setSelectedStore: (value: string) => void;
+  reset: () => void;
+}
+
+const Product = ({
+  productData,
+  storeList,
+  onRangeChange,
+  setSelectedStore,
+  reset,
+}: ProductProps) => {
+  const navigate = useNavigate();
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       <div className="md:col-span-2">
-        <CardWithFilter title="Product Overview" rightSection={<FilterGroup />}>
+        <CardWithFilter
+          title="Product Overview"
+          rightSection={
+            <div className="flex items-center gap-2 justify-end flex-wrap">
+              <Button onClick={reset}>Clear</Button>
+              <Select
+                placeholder="Select store"
+                // mode="multiple"
+                allowClear
+                size="large"
+                className="rounded w-[200px]"
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label?.toString() ?? '')
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                options={storeList?.map((store) => ({
+                  value: store.id,
+                  label: store.name,
+                }))}
+                onChange={(value) => setSelectedStore(value)}
+              />
+
+              <DatePickerComp onRangeChange={onRangeChange} />
+            </div>
+          }
+        >
           {data?.length > 0 ? (
             <div className="space-y-5">
               <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
@@ -92,11 +136,15 @@ const Product = () => {
                   name={customer.name}
                   email={customer.email}
                   avatar={customer.avatar}
-                  onClick={() => console.log(`Clicked on ${customer.name}`)}
+                  onClick={() => navigate(`/pos/inventory/${customer.id}`)}
                 />
               ))}
 
-              <Button type="link" className="w-full">
+              <Button
+                type="link"
+                className="w-full"
+                onClick={() => navigate('/pos/inventory')}
+              >
                 View All
               </Button>
             </div>

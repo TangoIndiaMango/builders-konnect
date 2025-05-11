@@ -13,14 +13,17 @@ interface RolesAndPermissionProps {
   rolesData: PaginatedResponse<Role>;
   isLoading: boolean;
   refetch: () => void;
+  searchValue: string;
+  setSearchValue: (value: string) => void;
 }
 
 const RolesAndPermission = ({
   rolesData,
   isLoading,
   refetch,
+  searchValue,
+  setSearchValue,
 }: RolesAndPermissionProps) => {
-  const { searchValue, setSearch } = useTableState('roles');
   const updateRole = usePutData('merchants/roles');
   const navigate = useNavigate();
 
@@ -46,7 +49,7 @@ const RolesAndPermission = ({
       />
       <div className="w-full md:max-w-sm">
         <SearchInput
-          onChange={setSearch}
+          onChange={setSearchValue}
           value={searchValue}
           placeholder="Search"
         />
@@ -58,7 +61,7 @@ const RolesAndPermission = ({
               key={role.id}
               role={role}
               handleToggleRole={handleToggleRole}
-              isLoading={updateRole.isLoading}
+              isLoading={updateRole.isPending}
               onClick={() => navigate(`/pos/staff/role/${role.id}`)}
             />
           ))}

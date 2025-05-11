@@ -14,6 +14,8 @@ interface StaffDetailsProps {
   lastActive: string;
   status: 'Active' | 'Inactive';
   avatar?: string;
+  staffID: string;
+  store: string;
 }
 
 export const StaffProfileHeader: React.FC<{ staff: StaffDetailsProps }> = ({ staff }) => {
@@ -41,7 +43,7 @@ export const StaffProfileHeader: React.FC<{ staff: StaffDetailsProps }> = ({ sta
           <div className="flex items-center gap-3">
             <h2 className="m-0 text-2xl font-semibold capitalize">{staff.name}</h2>
             <Tag className="inline-flex items-center flex-shrink-0 text-xs text-sky-700 bg-sky-50 border border-sky-200 px-3 py-0.5 rounded-full capitalize">
-              #{staff.id}
+              #{staff.staffID}
             </Tag>
           </div>
 
@@ -71,8 +73,8 @@ export const StaffInformation: React.FC<{ staff: StaffDetailsProps }> = ({ staff
       value: staff.role,
     },
     {
-      label: 'Subsidiary',
-      value: staff.subsidiary,
+      label: 'Store',
+      value: staff.store,
     },
     {
       label: 'House address',
@@ -80,7 +82,7 @@ export const StaffInformation: React.FC<{ staff: StaffDetailsProps }> = ({ staff
     },
     {
       label: 'Last Active',
-      value: dayjs(staff.lastActive).format('DD MMM, YYYY | HH:mm A'),
+      value: staff.lastActive ? dayjs(staff.lastActive).format('DD MMM, YYYY | HH:mm A') : '--',
     },
   ];
 

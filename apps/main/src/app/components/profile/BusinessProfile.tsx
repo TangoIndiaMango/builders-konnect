@@ -4,6 +4,7 @@ import { CopyIcon } from '../../lib/CustomIcon';
 import { BusinessInfo } from '../../pages/profile/types';
 import { SkeletonLoader } from '../common/SkeletonLoader';
 import InfoField from './InfoField';
+
 const { Text } = Typography;
 
 interface BusinessProfileProps {
@@ -19,6 +20,8 @@ const BusinessProfile = ({
   isEditRequested,
   handleChange,
 }: BusinessProfileProps) => {
+
+
   return (
     <div className="grid grid-cols-1 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm lg:grid-cols-[0.3fr_0.7fr]">
       <div className="flex items-start justify-between mb-4">

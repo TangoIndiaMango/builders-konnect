@@ -13,6 +13,7 @@ interface TableFiltersProps {
   searchValue: string;
   setSearchValue: (value: string) => void;
   onExport?: (value: string) => void;
+  isDashboard?: boolean;
 }
 
 const TableWrapper = ({
@@ -23,35 +24,38 @@ const TableWrapper = ({
   searchValue,
   setSearchValue,
   onExport,
+  isDashboard = false,
 }: TableFiltersProps) => {
   // console.log(selectedFilter, 'onFilterChange');
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-4">
-          <MultiOptionsFilter
-            items={filterOptions}
-            onChange={onFilterChange as (value: string) => void}
-            label={
-              <span className="flex items-center gap-2 capitalize">
-                <FilterOutlined />
-                {selectedFilter || 'Filter by'}
-              </span>
-            }
-          />
+      {!isDashboard && (
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            <MultiOptionsFilter
+              items={filterOptions}
+              onChange={onFilterChange as (value: string) => void}
+              label={
+                <span className="flex items-center gap-2 capitalize">
+                  <FilterOutlined />
+                  {selectedFilter || 'Filter by'}
+                </span>
+              }
+            />
 
-          <SearchInput
-            placeholder="Search..."
-            value={searchValue}
-            onChange={setSearchValue}
-            className="!w-full md:!min-w-[300px]"
-          />
-        </div>
+            <SearchInput
+              placeholder="Search..."
+              value={searchValue}
+              onChange={setSearchValue}
+              className="!w-full md:!min-w-[300px]"
+            />
+          </div>
 
-        <div className="flex items-center justify-end gap-4">
-          <ExportDropdown onExport={onExport} />
+          <div className="flex items-center justify-end gap-4">
+            <ExportDropdown onExport={onExport} />
+          </div>
         </div>
-      </div>
+      )}
       {children}
     </div>
   );
