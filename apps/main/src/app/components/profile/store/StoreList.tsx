@@ -19,6 +19,7 @@ interface StoreListProps extends FilterState {
   isLoading: boolean;
   refetch: () => void;
 }
+
 const StoreList = ({
   data,
   isLoading,
@@ -167,6 +168,7 @@ const StoreList = ({
         isLoading={isLoading}
         mode={mode}
         initialValues={initialValues}
+        loading={createStore.isPending}
         onSubmit={onSubmit}
       />
 

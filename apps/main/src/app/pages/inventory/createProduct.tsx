@@ -144,10 +144,10 @@ const CreateProduct = () => {
       form.setFieldsValue({
         name: singleProductData?.name,
         SKU: singleProductData?.SKU,
-        category: singleProductData?.category,
-        subcategory: singleProductData?.subcategory,
-        productType: singleProductData?.product_type,
-        // brand: singleProductData?.brand,
+        category: singleProductData?.category_id,
+        subcategory: singleProductData?.subcategory_id,
+        productType: singleProductData?.product_type_id,
+        brand: singleProductData?.brand,
         productImages: singleProductData?.media
           ? singleProductData?.media.map((url: string, idx: number) => ({
               uid: String(idx),
@@ -265,10 +265,55 @@ const CreateProduct = () => {
     form.setFieldValue('productType', undefined); // Clear product type selection
   };
 
+  const transformVariants = async (variants: any) => {
+    const transformedVariants = await Promise.all(
+      variants.map(async (variant: any, index: number) => {
+        // Handle media uploads
+        let mediaUrls: string[] = [];
+        if (variant.images) {
+          const uploadPromises = variant.images.map(async (file: any) => {
+            if (file && !file?.url?.startsWith('https')) {
+              const uploadRes = await handleFileUpload(file);
+              return uploadRes[0].url;
+            }
+            return file?.url;
+          });
+          mediaUrls = await Promise.all(uploadPromises);
+        }
+
+        const transformedVariant = {
+          [`variants[${index}][SKU]`]: variant.sku,
+          [`variants[${index}][unit_retail_price]`]: variant.sellingPrice,
+          [`variants[${index}][unit_cost_price]`]: variant.costPrice,
+          [`variants[${index}][quantity]`]: variant.quantity,
+          [`variants[${index}][reorder_value]`]: variant.reorderQty,
+          [`variants[${index}][media]`]: mediaUrls.join('|'),
+          [`variants[${index}][measurement_unit]`]: variant.measurement_unit,
+        };
+
+        // Add attributes
+        variant.attributes.forEach((attr: any) => {
+          if (attr.value) {
+            transformedVariant[`variants[${index}][metadata][attributes][${attr.attribute}][]`] =
+              attr.value;
+          }
+        });
+
+        return transformedVariant;
+      })
+    );
+
+    return transformedVariants;
+  };
+
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       const submittedData = { ...values, ...fieldsData };
+      const extendedVaraint = variants.map((variant) => ({
+        ...variant,
+        measurement_unit: submittedData.measurement_unit,
+      }));
 
       console.log('Fields', submittedData);
       // Handle variants as metadata attributes
@@ -277,22 +322,27 @@ const CreateProduct = () => {
       };
 
       // Process variants into metadata attributes
-      variants.forEach((variant) => {
-        Object.entries(variant.values)
-          .filter(([_, value]) => value !== undefined && value !== '')
-          .forEach(([attrId, value]) => {
-            const attrName = variant.labels[attrId];
-            if (!metadata.attributes[attrName]) {
-              metadata.attributes[attrName] = [];
-            }
-            // Handle both single values and arrays
-            if (Array.isArray(value)) {
-              metadata.attributes[attrName].push(...value);
-            } else {
-              metadata.attributes[attrName].push(value as string);
-            }
-          });
-      });
+      if (additionType === 'multiple') {
+        const variantAttributes = variants;
+        console.log(variantAttributes);
+      } else {
+        variants.forEach((variant) => {
+          Object.entries(variant.values)
+            .filter(([_, value]) => value !== undefined && value !== '')
+            .forEach(([attrId, value]) => {
+              const attrName = variant.labels[attrId];
+              if (!metadata.attributes[attrName]) {
+                metadata.attributes[attrName] = [];
+              }
+              // Handle both single values and arrays
+              if (Array.isArray(value)) {
+                metadata.attributes[attrName].push(...value);
+              } else {
+                metadata.attributes[attrName].push(value as string);
+              }
+            });
+        });
+      }
 
       // Handle media uploads
       let media: string[] = [];
@@ -319,7 +369,8 @@ const CreateProduct = () => {
         brand: submittedData.brand,
         media: media,
         metadata: metadata,
-        product_creation_format: 'single',
+        product_creation_format:
+          additionType === 'single' ? 'single' : 'multiple',
         measurement_unit: submittedData.measurement_unit,
         unit_retail_price: submittedData.unit_retail_price,
         unit_cost_price: submittedData.unit_cost_price,
@@ -327,28 +378,46 @@ const CreateProduct = () => {
         reorder_value: submittedData.reorder_value,
         description: submittedData.description,
         tags: submittedData.tags,
+        variants: extendedVaraint,
       };
 
       console.log('Final payload:', payload);
-      // return
-      // Create FormData for the request
+
       const formData = new FormData();
 
-      // Add all fields to FormData
-      Object.entries(payload).forEach(([key, value]) => {
-        if (key === 'metadata') {
-          // Handle metadata attributes
-          Object.entries(value.attributes).forEach(([attrKey, attrValues]) => {
+      // Handle metadata
+      if (payload.metadata) {
+        Object.entries(payload.metadata.attributes).forEach(
+          ([attrKey, attrValues]) => {
             (attrValues as string[]).forEach((val: string) => {
               formData.append(`metadata[attributes][${attrKey}][]`, val);
             });
-          });
-        } else if (key === 'media') {
-          formData.append('media', media?.map((file: any) => file).join('|'));
-        } else {
+          }
+        );
+      }
+
+      // Handle media
+      if (payload.media?.length > 0) {
+        formData.append('media', media?.map((file: any) => file).join('|'));
+      }
+
+      // Handle variants separately since it's async
+      const transformedVariants = await transformVariants(payload.variants);
+      transformedVariants.forEach((variant) => {
+        Object.entries(variant).forEach(([key, value]) => {
           formData.append(key, value as string);
-        }
+        });
       });
+
+      Object.entries(payload)
+        .filter(
+          ([_, value]) => value !== undefined && value !== null && value !== ''
+        )
+        .forEach(([key, value]) => {
+          if (key !== 'metadata' && key !== 'media' && key !== 'variants') {
+            formData.append(key, value as string);
+          }
+        });
 
       createProduct(formData as any, {
         onSuccess: (data) => {
@@ -377,6 +446,7 @@ const CreateProduct = () => {
     isAttributesLoading ||
     isVariantAttributesLoading;
 
+  console.log(variants);
   return (
     <>
       <div className="p-3 h-fit bg-gray-50">

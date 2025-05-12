@@ -36,9 +36,10 @@ const InfoField = ({
   const renderText = () => (
     <Input.TextArea
       autoSize
-      value={value ?? (field.value as string)}
+      value={value}
       className="min-h-10"
       onChange={(e) => handleChange?.(e.target.value)}
+      placeholder={placeholder}
     />
   );
 
@@ -88,7 +89,7 @@ const InfoField = ({
   return (
     <div className="space-y-1">
       <p className="text-sm text-gray-500">{field.label}</p>
-      {isEdit ? inputNode : <Text>{field.value || '-'}</Text>}
+      {isEdit ? inputNode : <Text>{value || field.value || '-'}</Text>}
     </div>
   );
 };

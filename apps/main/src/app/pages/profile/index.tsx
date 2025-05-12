@@ -258,6 +258,9 @@ const ProfilePage: React.FC = () => {
     [
       stores,
       profile,
+      isEditRequested,
+      handleUpdateProfile,
+      handleChange,
     ]
   );
 
