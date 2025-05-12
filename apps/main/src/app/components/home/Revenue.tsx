@@ -41,7 +41,7 @@ const Revenue = ({
   // console.log(revenueData?.data);
 
   const revenueRes = revenueData?.data?.data;
-  const revData = Object.entries(revenueRes).map(([month, value]) => ({
+  const revData = Object.entries(revenueRes)?.map(([month, value]) => ({
     month: monthAbbreviation(month),
     value: value,
   }));

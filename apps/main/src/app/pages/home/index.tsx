@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Skeleton } from 'antd';
 import { useState } from 'react';
 import { useFetchData, useFetchSingleData } from '../../../hooks/useApis';
 import { useTableState } from '../../../hooks/useTable';
@@ -46,6 +46,13 @@ const DashboardHome = () => {
     setSelectedStore('');
     reset();
   };
+
+  const isLoading =
+    statsData?.isLoading ||
+    revenueData?.isLoading ||
+    productData?.isLoading ||
+    customerData?.isLoading;
+
   return (
     <>
       <PageIntroBanner
@@ -57,34 +64,45 @@ const DashboardHome = () => {
       />
       <div className="container space-y-5 bg-gray-50">
         <Banner />
-        <Stats
-          statsData={statsData}
-          storeList={storeList}
-          onRangeChange={setCustomDateRange}
-          setSelectedStore={setSelectedStore}
-          reset={handleReset}
-        />
-        <Revenue
-          revenueData={revenueData}
-          storeList={storeList}
-          onRangeChange={setCustomDateRange}
-          setSelectedStore={setSelectedStore}
-          reset={handleReset}
-        />
-        <Customer
-          customerData={customerData}
-          storeList={storeList}
-          onRangeChange={setCustomDateRange}
-          setSelectedStore={setSelectedStore}
-          reset={handleReset}
-        />
-        <Product
-          productData={productData}
-          storeList={storeList}
-          onRangeChange={setCustomDateRange}
-          setSelectedStore={setSelectedStore}
-          reset={handleReset}
-        />
+        {isLoading ? (
+          <>
+            <Skeleton active />
+            <Skeleton active />
+            <Skeleton active />
+            <Skeleton active />
+          </>
+        ) : (
+          <>
+            <Stats
+              statsData={statsData}
+              storeList={storeList}
+              onRangeChange={setCustomDateRange}
+              setSelectedStore={setSelectedStore}
+              reset={handleReset}
+            />
+            <Revenue
+              revenueData={revenueData}
+              storeList={storeList}
+              onRangeChange={setCustomDateRange}
+              setSelectedStore={setSelectedStore}
+              reset={handleReset}
+            />
+            <Customer
+              customerData={customerData}
+              storeList={storeList}
+              onRangeChange={setCustomDateRange}
+              setSelectedStore={setSelectedStore}
+              reset={handleReset}
+            />
+            <Product
+              productData={productData}
+              storeList={storeList}
+              onRangeChange={setCustomDateRange}
+              setSelectedStore={setSelectedStore}
+              reset={handleReset}
+            />
+          </>
+        )}
         <Recent />
       </div>
     </>
