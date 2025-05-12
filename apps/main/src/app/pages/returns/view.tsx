@@ -7,6 +7,7 @@ import ActionConfirmModal from '../../components/returns/ActionConfirmMdal';
 import ActionReasonModal from '../../components/returns/ActionReasonModal';
 import { useFetchData, usePutData } from '../../../hooks/useApis';
 import ReturnOrderDetails from '../../components/returns/ProductReturnsDetails';
+import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 
 const ReturnsViewPage = () => {
   const { id } = useParams();
@@ -15,8 +16,8 @@ const ReturnsViewPage = () => {
   // API call to get the return request details
   const decsionUpdate = usePutData(`merchants/returns/${id}`);
 
-  const {data: returnDetailsData } = useFetchData(`merchants/returns/${id}`)
-  const {data: productDetailsData } = useFetchData(`merchants/inventory-products/${returnDetailsData?.data?.product_id}`)
+  const {data: returnDetailsData, isLoading: returnDetailsLoading } = useFetchData(`merchants/returns/${id}`)
+  const {data: productDetailsData, isLoading: productDetailsLoading } = useFetchData(`merchants/inventory-products/${returnDetailsData?.data?.product_id}`)
 
   // Modal states
   const [confirmType, setConfirmType] = useState<'approve' | 'reject' | null>(
@@ -85,8 +86,10 @@ const ReturnsViewPage = () => {
 
       <div className="p-6 space-y-6">
         <div className="space-y-6">
+        <SkeletonLoader active={returnDetailsLoading || productDetailsLoading} type="card" hasHeader className="p-5">
           <ReturnOrderDetails returnOrderData={returnDetailsData?.data} productImages={productDetailsData?.data?.media} />
           <CustomerInformation customer={returnDetailsData?.data} showOrder={false} />
+        </SkeletonLoader>
         </div>
       </div>
 
