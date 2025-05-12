@@ -91,10 +91,10 @@ const ReturnsPage = () => {
     }`
   );
 
-  const stats = returns?.data?.stats as ReturnStats;
-  const productsData = products?.data?.data
-  ?.data as PaginatedResponse<ProductTableData>;
-
+  const stats = returns?.data?.data?.stats as ReturnStats;
+  const returnsData = returns?.data?.data?.data
+  // console.log(returnsData,"returnsData")
+ 
   const navigate = useNavigate();
 
   const tableStatsData = useMemo(
@@ -148,7 +148,7 @@ const ReturnsPage = () => {
               className="rounded"
               size="large"
               icon={<PlusOutlined />}
-              onClick={() => navigate('/pos/sales/create')}
+              onClick={() => navigate('/pos/returns/create')}
             >
               New Return Log
             </Button>
@@ -159,8 +159,8 @@ const ReturnsPage = () => {
       <div className="p-5">
         <div className="p-5 space-y-3 bg-white">
           <DisplayHeader
-            title="All Products"
-            description="You're viewing all products below."
+            title="All Returns and Refund"
+            description="You're viewing all sales order below."
             actionButton={
               <div className="flex flex-wrap items-center justify-end gap-3">
                 <Button onClick={reset}>Clear</Button>
@@ -193,13 +193,13 @@ const ReturnsPage = () => {
             onExport={handleExport}
           >
             <ReturnsTable
-              data={productsData?.data}
+              data={returnsData}
               currentPage={currentPage}
               onPageChange={setPage}
-              loading={products?.isLoading}
+              loading={returns?.isLoading}
               showCheckbox={true}
-              total={productsData?.total}
-              perPage={productsData?.per_page}
+              total={returnsData?.total}
+              perPage={returnsData?.per_page}
               updateLimitSize={setLimitSize}
             />
           </TableWrapper>

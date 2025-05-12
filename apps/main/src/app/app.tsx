@@ -49,6 +49,8 @@ import ViewStaffDetails from './pages/staff/view-staff';
 import ReturnsOutlet from './pages/returns/outlet';
 import ReturnsPage from './pages/returns';
 import ReturnsViewPage from './pages/returns/view';
+import NewReturnLog from './pages/returns/create';
+import { CustomerDetails } from './components/customers/VeiwCustomer';
 
 const App = () => {
   return (
@@ -152,6 +154,7 @@ const App = () => {
         }
       >
         <Route path="list" element={<CustomersList />} />
+        <Route path="view/:id" element={<CustomerDetails />} />
         <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
         <Route path="product-review/view/:id" element={<ViewReview />} />
       </Route>
@@ -180,6 +183,7 @@ const App = () => {
       >
         <Route index element={<ReturnsPage />} />
         <Route path="view/:id" element={<ReturnsViewPage />} />
+        <Route path="create" element={<NewReturnLog />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

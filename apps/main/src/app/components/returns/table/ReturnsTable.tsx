@@ -1,17 +1,13 @@
-import { Tag, Button, Dropdown, Avatar } from 'antd';
-import type { MenuProps } from 'antd';
-
-import { EllipsisOutlined, EyeOutlined } from '@ant-design/icons';
+import { Tag, Avatar } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table'; // important!
 import { DataTableProps } from '../../../types/table';
 import { useSelection } from '../../../../hooks/useSelection';
 import { DataType, PaginatedTable } from '../../common/Table/Table';
-import { SalesOrder } from '../../../pages/sales/types';
-import { ProductTableData } from '../../inventory/product-table';
 import dayjs from 'dayjs';
 import { formatBalance } from '../../../../utils/helper';
 import ActionIcon from '../../common/ActionIcon';
-import { useNavigate } from 'react-router';
+import { useNavigate } from "react-router-dom";
 
 export interface ReturnsData {
   id: string;
@@ -58,6 +54,7 @@ export const ReturnsTable = ({
     });
 
   const navigate = useNavigate();
+
   const columns: ColumnsType<ReturnsDataWithKey> = [
     {
       title: 'Product',
@@ -70,20 +67,17 @@ export const ReturnsTable = ({
             src={
               record.primary_media_url
                 ? record.primary_media_url
-                : `https://placehold.co/150x150/E6F7FF/black?text=${record.name
+                : `https://placehold.co/150x150/E6F7FF/black?text=${record?.product_name
                     ?.split(' ')
                     .map((word) => word[0]?.toUpperCase())
                     .join('')}`
             }
-            alt={record.name}
+            alt={record?.product_name}
             className="object-cover w-10 h-10 rounded-lg"
           />
           <div>
-            <div className="font-medium truncate max-w-[150px]">
-              {record.name}
-            </div>
-            <div className="text-sm text-gray-500 truncate max-w-[150px]">
-              {record.description || 'No description'}
+            <div className="font-medium truncate max-w-[150px] capitalize">
+              {record?.product_name}
             </div>
           </div>
         </div>
@@ -105,13 +99,13 @@ export const ReturnsTable = ({
       title: 'Order Id',
       dataIndex: 'order_id',
       key: 'SKU',
-      render: (_, record) => <span>#{record.SKU || 'No order id'}</span>,
+      render: (_, record) => <span>#{record?.product_sku || 'No order id'}</span>,
     },
 
     {
       title: 'Amount',
       key: 'amount',
-      render: (_, record) => <span>{formatBalance(record.retail_price)}</span>,
+      render: (_, record) => <span>{formatBalance(record?.total_amount_refunded)}</span>,
     },
     {
       title: 'Customer ',
@@ -120,10 +114,10 @@ export const ReturnsTable = ({
       render: (_, record: ReturnsDataWithKey) => (
         <div>
           <div className="font-medium">
-            {record?.customer?.name ?? 'Milacia Florence'}
+            {record?.customer_name ?? 'Milacia Florence'}
           </div>
           <div className="text-sm text-gray-500">
-            {record?.customer?.email ?? 'milaciaflorence@gmail.com'}
+            {record?.customer_email ?? 'milaciaflorence@gmail.com'}
           </div>
         </div>
       ),
@@ -134,7 +128,7 @@ export const ReturnsTable = ({
       render: (_, record) => {
         return (
           <Tag
-            color={record.status === 'active' ? 'green' : 'red'}
+            color={record.status === 'pending' ? 'orange' : 'green'}
             className="capitalize"
           >
             {record.status || 'No status'}
