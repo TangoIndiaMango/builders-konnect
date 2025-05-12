@@ -58,6 +58,8 @@ import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
+import NewReturnLog from './pages/returns/create';
+import { CustomerDetails } from './components/customers/VeiwCustomer';
 import MultiVariants from './pages/inventory/components/MultiVariants';
 
 // Inventory
@@ -191,6 +193,7 @@ const App = () => {
         }
       >
         <Route path="list" element={<CustomersList />} />
+        <Route path="view/:id" element={<CustomerDetails />} />
         <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
         <Route path="product-review/view/:id" element={<ViewReview />} />
       </Route>
@@ -220,6 +223,7 @@ const App = () => {
       >
         <Route index element={<ReturnsPage />} />
         <Route path="view/:id" element={<ReturnsViewPage />} />
+        <Route path="create" element={<NewReturnLog />} />
       </Route>
 
       {/* Not Found */}

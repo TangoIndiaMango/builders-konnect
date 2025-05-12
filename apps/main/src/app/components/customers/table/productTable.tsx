@@ -45,7 +45,15 @@ export const ProductTable = ({
       dataIndex: 'product',
       render: (_, record: ProductWithKey) => (
         <div className="flex items-center space-x-2">
-          <Avatar shape="square" src={record.primary_media_url} size="large" />
+          <Avatar shape="square"  src={
+              record.primary_media_url
+                ? record.primary_media_url
+                : `https://placehold.co/150x150/E6F7FF/black?text=${record.name
+                    ?.split(' ')
+                    .map((word) => word[0]?.toUpperCase())
+                    .join('')}`
+            }
+            alt={record.name} size="large" />
           <div>
             <div className="text-sm text-gray-500">{record.name}</div>
             <div className="text-xs font-medium text-blue-600">{record.quantity}</div>

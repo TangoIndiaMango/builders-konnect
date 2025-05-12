@@ -1,10 +1,7 @@
 import { Button, Form, notification } from 'antd';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import {
-  useCreateData,
-  useFetchData
-} from '../../../hooks/useApis';
+import { useNavigate } from 'react-router-dom';
+import { useCreateData, useFetchData } from '../../../hooks/useApis';
 import { useProductDiscounts } from '../../../hooks/useProductDiscount';
 import { useGetCustomers } from '../../../service/customer/customerFN';
 import { useCheckOut } from '../../../service/sales/salesFN';
@@ -97,8 +94,8 @@ const CreateSales = () => {
     paymentMethodInterface[]
   >([]);
   const [selectedProductDiscount, setSelectedProductDiscount] = useState<
-  string | null
->(null);
+    string | null
+  >(null);
   const [paymentAmount, setPaymentAmount] = useState<
     { methodId: string; amount: number; balance: number }[]
   >([]);
@@ -120,7 +117,7 @@ const CreateSales = () => {
   // console.log(paymentMethods?.data);
 
   // console.log(customers);
-  console.log(form.getFieldsValue());
+  // console.log(form.getFieldsValue());
 
   const discountData = discounts?.data as DiscountType[];
   const productDiscountData = productDiscounts?.data?.data as DiscountType[];
@@ -131,9 +128,8 @@ const CreateSales = () => {
   const paymentMethodData = paymentMethods?.data
     ?.data as paymentMethodInterface[];
 
-  const { discountedPrices, applyDiscount, removeDiscount } = useProductDiscounts(
-    productDiscountData
-  );
+  const { discountedPrices, applyDiscount, removeDiscount } =
+    useProductDiscounts(productDiscountData);
 
   const handleProductSelect = (product: ProductType) => {
     // Check if product already exists
@@ -179,7 +175,6 @@ const CreateSales = () => {
   const handleRemoveDiscount = () => {
     setSelectedDiscount(null);
     setSelectedProductDiscount(null);
-
   };
 
   const handleApplyDiscount = () => {
