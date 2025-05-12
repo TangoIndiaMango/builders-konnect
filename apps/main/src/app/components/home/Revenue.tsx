@@ -1,7 +1,12 @@
+import { Stores } from '@/app/pages/staff/types';
 import CardWithFilter from '../common/CardWithFilter';
 import EmptyState from '../common/EmptyState';
 import FilterGroup from '../common/filters/FilterGroup';
 import RevenueChart from './charts/RevenueChart';
+import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
+import { Select } from 'antd';
+import { Button } from 'antd';
+import { monthAbbreviation } from '../../../utils/helper';
 
 const data = [
   { year: '1991', value: 3 },
@@ -15,16 +20,65 @@ const data = [
   { year: '1998', value: 9 },
   { year: '1999', value: 13 },
 ];
-const Revenue = () => {
+interface MonthlyEarnings {
+  [month: string]: string;
+}
+interface RevenueProps {
+  revenueData: any;
+  storeList: Stores[];
+  onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
+  reset: () => void;
+  setSelectedStore: (value: string) => void;
+}
+
+const Revenue = ({
+  revenueData,
+  storeList,
+  onRangeChange,
+  reset,
+  setSelectedStore,
+}: RevenueProps) => {
+  // console.log(revenueData?.data);
+
+  const revenueRes = revenueData?.data?.data;
+  const revData = Object.entries(revenueRes)?.map(([month, value]) => ({
+    month: monthAbbreviation(month),
+    value: value,
+  }));
+  // console.log(revData);
   return (
     <CardWithFilter
       title="Revenue Analytics"
       description="Create sales orders and track order sales and performance here"
-      rightSection={<FilterGroup />}
+      rightSection={
+        <div className="flex items-center gap-2 justify-end flex-wrap">
+          <Button onClick={reset}>Clear</Button>
+          <Select
+            placeholder="Select store"
+            // mode="multiple"
+            allowClear
+            size="large"
+            className="rounded w-[200px]"
+            showSearch
+            filterOption={(input, option) =>
+              (option?.label?.toString() ?? '')
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+            options={storeList?.map((store) => ({
+              value: store.id,
+              label: store.name,
+            }))}
+            onChange={(value) => setSelectedStore(value)}
+          />
+
+          <DatePickerComp onRangeChange={onRangeChange} />
+        </div>
+      }
     >
-      {data?.length > 0 ? (
+      {revData?.length > 0 ? (
         <div className="w-full h-full min-h-[400px] max-w-[1200px] mx-auto">
-          <RevenueChart data={data} />
+          <RevenueChart data={revData} />
         </div>
       ) : (
         <EmptyState description="You have no data here yet." />

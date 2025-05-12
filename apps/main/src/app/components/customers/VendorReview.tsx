@@ -28,7 +28,7 @@ export interface VendorReviewProps {
   setCurrentPage: (currentPage: number) => void;
 }
 const VendorReview = ({ data, isLoading, setSearchTerm, currentPage, setCurrentPage}: VendorReviewProps) => {
-  
+
   const tableStatsData = [
     {
       label: 'Total Reviews',
@@ -74,11 +74,11 @@ const VendorReview = ({ data, isLoading, setSearchTerm, currentPage, setCurrentP
         <DisplayHeader
           title="Vendor Reviews"
           description=""
-          
+
         />
 
         <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
-          <div className="flex flex-wrap items-start w-full gap-1 mx-auto divide-x-2">
+          <div className="flex flex-wrap items-start w-full gap-1 mx-auto divide-x divide-gray-300">
             {tableStatsData?.map((item, index) => (
               <TableStats
                 key={index}

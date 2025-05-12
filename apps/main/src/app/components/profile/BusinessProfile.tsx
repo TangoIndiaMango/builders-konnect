@@ -1,18 +1,29 @@
-import { Typography, Space, Button } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { Typography } from 'antd';
+import { handleCopy } from '../../../utils/helper';
+import { CopyIcon } from '../../lib/CustomIcon';
 import { BusinessInfo } from '../../pages/profile/types';
 import { SkeletonLoader } from '../common/SkeletonLoader';
+import InfoField from './InfoField';
+
 const { Text } = Typography;
 
 interface BusinessProfileProps {
   businessInfo: BusinessInfo;
   isLoading: boolean;
+  isEditRequested: boolean;
+  handleChange: (field: string, value: string) => void;
 }
 
-const BusinessProfile = ({ businessInfo, isLoading }: BusinessProfileProps) => {
+const BusinessProfile = ({
+  businessInfo,
+  isLoading,
+  isEditRequested,
+  handleChange,
+}: BusinessProfileProps) => {
+
+
   return (
-    <div className="grid grid-cols-1 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm lg:grid-cols-[0.3fr_0.7fr]">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold">BUSINESS PROFILE</h3>
@@ -27,43 +38,61 @@ const BusinessProfile = ({ businessInfo, isLoading }: BusinessProfileProps) => {
 
       <SkeletonLoader active={isLoading} type="list">
         <div className="grid grid-cols-1 gap-x-24 gap-y-6 md:grid-cols-2">
-          <div>
-            <Text className="block mb-1 text-gray-500">Business name</Text>
-            <Text className="text-gray-900">{businessInfo?.name}</Text>
-          </div>
-          <div>
-            <Text className="block mb-1 text-gray-500">Business email</Text>
-            <Text className="text-gray-900">{businessInfo?.email}</Text>
-          </div>
-          <div>
-            <Text className="block mb-1 text-gray-500">Business category</Text>
-            <Text className="text-gray-900">{businessInfo?.category}</Text>
-          </div>
-          <div>
-            <Text className="block mb-1 text-gray-500">Business type</Text>
-            <Text className="text-gray-900">{businessInfo?.type}</Text>
-          </div>
-          <div>
-            <Text className="block mb-1 text-gray-500">
-              Business phone number
-            </Text>
-            <Text className="text-gray-900">{businessInfo?.phone}</Text>
-          </div>
-          <div>
-            <Text className="block mb-1 text-gray-500">Vendor ID</Text>
-            <Space>
-              <InfoCircleOutlined className="text-blue-600" />
-              <Text className="text-gray-900">{businessInfo?.vendorID}</Text>
-            </Space>
-          </div>
-          <div className="md:col-span-2">
-            <Text className="block mb-1 text-gray-500">Business address</Text>
-            <Text className="text-gray-900">
-              {businessInfo?.address}
-              <br />
-              {/* {businessInfo.location} */}
-            </Text>
-          </div>
+          <InfoField
+            field={{ label: 'Business name', value: businessInfo?.name }}
+            isEdit={isEditRequested}
+            handleChange={(value) => handleChange('name', value)}
+          />
+          <InfoField
+            field={{ label: 'Business email', value: businessInfo?.email }}
+            isEdit={isEditRequested}
+            handleChange={(value) => handleChange('email', value)}
+          />
+          <InfoField
+            field={{
+              label: 'Business category',
+              value: businessInfo?.category,
+            }}
+            isEdit={isEditRequested}
+            handleChange={(value) => handleChange('category', value)}
+          />
+          <InfoField
+            field={{ label: 'Business type', value: businessInfo?.type }}
+            isEdit={isEditRequested}
+            handleChange={(value) => handleChange('type', value)}
+          />
+          <InfoField
+            field={{
+              label: 'Business phone number',
+              value: businessInfo?.phone,
+            }}
+            isEdit={isEditRequested}
+            handleChange={(value) => handleChange('phone', value)}
+          />
+          <InfoField
+            field={{
+              label: 'Vendor ID',
+              value: (
+                <div
+                  onClick={() =>
+                    handleCopy(businessInfo?.vendorID, 'Vendor ID copied!')
+                  }
+                  className="flex gap-3 hover:text-blue-600 cursor-pointer"
+                >
+                  <CopyIcon color="blue" />
+                  <Text className="hover:text-blue-600 cursor-pointer">
+                    {businessInfo?.vendorID}
+                  </Text>
+                </div>
+              ),
+            }}
+            isEdit={false}
+          />
+          <InfoField
+            field={{ label: 'Business address', value: businessInfo?.address }}
+            isEdit={isEditRequested}
+            handleChange={(value) => handleChange('address', value)}
+          />
         </div>
       </SkeletonLoader>
     </div>

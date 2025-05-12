@@ -29,6 +29,8 @@ export interface SalesProps extends FilterState {
   isLoading: boolean;
   title: string;
   description: string;
+  isDashboard?: boolean;
+  withPagination?: boolean;
 }
 const AllSales = ({
   data,
@@ -46,6 +48,8 @@ const AllSales = ({
   onExport,
   updateLimitSize,
   filterOptions,
+  isDashboard = false,
+  withPagination = true,
 }: SalesProps) => {
   const tableStatsData = useMemo(
     () => [
@@ -96,10 +100,11 @@ const AllSales = ({
         }
       />
 
-      <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
-        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
-          {tableStatsData?.map((item, index) => (
-            <TableStats
+      {!isDashboard && (
+        <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
+          <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
+            {tableStatsData?.map((item, index) => (
+              <TableStats
               key={index}
               label={item?.label}
               value={item?.value}
@@ -107,8 +112,9 @@ const AllSales = ({
               valueColor={item?.valueColor}
             />
           ))}
-        </div>
-      </SkeletonLoader>
+          </div>
+        </SkeletonLoader>
+      )}
 
       <TableWrapper
         searchValue={searchValue}
@@ -117,6 +123,7 @@ const AllSales = ({
         selectedFilter={filterValue}
         onExport={onExport}
         filterOptions={filterOptions}
+        isDashboard={isDashboard}
       >
         <OrdersTable
           data={data?.data?.data}
@@ -127,6 +134,7 @@ const AllSales = ({
           perPage={data?.data?.per_page}
           total={data?.data?.total}
           updateLimitSize={updateLimitSize}
+          withPagination={withPagination}
         />
       </TableWrapper>
     </div>

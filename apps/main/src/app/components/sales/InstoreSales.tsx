@@ -65,7 +65,7 @@ const InstoreSales = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodF
       />
 
       <SkeletonLoader active={isLoading} type="table" columns={4} rows={1} >
-      <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
+      <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
         {tableStatsData?.map((item, index) => (
           <TableStats
             key={index}

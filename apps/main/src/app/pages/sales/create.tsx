@@ -100,7 +100,7 @@ const CreateSales = () => {
     { methodId: string; amount: number; balance: number }[]
   >([]);
 
-  const { mutate: checkOut, isLoading: isCheckingOut } = useCheckOut();
+  const { mutate: checkOut, isPending: isCheckingOut } = useCheckOut();
   const { data: customers, isLoading: isLoadingCustomers } = useGetCustomers();
   const discounts = useFetchData(
     'merchants/discounts?paginate=0&category=sales-orders'
@@ -205,7 +205,14 @@ const CreateSales = () => {
   }, [selectedProducts, selectedDiscount]);
 
   const handlePaymentMethodSelect = (methods: paymentMethodInterface[]) => {
-    setSelectedPaymentMethods((prev) => [...prev, ...methods]);
+    setSelectedPaymentMethods((prev) => {
+      const method = methods[0]
+      const alreadySelected = prev.find((p) => p.id === method.id)
+      if(alreadySelected){
+        return prev.filter((p) => p.id !== method.id)
+      }
+      return [...prev, method]
+    });
   };
 
   const handlePaymentConfirm = (
@@ -285,7 +292,7 @@ const CreateSales = () => {
     discounts?.isLoading ||
     paymentMethods?.isLoading ||
     products?.isLoading ||
-    calculateAmount?.isLoading;
+    calculateAmount?.isPending;
 
   return (
     <div className="space-y-5">

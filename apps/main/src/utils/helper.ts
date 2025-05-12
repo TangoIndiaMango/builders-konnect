@@ -1,8 +1,9 @@
-import { message, Upload } from 'antd';
+import { GetProp, message, Upload, UploadProps } from 'antd';
 import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg';
+export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg,.gif,.webp,.csv,.xls,.xlsx';
 export const maxFileSize = 10 * 1024 * 1024; // 10MB
 export const getStatusColor = (status: string) => {
   const colorMap: Record<string, string> = {
@@ -131,4 +132,44 @@ export const exportToExcel = (data: BlobPart, prefix: string) => {
 
   const blob = new Blob([data], { type: mimeType });
   saveAs(blob, filename);
+};
+
+export const handleCopy = (val: string, successTitle: string) => {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard
+      .writeText(val)
+      .then(() =>
+        message.success(successTitle)
+      )
+      .catch((err) =>
+        message.error('Failed to copy')
+      );
+  }
+};
+
+export const getBase64 = (file: FileType): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+
+
+export const monthAbbreviation = (month: string) => {
+  const monthMap = {
+    'January': 'Jan',
+    'February': 'Feb',
+    'March': 'Mar',
+    'April': 'Apr',
+    'May': 'May',
+    'June': 'Jun',
+    'July': 'Jul',
+    'August': 'Aug',
+    'September': 'Sep',
+    'October': 'Oct',
+    'November': 'Nov',
+    'December': 'Dec',
+  };
+  return monthMap[month] || month;
 };

@@ -33,19 +33,19 @@ const StaffList = ({
   const tableStatsData = [
     {
       label: 'Total Staff',
-      value: `${data?.stats?.total}`,
+      value: `${data?.stats?.total ?? 0}`,
       valueBgColor: '#E6F7FF',
       valueColor: '#003399',
     },
     {
       label: 'Active',
-      value: `${data?.stats?.active}`,
+      value: `${data?.stats?.active ?? 0}`,
       valueBgColor: '#E6FFFB',
       valueColor: '#08979C',
     },
     {
       label: 'Deactivated',
-      value: `${data?.stats?.inactive}`,
+      value: `${data?.stats?.inactive ?? 0}`,
       valueBgColor: '#F9F0FF',
       valueColor: '#722ED1',
     },
@@ -71,7 +71,7 @@ const StaffList = ({
       />
 
       <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
-        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
+        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
           {tableStatsData?.map((item, index) => (
             <TableStats
               key={index}

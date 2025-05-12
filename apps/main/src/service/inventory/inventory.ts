@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query"
 import { axiosInstance } from "../../utils/axios-instance"
 import { Product, ProductSearchParams, ProductResponse } from "./inventory.types"
 
@@ -14,7 +15,7 @@ const inventoryURLs = {
 
 export const searchProducts = async (params?: ProductSearchParams) => {
   const queryParams = new URLSearchParams();
-  
+
   if (params?.paginate !== undefined) queryParams.append('paginate', params.paginate.toString());
   if (params?.q) queryParams.append('q', params.q);
   if (params?.limit !== undefined) queryParams.append('limit', params.limit.toString());
@@ -35,7 +36,11 @@ export const getProduct = async (id: string) => {
 }
 
 export const createProduct = async (data: Partial<Product>) => {
-  const response = await axiosInstance.post(INVENTORY_URL + inventoryURLs.createProduct, data)
+  const response = await axiosInstance.post(INVENTORY_URL + inventoryURLs.createProduct, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
   return response.data
 }
 
@@ -54,4 +59,10 @@ export const getInventoryProducts = async (params?: ProductSearchParams) => {
 export const deleteProduct = async (id: string) => {
   const response = await axiosInstance.delete(INVENTORY_URL + inventoryURLs.deleteProduct.replace(':id', id))
   return response.data
+}
+
+export const useCreateProduct = () => {
+  return useMutation({
+    mutationFn: (data: FormData) => createProduct(data as any),
+  })
 }

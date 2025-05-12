@@ -2,7 +2,11 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Form, notification, Typography } from 'antd';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useCreateData, useFetchSingleData, usePutData } from '../../../hooks/useApis';
+import {
+  useCreateData,
+  useFetchSingleData,
+  usePutData,
+} from '../../../hooks/useApis';
 import SuccessModal from '../../components/common/SuccessModal';
 import DiscountForm from '../../components/discount/DiscountForm';
 import ErrorModal from '../../components/common/ErrorModal';
@@ -18,6 +22,7 @@ const DiscountCreate = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [form] = Form.useForm();
   const allProductsValue = Form.useWatch('all_products', form);
+  const categoryValue = Form.useWatch('category', form);
 
   // console.log(allProductsValue);
   const handleSubmit = async () => {
@@ -33,7 +38,7 @@ const DiscountCreate = () => {
       end_date: values.end_date.format('YYYY-MM-DD'),
       type: values.type, // "percentage" or "amount"
       value: Number(values.value),
-      all_products: values.all_products,
+      all_products: values.all_products || false,
     };
 
     if (!values.all_products && values.discounted_products?.length) {
@@ -86,11 +91,9 @@ const DiscountCreate = () => {
             initialValues={getDiscount?.data?.data}
             form={form}
             onFinish={handleSubmit}
-            loading={
-              id ? updateDiscount.isPending : createDiscount.isPending ||
-              getDiscount.isLoading
-            }
+            loading={id ? getDiscount.isPending : false}
             allProductsValue={allProductsValue}
+            categoryValue={categoryValue}
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
-import { bannerLogo, bgPattern } from '../../lib/assets/background';
+import { bannerLogo, welcomeBanner } from '../../lib/assets/background';
 import { Button } from 'antd';
 
 const Banner = () => {
@@ -22,11 +22,11 @@ const Banner = () => {
       <div
         className="absolute inset-0 bg-center bg-no-repeat bg-cover"
         style={{
-          backgroundImage: `url(${bgPattern})`,
+          backgroundImage: `url(${welcomeBanner})`,
           mixBlendMode: 'overlay',
           opacity: '1',
-          backgroundSize: 'contain',
-          backgroundRepeat: 'repeat',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
         }}
       />
 

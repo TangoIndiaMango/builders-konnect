@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { Avatar, Typography } from 'antd';
+import { useState } from 'react';
+import { useFetchData } from '../../../../hooks/useApis';
 import CardWithFilter from '../../common/CardWithFilter';
 import FilterDropdown from '../../common/filters/FilterDropdown';
-import { Avatar } from 'antd';
-import { Typography } from 'antd';
-import { useFetchData } from '../../../../hooks/useApis';
 import { SkeletonLoader } from '../../common/SkeletonLoader';
 
 const { Text } = Typography;
@@ -47,54 +46,6 @@ export const ProductListItem = ({ product, id }: { product: TopSellingProducts, 
     </div>
   );
 };
-
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: 'Premium Cement',
-    description: '10kg Smooth',
-    imageUrl: '',
-    soldCount: 250
-  },
-  {
-    id: 2,
-    name: 'Premium Cement',
-    description: '10kg Smooth',
-    imageUrl: '',
-    soldCount: 250
-  },
-  {
-    id: 3,
-    name: 'Premium Cement',
-    description: '10kg Smooth',
-    imageUrl: '',
-    soldCount: 250
-  },
-  {
-    id: 4,
-    name: 'Premium Cement',
-    description: '10kg Smooth',
-    imageUrl: '',
-    soldCount: 250
-  },
-  {
-    id: 5,
-    name: 'Premium Cement',
-    description: '10kg Smooth',
-    imageUrl: '',
-    soldCount: 250
-  },
-  {
-    id: 6,
-    name: 'Premium Cement',
-    description: '10kg Smooth',
-    imageUrl: '',
-    soldCount: 250
-  },
-];
-
-
 
 const TopSellingProducts = () => {
   const [selectedStore, setSelectedStore] = useState<string>('all');
