@@ -10,7 +10,7 @@ import ErrorModal from '../../components/common/ErrorModal';
 import { useCreateData, useUploadData } from '../../../hooks/useApis';
 import { frontendBaseUrl } from './auth-outlets';
 import { useEmailProvider } from '../../../hooks/useEmailProvider';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 interface MediaMetadata {
   identification_number: string;

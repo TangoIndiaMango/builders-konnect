@@ -29,10 +29,10 @@ const SalesViewPage = () => {
   const { id } = useParams();
   const getSalesOrder = useFetchData(`merchants/sales-orders/${id}`);
   const singleSalesOrder = getSalesOrder?.data?.data as SingleSalesOrder;
-  console.log('getSalesOrder', singleSalesOrder);
-  const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e);
-  };
+  // console.log('getSalesOrder', singleSalesOrder);
+  // const onClick: MenuProps['onClick'] = (e) => {
+  //   console.log('click ', e);
+  // };
   const navigate = useNavigate();
   return (
     <div>

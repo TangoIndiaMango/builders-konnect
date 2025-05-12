@@ -1,12 +1,13 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, message, Tag, Typography } from 'antd';
-import { useParams, useNavigate } from 'react-router';
+import {useParams, useNavigate } from "react-router-dom";
 import { useState } from 'react';
-import ProductDetails from '../../components/returns/ProductReturnsDetails';
 import CustomerInformation from '../../components/returns/CustomerInfo';
 import ActionConfirmModal from '../../components/returns/ActionConfirmMdal';
 import ActionReasonModal from '../../components/returns/ActionReasonModal';
-import { usePutData } from '../../../hooks/useApis';
+import { useFetchData, usePutData } from '../../../hooks/useApis';
+import ReturnOrderDetails from '../../components/returns/ProductReturnsDetails';
+import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 
 const ReturnsViewPage = () => {
   const { id } = useParams();
@@ -14,6 +15,9 @@ const ReturnsViewPage = () => {
 
   // API call to get the return request details
   const decsionUpdate = usePutData(`merchants/returns/${id}`);
+
+  const {data: returnDetailsData, isLoading: returnDetailsLoading } = useFetchData(`merchants/returns/${id}`)
+  const {data: productDetailsData, isLoading: productDetailsLoading } = useFetchData(`merchants/inventory-products/${returnDetailsData?.data?.product_id}`)
 
   // Modal states
   const [confirmType, setConfirmType] = useState<'approve' | 'reject' | null>(
@@ -55,13 +59,13 @@ const ReturnsViewPage = () => {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-5 p-5 bg-white">
-        <div>
+        <div className=' space-y-3'>
           <div className="flex items-center gap-3">
             <ArrowLeftOutlined onClick={() => navigate(-1)} />
             <Typography.Title level={4} className="!mb-0">
-              View Staff
+              View Request
             </Typography.Title>
-            <Tag color="yellow">pending</Tag>
+            <Tag color={returnDetailsData?.data?.status === 'pending' ? 'orange' : 'green'} className='capitalize'>{returnDetailsData?.data?.status}</Tag>
           </div>
           <p>See details of a refund request and track the progress. </p>
         </div>
@@ -82,8 +86,10 @@ const ReturnsViewPage = () => {
 
       <div className="p-6 space-y-6">
         <div className="space-y-6">
-          <ProductDetails />
-          <CustomerInformation />
+        <SkeletonLoader active={returnDetailsLoading || productDetailsLoading} type="card" hasHeader className="p-5">
+          <ReturnOrderDetails returnOrderData={returnDetailsData?.data} productImages={productDetailsData?.data?.media} />
+          <CustomerInformation customer={returnDetailsData?.data} showOrder={false} />
+        </SkeletonLoader>
         </div>
       </div>
 
