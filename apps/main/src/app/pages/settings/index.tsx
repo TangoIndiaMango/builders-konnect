@@ -1,30 +1,38 @@
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Tabs, Button } from 'antd';
 import type { TabsProps } from 'antd';
-import { Button, Tabs } from 'antd';
-import React from 'react';
-import {
-  useFetchDataSeperateLoading
-} from '../../../hooks/useApis';
-import WelcomeSection from '../../components/profile/WelcomeSection';
+
 import ProfileInfoSection from '../../components/settings/profilenfoSection';
-import { VendorProfile } from '../profile/types';
 import NotificationList from './views/NotificationList';
-import { StaffProfile } from './types';
+import WelcomeSection from '../../components/profile/WelcomeSection';
+import { VendorProfile } from '../profile/types';
+import { useFetchData } from '../../../hooks/useApis';
 
 const SettingPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState('profile');
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      setTab(tabParam);
+    }
+  }, [searchParams]);
+
   const onChange = (key: string) => {
-    console.log('Selected tab:', key);
+    setTab(key);
   };
 
-  const profileData = useFetchDataSeperateLoading(`merchants/staff/get/profile`);
-
-  const profile = profileData?.data?.data as StaffProfile;
+  const profileData = useFetchData('merchants/profile/view');
+  const profile = profileData?.data?.data as VendorProfile;
 
   const items: TabsProps['items'] = [
     {
       key: 'profile',
       label: 'Profile Information',
       children: (
-        <div className=" space-y-6">
+        <div className="space-y-6">
           <WelcomeSection
             data={profile}
             isLoading={profileData.isLoading}
@@ -40,10 +48,10 @@ const SettingPage: React.FC = () => {
       ),
     },
     {
-      key: 'Notification',
+      key: 'notifications',
       label: 'Notification',
       children: (
-        <div className="">
+        <div>
           <NotificationList />
         </div>
       ),
@@ -62,7 +70,7 @@ const SettingPage: React.FC = () => {
         <Button type="default">View Storefront</Button>
       </div>
       <div className="px-6 py-4">
-        <Tabs defaultActiveKey="profile" items={items} onChange={onChange} />
+        <Tabs activeKey={tab} onChange={onChange} items={items} />
       </div>
     </div>
   );
