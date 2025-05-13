@@ -1,21 +1,17 @@
-import EmptyState from '../../../components/common/EmptyState';
 import {
   CalendarOutlined,
   CheckOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import { Button, Checkbox, message, Pagination, Image } from 'antd';
+import { Button, Checkbox, message } from 'antd';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useState } from 'react';
 import {
-  useCreateData,
   useDeleteData,
-  useFetchData,
   useFetchDataSeperateLoading,
-  usePutData,
+  usePutData
 } from '../../../../hooks/useApis';
-import { emptyStateIllustration } from '../../../lib/assets/images';
 // Add relative time plugin to dayjs
 dayjs.extend(relativeTime);
 
@@ -97,9 +93,7 @@ const NotificationList = () => {
   const notifications = notificationResponse?.notifications;
 
   const markAsRead = usePutData(`merchants/notifications/:id/mark-as-read`);
-  const markAllAsRead = useFetchData(
-    `merchants/notifications/mark-all-as-read`
-  );
+  const markAllAsRead = usePutData(`merchants/notifications/mark-all-as-read`);
   const deleteNotification = useDeleteData(`merchants/notifications/:id`);
 
   const handleMarkAsRead = async (id: string) => {

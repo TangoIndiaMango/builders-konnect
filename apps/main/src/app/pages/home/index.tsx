@@ -13,6 +13,7 @@ import Stats from '../../components/home/Stats';
 import { Stores } from '../../pages/staff/types';
 import { customerData } from '../../components/home/constant';
 import { useGetOverviewCustomers } from '../../../service/customer/customerFN';
+import { useSessionStorage } from '../../../hooks/useSessionStorage';
 
 const DashboardHome = () => {
   const { customDateRange, setCustomDateRange, reset } =
@@ -51,6 +52,8 @@ const DashboardHome = () => {
   const productData = useFetchData(productUrl);
   const customerData = useFetchData(customerUrl);
   // console.log(customerData?.data, 'customerData');
+
+  const { businessProfile } = useSessionStorage();
   const handleReset = () => {
     setSelectedStore('');
     reset();
@@ -72,7 +75,7 @@ const DashboardHome = () => {
         }
       />
       <div className="container space-y-5 bg-gray-50">
-        <Banner />
+        {!businessProfile?.logo && <Banner />}
         {isLoading ? (
           <>
             <Skeleton active />

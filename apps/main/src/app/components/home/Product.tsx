@@ -67,7 +67,7 @@ const Product = ({
 }: ProductProps) => {
   const productOverview = productData?.data?.data as ProductOverview;
   const navigate = useNavigate();
-  console.log(recentProductData, 'recentProductData');
+  // console.log(recentProductData, 'recentProductData');
   const statsData = [
     {
       title: 'Total Products',

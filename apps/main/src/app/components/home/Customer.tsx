@@ -80,7 +80,7 @@ const Customer = ({
     month: monthAbbreviation(month),
     value: value,
   }));
-  console.log(recentCustomerData?.data?.data);
+  // console.log(recentCustomerData?.data?.data);
   const navigate = useNavigate();
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
