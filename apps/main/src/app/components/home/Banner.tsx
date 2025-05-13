@@ -43,7 +43,13 @@ const Banner = () => {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button type="default" className="bg-white hover:bg-gray-100">
+              <Button
+                type="default"
+                className="bg-white hover:bg-gray-100"
+                onClick={() => {
+                  navigate('/pos/profile');
+                }}
+              >
                 Upload Logo
               </Button>
               <Button

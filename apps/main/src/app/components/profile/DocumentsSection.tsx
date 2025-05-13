@@ -1,7 +1,11 @@
 import { ArrowRightOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, Typography, Upload, UploadFile } from 'antd';
 import { useEffect, useState } from 'react';
-import { acceptedFileTypes, beforeUpload } from '../../../utils/helper';
+import {
+  acceptedFileTypes,
+  beforeUpload,
+  getBase64,
+} from '../../../utils/helper';
 import { Documents } from '../../pages/profile/types';
 import ActionIcon from '../common/ActionIcon';
 import { SkeletonLoader } from '../common/SkeletonLoader';
@@ -39,6 +43,26 @@ const DocumentsSection = ({
 }: DocumentsSectionProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentFile, setCurrentFile] = useState<string | null>(null);
+  const [fileLists, setFileLists] = useState<{
+    CAC?: UploadFile[];
+    TIN?: UploadFile[];
+    proof_of_address?: UploadFile[];
+  }>({});
+
+  useEffect(() => {
+    setFileLists({
+      CAC: getFileList(documents?.CAC?.file, 'CAC'),
+      TIN: getFileList(documents?.TIN?.file, 'TIN'),
+      proof_of_address: getFileList(
+        documents?.proof_of_address?.file
+          ? documents.proof_of_address.file
+          : typeof documents?.proof_of_address === 'string'
+          ? documents.proof_of_address
+          : null,
+        'proof_of_address'
+      ),
+    });
+  }, [documents]);
 
   const handleOpen = (fileUrl: string | null) => {
     setCurrentFile(fileUrl);
@@ -46,8 +70,23 @@ const DocumentsSection = ({
   };
 
   const handleFileSelect =
-    (docType: 'CAC' | 'TIN' | 'proof_of_address') => (info: any) => {
-      if (info) {
+    (docType: 'CAC' | 'TIN' | 'proof_of_address') => async (info: any) => {
+      if (info.file) {
+        const convertToBase64 = info?.file?.url?.startsWith('http')
+          ? info.file
+          : await getBase64(info.file);
+        setFileLists((prev) => ({
+          ...prev,
+          [docType]: [
+            {
+              uid: info.file.uid,
+              name: info.file.name,
+              status: 'done',
+              url: convertToBase64,
+            },
+          ],
+        }));
+
         setSelectedFiles((prev) => ({
           ...prev,
           [docType]: info,
@@ -87,7 +126,7 @@ const DocumentsSection = ({
             }}
             handleUpload={handleFileSelect('CAC')}
             isEdit={isEditRequested}
-            fileList={getFileList(documents?.CAC?.file, 'CAC')}
+            fileList={fileLists.CAC}
           />
           <InfoField
             field={{ label: 'TIN no.', value: documents?.TIN?.identifier }}
@@ -115,7 +154,7 @@ const DocumentsSection = ({
             }}
             handleUpload={handleFileSelect('TIN')}
             isEdit={isEditRequested}
-            fileList={getFileList(documents?.TIN?.file, 'TIN')}
+            fileList={fileLists.TIN}
           />
           <InfoField
             type="file"
@@ -140,15 +179,7 @@ const DocumentsSection = ({
             }}
             handleUpload={handleFileSelect('proof_of_address')}
             isEdit={isEditRequested}
-            fileList={getFileList(
-              // proof_of_address can be null or an object with file
-              documents?.proof_of_address?.file
-                ? documents.proof_of_address.file
-                : typeof documents?.proof_of_address === 'string'
-                ? documents.proof_of_address
-                : null,
-              'proof_of_address'
-            )}
+            fileList={fileLists.proof_of_address}
           />
         </div>
       </SkeletonLoader>

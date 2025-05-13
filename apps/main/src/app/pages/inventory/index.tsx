@@ -3,27 +3,24 @@ import { Button, Divider, Dropdown, MenuProps, Modal, message } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  useDeleteData,
   useFetchData,
-  useGetExportData,
+  useGetExportData
 } from '../../../hooks/useApis';
 import { useTableState } from '../../../hooks/useTable';
 import { ProductStats } from '../../../service/inventory/inventory.types';
+import { useDeleteProduct } from '../../../service/inventory/inventoryFN';
 import { exportCsvFromString, formatBalance } from '../../../utils/helper';
 import DisplayHeader from '../../components/common/DisplayHeader';
-import TimelineFilter from '../../components/common/filters/DateFilter';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
+import TableWrapper from '../../components/common/Table/TableWrapper';
 import TableStats from '../../components/common/TableStats';
-import { EmptyInventoryState } from '../../components/inventory/empty-inventory-state';
+import DatePickerComp from '../../components/date/DatePickerrComp';
 import {
   ProductTable,
   ProductTableData,
 } from '../../components/inventory/product-table';
-import { PaginatedResponse } from '../../types/paginatedData';
-import TableWrapper from '../../components/common/Table/TableWrapper';
 import { filterOptions } from '../../lib/constant';
-import DatePickerComp from '../../components/date/DatePickerrComp';
-import { useDeleteProduct } from '../../../service/inventory/inventoryFN';
+import { PaginatedResponse } from '../../types/paginatedData';
 
 const ProductsPage = () => {
   // const [currentPage, setCurrentPage] = useState(1);

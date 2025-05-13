@@ -38,7 +38,7 @@ const ProfileInfoSection = ({
               </div>
               <div>
                 <p className="text-xs text-gray-400">Role</p>
-                <p className="font-medium">{data?.role}</p>
+                <p className="font-medium">{data?.role || 'N/A'}</p>
               </div>
             </div>
 

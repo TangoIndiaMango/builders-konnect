@@ -85,7 +85,9 @@ const ProductPreview = () => {
   };
 
   const handleAddProduct = () => {
-    setIsSuccessModalVisible(true);
+    navigate(`/pos/inventory/product-edit/${product.id}`, {
+      state: product,
+    });
   };
 
   const handlePreview = (img: string) => {
@@ -111,9 +113,9 @@ const ProductPreview = () => {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button onClick={handleContinueEditing}>Continue Editing</Button>
+          {/* <Button onClick={handleContinueEditing}>Continue Editing</Button> */}
           <Button type="primary" onClick={handleAddProduct}>
-            Submit Product
+            Edit Product
           </Button>
         </div>
       </div>
@@ -218,7 +220,7 @@ const ProductPreview = () => {
                   </div>
                 </div>
                 {/* Variants */}
-                <div className="mt-4">
+                {/* <div className="mt-4">
                   <Text strong>Product Variants:</Text>
                   <Card className="mt-2 p-0 overflow-x-auto">
                     <div style={{ overflowX: 'auto' }}>
@@ -282,7 +284,7 @@ const ProductPreview = () => {
                       </table>
                     </div>
                   </Card>
-                </div>
+                </div> */}
 
                 {/* Product Attributes */}
                 <div className="mt-4">
