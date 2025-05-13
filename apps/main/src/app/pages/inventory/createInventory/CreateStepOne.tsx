@@ -51,24 +51,29 @@ const CreateStepOne = ({
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [media, setMedia] = useState<string[]>([]);
-  const [formImages, setFormImages] = useState<any[]>([]);
 
   // Update this effect to properly sync with form
   useEffect(() => {
     const images = form.getFieldValue('productImages');
-    setFormImages(images || []);
-  }, [form]);
-
-  // Update this effect to handle fileList
-  useEffect(() => {
-    if (isEdit && formImages && Array.isArray(formImages) && formImages.length > 0) {
-      setFileList(formImages);
+    // console.log(images)
+    if (images && Array.isArray(images)) {
+      setFileList(images);
+      // Also update media state if needed
+      const mediaUrls = images.map((file) => file.url || file.thumbUrl).filter(Boolean);
+      setMedia(mediaUrls);
     }
-  }, [formImages, isEdit]);
+  }, [form, form.getFieldValue('productImages')]);
 
   // Handle file changes
   const handleChange = async ({ fileList: newFileList }) => {
     setFileList(newFileList);
+
+    // Update form value immediately
+    form.setFieldsValue({
+      productImages: newFileList,
+    });
+
+    // Update media array
     const mediaArr = await Promise.all(
       newFileList.map(async (file) => {
         if (file.url && file.url.startsWith('http')) {
@@ -81,26 +86,7 @@ const CreateStepOne = ({
       })
     );
     setMedia(mediaArr.filter(Boolean));
-
-    // Update form value
-    form.setFieldsValue({
-      productImages: newFileList,
-    });
   };
-
-  console.log(form.getFieldValue("productImages"))
-
-  // Keep form in sync with fileList (for submit)
-  useEffect(() => {
-    if (isEdit) {
-      form.setFieldsValue({
-        productImages: fileList,
-      });
-    }
-  }, [fileList, form, isEdit]);
-
-  // console.log('fileList', fileList);
-  // console.log('form.getFieldValue(productImages)', form.getFieldValue('productImages'));
 
   // For preview modal
   const handlePreview = async (file) => {
@@ -117,7 +103,6 @@ const CreateStepOne = ({
       <div style={{ marginTop: 8 }}>Upload</div>
     </button>
   );
-
 
   return (
     <div>
@@ -194,79 +179,81 @@ const CreateStepOne = ({
         <Input placeholder="Enter brand name" />
       </Form.Item>
 
-      <Form.Item
-        label="Product Images"
-        name="productImages"
-        rules={[{ required: true, message: 'Required' }]}
-        extra="Recommended file size: 500x500 px. Max file size: 2MB"
-      >
-        <Upload
-          listType="picture-card"
-          beforeUpload={beforeUpload}
-          maxCount={4}
-          accept={'.jpg,.png,.jpeg,.gif,.webp'}
-          onPreview={handlePreview}
-          onChange={handleChange}
-          fileList={fileList}
-        >
-          {fileList.length >= 4 ? null : uploadButton}
-        </Upload>
-
-        {previewImage && (
-          <Image
-            wrapperStyle={{ display: 'none' }}
-            preview={{
-              visible: previewOpen,
-              onVisibleChange: (visible) => setPreviewOpen(visible),
-              afterOpenChange: (visible) => !visible && setPreviewImage(''),
-            }}
-            src={previewImage}
-          />
-        )}
-      </Form.Item>
-
       {additionType === 'single' ? (
+        <>
+          <Form.Item
+            label="Product Images"
+            name="productImages"
+            rules={[{ required: true, message: 'Required' }]}
+            extra="Recommended file size: 500x500 px. Max file size: 2MB"
+          >
+            <Upload
+              listType="picture-card"
+              beforeUpload={beforeUpload}
+              maxCount={4}
+              accept={'.jpg,.png,.jpeg,.gif,.webp'}
+              onPreview={handlePreview}
+              onChange={handleChange}
+              fileList={fileList}
+            >
+              {fileList.length >= 4 ? null : uploadButton}
+            </Upload>
+
+            {previewImage && (
+              <Image
+                wrapperStyle={{ display: 'none' }}
+                preview={{
+                  visible: previewOpen,
+                  onVisibleChange: (visible) => setPreviewOpen(visible),
+                  afterOpenChange: (visible) => !visible && setPreviewImage(''),
+                }}
+                src={previewImage}
+              />
+            )}
+          </Form.Item>
+
+          <Form.Item
+            label="Product Variant"
+            name="variants"
+            required
+            className="mb-2"
+          >
+            {variants.length > 0 ? (
+              <VariantList
+                variants={variants}
+                handleEditVariant={handleEditVariant}
+                handleDeleteVariant={handleDeleteVariant}
+              />
+            ) : (
+              <div>
+                <Button
+                  type="link"
+                  className=" text-[#3B43FF] "
+                  onClick={() => setIsVariantModalVisible(true)}
+                  icon={<PlusOutlined />}
+                >
+                  Add product variant
+                </Button>
+                <p className="text-sm text-gray-400">
+                  Select the product variations of the product you want to add.
+                </p>
+              </div>
+            )}
+          </Form.Item>
+        </>
+      ) : (
         <Form.Item
-          label="Product Variant"
-          name="variants"
-          required
-          className="mb-2"
+          label="Unit Type"
+          name="measurement_unit"
+          rules={[{ required: true, message: 'Required' }]}
         >
-          {variants.length > 0 ? (
-            <VariantList
-              variants={variants}
-              handleEditVariant={handleEditVariant}
-              handleDeleteVariant={handleDeleteVariant}
-            />
-          ) : (
-            <div>
-              <Button
-                type="link"
-                className=" text-[#3B43FF] "
-                onClick={() => setIsVariantModalVisible(true)}
-                icon={<PlusOutlined />}
-              >
-                Add product variant
-              </Button>
-              <p className="text-sm text-gray-400">
-                Select the product variations of the product you want to add.
-              </p>
-            </div>
-          )}
+          <Select
+            placeholder="Select measuring unit"
+            options={measuringUnits}
+            onChange={handleMeasuringUnitChange}
+            style={{ width: '100%' }}
+          />
         </Form.Item>
-      ): (
-        <Form.Item
-        label="Unit Type"
-        name="measurement_unit"
-        rules={[{ required: true, message: 'Required' }]}
-      >
-        <Select
-          placeholder="Select measuring unit"
-          options={measuringUnits}
-          onChange={handleMeasuringUnitChange}
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
       )}
     </div>
   );

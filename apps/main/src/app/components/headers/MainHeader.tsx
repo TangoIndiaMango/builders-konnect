@@ -1,10 +1,17 @@
-
-import { DownOutlined, MenuFoldOutlined, MenuUnfoldOutlined, RightOutlined, BellOutlined } from '@ant-design/icons';
-import { Avatar, Dropdown, Card, Badge } from 'antd';
+import {
+  BellOutlined,
+  DownOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  RightOutlined,
+} from '@ant-design/icons';
+import { Avatar, Badge, Card, Dropdown } from 'antd';
 import { Header } from 'antd/es/layout/layout';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import NotificationPanel from './NotificationPanel';
+import { useFetchDataSeperateLoading } from '../../../hooks/useApis';
+import { useSessionStorage } from '../../../hooks/useSessionStorage';
+import NotificationPanel, { NotificationAPI } from './NotificationPanel';
 
 interface MainHeaderProps {
   isMobile: boolean;
@@ -25,8 +32,11 @@ const MainHeader: React.FC<MainHeaderProps> = ({
   storeType = 'Mainland Store',
   userName = 'Olugbenga Daniels',
 }) => {
-  
-  const [visibleTab, setVisibleTab] = useState<'profile' | 'notifications'>('notifications');
+  const { user, businessProfile } = useSessionStorage();
+  // console.log(user);
+  const [visibleTab, setVisibleTab] = useState<'profile' | 'notifications'>(
+    'notifications'
+  );
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -40,6 +50,13 @@ const MainHeader: React.FC<MainHeaderProps> = ({
     }
   }, [searchParams]);
 
+  const notificationData = useFetchDataSeperateLoading(
+    `merchants/notifications?&grouped=false&limit=&paginate=0`
+  );
+  const notificationResponse = notificationData?.data?.data;
+  const notificationsAPI =
+    notificationResponse?.notifications as NotificationAPI[];
+
   const ProfileDropdown = () => (
     <div className="bg-white shadow-lg rounded-md border border-gray-100 w-72 max-w-full">
       <Card className="w-full p-0 overflow-hidden rounded-lg border-0 shadow-none">
@@ -49,17 +66,24 @@ const MainHeader: React.FC<MainHeaderProps> = ({
             <div className="flex flex-col items-center py-4 px-2">
               <div className="bg-sky-200 rounded-full w-16 h-16 flex items-center justify-center overflow-hidden mb-3">
                 <img
-                  src="/Avatar.png"
+                  src={
+                    user?.avatar ??
+                    `https://placehold.co/160x160/e0e0e0/e0e0e0?text=${user?.name
+                      ?.charAt(0)
+                      .toUpperCase()}`
+                  }
                   alt="Profile"
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
-              <h4 className="text-sm font-semibold mb-0">{userName}</h4>
+              <h4 className="text-sm font-semibold mb-0">
+                {user?.name ?? 'N/A'}
+              </h4>
               <p className="text-xs text-gray-500 mb-1 text-center break-all">
-                daniels@buildershub.com
+                {user?.email ?? 'N/A'}
               </p>
               <div className="bg-gray-100 rounded-full px-3 py-0.5 text-xs">
-                <span className="text-gray-600">Finance Manager</span>
+                <span className="text-gray-600">{user?.role ?? 'N/A'}</span>
               </div>
             </div>
 
@@ -69,28 +93,36 @@ const MainHeader: React.FC<MainHeaderProps> = ({
                 <span className="text-xs text-gray-500">Current account</span>
                 <span className="ml-2 w-1.5 h-1.5 rounded-full bg-red-500 inline-block"></span>
               </div>
-              <h5 className="text-sm font-medium mb-1">{storeName}</h5>
+              <h5 className="text-sm font-medium mb-1">
+                {businessProfile?.business?.name ?? `N/A`}
+              </h5>
               <span className="inline-block rounded-full px-2 py-0.5 text-xs bg-sky-100 text-sky-600">
-                {storeType}
+                {businessProfile?.business?.type ?? `N/A`}
               </span>
             </div>
 
             {/* Switch Account Section */}
             <div className="px-4 py-3 border-t border-gray-100">
-              <span className="text-xs text-gray-500 block mb-2">Switch account/store</span>
+              <span className="text-xs text-gray-500 block mb-2">
+                Switch account/store
+              </span>
               <div className="flex justify-between items-center py-2 cursor-pointer hover:bg-gray-50">
-                <span className="text-sm font-medium truncate">Builder's Hub Constructions</span>
+                <span className="text-sm font-medium truncate">
+                  Builder's Hub Constructions
+                </span>
                 <RightOutlined className="text-gray-400 text-xs" />
               </div>
               <div className="flex justify-between items-center py-2 cursor-pointer hover:bg-gray-50 border-t border-gray-100">
-                <span className="text-sm font-medium truncate">Builder's Hub Tools and Machinery</span>
+                <span className="text-sm font-medium truncate">
+                  Builder's Hub Tools and Machinery
+                </span>
                 <RightOutlined className="text-gray-400 text-xs" />
               </div>
             </div>
           </>
         ) : (
           <div className="max-h-80 overflow-y-auto">
-            <NotificationPanel />
+            <NotificationPanel notificationsAPI={notificationsAPI} />
           </div>
         )}
       </Card>
@@ -108,7 +140,9 @@ const MainHeader: React.FC<MainHeaderProps> = ({
             }}
             className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 text-gray-700"
           >
-            {visibleTab === 'profile' ? '🔔 View Notifications' : '👤 Back to Profile'}
+            {visibleTab === 'profile'
+              ? '🔔 View Notifications'
+              : '👤 Back to Profile'}
           </button>
         </div>
       )}
@@ -116,23 +150,31 @@ const MainHeader: React.FC<MainHeaderProps> = ({
   );
 
   return (
-<Header
-  className="px-4 py-2 flex items-center justify-between border-b border-gray-100 h-[80px] overflow-hidden"
-  style={{ backgroundColor: 'white' }} // Inline style to enforce white background
->
-
+    <Header
+      className="px-4 py-2 flex items-center justify-between border-b border-gray-100 h-[80px] overflow-hidden"
+      style={{ backgroundColor: 'white' }} // Inline style to enforce white background
+    >
       <div className="flex items-center justify-between w-full gap-x-4 overflow-hidden">
         {/* Left: Store Info */}
         <div className="flex items-center gap-3 min-w-0">
           {isMobile && (
-            <div onClick={toggleSidebar} className="cursor-pointer text-xl shrink-0">
-              {showMobileSidebar ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            <div
+              onClick={toggleSidebar}
+              className="cursor-pointer text-xl shrink-0"
+            >
+              {showMobileSidebar ? (
+                <MenuUnfoldOutlined />
+              ) : (
+                <MenuFoldOutlined />
+              )}
             </div>
           )}
           <div className="flex items-center gap-2 min-w-0 truncate">
-            <h2 className="text-base font-medium text-gray-800 truncate">{storeName}</h2>
+            <h2 className="text-base font-medium text-gray-800 truncate">
+              {businessProfile?.business?.name ?? `N/A`}
+            </h2>
             <span className="text-xs text-sky-700 bg-sky-50 border border-sky-200 px-3 py-0.5 rounded-full shrink-0">
-              {storeType}
+              {businessProfile?.business?.type ?? 'N/A'}
             </span>
           </div>
         </div>
@@ -146,13 +188,13 @@ const MainHeader: React.FC<MainHeaderProps> = ({
               placement="bottomRight"
               dropdownRender={() => (
                 <div className="bg-white shadow-lg rounded-md border border-gray-100 w-80 max-w-full max-h-96 overflow-y-auto">
-                  <NotificationPanel />
+                  <NotificationPanel notificationsAPI={notificationsAPI} />
                 </div>
               )}
             >
               <div className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors duration-150 cursor-pointer">
                 <Badge
-                  count={5}
+                  count={notificationsAPI?.length}
                   size="small"
                   offset={[-2, 2]}
                   style={{ backgroundColor: '#f5222d' }}
@@ -172,13 +214,20 @@ const MainHeader: React.FC<MainHeaderProps> = ({
           >
             <div className="flex items-center gap-1 cursor-pointer px-2 py-1 hover:bg-gray-100 rounded-md">
               <Avatar
-                src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
+                src={
+                  user?.avatar ??
+                  `https://placehold.co/160x160/e0e0e0/e0e0e0?text=${user?.name
+                    ?.charAt(0)
+                    .toUpperCase()}`
+                }
                 size="default"
                 style={{ backgroundColor: '#87d068' }}
               />
               {!isMobile && (
                 <>
-                  <span className="text-sm font-medium text-gray-700">{userName}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user?.name ?? userName}
+                  </span>
                   <DownOutlined className="text-xs text-gray-500" />
                 </>
               )}

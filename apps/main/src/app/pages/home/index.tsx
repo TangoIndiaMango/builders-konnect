@@ -12,6 +12,8 @@ import Revenue from '../../components/home/Revenue';
 import Stats from '../../components/home/Stats';
 import { Stores } from '../../pages/staff/types';
 import { customerData } from '../../components/home/constant';
+import { useGetOverviewCustomers } from '../../../service/customer/customerFN';
+import { useSessionStorage } from '../../../hooks/useSessionStorage';
 
 const DashboardHome = () => {
   const { customDateRange, setCustomDateRange, reset } =
@@ -36,12 +38,22 @@ const DashboardHome = () => {
   const customerUrl = queryString
     ? `merchants/dashboard/customer-traffic?${queryString}`
     : 'merchants/dashboard/customer-traffic?location_id=l_4XQQZ8I7AJKVdjxc_VgWA';
-
+  const { data: recentCustomerData, isLoading: recentCustomerLoading } =
+    useGetOverviewCustomers({
+      paginate: 1,
+      limit: 5,
+      // date_filter: 'date_decending',
+    });
+  const products = useFetchData(
+    `merchants/inventory-products?paginate=1&limit=5`
+  );
   const statsData = useFetchData(url);
   const revenueData = useFetchData(revenueUrl);
   const productData = useFetchData(productUrl);
   const customerData = useFetchData(customerUrl);
   // console.log(customerData?.data, 'customerData');
+
+  const { businessProfile } = useSessionStorage();
   const handleReset = () => {
     setSelectedStore('');
     reset();
@@ -63,7 +75,7 @@ const DashboardHome = () => {
         }
       />
       <div className="container space-y-5 bg-gray-50">
-        <Banner />
+        {!businessProfile?.logo && <Banner />}
         {isLoading ? (
           <>
             <Skeleton active />
@@ -93,6 +105,8 @@ const DashboardHome = () => {
               onRangeChange={setCustomDateRange}
               setSelectedStore={setSelectedStore}
               reset={handleReset}
+              recentCustomerData={recentCustomerData}
+              recentCustomerLoading={recentCustomerLoading}
             />
             <Product
               productData={productData}
@@ -100,6 +114,8 @@ const DashboardHome = () => {
               onRangeChange={setCustomDateRange}
               setSelectedStore={setSelectedStore}
               reset={handleReset}
+              recentProductData={products}
+              recentProductLoading={isLoading}
             />
           </>
         )}

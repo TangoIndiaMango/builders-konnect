@@ -168,7 +168,7 @@ const App = () => {
         <Route path="preview-product/:id" element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage />} />
-        <Route path="multi" element={<MultiVariants />} />
+        {/* <Route path="multi" element={<MultiVariants />} /> */}
       </Route>
 
       {/* Settings */}
