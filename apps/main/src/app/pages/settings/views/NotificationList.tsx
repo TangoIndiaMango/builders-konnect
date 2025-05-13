@@ -12,6 +12,7 @@ import {
   useFetchDataSeperateLoading,
   usePutData
 } from '../../../../hooks/useApis';
+import {SkeletonLoader} from '../../../components/common/SkeletonLoader';
 // Add relative time plugin to dayjs
 dayjs.extend(relativeTime);
 
@@ -145,6 +146,10 @@ const NotificationList = () => {
     }
   };
 
+  if (notificationData.isLoading) {
+    return <SkeletonLoader active={true} type="list" />;
+  }
+
   return (
     <div className="bg-white p-6 rounded-md shadow-sm border border-gray-50">
       {/* Header with actions */}
@@ -159,7 +164,7 @@ const NotificationList = () => {
             onChange={(e) => handleSelectAll(e.target.checked)}
             checked={
               selectedNotifications.length ===
-              notifications.reduce((acc, group) => acc + group.items.length, 0)
+              notifications?.reduce((acc, group) => acc + group.items.length, 0)
             }
           >
             Select All
@@ -175,7 +180,7 @@ const NotificationList = () => {
       </div>
 
       {/* Notification groups */}
-      {notifications.map((group) => (
+      {notifications?.map((group) => (
         <div key={group.group} className="mb-6">
           {/* Group header */}
           <div className="flex items-center space-x-2 text-gray-400 text-xs mb-4">
