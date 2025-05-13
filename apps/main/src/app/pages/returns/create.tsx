@@ -261,11 +261,11 @@ const NewReturnLog = () => {
               <Typography.Title level={5}>Description</Typography.Title>
             </div>
 
-            <div className="flex gap-2">
+            <div className="w-full md:w-[500px]">
               <TextArea
                 placeholder="Enter description about the return"
-                className="w-full md:w-[300px]"
-                rows={4}
+                className=""
+                rows={8}
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
