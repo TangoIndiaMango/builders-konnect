@@ -1,25 +1,25 @@
 import { Avatar } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
-import ActionIcon from '../../common/ActionIcon';
+import ActionIcon from '../common/ActionIcon';
 
-interface CustomerListItemProps {
-  avatar: string;
+interface ProductListItemProps {
   name: string;
-  email: string;
+  SKU: string;
+  primary_media_url: string;
   onClick?: () => void;
 }
 
-const CustomerListItem: React.FC<CustomerListItemProps> = ({
-  avatar,
+const ProductListItem: React.FC<ProductListItemProps> = ({
   name,
-  email,
+  SKU,
+  primary_media_url,
   onClick,
 }) => {
   return (
     <div className="flex items-center justify-between w-full py-2">
       <div className="flex items-center gap-2 md:gap-5">
         <Avatar
-          src={avatar || `https://placehold.co/40x40/C7B9DA/black?text=${name?.split(' ').map((word) => word[0]?.toUpperCase()).join('')}`}
+          src={primary_media_url || `https://placehold.co/40x40/C7B9DA/black?text=${name?.split(' ').map((word) => word[0]?.toUpperCase()).join('')}`}
           size="large"
           style={{ backgroundColor: '#C7B9DA' }}
         />
@@ -27,7 +27,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({
         <div className="flex flex-col">
           <h4 className="text-sm font-medium md:text-lg">{name}</h4>
           <p className="text-xs text-gray-500 sm:text-sm md:text-base">
-            {email}
+            {SKU}
           </p>
         </div>
       </div>
@@ -43,4 +43,4 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({
   );
 };
 
-export default CustomerListItem;
+export default ProductListItem;

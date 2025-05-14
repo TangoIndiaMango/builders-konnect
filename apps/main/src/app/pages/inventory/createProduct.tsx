@@ -1,13 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Typography,
-  UploadFile,
-  message,
-} from 'antd';
+import { Button, Form, Input, Modal, Typography, message } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useFetchSingleData } from '../../../hooks/useApis';
@@ -21,6 +13,7 @@ import {
 import CreateStepOne from './createInventory/CreateStepOne';
 import CreateStepTwo from './createInventory/CreateStepTwo';
 import ProductOptionModal from './createInventory/ProductOptionModal';
+import useCreateProductHook from './hooks/useCreateProduct';
 import { SingleProductResponse } from './types';
 
 type CategoryResponse = {
@@ -51,34 +44,10 @@ interface Category {
   value: string;
   label: string;
 }
-
-interface ProductFormData {
-  name: string;
-  sku: string;
-  category: string;
-  subcategory: string;
-  productType: string;
-  brand: string;
-  productImages: UploadFile[];
-  size: string;
-  costPrice: number;
-  sellingPrice: number;
-  stockQuantity: number;
-  reorderLevel: number;
-  description: string;
-  tags: string[];
-  measuringUnit: string;
-  attributes: Record<string, string>;
-}
-
-const CreateProduct = () => {
-  const [form] = Form.useForm();
-  const [currentStep, setCurrentStep] = useState(0);
-  const { id } = useParams();
-  const isEdit = id ? true : false;
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [subcategories, setSubcategories] = useState<Category[]>([]);
-  const [productTypes, setProductTypes] = useState<Category[]>([]);
+/**
+ *
+ * @returns
+ *   const [productTypes, setProductTypes] = useState<Category[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   const [selectedSubcategoryId, setSelectedSubcategoryId] =
     useState<string>('');
@@ -98,12 +67,61 @@ const CreateProduct = () => {
   const [editingVariantIndex, setEditingVariantIndex] = useState<number | null>(
     null
   );
+ */
+
+const CreateProduct = () => {
+  const [form] = Form.useForm();
+
+  const { id } = useParams();
+  const isEdit = id ? true : false;
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Category[]>([]);
+
   const navigate = useNavigate();
   const { handleFileUpload, isUploading } = useUploadFileMedia();
   const { mutate: createProduct, isPending: isCreateProductLoading } =
     useCreateProduct();
   const [searchParams] = useSearchParams();
   const additionType = searchParams.get('type') ?? 'single'; //multiple or single
+  const { data: measuringUnitsData, isLoading: isMeasuringUnitsLoading } =
+    useGetMeasuringUnits();
+
+  // Refactor hook
+  const {
+    currentStep,
+    productTypes,
+    selectedCategoryId,
+    selectedSubcategoryId,
+    selectedProductTypeId,
+    isModalVisible,
+    productCode,
+    isVariantModalVisible,
+    isColorModalVisible,
+    variants,
+    measuringUnits,
+    fieldsData,
+    editingVariantIndex,
+    handleMeasuringUnitChange,
+    handleEditVariant,
+    handleDeleteVariant,
+    handleCancel,
+    handleModalOk,
+    handleNext,
+    handlePrevious,
+    handleSubcategoryChange,
+    transformVariants,
+    setIsModalVisible,
+    setProductCode,
+    setVariants,
+    setMeasuringUnits,
+    setEditingVariantIndex,
+    setSelectedCategoryId,
+    setSelectedSubcategoryId,
+    setSelectedProductTypeId,
+    setProductTypes,
+    setIsVariantModalVisible,
+    setIsColorModalVisible,
+  } = useCreateProductHook({ form, measuringUnitsData, handleFileUpload });
 
   const { data: categoriesData, isLoading: isCategoriesLoading } =
     useGetCategorizations('category');
@@ -111,8 +129,7 @@ const CreateProduct = () => {
     useGetCategorizations('subcategory', selectedCategoryId);
   const { data: productTypesData, isLoading: isProductTypesLoading } =
     useGetCategorizations('type', selectedSubcategoryId);
-  const { data: measuringUnitsData, isLoading: isMeasuringUnitsLoading } =
-    useGetMeasuringUnits();
+
   const { data: attributesData, isLoading: isAttributesLoading } =
     useGetInventoryAttributes(selectedCategoryId);
   const { data: variantAttributesData, isLoading: isVariantAttributesLoading } =
@@ -144,10 +161,10 @@ const CreateProduct = () => {
       form.setFieldsValue({
         name: singleProductData?.name,
         SKU: singleProductData?.SKU,
-        category: singleProductData?.category,
-        subcategory: singleProductData?.subcategory,
-        productType: singleProductData?.product_type,
-        // brand: singleProductData?.brand,
+        category: singleProductData?.category_id,
+        subcategory: singleProductData?.subcategory_id,
+        productType: singleProductData?.product_type_id,
+        brand: singleProductData?.brand,
         productImages: singleProductData?.media
           ? singleProductData?.media.map((url: string, idx: number) => ({
               uid: String(idx),
@@ -215,60 +232,14 @@ const CreateProduct = () => {
     }
   }, [measuringUnitsData]);
 
-  const handleMeasuringUnitChange = (value: string) => {
-    const selectedUnit = measuringUnitsData?.find(
-      (unit) => unit.name === value
-    );
-    if (selectedUnit) {
-      setMeasuringUnits([
-        { value: selectedUnit.name, label: selectedUnit.name },
-      ]);
-    }
-  };
-
-  const handleEditVariant = (index: number) => {
-    const variant = variants[index];
-    form.setFieldsValue(variant.values);
-    setEditingVariantIndex(index);
-    setIsVariantModalVisible(true);
-  };
-
-  const handleDeleteVariant = (index: number) => {
-    const newVariants = [...variants];
-    newVariants.splice(index, 1);
-    setVariants(newVariants);
-  };
-
-  const handleCancel = (): void => {
-    navigate(-1);
-  };
-
-  const handleModalOk = (): void => {
-    setIsModalVisible(false);
-    navigate('/pos/inventory');
-  };
-
-  const handleNext = async (): Promise<void> => {
-    const values = await form.validateFields();
-    console.log('Form values', values);
-    setFieldsData({ ...values });
-    setCurrentStep((prev) => Math.min(prev + 1, 1));
-  };
-
-  const handlePrevious = (): void => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
-  };
-
-  const handleSubcategoryChange = (value: string) => {
-    setSelectedSubcategoryId(value);
-    setProductTypes([]); // Clear existing product types
-    form.setFieldValue('productType', undefined); // Clear product type selection
-  };
-
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       const submittedData = { ...values, ...fieldsData };
+      const extendedVaraint = variants.map((variant) => ({
+        ...variant,
+        measurement_unit: submittedData.measurement_unit,
+      }));
 
       console.log('Fields', submittedData);
       // Handle variants as metadata attributes
@@ -277,30 +248,36 @@ const CreateProduct = () => {
       };
 
       // Process variants into metadata attributes
-      variants.forEach((variant) => {
-        Object.entries(variant.values)
-          .filter(([_, value]) => value !== undefined && value !== '')
-          .forEach(([attrId, value]) => {
-            const attrName = variant.labels[attrId];
-            if (!metadata.attributes[attrName]) {
-              metadata.attributes[attrName] = [];
-            }
-            // Handle both single values and arrays
-            if (Array.isArray(value)) {
-              metadata.attributes[attrName].push(...value);
-            } else {
-              metadata.attributes[attrName].push(value as string);
-            }
-          });
-      });
+      if (additionType === 'multiple') {
+        const variantAttributes = variants;
+        console.log(variantAttributes);
+      } else {
+        variants.forEach((variant) => {
+          Object.entries(variant.values)
+            .filter(([_, value]) => value !== undefined && value !== '')
+            .forEach(([attrId, value]) => {
+              const attrName = variant.labels[attrId];
+              if (!metadata.attributes[attrName]) {
+                metadata.attributes[attrName] = [];
+              }
+              // Handle both single values and arrays
+              if (Array.isArray(value)) {
+                metadata.attributes[attrName].push(...value);
+              } else {
+                metadata.attributes[attrName].push(value as string);
+              }
+            });
+        });
+      }
 
       // Handle media uploads
       let media: string[] = [];
       if (submittedData.productImages) {
+        console.log(submittedData.productImages);
         const uploadPromises = submittedData?.productImages?.map(
           async (file: any) => {
             if (file && !file?.url?.startsWith('https')) {
-              const uploadRes = await handleFileUpload(file);
+              const uploadRes = await handleFileUpload(file?.thumbUrl);
               return uploadRes[0].url;
             }
             return file?.url;
@@ -319,7 +296,8 @@ const CreateProduct = () => {
         brand: submittedData.brand,
         media: media,
         metadata: metadata,
-        product_creation_format: 'single',
+        product_creation_format:
+          additionType === 'single' ? 'single' : 'multiple',
         measurement_unit: submittedData.measurement_unit,
         unit_retail_price: submittedData.unit_retail_price,
         unit_cost_price: submittedData.unit_cost_price,
@@ -327,33 +305,55 @@ const CreateProduct = () => {
         reorder_value: submittedData.reorder_value,
         description: submittedData.description,
         tags: submittedData.tags,
+        ...(additionType === 'multiple' && {
+          variants: extendedVaraint,
+        }),
       };
 
       console.log('Final payload:', payload);
-      // return
-      // Create FormData for the request
+
       const formData = new FormData();
 
-      // Add all fields to FormData
-      Object.entries(payload).forEach(([key, value]) => {
-        if (key === 'metadata') {
-          // Handle metadata attributes
-          Object.entries(value.attributes).forEach(([attrKey, attrValues]) => {
+      // Handle metadata
+      if (payload.metadata) {
+        Object.entries(payload.metadata.attributes).forEach(
+          ([attrKey, attrValues]) => {
             (attrValues as string[]).forEach((val: string) => {
               formData.append(`metadata[attributes][${attrKey}][]`, val);
             });
+          }
+        );
+      }
+
+      // Handle media
+      if (payload.media?.length > 0) {
+        formData.append('media', media?.map((file: any) => file).join('|'));
+      }
+
+      // Handle variants separately since it's async
+      if (additionType === 'multiple') {
+        const transformedVariants = await transformVariants(payload.variants);
+        transformedVariants.forEach((variant) => {
+          Object.entries(variant).forEach(([key, value]) => {
+            formData.append(key, value as string);
           });
-        } else if (key === 'media') {
-          formData.append('media', media?.map((file: any) => file).join('|'));
-        } else {
-          formData.append(key, value as string);
-        }
-      });
+        });
+      }
+
+      Object.entries(payload)
+        .filter(
+          ([_, value]) => value !== undefined && value !== null && value !== ''
+        )
+        .forEach(([key, value]) => {
+          if (key !== 'metadata' && key !== 'media' && key !== 'variants') {
+            formData.append(key, value as string);
+          }
+        });
 
       createProduct(formData as any, {
         onSuccess: (data) => {
           console.log(data?.data);
-          setProductCode(data?.data?.id);
+          setProductCode(data?.data?.id ?? data?.data?.[0]?.id);
           setIsModalVisible(true);
         },
         onError: (error) => {
@@ -377,6 +377,7 @@ const CreateProduct = () => {
     isAttributesLoading ||
     isVariantAttributesLoading;
 
+  // console.log(variants);
   return (
     <>
       <div className="p-3 h-fit bg-gray-50">
@@ -496,7 +497,12 @@ const CreateProduct = () => {
         <p className="text-sm text-[#000000D9]">
           Product has been created successfully!
         </p>
-        <p className="font-bold text-sm mt-2 text-[#003399]">{productCode}</p>
+        <p className="">
+          Your product ID is:{' '}
+          <span className="font-bold text-sm mt-2 text-[#003399]">
+            {productCode}
+          </span>
+        </p>
       </Modal>
 
       {/* Add Product Option Modal */}

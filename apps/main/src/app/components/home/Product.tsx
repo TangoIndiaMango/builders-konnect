@@ -8,6 +8,7 @@ import ProductSalesChart from './charts/ProductSalesChart';
 import CustomerListItem from './customer/CustomerListItem';
 import { useNavigate } from 'react-router-dom';
 import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
+import ProductListItem from './ProductListItem';
 
 const data = [
   { name: 'Cement', sales: 200, value: 30, amount: 4544 },
@@ -39,8 +40,6 @@ const products = [
   },
 ];
 
-
-
 export interface ProductOverview {
   products_count: number;
   products_value: string;
@@ -53,6 +52,8 @@ interface ProductProps {
   onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
   setSelectedStore: (value: string) => void;
   reset: () => void;
+  recentProductData: any;
+  recentProductLoading: boolean;
 }
 
 const Product = ({
@@ -61,10 +62,12 @@ const Product = ({
   onRangeChange,
   setSelectedStore,
   reset,
+  recentProductData,
+  recentProductLoading,
 }: ProductProps) => {
   const productOverview = productData?.data?.data as ProductOverview;
   const navigate = useNavigate();
-
+  // console.log(recentProductData, 'recentProductData');
   const statsData = [
     {
       title: 'Total Products',
@@ -137,17 +140,17 @@ const Product = ({
 
       <div className="w-full xl:col-span-1">
         <CardWithFilter title="New products Added">
-          {products?.length > 0 ? (
+          {recentProductData?.data?.data?.data?.data?.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {products.map((customer) => (
-                <CustomerListItem
-                  key={customer.id}
-                  name={customer.name}
-                  email={customer.email}
-                  avatar={customer.avatar}
-                  onClick={() => navigate(`/pos/inventory/${customer.id}`)}
-                />
-              ))}
+              {recentProductData?.data?.data?.data?.data?.slice(0, 5).map((product) => (
+                <ProductListItem
+                    key={product.id}
+                    name={product.name}
+                    SKU={product.SKU}
+                    primary_media_url={product.primary_media_url}
+                    onClick={() => navigate(`/pos/inventory/${product.id}`)}
+                  />
+                ))}
 
               <Button
                 type="link"

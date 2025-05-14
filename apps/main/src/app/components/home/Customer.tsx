@@ -62,6 +62,8 @@ interface CustomerProps {
   onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
   setSelectedStore: (value: string) => void;
   reset: () => void;
+  recentCustomerData: any;
+  recentCustomerLoading: boolean;
 }
 
 const Customer = ({
@@ -70,12 +72,15 @@ const Customer = ({
   onRangeChange,
   setSelectedStore,
   reset,
+  recentCustomerData,
+  recentCustomerLoading,
 }: CustomerProps) => {
   const customerRes = customerData?.data?.data;
   const cusData = Object.entries(customerRes).map(([month, value]) => ({
     month: monthAbbreviation(month),
     value: value,
   }));
+  // console.log(recentCustomerData?.data?.data);
   const navigate = useNavigate();
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
@@ -123,15 +128,15 @@ const Customer = ({
 
       <div className="w-full xl:col-span-1">
         <CardWithFilter title="Recent Customers">
-          {products?.length > 0 ? (
+          {recentCustomerData?.data?.data?.data?.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {products.map((customer) => (
+              {recentCustomerData?.data?.data?.data?.slice(0, 5).map((customer) => (
                 <CustomerListItem
                   key={customer.id}
                   name={customer.name}
                   email={customer.email}
                   avatar={customer.avatar}
-                  onClick={() => navigate(`/pos/sales/${customer.id}`)}
+                  onClick={() => navigate(`/pos/customers/view/${customer.id}`)}
                 />
               ))}
 

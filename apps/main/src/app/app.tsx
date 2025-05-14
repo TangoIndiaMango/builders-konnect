@@ -61,6 +61,8 @@ import ViewStaffDetails from './pages/staff/view-staff';
 import NewReturnLog from './pages/returns/create';
 import { CustomerDetails } from './components/customers/VeiwCustomer';
 import MultiVariants from './pages/inventory/components/MultiVariants';
+import ReportsOutlet from './pages/report/outlet';
+import ReportsPage from './pages/report';
 
 // Inventory
 
@@ -168,7 +170,7 @@ const App = () => {
         <Route path="preview-product/:id" element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage />} />
-        <Route path="multi" element={<MultiVariants />} />
+        {/* <Route path="multi" element={<MultiVariants />} /> */}
       </Route>
 
       {/* Settings */}
@@ -224,6 +226,18 @@ const App = () => {
         <Route index element={<ReturnsPage />} />
         <Route path="view/:id" element={<ReturnsViewPage />} />
         <Route path="create" element={<NewReturnLog />} />
+      </Route>
+
+      {/* Reports */}
+      <Route
+        path="pos/reports"
+        element={
+          <ProtectedRoute>
+            <ReportsOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ReportsPage />} />
       </Route>
 
       {/* Not Found */}

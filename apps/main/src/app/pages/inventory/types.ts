@@ -57,11 +57,15 @@ export interface ProductData {
 export interface SingleProductResponse {
   id: string;
   name: string;
+  brand: string;
   SKU: string;
   ean: string | null;
+  category_id: string;
   category: string;
   subcategory: string;
+  subcategory_id: string;
   product_type: string;
+  product_type_id: string
   retail_price: string;
   cost_price: string;
   metadata: any;

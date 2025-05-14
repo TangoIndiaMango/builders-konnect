@@ -18,7 +18,7 @@ import {
   Upload,
 } from 'antd';
 import { useState } from 'react';
-import { beforeUpload } from '../../../../utils/helper';
+import { beforeUpload, getBase64 } from '../../../../utils/helper';
 import { DataType } from '../../../components/common/Table/Table';
 import { ProductOptionModalProps } from '../createInventory/ProductOptionModal';
 import ProductOptionModalMulti from '../createInventory/ProductOptionModalMulti';
@@ -55,7 +55,8 @@ const MultiVariants = ({
     console.log('Row Index', rowIdx);
     console.log('Key', key);
     const newVariants = [...variants];
-    newVariants[rowIdx][0][key] = value;
+    console.log('Variants', newVariants);
+    newVariants[rowIdx][key] = value;
     setVariants(newVariants);
   };
 
@@ -89,7 +90,7 @@ const MultiVariants = ({
 
   // Open modal and load current images
   const openImageModal = (rowIdx) => {
-    setTempImages(variants[rowIdx][0]?.images || []);
+    setTempImages(variants[rowIdx]?.images || []);
     setImageModal({ open: true, rowIdx });
   };
 
@@ -105,8 +106,8 @@ const MultiVariants = ({
   // Save images to variant
   const handleSaveImages = () => {
     setVariants((prev: any) =>
-      prev.map((v, idx) =>
-        idx === imageModal.rowIdx ? { ...v[0], images: tempImages } : v
+      prev.map((variant: any, idx: number) =>
+        idx === imageModal.rowIdx ? { ...variant, images: tempImages } : variant
       )
     );
     setImageModal({ open: false, rowIdx: null });
@@ -120,8 +121,8 @@ const MultiVariants = ({
   };
 
   // Handle upload
-  const handleImageUpload = ({ file }) => {
-    const url = URL.createObjectURL(file);
+  const handleImageUpload = async ({ file }) => {
+    const url = await getBase64(file);
     setTempImages((prev: any) => [...prev, url]);
     return false; // Prevent upload
   };
@@ -133,19 +134,23 @@ const MultiVariants = ({
 
   // Price and Quantity Modals
   const handleBulkUpdate = (field, value) => {
-    setVariants(variants.map((v, idx) =>
-      selectedRowKeys.includes(idx)
-        ? { ...v, [field]: value, attributes: [...v.attributes] }
-        : v
-    ));
+    setVariants(
+      variants.map((v, idx) =>
+        selectedRowKeys.includes(idx)
+          ? { ...v, [field]: value, attributes: [...v.attributes] }
+          : v
+      )
+    );
   };
 
   const handleMultiOptionSave = (updatedVariant) => {
     if (editingVariantIndex !== null) {
       // Edit mode: replace the variant at the index
-      setVariants(variants.map((v, idx) =>
-        idx === editingVariantIndex ? updatedVariant[0] : v
-      ));
+      setVariants(
+        variants.map((v, idx) =>
+          idx === editingVariantIndex ? updatedVariant[0] : v
+        )
+      );
     } else {
       // Add mode: append the new variant
       setVariants([...variants, updatedVariant[0]]);
@@ -158,8 +163,6 @@ const MultiVariants = ({
     setVariants(variants.filter((_, idx) => !selectedRowKeys.includes(idx)));
     setSelectedRowKeys([]);
   };
-
-  console.log('Variants', variants);
 
   // Get attribute columns from the first variant. Just so columns are consistent
   const attributeColumns =

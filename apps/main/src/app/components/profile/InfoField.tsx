@@ -36,9 +36,10 @@ const InfoField = ({
   const renderText = () => (
     <Input.TextArea
       autoSize
-      value={value ?? (field.value as string)}
+      defaultValue={field.value as string}
       className="min-h-10"
       onChange={(e) => handleChange?.(e.target.value)}
+      placeholder={placeholder}
     />
   );
 
@@ -64,7 +65,7 @@ const InfoField = ({
       options={options}
       onChange={handleChange}
       showSearch
-      value={value}
+      defaultValue={field.value as string}
       filterOption={(input, option) =>
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
       }
@@ -88,7 +89,7 @@ const InfoField = ({
   return (
     <div className="space-y-1">
       <p className="text-sm text-gray-500">{field.label}</p>
-      {isEdit ? inputNode : <Text>{field.value || '-'}</Text>}
+      {isEdit ? inputNode : <Text>{value || field.value || '-'}</Text>}
     </div>
   );
 };
