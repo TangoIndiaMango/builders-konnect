@@ -19,7 +19,7 @@ interface LocationData {
   name: string;
 }
 
-function ShippingAddressEditPage() {
+function BillingAddressEditPage() {
   const [form] = Form.useForm<AddressFormValues>();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -40,9 +40,10 @@ function ShippingAddressEditPage() {
     setState(value);
     form.setFieldsValue({
       state_id: value,
-      city_id: undefined,
+      city_id: value,
     });
   };
+
 
   useEffect(() => {
     if (addressData?.data) {
@@ -65,7 +66,6 @@ function ShippingAddressEditPage() {
   const onFinish = async (values: AddressFormValues) => {
     try {
       const payload = {
-  
           name: `${values.firstName} ${values.lastName}`,
           company: values.company || null,
           address: values.address,
@@ -73,11 +73,11 @@ function ShippingAddressEditPage() {
           state_id: String(values.state_id),
           city_id: String(values.city_id),
           phone: values.phone,
-          type: 'shipping',
+          type: 'billing',
           is_default: true
       };
 
-      if (isEditing) {
+      if (isEditing && id) {
         await updateAddressState.mutateAsync(payload);
         message.success('Address updated successfully!');
       } else {
@@ -95,7 +95,7 @@ function ShippingAddressEditPage() {
 
   return (
     <div className="max-w-2xl mx-auto py-10 px-4">
-      <h1 className="text-2xl font-bold mb-6">{isEditing ? 'Edit' : 'Add'} Shipping Address</h1>
+      <h1 className="text-2xl font-bold mb-6">{isEditing ? 'Edit' : 'Add'} Billing Address</h1>
       <Form layout="vertical" form={form} onFinish={onFinish}>
         <div className="grid md:grid-cols-2 gap-4">
           <Form.Item
@@ -201,4 +201,4 @@ function ShippingAddressEditPage() {
   );
 };
 
-export default ShippingAddressEditPage;
+export default BillingAddressEditPage;
