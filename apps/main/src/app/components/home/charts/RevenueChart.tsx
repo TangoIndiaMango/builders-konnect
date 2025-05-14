@@ -7,16 +7,26 @@ const Line = RawLine as unknown as React.FC<LineConfig>;
 const RevenueChart = ({ data }: { data: any }) => {
   const { containerRef, containerWidth } = useResizeContainer();
 
+  const newData = data?.map((item: any) => {
+    return {
+      ...item,
+      value: Number(item?.value?.replace(/[^\d.]/g, '')),
+    };
+  });
+
   const config: LineConfig = {
-    data,
+    data: newData,
     autoFit: true,
     height: 400,
 
-    width: containerWidth || undefined, // Use container width
-    padding: [40, 20, 40, 40], // [top, right, bottom, left]
+    width: containerWidth,
+    padding: [40, 20, 40, 40],
     xField: 'month',
     yField: 'value',
     smooth: true,
+    yAxis: {
+      type: 'log',
+    },
     xAxis: {
       tickCount: 10,
       type: 'linear',
@@ -47,7 +57,11 @@ const RevenueChart = ({ data }: { data: any }) => {
         overflow: 'hidden',
       }}
     >
-      {containerWidth > 0 && <Line {...config} />}
+      {containerWidth > 0 && (
+        <Line
+          {...config}
+        />
+      )}
     </div>
   );
 };

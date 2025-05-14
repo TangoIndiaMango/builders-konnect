@@ -4,7 +4,7 @@ import EmptyState from '../common/EmptyState';
 import FilterGroup from '../common/filters/FilterGroup';
 import RevenueChart from './charts/RevenueChart';
 import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
-import { Select } from 'antd';
+import { Select, Skeleton } from 'antd';
 import { Button } from 'antd';
 import { monthAbbreviation } from '../../../utils/helper';
 
@@ -29,6 +29,7 @@ interface RevenueProps {
   onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
   reset: () => void;
   setSelectedStore: (value: string) => void;
+  isLoading: boolean;
 }
 
 const Revenue = ({
@@ -37,14 +38,18 @@ const Revenue = ({
   onRangeChange,
   reset,
   setSelectedStore,
+  isLoading,
 }: RevenueProps) => {
   // console.log(revenueData?.data);
 
+
   const revenueRes = revenueData?.data?.data;
-  const revData = Object.entries(revenueRes)?.map(([month, value]) => ({
-    month: monthAbbreviation(month),
-    value: value,
-  }));
+  const revData = revenueRes
+  ? Object.entries(revenueRes).map(([month, value]) => ({
+      month: monthAbbreviation(month),
+      value: value,
+    }))
+  : [];
   // console.log(revData);
   return (
     <CardWithFilter
@@ -77,9 +82,13 @@ const Revenue = ({
       }
     >
       {revData?.length > 0 ? (
-        <div className="w-full h-full min-h-[400px] max-w-[1200px] mx-auto">
-          <RevenueChart data={revData} />
-        </div>
+        isLoading || revenueData.isLoading ? (
+          <Skeleton active />
+        ) : (
+          <div className="w-full h-full min-h-[400px] max-w-[1200px] mx-auto">
+            <RevenueChart data={revData} />
+          </div>
+        )
       ) : (
         <EmptyState description="You have no data here yet." />
       )}
