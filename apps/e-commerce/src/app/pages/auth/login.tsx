@@ -29,6 +29,8 @@ const Login = () => {
       };
 
       const response = await mutateAsync(payload);
+      sessionStorage.setItem('access_token', response.data.accessToken || '');
+
       
       // Check if response exists and has data
       if (response?.data) {

@@ -131,3 +131,131 @@ export const useFetchPostData = (url: string, options: any) => {
 
   return { ...query, isLoading: query.isFetching || query.isLoading };
 };
+
+// Get all categories
+
+export const useGetCategorizations = (level: 'category' | 'subcategory' | 'type', parentId?: string) => {
+  return useQuery({
+    queryKey: ['categorizations', level, parentId],
+    queryFn: async () => {
+      const params = {
+        paginate: 0,
+        table: 'inventory_products',
+        level,
+        ...(parentId && { parent_id: parentId })
+      }
+      const response = await axiosInstance.get('shared/categorizations', { params })
+      return response.data.data
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    refetchOnWindowFocus: false
+  })
+}
+
+type Product = {
+  id: string;
+  name: string;
+  category: string;
+  code: string;
+  retail_price: string;
+  discount_information: {
+    id: number;
+    type: string;
+    value: string;
+    amount: string;
+  };
+  primary_media_url: string;
+  ratings: number;
+};
+
+interface ProductsResponse {
+  error: boolean;
+  message: string;
+  data: {
+    total: number;
+    data: Product[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    from: number;
+    to: number;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+  };
+}
+
+export const useGetInventoryAttributes = (categoryId?: string) => {
+  console.log('useGetInventoryAttributes called with categoryId:', categoryId);
+  return useQuery({
+    queryKey: ['inventoryAttributes', categoryId],
+    queryFn: async () => {
+      if (!categoryId) {
+        console.log('No categoryId provided');
+        return null;
+      }
+      console.log('Making API call with categoryId:', categoryId);
+      const response = await axiosInstance.get(`shared/inventory-attributes`, {
+        params: {
+          paginate: 0,
+          category_id: categoryId
+        }
+      });
+      return response.data.data;
+    },
+    enabled: !!categoryId,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    refetchOnWindowFocus: false
+  });
+};
+
+interface GetProductsParams {
+  categoryId?: string;
+  subcategoryId?: string;
+  sort_by?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  page?: number;
+  [key: string]: string | number | undefined;
+}
+
+export const useGetProducts = (params: GetProductsParams = {}) => {
+
+  return useQuery({
+    queryKey: ['products', params],
+    queryFn: async () => {
+      const apiParams: Record<string, any> = {
+        q: params.q,
+        limit: params.limit,
+        sort_by: params.sort_by,
+        'filters[categorization][category_id]': params.categoryId,
+        'filters[categorization][subcategory_id]': params.subcategoryId,
+        'filters[categorization][sub_subcategory_id]': params.subSubcategoryId,
+        'filters[categorization][product_type_id]': params.productTypeId,
+        collection: params.collection
+      };
+
+      // Only add price filters if they are explicitly set
+      if (params.minPrice !== undefined) {
+        apiParams['filters[price][min]'] = params.minPrice;
+      }
+      if (params.maxPrice !== undefined) {
+        apiParams['filters[price][max]'] = params.maxPrice;
+      }
+
+      // Add any dynamic metadata filters
+      Object.entries(params).forEach(([key, value]) => {
+        if (key.startsWith('filters[metadata]')) {
+          apiParams[key] = value;
+        }
+      });
+      
+      // Remove undefined parameters
+      Object.keys(apiParams).forEach(key => apiParams[key] === undefined && delete apiParams[key]);
+      
+      const response = await axiosInstance.get('/customers/products', { params: apiParams });
+      return response.data as ProductsResponse;
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    refetchOnWindowFocus: false
+  });
+}

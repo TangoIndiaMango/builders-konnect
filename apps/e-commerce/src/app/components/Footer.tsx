@@ -16,7 +16,7 @@ const Footer = () => {
     }, 500);
   };
   return (
-    <AntFooter className="bg-[#1A1A1A] text-white p-0">
+    <AntFooter className="!bg-[#1A1A1A] !text-white !p-0">
       <div className="container mx-auto px-4 py-8">
         {/* Email Subscription */}
         <div className="mb-8 flex flex-col md:flex-row gap-4 md:gap-0 justify-between">
@@ -29,11 +29,11 @@ const Footer = () => {
               placeholder="Enter your email address" 
               className="bg-transparent h-[50px] border border-white placeholder:text-white" 
             />
-            <Button type="primary" className="bg-white text-black hover:bg-gray-100 h-[50px]">
+            <Button type="primary" className="!bg-white !text-black hover:!bg-gray-100 !h-[50px]">
               Subscribe
             </Button>
           </Space.Compact>
-        </div>
+        </div>  
 
         {/* Footer Links Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 py-2" style={{color: 'rgba(250, 250, 250, 0.7)', borderBottom: '1px solid rgba(255, 255, 255, 0.46)'}}>
