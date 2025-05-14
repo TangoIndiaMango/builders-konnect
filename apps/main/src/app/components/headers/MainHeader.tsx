@@ -1,11 +1,12 @@
 import {
   BellOutlined,
   DownOutlined,
+  LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   RightOutlined,
 } from '@ant-design/icons';
-import { Avatar, Badge, Card, Dropdown } from 'antd';
+import { Avatar, Badge, Button, Card, Dropdown } from 'antd';
 import { Header } from 'antd/es/layout/layout';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -32,11 +33,16 @@ const MainHeader: React.FC<MainHeaderProps> = ({
   storeType = 'Mainland Store',
   userName = 'Olugbenga Daniels',
 }) => {
-  const { user, businessProfile } = useSessionStorage();
+  const { user, businessProfile, clearUser } = useSessionStorage();
   // console.log(user);
   const [visibleTab, setVisibleTab] = useState<'profile' | 'notifications'>(
     'notifications'
   );
+
+  const handleLogout = () => {
+    clearUser();
+    navigate('/auth/login');
+  };
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -121,9 +127,20 @@ const MainHeader: React.FC<MainHeaderProps> = ({
             </div>
           </>
         ) : (
-          <div className="max-h-80 overflow-y-auto">
-            <NotificationPanel notificationsAPI={notificationsAPI} />
-          </div>
+          <>
+            <div className="max-h-80 overflow-y-auto">
+              <NotificationPanel notificationsAPI={notificationsAPI} />
+            </div>
+
+            <button
+              className="flex items-center gap-2 w-full px-4 py-3 border-t border-gray-100 text-left hover:bg-gray-50 focus:bg-gray-100 transition-colors cursor-pointer"
+              onClick={handleLogout}
+              type="button"
+            >
+              <LogoutOutlined className="text-gray-400 text-base" />
+              <span className="text-gray-700">Logout</span>
+            </button>
+          </>
         )}
       </Card>
 
@@ -233,6 +250,16 @@ const MainHeader: React.FC<MainHeaderProps> = ({
               )}
             </div>
           </Dropdown>
+
+          {/* Logout Button */}
+          <button
+            className="  focus:bg-gray-100 transition-colors cursor-pointer"
+            onClick={handleLogout}
+            type="button"
+          >
+            <LogoutOutlined className="text-gray-400 text-base" />
+            <span className="text-gray-700">Logout</span>
+          </button>
         </div>
       </div>
     </Header>
