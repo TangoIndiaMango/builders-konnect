@@ -1,0 +1,55 @@
+.category-carousel {
+  padding: 0.5rem 0;
+}
+
+.category-carousel .slick-track {
+  display: flex !important;
+  align-items: center;
+}
+
+.category-carousel .slick-slide {
+  height: auto;
+  padding: 0 0.5rem;
+}
+
+.category-carousel .slick-list {
+  margin: 0 -0.5rem;
+  overflow: visible !important;
+}
+
+/* Make sure carousel items don't shrink */
+.category-carousel .slick-slide > div {
+  min-width: 0;
+}
+
+/* Ensure dropdown menus don't get cut off */
+.category-carousel .slick-slide {
+  overflow: visible;
+}
+
+/* Navigation buttons */
+.category-carousel-nav {
+  width: 40px !important;
+  height: 40px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
+
+.category-carousel-nav:hover {
+  background-color: #f9fafb !important;
+  border-color: #d1d5db !important;
+  color: #003399 !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Container spacing */
+.category-carousel-container {
+  padding: 0 2rem;
+  position: relative;
+  margin: 0 1rem;
+}

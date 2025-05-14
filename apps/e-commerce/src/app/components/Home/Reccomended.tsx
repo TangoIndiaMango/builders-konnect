@@ -1,7 +1,15 @@
-import { Card, Rate } from "antd";
-import { SimilarProductData } from "../../lib/Constants";
+import { Spin } from "antd";
+import { Link } from "react-router-dom";
+import { useGetProducts } from "../../../hooks/useApis";
+import ProductCards from "../ProductListing/ProductListingHomePage";
+import { woodlikefour } from '../../lib/assets/images';
 
 function Reccomended() {
+  const { data: products, isLoading } = useGetProducts({
+    collection: 'recommended_for_you',
+    limit: 10
+  });
+
   return (
     <div className="container mx-auto py-16 px-4">
       <div className="mb-8 flex items-center justify-between">
@@ -9,56 +17,29 @@ function Reccomended() {
           <span className="w-1.5 h-8 bg-red-600 mr-4 inline-block"></span>
           Recommended for you
         </h2>
-        <h4 className="text-[#FF4D4F] font-medium">View All</h4>
+        <Link to="/products?collection=recommended_for_you" className="text-[#FF4D4F] font-medium hover:text-red-700">
+          View All
+        </Link>
       </div>
-      <div className="grid grid-cols-1 mt-4 sm:grid-cols-2  lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {SimilarProductData.map((item) => (
-          <Card
-            key={item.id}
-            hoverable
-            cover={
-              <img
-                alt={item.name}
-                src={item.image}
-                className="object-cover w-full"
+      <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        {isLoading ? (
+          <div className="col-span-full flex justify-center py-4"><Spin /></div>
+        ) : (
+          products?.data?.data?.map((product) => (
+            <Link key={product.id} to={`/product-details/${product.id}`}>
+              <ProductCards
+                item={{
+                  id: Number(product.id),
+                  name: product.name,
+                  price: parseFloat(product.retail_price),
+                  discount: product.discount_information?.value ? parseFloat(product.discount_information.value) : 0,
+                  rating: product.ratings || 0,
+                  image: product.primary_media_url || woodlikefour
+                }}
               />
-            }
-            className="border-none p-2 shadow-none"
-            bodyStyle={{ padding: 2 }}
-          >
-            <div className="px-0 py-0">
-              {' '}
-              <h2 className="text-md font-medium text-gray-800 mb-1">
-                {item.name}
-              </h2>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-red-500 font-bold text-lg">
-                    ₦ {item.price.toLocaleString()}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <p className="line-through text-[#00000040]">₦ 23,803</p>
-                    <p className="text-xs text-red-400">
-                      -{item.discount}% Off
-                    </p>
-                  </div>
-                </div>
-                <div className="flex float-end">
-                  <img src={item.icon} alt={item.name} width="48" />
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <Rate
-                  disabled
-                  allowHalf
-                  defaultValue={item.rating}
-                  className="text-yellow-500"
-                />
-                <p className="text-[#00000073] mt-3 text-xs">(567)</p>
-              </div>
-            </div>
-          </Card>
-        ))}
+            </Link>
+          ))
+        )}
       </div>
     </div>
   );
