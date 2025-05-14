@@ -26,18 +26,18 @@ export const SalesFilterOptions = [
     key: 'payment_status',
     options: [
       { label: 'Paid', value: 'paid' },
-      { label: 'Unpaid', value: 'unpaid' },
-      { label: 'Refunded', value: 'refunded' },
+      { label: 'Pending', value: 'pending' },
+      { label: 'Failed', value: 'failed' },
     ],
   },
   {
     label: 'Order Status',
     key: 'order_status',
     options: [
-      { label: 'Pending', value: 'pending' },
-      { label: 'Processing', value: 'processing' },
+      { label: 'Shipped', value: 'shipped' },
       { label: 'Completed', value: 'completed' },
-      { label: 'Cancelled', value: 'cancelled' },
+      { label: 'Failed', value: 'failed' },
+      { label: 'Draft', value: 'draft' },
     ],
   },
   {

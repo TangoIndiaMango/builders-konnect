@@ -17,9 +17,10 @@ interface DatePickerCompProps {
     dates: DateRange,
     dateStrings: string[]
   ) => void;
+  value?: any;
 }
-const DatePickerComp = ({ onRangeChange }: DatePickerCompProps) => (
-  <RangePicker presets={rangePresets} onChange={onRangeChange} placeholder={['From', 'To']} />
+const DatePickerComp = ({ onRangeChange, value }: DatePickerCompProps) => (
+  <RangePicker presets={rangePresets} onChange={onRangeChange} placeholder={['From', 'To']} value={value}/>
 );
 
 export default DatePickerComp;
