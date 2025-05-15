@@ -41,7 +41,7 @@ export const StaffTable = ({
 
   const columns: ColumnsType<StaffListWithKey> = [
     {
-      title: 'Name',
+      title: 'Staff Name and ID',
       dataIndex: 'name',
       render: (_, record: StaffListWithKey) => (
         <div className="flex items-center gap-2">
@@ -52,9 +52,9 @@ export const StaffTable = ({
             icon={<UserOutlined className="text-blue-600" />}
           />
           <div className="max-w-[150px]">
-            <div className="font-medium">{record.name}</div>
+            <div className="font-medium">{record?.name}</div>
             <div className="text-xs text-gray-500">
-              ID: <span className="text-xs text-blue-600">{record.id}</span>
+              ID: <span className="text-xs text-blue-600">{record?.staffID}</span>
             </div>
           </div>
         </div>

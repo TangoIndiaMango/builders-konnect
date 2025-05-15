@@ -72,7 +72,7 @@ const AllSales = ({
         valueColor: '#722ED1',
       },
       {
-        label: 'Offline Saless',
+        label: 'Offline Sales',
         value: `${formatBalance(data?.stats?.offline_sales ?? 0)}`,
         valueBgColor: '#FFFBE6',
         valueColor: '#D48806',

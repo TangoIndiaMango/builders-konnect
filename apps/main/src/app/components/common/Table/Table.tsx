@@ -74,6 +74,7 @@ export const PaginatedTable = <T extends DataType>({
                   showQuickJumper: true,
                   showTotal: (total) => `Total ${total} items`,
                   onShowSizeChange: updateLimitSize,
+
                 }
               : false
           }

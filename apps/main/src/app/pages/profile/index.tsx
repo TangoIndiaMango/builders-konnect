@@ -15,7 +15,7 @@ import {
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { StoreListResponse, VendorProfile } from './types';
 import StoreList from '../../components/profile/store/StoreList';
-import { data, useNavigate } from 'react-router-dom';
+import { data, useNavigate, useSearchParams } from 'react-router-dom';
 import { exportCsvFromString } from '../../../utils/helper';
 import { useTableState } from '../../../hooks/useTable';
 import { filterOptions } from '../../lib/constant';
@@ -31,7 +31,8 @@ const ProfilePage: React.FC = () => {
 
   const navigate = useNavigate();
   const MediaState = useUploadData('shared/media/upload');
-  const [tab, setTab] = useState('profile');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tab, setTab] = useState(searchParams?.get('tab') ?? 'profile');
   const [isEditRequested, setIsEditRequested] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<{
     CAC?: any;
@@ -219,7 +220,7 @@ const ProfilePage: React.FC = () => {
             setSearchValue={setSearch}
             handleFilterChange={handleFilterChange}
             filterOptions={filterOptions}
-            onExport={handleExport}
+            onExport={setExportType}
             filterValue={filterValue ?? ''}
             setCustomDateRange={setCustomDateRange}
             pageSize={pageSize}
@@ -259,6 +260,7 @@ const ProfilePage: React.FC = () => {
 
   const onChange = (key: string) => {
     setTab(key);
+    setSearchParams({ tab: key });
   };
 
   return (
@@ -301,7 +303,7 @@ const ProfilePage: React.FC = () => {
       <div className="px-6 py-6">
         <div className="p-6 bg-white rounded-lg shadow-sm">
           <Tabs
-            defaultActiveKey="profile"
+            defaultActiveKey={tab}
             items={items}
             onChange={onChange}
             className="!mb-0"

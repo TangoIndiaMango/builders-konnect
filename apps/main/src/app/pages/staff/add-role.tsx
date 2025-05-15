@@ -42,9 +42,15 @@ const AddRole = () => {
         permissions:
           viewRole?.data?.data?.permissions === 'all'
             ? 'all'
-            : viewRole?.data?.data?.permissions?.map((permission) => Number(permission.id)),
+            : viewRole?.data?.data?.permissions?.map((permission) =>
+                Number(permission.id)
+              ),
       });
-      setSelectedPermissions(viewRole?.data?.data?.permissions?.map((permission) => Number(permission.id)) || []);
+      setSelectedPermissions(
+        viewRole?.data?.data?.permissions?.map((permission) =>
+          Number(permission.id)
+        ) || []
+      );
     }
   }, [id, viewRole?.data?.data]);
 
@@ -91,7 +97,11 @@ const AddRole = () => {
       message.success('Role created successfully');
       navigate(-1);
     } catch (error: any) {
-      message.error(error?.response?.data?.message || error?.message || 'Failed to create role');
+      message.error(
+        error?.response?.data?.message || error?.message || id
+          ? 'Failed to update role'
+          : 'Failed to create role'
+      );
     }
   };
 
@@ -120,7 +130,7 @@ const AddRole = () => {
           <Button
             type="primary"
             onClick={handleSubmit}
-            loading={createRole.isPending}
+            loading={createRole.isPending || updateRole.isPending}
           >
             {id ? 'Update Role' : 'Add Role'}
           </Button>
@@ -180,7 +190,7 @@ const AddRole = () => {
                 >
                   All Features
                 </Checkbox>
-                <div className='h-2'/>
+                <div className="h-2" />
                 {/* Permissions Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 max-h-[300px] overflow-y-auto border border-gray-200 rounded-md p-3">
                   <SkeletonLoader

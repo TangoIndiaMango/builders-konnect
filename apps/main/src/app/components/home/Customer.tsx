@@ -158,7 +158,7 @@ const Customer = ({
               <Button
                 type="link"
                 className="w-full"
-                onClick={() => navigate('/pos/sales')}
+                onClick={() => navigate('/pos/customers/list')}
               >
                 View All
               </Button>

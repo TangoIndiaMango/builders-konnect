@@ -58,7 +58,7 @@ const DiscountCreate = () => {
       .catch((err: any) => {
         notification.error({ message: 'Error', description: err.message });
         setIsErrorModalOpen(true);
-        setErrorMessage(err?.response?.data?.message || 'An error occurred');
+        setErrorMessage(err?.response?.data?.message || err?.message || 'An error occurred');
       });
   };
 
