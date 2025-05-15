@@ -2,6 +2,7 @@ import {
   useFetchData,
   useCreateData,
   usePutData,
+  useFetchSingleData,
 } from '../../../hooks/useApis';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Typography, Form, Input, Checkbox, message } from 'antd';
@@ -28,7 +29,7 @@ const AddRole = () => {
   );
   const createRole = useCreateData('merchants/roles');
   const updateRole = usePutData(`merchants/roles/${id}`);
-  const viewRole = useFetchData(`merchants/roles/${id}`);
+  const viewRole = useFetchSingleData(`merchants/roles/${id}`, !!id);
   const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
   const [selectAll, setSelectAll] = useState(false);
 
@@ -70,8 +71,12 @@ const AddRole = () => {
   };
 
   const handleSubmit = async () => {
+    const values = await form.validateFields();
+    if (!values.name || !values.description || !values.permissions) {
+      message.error('Please fill all fields');
+      return;
+    }
     try {
-      const values = await form.validateFields();
       if (id) {
         await updateRole.mutateAsync({
           ...values,
@@ -85,10 +90,17 @@ const AddRole = () => {
       }
       message.success('Role created successfully');
       navigate(-1);
-    } catch (error) {
-      message.error('Failed to create role');
+    } catch (error: any) {
+      message.error(error?.response?.data?.message || error?.message || 'Failed to create role');
     }
   };
+
+  const sortedPermissions = [...permissions].sort((a, b) => {
+    const aSelected = selectedPermissions.includes(a.id);
+    const bSelected = selectedPermissions.includes(b.id);
+    if (aSelected === bSelected) return 0;
+    return aSelected ? -1 : 1; // Selected first
+  });
 
   return (
     <div>
@@ -108,7 +120,7 @@ const AddRole = () => {
           <Button
             type="primary"
             onClick={handleSubmit}
-            loading={createRole.isLoading}
+            loading={createRole.isPending}
           >
             {id ? 'Update Role' : 'Add Role'}
           </Button>
@@ -159,7 +171,7 @@ const AddRole = () => {
                 },
               ]}
             >
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {/* All Features Checkbox */}
                 <Checkbox
                   checked={selectAll}
@@ -168,16 +180,16 @@ const AddRole = () => {
                 >
                   All Features
                 </Checkbox>
-
+                <div className='h-2'/>
                 {/* Permissions Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 max-h-[300px] overflow-y-auto border border-gray-200 rounded-md p-3">
                   <SkeletonLoader
                     active={isLoading}
                     type="table"
                     columns={2}
                     rows={5}
                   >
-                    {permissions.map((permission) => (
+                    {sortedPermissions.map((permission) => (
                       <div
                         key={permission.id}
                         className="flex items-start min-w-0 gap-2"
