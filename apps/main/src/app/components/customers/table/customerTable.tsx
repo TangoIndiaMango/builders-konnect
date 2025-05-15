@@ -109,7 +109,7 @@ export const CustomersTable = ({
         <Button
           type="text"
           icon={<EyeOutlined />}
-          // onClick={() => ()}
+          onClick={() => navigate(`/pos/customers/view/${record.id}`)}
           className="text-gray-600 hover:text-blue-600"
         />
       ),

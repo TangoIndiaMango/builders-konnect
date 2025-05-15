@@ -5,18 +5,23 @@ import { CustomerType } from '../../lib./../pages/sales/types';
 
 interface CustomerSectionProps {
   onCustomerSelect?: (customer: CustomerType) => void;
+  onCustomerRemove?: () => void;
   customerData?: CustomerType[];
+  showCustomer?: boolean;
 }
 
 export const CustomerSection = ({
   onCustomerSelect,
+  onCustomerRemove,
   customerData,
+  showCustomer = true ,
 }: CustomerSectionProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(
     null
   );
+
   const [form] = Form.useForm();
 
   const sourceOptions = [
@@ -90,6 +95,9 @@ export const CustomerSection = ({
     setIsAdding(false);
     setIsEditing(false);
     form.resetFields();
+    if (onCustomerRemove) {  
+      onCustomerRemove();
+    }
   };
 
   const handleEdit = () => {
@@ -112,12 +120,12 @@ export const CustomerSection = ({
               onSearch={handleCustomerSearch}
               onSelect={handleCustomerSelect}
             />
-            <Button icon={<PlusOutlined />} onClick={handleAddNew}>
+          {!showCustomer && <Button icon={<PlusOutlined />} onClick={handleAddNew}>
               Add New
-            </Button>
+            </Button>}
           </div>
         )}
-        {selectedCustomer && !isEditing && !isAdding && (
+        { selectedCustomer && !isEditing && !isAdding && (
           <div className="flex flex-wrap items-center justify-end gap-3">
             <Button
               type="text"
@@ -126,9 +134,9 @@ export const CustomerSection = ({
             >
               Remove Customer
             </Button>
-            <Button icon={<EditOutlined />} onClick={handleEdit}>
+           {!showCustomer && <Button icon={<EditOutlined />} onClick={handleEdit}>
               Edit
-            </Button>
+            </Button>}
           </div>
         )}
       </div>
@@ -186,7 +194,7 @@ export const CustomerSection = ({
         </Form>
       )}
 
-      {selectedCustomer && !isEditing && !isAdding && (
+      {showCustomer && selectedCustomer && !isEditing && !isAdding && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1">
             <label className="text-sm text-gray-500">Name</label>

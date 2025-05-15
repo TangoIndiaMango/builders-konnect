@@ -27,6 +27,8 @@ interface StatsProps {
   onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
   reset: () => void;
   setSelectedStore: (value: string) => void;
+  selectedStore: string;
+  isLoading: boolean;
 }
 
 const Stats = ({
@@ -35,6 +37,8 @@ const Stats = ({
   onRangeChange,
   reset,
   setSelectedStore,
+  selectedStore,
+  isLoading,
 }: StatsProps) => {
   const statsListData = useMemo(
     () => [
@@ -80,6 +84,7 @@ const Stats = ({
             size="large"
             className="rounded w-[200px]"
             showSearch
+            value={selectedStore || undefined}
             filterOption={(input, option) =>
               (option?.label?.toString() ?? '')
                 .toLowerCase()
@@ -89,14 +94,17 @@ const Stats = ({
               value: store.id,
               label: store.name,
             }))}
-            onChange={(value) => setSelectedStore(value)}
+            onChange={(value) => {
+              setSelectedStore(value);
+              console.log(value, 'value');
+            }}
           />
 
           <DatePickerComp onRangeChange={onRangeChange} />
         </div>
       }
     >
-      {statsData.isLoading ? (
+      {isLoading || statsData.isLoading ? (
         <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
             <Skeleton.Node key={i} active style={{ width: 150, height: 140 }} />

@@ -50,3 +50,6 @@ vitest.config.*.timestamp*
 
 .cursor
 .nx
+.env
+
+helper

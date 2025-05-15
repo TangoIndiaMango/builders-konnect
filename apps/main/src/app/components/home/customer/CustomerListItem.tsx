@@ -19,7 +19,7 @@ const CustomerListItem: React.FC<CustomerListItemProps> = ({
     <div className="flex items-center justify-between w-full py-2">
       <div className="flex items-center gap-2 md:gap-5">
         <Avatar
-          src={avatar}
+          src={avatar || `https://placehold.co/40x40/C7B9DA/black?text=${name?.split(' ').map((word) => word[0]?.toUpperCase()).join('')}`}
           size="large"
           style={{ backgroundColor: '#C7B9DA' }}
         />

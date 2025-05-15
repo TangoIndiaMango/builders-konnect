@@ -1,19 +1,13 @@
-import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  DashboardOutlined,
-  ShopOutlined,
-  InboxOutlined,
-} from '@ant-design/icons';
+import type { MenuProps } from 'antd';
 import { Grid, Image, Layout, Menu, Typography } from 'antd';
+import { useAtom } from 'jotai';
 import { useState } from 'react';
-import { sidebar_logo } from '../lib/assets/logo';
-import { POSMenus, AccountingMenus, ProcurementMenus } from '../lib/constant';
+import { useLocation, useNavigate } from 'react-router-dom';
 import MainHeader from '../components/headers/MainHeader';
 import SubHeaderTabs from '../components/headers/SubHeaderTabs';
+import { sidebar_logo } from '../lib/assets/logo';
+import { AccountingMenus, POSMenus, ProcurementMenus } from '../lib/constant';
 import { currentNavigationAtom, NavigationType } from '../store/navigation';
-import { useAtom } from 'jotai';
-import type { MenuProps } from 'antd';
-import { useSessionStorage } from '../../hooks/useSessionStorage';
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -25,7 +19,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   const [currentNavigation] = useAtom(currentNavigationAtom);
   const navigate = useNavigate();
   const location = useLocation(); // 👈 Get current route
-  const { user } = useSessionStorage();
+
 
   const toggleSidebar = () => {
     if (!screens.md) {
@@ -145,7 +139,6 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
             collapsed={collapsed}
             showMobileSidebar={showMobileSidebar}
             toggleSidebar={toggleSidebar}
-            userName={user?.name}
           />
           <SubHeaderTabs />
         </div>

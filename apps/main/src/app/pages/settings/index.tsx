@@ -7,7 +7,11 @@ import ProfileInfoSection from '../../components/settings/profilenfoSection';
 import NotificationList from './views/NotificationList';
 import WelcomeSection from '../../components/profile/WelcomeSection';
 import { VendorProfile } from '../profile/types';
-import { useFetchData } from '../../../hooks/useApis';
+import {
+  useFetchData,
+  useFetchDataSeperateLoading,
+} from '../../../hooks/useApis';
+import { StaffProfile } from './types';
 
 const SettingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -24,8 +28,11 @@ const SettingPage: React.FC = () => {
     setTab(key);
   };
 
-  const profileData = useFetchData('merchants/profile/view');
-  const profile = profileData?.data?.data as VendorProfile;
+  const profileData = useFetchDataSeperateLoading(
+    `merchants/staff/get/profile`
+  );
+  const profile = profileData?.data?.data as StaffProfile;
+
 
   const items: TabsProps['items'] = [
     {
@@ -52,7 +59,8 @@ const SettingPage: React.FC = () => {
       label: 'Notification',
       children: (
         <div>
-          <NotificationList />
+          <NotificationList
+          />
         </div>
       ),
     },

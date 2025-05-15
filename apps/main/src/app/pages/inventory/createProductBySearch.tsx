@@ -87,6 +87,7 @@ const CreateProductBySearch = () => {
       navigate('/pos/inventory/add-product');
     } else {
       const found = searchResults?.data?.find((p) => p.id.toString() === value);
+      console.log("found", found)
       if (found) {
         setSelectedProduct(found);
         form.setFieldsValue({

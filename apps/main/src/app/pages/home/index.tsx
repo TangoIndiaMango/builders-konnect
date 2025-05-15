@@ -1,8 +1,10 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Skeleton } from 'antd';
 import { useState } from 'react';
-import { useFetchData, useFetchSingleData } from '../../../hooks/useApis';
+import { useFetchData } from '../../../hooks/useApis';
+import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { useTableState } from '../../../hooks/useTable';
+import { useGetOverviewCustomers } from '../../../service/customer/customerFN';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 import Banner from '../../components/home/Banner';
 import Customer from '../../components/home/Customer';
@@ -11,39 +13,49 @@ import Recent from '../../components/home/Recent';
 import Revenue from '../../components/home/Revenue';
 import Stats from '../../components/home/Stats';
 import { Stores } from '../../pages/staff/types';
-import { customerData } from '../../components/home/constant';
+
+function toQueryString(params: Record<string, any>) {
+  return Object.entries(params)
+    .filter(([_, v]) => v !== undefined && v !== '' && v !== null)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&');
+}
 
 const DashboardHome = () => {
   const { customDateRange, setCustomDateRange, reset } =
     useTableState('dashboard');
-  const [selectedStore, setSelectedStore] = useState<string>('');
+  const [selectedStoreId, setSelectedStoreId] = useState<string>('');
   const stores = useFetchData('merchants/locations?q&sort_by=alphabetically');
   const storeList = stores?.data?.data as Stores[];
-  const storeParam =
-    selectedStore.length > 0 ? `&location_id=${selectedStore}` : '';
-  const dateParam = customDateRange ? `date_filter=${customDateRange}` : '';
-  const queryString = [dateParam, storeParam].filter(Boolean).join('&');
-  const url = queryString
-    ? `merchants/dashboard/stats?${queryString}`
-    : 'merchants/dashboard/stats';
-  const revenueUrl = queryString
-    ? `merchants/dashboard/revenue-analytics?${queryString}`
-    : 'merchants/dashboard/revenue-analytics?location_id=l_4XQQZ8I7AJKVdjxc_VgWA';
-  const productUrl = queryString
-    ? `merchants/dashboard/product-overview?${queryString}`
-    : 'merchants/dashboard/product-overview?location_id=l_4XQQZ8I7AJKVdjxc_VgWA';
+  const queryParams = {
+    ...(customDateRange && { date_filter: customDateRange }),
+    ...(selectedStoreId && { location_id: selectedStoreId }),
+  };
+  const queryString = toQueryString(queryParams);
+  const url = `merchants/dashboard/stats${queryString ? `?${queryString}` : ''}`;
+  const revenueUrl = `merchants/dashboard/revenue-analytics${queryString ? `?${queryString}` : ''}`;
+  const productUrl = `merchants/dashboard/product-overview${queryString ? `?${queryString}` : ''}`;
+  const customerUrl = `merchants/dashboard/customer-traffic${queryString ? `?${queryString}` : ''}`;
 
-  const customerUrl = queryString
-    ? `merchants/dashboard/customer-traffic?${queryString}`
-    : 'merchants/dashboard/customer-traffic?location_id=l_4XQQZ8I7AJKVdjxc_VgWA';
-
+  const { data: recentCustomerData, isLoading: recentCustomerLoading } =
+    useGetOverviewCustomers({
+      paginate: 1,
+      limit: 5,
+      date_filter: customDateRange,
+      // location_id: selectedStoreId,
+    });
+  const products = useFetchData(
+    `merchants/inventory-products?paginate=1&limit=5${queryString ? `&${queryString}` : ''}`
+  );
   const statsData = useFetchData(url);
   const revenueData = useFetchData(revenueUrl);
   const productData = useFetchData(productUrl);
   const customerData = useFetchData(customerUrl);
   // console.log(customerData?.data, 'customerData');
+
+  const { businessProfile } = useSessionStorage();
   const handleReset = () => {
-    setSelectedStore('');
+    setSelectedStoreId('');
     reset();
   };
 
@@ -63,46 +75,46 @@ const DashboardHome = () => {
         }
       />
       <div className="container space-y-5 bg-gray-50">
-        <Banner />
-        {isLoading ? (
-          <>
-            <Skeleton active />
-            <Skeleton active />
-            <Skeleton active />
-            <Skeleton active />
-          </>
-        ) : (
-          <>
-            <Stats
-              statsData={statsData}
-              storeList={storeList}
-              onRangeChange={setCustomDateRange}
-              setSelectedStore={setSelectedStore}
-              reset={handleReset}
-            />
-            <Revenue
-              revenueData={revenueData}
-              storeList={storeList}
-              onRangeChange={setCustomDateRange}
-              setSelectedStore={setSelectedStore}
-              reset={handleReset}
-            />
-            <Customer
-              customerData={customerData}
-              storeList={storeList}
-              onRangeChange={setCustomDateRange}
-              setSelectedStore={setSelectedStore}
-              reset={handleReset}
-            />
-            <Product
-              productData={productData}
-              storeList={storeList}
-              onRangeChange={setCustomDateRange}
-              setSelectedStore={setSelectedStore}
-              reset={handleReset}
-            />
-          </>
-        )}
+        {!businessProfile?.logo && <Banner />}
+        <>
+          <Stats
+            statsData={statsData}
+            storeList={storeList}
+            selectedStore={selectedStoreId}
+            onRangeChange={setCustomDateRange}
+            setSelectedStore={setSelectedStoreId}
+            reset={handleReset}
+            isLoading={isLoading}
+          />
+          <Revenue
+            revenueData={revenueData}
+            storeList={storeList}
+            onRangeChange={setCustomDateRange}
+            setSelectedStore={setSelectedStoreId}
+            reset={handleReset}
+            isLoading={isLoading}
+          />
+          <Customer
+            customerData={customerData}
+            storeList={storeList}
+            onRangeChange={setCustomDateRange}
+            setSelectedStore={setSelectedStoreId}
+            reset={handleReset}
+            recentCustomerData={recentCustomerData}
+            recentCustomerLoading={recentCustomerLoading}
+            isLoading={isLoading}
+          />
+          <Product
+            productData={productData}
+            storeList={storeList}
+            onRangeChange={setCustomDateRange}
+            setSelectedStore={setSelectedStoreId}
+            reset={handleReset}
+            recentProductData={products}
+            recentProductLoading={isLoading}
+            isLoading={isLoading}
+          />
+        </>
         <Recent />
       </div>
     </>

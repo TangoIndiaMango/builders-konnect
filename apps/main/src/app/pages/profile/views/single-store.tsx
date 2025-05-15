@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button, message, Modal, Skeleton, Tag, Typography } from 'antd';
+import {
+  Button,
+  Form,
+  message,
+  Modal,
+  notification,
+  Skeleton,
+  Tag,
+  Typography,
+} from 'antd';
 import { SkeletonLoader } from '../../../components/common/SkeletonLoader';
 import { exportCsvFromString, getStatusColor } from '../../../../utils/helper';
 import { useNavigate, useParams } from 'react-router-dom';
 import SalesOverview from '../../../components/profile/store/OrderDetails';
 import {
   useFetchData,
+  useFetchSingleData,
   useGetExportData,
   usePutData,
 } from '../../../../hooks/useApis';
@@ -14,6 +24,8 @@ import StoreDetailsnfo from '../../../components/profile/store/StoreDetailsnfo';
 import { SingleStoreResponse } from '../types';
 import { useTableState } from '../../../../hooks/useTable';
 import { SalesFilterOptions } from '../../sales/constant';
+import StoreFormModal from '../../../components/profile/store/AddStoreForm';
+import SuccessModal from '../../../components/common/SuccessModal';
 
 const SingleStoreDetails = () => {
   const { id } = useParams();
@@ -61,9 +73,21 @@ const SingleStoreDetails = () => {
     useFetchData(`merchants/locations/${id}?with_sales_overview=true
 `);
 
+  const [form] = Form.useForm();
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<'add' | 'edit'>('add');
+  // const [initialValues, setInitialValues] = useState<any>(null);
+  const [state, setState] = useState('');
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const StatesState = useFetchData('shared/states?paginate=0&country_id=161');
+  const CitiesState = useFetchSingleData(
+    `shared/cities?paginate=0&country_id=161&state_id=${state}`,
+    !!state
+  );
   const updateStore = usePutData(`merchants/locations/${id}`);
   const singleSalesOrder = getSalesOrder?.data?.data as SingleStoreResponse;
   const navigate = useNavigate();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   // const [modalType, setModalType] = useState<'deactivate' | 'activate'>(
   //   singleSalesOrder?.status === 'active' ? 'deactivate' : 'activate'
@@ -91,6 +115,34 @@ const SingleStoreDetails = () => {
       }
     );
   };
+
+  const handleStateChange = (value: string) => {
+    setState(value);
+    form.setFieldsValue({
+      state: value,
+      cityRegion: undefined,
+    });
+  };
+
+  const onSubmit = async () => {
+    const values = await form.validateFields();
+    updateStore.mutate(values, {
+      onSuccess: () => {
+        notification.success({
+          message: 'Store created successfully',
+        });
+        setOpen(false);
+        setSuccessModalOpen(true);
+        form.resetFields();
+        getSalesOrder.refetch();
+      },
+      onError: () => {
+        notification.error({
+          message: 'Store creation failed',
+        });
+      },
+    });
+  };
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-5 p-5 bg-white">
@@ -102,10 +154,14 @@ const SingleStoreDetails = () => {
         </div>
 
         <div className="flex items-center justify-end gap-3">
-          {/* <Select
-            placeholder="Select order status"
-            options={orderStatusOptions}
-          /> */}
+          <Button
+            onClick={() => {
+              setMode('edit');
+              setOpen(true);
+            }}
+          >
+            Edit Store
+          </Button>
 
           {getSalesOrder.isFetching ? (
             <Skeleton.Input active={true} size="small" />
@@ -184,6 +240,27 @@ const SingleStoreDetails = () => {
           </div>
         </div>
       </Modal>
+
+      <StoreFormModal
+        open={open}
+        onClose={() => setOpen(false)}
+        state={StatesState?.data?.data}
+        city={CitiesState?.data?.data}
+        handleStateChange={handleStateChange}
+        form={form}
+        isLoading={getSalesOrder.isLoading}
+        loading={updateStore.isPending}
+        mode={mode}
+        initialValues={singleSalesOrder}
+        onSubmit={onSubmit}
+      />
+
+      <SuccessModal
+        open={successModalOpen}
+        onClose={() => setSuccessModalOpen(false)}
+        title="Store created successfully"
+        message="Your store has been created successfully. You can now view it in the list of stores."
+      />
     </div>
   );
 };

@@ -46,23 +46,21 @@ const FinanceSection = ({
             data: payload,
             config: { tenant_id: false },
           });
-          setAccountName(res?.data?.account_name || '');
-          handleChange('account_name', res?.data?.account_name || '');
-        } catch {
-          setAccountName('');
-          handleChange('account_name', '');
+          if (res?.data?.account_name) {
+            setAccountName(res.data.account_name);
+            handleChange('account_name', res.data.account_name);
+          }
+        } catch (error) {
+          // Don't clear the account name on error, just keep the existing one
+          console.error('Verification failed:', error);
         }
-      } else {
-        setAccountName('');
-        handleChange('account_name', '');
       }
     };
     verify();
-  }, [selectedBank, accountNumber, isEditRequested, accountName]);
+  }, [selectedBank, accountNumber, isEditRequested]);
 
   const handleBankChange = (value: string) => {
     setSelectedBank(value);
-    setAccountName('');
     handleChange('bank_name', value);
   };
 
@@ -108,7 +106,7 @@ const FinanceSection = ({
               label: 'Account name',
               value: VerifyAccountState.isPending
                 ? 'Verifying...'
-                : accountName || financeInfo?.account_name,
+                : accountName || financeInfo?.account_name || '-',
             }}
             isEdit={false}
             type="text"

@@ -27,7 +27,7 @@ const ProfilePage: React.FC = () => {
 
   const profileData = useFetchDataSeperateLoading(`merchants/profile/view`);
   const profile = profileData?.data?.data as VendorProfile;
-  const updateProfile = usePutData(`merchants/profile/update`);
+  const updateProfile = usePutData(`merchants/profile`);
 
   const navigate = useNavigate();
   const MediaState = useUploadData('shared/media/upload');
@@ -147,7 +147,6 @@ const ProfilePage: React.FC = () => {
         },
       };
       console.log(finalPayload);
-      return;
       // Update profile with the complete payload
       updateProfile.mutate(finalPayload, {
         onSuccess: () => {
@@ -255,10 +254,7 @@ const ProfilePage: React.FC = () => {
         ),
       },
     ],
-    [
-      stores,
-      profile,
-    ]
+    [stores, profile, isEditRequested, handleUpdateProfile, handleChange]
   );
 
   const onChange = (key: string) => {
@@ -286,6 +282,7 @@ const ProfilePage: React.FC = () => {
                 </Button>
                 <Button
                   type="primary"
+                  loading={updateProfile.isPending || MediaState.isPending}
                   onClick={() => handleUpdateProfile(profile)}
                 >
                   Submit Request
