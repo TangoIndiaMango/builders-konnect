@@ -23,6 +23,7 @@ const DiscountCreate = () => {
   const [form] = Form.useForm();
   const allProductsValue = Form.useWatch('all_products', form);
   const categoryValue = Form.useWatch('category', form);
+  // const typeValue = Form.useWatch('type', form);
 
   // console.log(allProductsValue);
   const handleSubmit = async () => {

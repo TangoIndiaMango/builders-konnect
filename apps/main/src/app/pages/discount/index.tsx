@@ -9,23 +9,7 @@ import { DiscountListResponse } from './types';
 import { exportCsvFromString } from '../../../utils/helper';
 import { useTableState } from '../../../hooks/useTable';
 import { StaffFilterOptions } from '../staff/constant';
-/**
- * paginate
-1
 
-limit
-status
-active, inactive
-
-date_filter
-Today, 3 days, 7 days, 14 days, this month, 3 months, this year, 2025, 2025-03-01|2025-03-31
-
-sort_by
-alphabetically, date_ascending, date_descending
-
-export
-csv
- */
 export interface Role {
   id: number;
   name: string;

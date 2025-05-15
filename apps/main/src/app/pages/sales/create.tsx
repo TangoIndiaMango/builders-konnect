@@ -119,7 +119,7 @@ const CreateSales = () => {
   // console.log(customers);
   // console.log(form.getFieldsValue());
 
-  const discountData = discounts?.data as DiscountType[];
+  const discountData = discounts?.data?.data as DiscountType[];
   const productDiscountData = productDiscounts?.data?.data as DiscountType[];
   const productData = products?.data?.data as ProductType[];
 
