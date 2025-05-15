@@ -1,10 +1,5 @@
-import {
-  DownloadOutlined,
-  FilePdfOutlined,
-  FileTextOutlined,
-} from '@ant-design/icons';
+import { DownloadOutlined, FileTextOutlined } from '@ant-design/icons';
 import { Button, Popover } from 'antd';
-import { Download, FileSpreadsheet } from 'lucide-react';
 import { useState } from 'react';
 
 interface ExportOption {
@@ -24,11 +19,11 @@ const exportOptions: ExportOption[] = [
     value: 'csv',
     icon: <FileTextOutlined size={16} />,
   },
-  {
-    label: 'Export as PDF',
-    value: 'pdf',
-    icon: <FilePdfOutlined size={16} />,
-  },
+  // {
+  //   label: 'Export as PDF',
+  //   value: 'pdf',
+  //   icon: <FilePdfOutlined size={16} />,
+  // },
 ];
 
 export const ExportDropdown = ({
@@ -58,7 +53,9 @@ export const ExportDropdown = ({
         <div
           key={option.value}
           className="flex items-center gap-2 px-4 py-2 text-gray-700 cursor-pointer hover:bg-gray-50"
-          onClick={() => handleExport(option.value)}
+          onClick={() => {
+            handleExport(option.value.toString());
+          }}
         >
           {option.icon}
           <span>{option.label}</span>

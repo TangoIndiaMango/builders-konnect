@@ -1,31 +1,33 @@
-import { Product } from '../../../service/inventory/inventory.types';
-import {
-  useSearchProducts,
-  useCreateProduct,
-} from '../../../service/inventory/inventoryFN';
 import {
   ArrowLeftOutlined,
   BarcodeOutlined,
   PlusOutlined,
-  UploadOutlined,
 } from '@ant-design/icons';
 import {
   Button,
-  Select,
   Form,
+  Image,
   Input,
   InputNumber,
-  Upload,
-  Typography,
-  Modal,
-  message,
   MenuProps,
-  Dropdown,
+  Modal,
+  Select,
+  Typography,
+  Upload,
+  UploadFile,
+  message,
 } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ProductType } from '../sales/types';
 import useDebounce from '../../../hooks/useDebounce';
+import { useUploadFileMedia } from '../../../hooks/useUpload';
+import { Product } from '../../../service/inventory/inventory.types';
+import {
+  useCreateProduct,
+  useSearchProducts,
+} from '../../../service/inventory/inventoryFN';
+import { beforeUpload, getBase64 } from '../../../utils/helper';
+import { ProductType } from '../sales/types';
 const { Title, Text } = Typography;
 
 interface ProductFormData {
@@ -57,11 +59,17 @@ const CreateProductBySearch = () => {
     q: debouncedSearchQuery,
   });
   const navigate = useNavigate();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const { handleFileUpload, isUploading } = useUploadFileMedia();
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const handleCancel = () => {
-    // navigate(-1);
+    navigate(-1);
     setSelectedProduct(null);
   };
+
+  // Update this effect to properly sync with form
 
   const menu: MenuProps = {
     items: [
@@ -87,22 +95,59 @@ const CreateProductBySearch = () => {
       navigate('/pos/inventory/add-product');
     } else {
       const found = searchResults?.data?.find((p) => p.id.toString() === value);
-      console.log("found", found)
       if (found) {
+        const images = found?.media
+          ? found.media.map((url: string, idx: number) => ({
+              uid: String(idx),
+              name: `image-${idx + 1}.jpg`,
+              status: 'done',
+              url,
+            }))
+          : [];
         setSelectedProduct(found);
+        setFileList(images);
         form.setFieldsValue({
           name: found.name,
           SKU: found.SKU || '',
           catalogue_id: found.identifier_no,
+          images,
         });
-        // Set initial values for the form fields
-        form.setFieldValue('name', found.name);
-        form.setFieldValue('SKU', found.SKU || '');
       }
     }
   };
+  // Handle file changes
+  const handleChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    form.setFieldValue('images', newFileList);
+  };
 
-  const handleFinish = (values: ProductFormData) => {
+  // For preview modal
+  const handlePreview = async (file) => {
+    setPreviewImage(file.url || file.thumbUrl);
+    setPreviewOpen(true);
+  };
+
+  const handleFinish = async () => {
+    const values = await form.validateFields();
+    let imagesRes: string[] = [];
+
+    if (values?.images?.length > 0) {
+      const alreadyUploaded = values.images.filter(
+        (img) => img.url && img.url.startsWith('http')
+      );
+      const toUpload = values.images.filter(
+        (img) => !img.url || !img.url.startsWith('http')
+      );
+      imagesRes = alreadyUploaded.map((img) => img.url || '');
+
+      if (toUpload.length > 0) {
+        const uploadedImages = await Promise.all(
+          toUpload.map((image) => handleFileUpload(image.thumbUrl || image))
+        );
+        imagesRes = imagesRes.concat(uploadedImages.map((img) => img.url));
+      }
+    }
+
     const productData = {
       product_creation_format: 'catalogue' as const,
       name: selectedProduct?.name || '',
@@ -115,11 +160,11 @@ const CreateProductBySearch = () => {
       tags: values.tags,
       size: values.measurement_unit,
       catalogue_id: selectedProduct?.identifier_no,
+      media: imagesRes,
     };
 
     createProduct(productData, {
       onSuccess: (response: any) => {
-        console.log('response', response?.data);
         setProductData(response?.data);
         const generatedCode = response?.data?.id;
         setProductCode(generatedCode);
@@ -141,14 +186,12 @@ const CreateProductBySearch = () => {
     }
   };
 
-  const handleImagePreview = (file: { thumbUrl?: string; url?: string }) => {
-    const url = file?.thumbUrl || file?.url;
-    if (url) {
-      navigate('/pos/inventory/preview-page', {
-        state: { imageUrl: url },
-      });
-    }
-  };
+  const uploadButton = (
+    <button style={{ border: 0, background: 'none' }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
 
   return (
     <div className="space-y-5">
@@ -170,7 +213,7 @@ const CreateProductBySearch = () => {
               <Button
                 type="primary"
                 onClick={() => form.submit()}
-                loading={isCreating}
+                loading={isCreating || isUploading}
               >
                 Submit
               </Button>
@@ -195,196 +238,254 @@ const CreateProductBySearch = () => {
         </Text>
       </div>
 
-     <div className='p-5'>
-     <div className=" p-5 bg-white">
-        {!selectedProduct ? (
-          <div>
-            <div className="flex flex-col items-center justify-center w-full mb-4">
-              <h1 className="mb-5 text-base font-medium">
-                Search to add product from catalogue
-              </h1>
-              <Select
-                showSearch
-                placeholder="Search product by name or sku"
-                className="w-full max-w-sm"
-                defaultActiveFirstOption={false}
-                suffixIcon={false}
-                filterOption={false}
-                onSearch={(value: string) => setSearchQuery(value)}
-                onSelect={handleSelect}
-                loading={isSearching}
-                options={[
-                  {
-                    value: 'add-new',
-                    label: (
-                      <div>
-                        <p
-                          onClick={() => navigate('/pos/inventory/add-product')}
-                          className="text-sm text-wrap"
-                        >
-                          Can't find the product you want to add?{' '}
-                          <span className="text-[#003399] cursor-pointer">
-                            Request to add single variation product
-                          </span>
-                        </p>
-                      </div>
-                    ),
-                  },
-                  {
-                    value: 'add-multiple',
-                    label: (
-                      <div>
-                        <p
-                          onClick={() => navigate('/pos/inventory/add-product?type=multiple')}
-                          className="text-sm text-wrap"
-                        >
-                          Can't find the product you want to add?{' '}
-                          <span className="text-[#003399] cursor-pointer">
-                            Request to add multiple variation product
-                          </span>
-                        </p>
-                      </div>
-                    ),
-                  },
-                  ...(searchResults?.data?.map((product) => ({
-                    key: product.id.toString(),
-                    value: product.id.toString(),
-                    label: `${product.name} - ${product.SKU}`,
-                  })) || []),
-                ]}
-              />
+      <div className="p-5">
+        <div className=" p-5 bg-white">
+          {!selectedProduct ? (
+            <div>
+              <div className="flex flex-col items-center justify-center w-full mb-4">
+                <h1 className="mb-5 text-base font-medium">
+                  Search to add product from catalogue
+                </h1>
+                <Select
+                  showSearch
+                  placeholder="Search product by name or sku"
+                  className="w-full max-w-sm"
+                  defaultActiveFirstOption={false}
+                  suffixIcon={false}
+                  filterOption={false}
+                  onSearch={(value: string) => setSearchQuery(value)}
+                  onSelect={handleSelect}
+                  loading={isSearching}
+                  options={[
+                    {
+                      value: 'add-new',
+                      label: (
+                        <div>
+                          <p
+                            onClick={() =>
+                              navigate('/pos/inventory/add-product')
+                            }
+                            className="text-sm text-wrap"
+                          >
+                            Can't find the product you want to add?{' '}
+                            <span className="text-[#003399] cursor-pointer">
+                              Request to add single variation product
+                            </span>
+                          </p>
+                        </div>
+                      ),
+                    },
+                    {
+                      value: 'add-multiple',
+                      label: (
+                        <div>
+                          <p
+                            onClick={() =>
+                              navigate(
+                                '/pos/inventory/add-product?type=multiple'
+                              )
+                            }
+                            className="text-sm text-wrap"
+                          >
+                            Can't find the product you want to add?{' '}
+                            <span className="text-[#003399] cursor-pointer">
+                              Request to add multiple variation product
+                            </span>
+                          </p>
+                        </div>
+                      ),
+                    },
+                    ...(searchResults?.data?.map((product) => ({
+                      key: product.id.toString(),
+                      value: product.id.toString(),
+                      label: `${product.name} - ${product.SKU}`,
+                    })) || []),
+                  ]}
+                />
+              </div>
+
+              <div className="flex gap-3 cursor-pointer w-fit mx-auto px-4 items-center text-sm text-[#000000] py-2 bg-[#D9D9D9] rounded-md">
+                <BarcodeOutlined />
+                <p onClick={() => navigate('/pos/inventory/scan-product')}>
+                  Click here to scan product barcode to add product
+                </p>
+              </div>
             </div>
-
-            <div className="flex gap-3 cursor-pointer w-fit mx-auto px-4 items-center text-sm text-[#000000] py-2 bg-[#D9D9D9] rounded-md">
-              <BarcodeOutlined />
-              <p onClick={() => navigate('/pos/inventory/scan-product')}>
-                Click here to scan product barcode to add product
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center w-full">
-            <Form
-              form={form}
-              layout="horizontal"
-              labelCol={{ span: 6 }}
-              wrapperCol={{ span: 18 }}
-              onFinish={handleFinish}
-              className="w-full max-w-2xl"
-            >
-              <Form.Item
-                label="Product Name"
-                name="name"
-                rules={[
-                  { required: true, message: 'Please enter the product name' },
-                ]}
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full">
+              <Form
+                form={form}
+                layout="horizontal"
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 18 }}
+                onFinish={handleFinish}
+                className="w-full max-w-2xl"
               >
-                <Input disabled />
-              </Form.Item>
+                <Form.Item
+                  label="Product Name"
+                  name="name"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter the product name',
+                    },
+                  ]}
+                >
+                  <Input disabled />
+                </Form.Item>
 
-              <Form.Item
-                label="SKU"
-                name="SKU"
-                rules={[{ required: true, message: 'Please enter the SKU' }]}
-              >
-                <Input disabled />
-              </Form.Item>
+                <Form.Item
+                  label="SKU"
+                  name="SKU"
+                  rules={[{ required: true, message: 'Please enter the SKU' }]}
+                >
+                  <Input disabled />
+                </Form.Item>
 
-              <Form.Item
+                {/* <Form.Item
                 label="Size"
                 name="size"
                 rules={[{ required: true, message: 'Please enter the size' }]}
               >
                 <Input />
-              </Form.Item>
+              </Form.Item> */}
 
-              <Form.Item
-                label="Product Images"
-                name="images"
-                valuePropName="fileList"
-                getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please upload at least one image',
-                  },
-                ]}
-              >
-                <Upload
+                <Form.Item
+                  label="Product Images"
                   name="images"
-                  listType="picture"
-                  beforeUpload={() => false}
-                  onPreview={handleImagePreview}
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) =>
+                    Array.isArray(e) ? e : e?.fileList
+                  }
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please upload at least one image',
+                    },
+                  ]}
                 >
-                  <Button icon={<UploadOutlined />}>Upload</Button>
-                </Upload>
-              </Form.Item>
+                  <Upload
+                    name="images"
+                    listType="picture-card"
+                    beforeUpload={beforeUpload}
+                    onPreview={handlePreview}
+                    maxCount={4}
+                    onChange={handleChange}
+                    fileList={fileList}
+                  >
+                    {fileList.length >= 4 ? null : uploadButton}
+                  </Upload>
 
-              <Form.Item
-                label="Cost Price"
-                name="costPrice"
-                rules={[
-                  { required: true, message: 'Please enter the cost price' },
-                ]}
-              >
-                <InputNumber min={0} style={{ width: '100%' }} />
-              </Form.Item>
+                  <div>
+                    {previewImage && (
+                      <div>
+                        <Image
+                          wrapperStyle={{ display: 'none' }}
+                          preview={{
+                            visible: previewOpen,
+                            onVisibleChange: (visible) =>
+                              setPreviewOpen(visible),
+                            afterOpenChange: (visible) =>
+                              !visible && setPreviewImage(''),
+                          }}
+                          src={previewImage}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </Form.Item>
 
-              <Form.Item
-                label="Selling Price"
-                name="sellingPrice"
-                rules={[
-                  { required: true, message: 'Please enter the selling price' },
-                ]}
-              >
-                <InputNumber min={0} style={{ width: '100%' }} />
-              </Form.Item>
+                <Form.Item
+                  label="Cost Price"
+                  name="costPrice"
+                  rules={[
+                    { required: true, message: 'Please enter the cost price' },
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    style={{ width: '100%' }}
+                    formatter={(value: any) =>
+                      value
+                        ? `₦ ${value
+                            ?.toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
+                        : '₦'
+                    }
+                  />
+                </Form.Item>
 
-              <Form.Item
-                label="Stock Quantity"
-                name="quantity"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please enter the stock quantity',
-                  },
-                ]}
-              >
-                <InputNumber min={0} style={{ width: '100%' }} />
-              </Form.Item>
+                <Form.Item
+                  label="Selling Price"
+                  name="sellingPrice"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter the selling price',
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    min={0}
+                    style={{ width: '100%' }}
+                    formatter={(value: any) =>
+                      value
+                        ? `₦ ${value
+                            ?.toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
+                        : '₦'
+                    }
+                  />
+                </Form.Item>
 
-              <Form.Item
-                label="Reorder Level"
-                name="reorderLevel"
-                rules={[
-                  { required: true, message: 'Please enter the reorder level' },
-                ]}
-              >
-                <InputNumber min={0} style={{ width: '100%' }} />
-              </Form.Item>
+                <Form.Item
+                  label="Stock Quantity"
+                  name="quantity"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter the stock quantity',
+                    },
+                  ]}
+                >
+                  <InputNumber min={0} style={{ width: '100%' }} />
+                </Form.Item>
 
-              <Form.Item
-                label="Description"
-                name="description"
-                rules={[
-                  { required: true, message: 'Please enter a description' },
-                ]}
-              >
-                <Input.TextArea rows={3} />
-              </Form.Item>
+                <Form.Item
+                  label="Reorder Level"
+                  name="reorderLevel"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please enter the reorder level',
+                    },
+                  ]}
+                >
+                  <InputNumber min={0} style={{ width: '100%' }} />
+                </Form.Item>
 
-              <Form.Item
-                label="Product Tags"
-                name="tags"
-                rules={[{ required: true, message: 'Please enter tags' }]}
-              >
-                <Input placeholder="e.g cement, building, bag" />
-              </Form.Item>
-            </Form>
-          </div>
-        )}
+                <Form.Item
+                  label="Description"
+                  name="description"
+                  rules={[
+                    { required: true, message: 'Please enter a description' },
+                  ]}
+                >
+                  <Input.TextArea rows={3} />
+                </Form.Item>
+
+                <Form.Item
+                  label="Product Tags"
+                  name="tags"
+                  rules={[{ required: true, message: 'Please enter tags' }]}
+                >
+                  <Input placeholder="e.g cement, building, bag" />
+                </Form.Item>
+              </Form>
+            </div>
+          )}
+        </div>
       </div>
-     </div>
 
       <Modal
         title="Product Successfully Added"
@@ -401,6 +502,20 @@ const CreateProductBySearch = () => {
           <p className="font-bold text-sm mt-2 text-[#003399]">{productCode}</p>
         </div>
       </Modal>
+
+      {/* <ImagePreviewModal
+        isOpen={isImagePreviewOpen && !!previewImage}
+        image={previewImage?.url || previewImage?.thumbUrl}
+        imageUid={previewImageUid || ''}
+        onClose={() => {
+          setIsImagePreviewOpen(false);
+          setPreviewImageUid(null);
+        }}
+        onChange={handleImageChange}
+        onDelete={handleImageDelete}
+        isDeleteOpen={isImageDeleteOpen}
+        setIsDeleteOpen={setIsImageDeleteOpen}
+      /> */}
     </div>
   );
 };

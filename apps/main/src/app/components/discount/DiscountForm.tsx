@@ -112,7 +112,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   }
 
   return (
-    <div className="h-screen">
+    <div className="min-h-screen">
       <Form
         form={form}
         layout="horizontal"
@@ -204,15 +204,15 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
           rules={[
             { required: true, message: 'Please enter value' },
             {
-              validator: (rule, value, callback) => {
+              validator: (_, value) => {
                 if (
                   value &&
                   typeValue === 'percentage' &&
                   (value < 0 || value > 100)
                 ) {
-                  callback('Percentage must be between 0 and 100');
+                  return Promise.reject('Percentage must be between 0 and 100');
                 }
-                callback();
+                return Promise.resolve();
               },
             },
           ]}
