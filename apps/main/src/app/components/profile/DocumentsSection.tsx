@@ -1,16 +1,13 @@
-import { ArrowRightOutlined, UploadOutlined } from '@ant-design/icons';
+import { ArrowRightOutlined } from '@ant-design/icons';
 import { Button, Typography, Upload, UploadFile } from 'antd';
-import { useEffect, useState } from 'react';
-import {
-  acceptedFileTypes,
-  beforeUpload,
-  getBase64,
-} from '../../../utils/helper';
+import { useState } from 'react';
+import { acceptedFileTypes, beforeUpload } from '../../../utils/helper';
 import { Documents } from '../../pages/profile/types';
 import ActionIcon from '../common/ActionIcon';
 import { SkeletonLoader } from '../common/SkeletonLoader';
 import { DocumentPreviewModal, getFileName } from './DocumentPreviewUrl';
 import InfoField from './InfoField';
+import ChangePasswordModal from '../../pages/auth/ChangePasswordModal';
 
 const { Text } = Typography;
 
@@ -43,26 +40,7 @@ const DocumentsSection = ({
 }: DocumentsSectionProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentFile, setCurrentFile] = useState<string | null>(null);
-  const [fileLists, setFileLists] = useState<{
-    CAC?: UploadFile[];
-    TIN?: UploadFile[];
-    proof_of_address?: UploadFile[];
-  }>({});
-
-  useEffect(() => {
-    setFileLists({
-      CAC: getFileList(documents?.CAC?.file, 'CAC'),
-      TIN: getFileList(documents?.TIN?.file, 'TIN'),
-      proof_of_address: getFileList(
-        documents?.proof_of_address?.file
-          ? documents.proof_of_address.file
-          : typeof documents?.proof_of_address === 'string'
-          ? documents.proof_of_address
-          : null,
-        'proof_of_address'
-      ),
-    });
-  }, [documents]);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   const handleOpen = (fileUrl: string | null) => {
     setCurrentFile(fileUrl);
@@ -70,23 +48,8 @@ const DocumentsSection = ({
   };
 
   const handleFileSelect =
-    (docType: 'CAC' | 'TIN' | 'proof_of_address') => async (info: any) => {
-      if (info.file) {
-        const convertToBase64 = info?.file?.url?.startsWith('http')
-          ? info.file
-          : await getBase64(info.file);
-        setFileLists((prev) => ({
-          ...prev,
-          [docType]: [
-            {
-              uid: info.file.uid,
-              name: info.file.name,
-              status: 'done',
-              url: convertToBase64,
-            },
-          ],
-        }));
-
+    (docType: 'CAC' | 'TIN' | 'proof_of_address') => (info: any) => {
+      if (info) {
         setSelectedFiles((prev) => ({
           ...prev,
           [docType]: info,
@@ -126,7 +89,7 @@ const DocumentsSection = ({
             }}
             handleUpload={handleFileSelect('CAC')}
             isEdit={isEditRequested}
-            fileList={fileLists.CAC}
+            fileList={getFileList(documents?.CAC?.file, 'CAC')}
           />
           <InfoField
             field={{ label: 'TIN no.', value: documents?.TIN?.identifier }}
@@ -154,7 +117,7 @@ const DocumentsSection = ({
             }}
             handleUpload={handleFileSelect('TIN')}
             isEdit={isEditRequested}
-            fileList={fileLists.TIN}
+            fileList={getFileList(documents?.TIN?.file, 'TIN')}
           />
           <InfoField
             type="file"
@@ -179,10 +142,30 @@ const DocumentsSection = ({
             }}
             handleUpload={handleFileSelect('proof_of_address')}
             isEdit={isEditRequested}
-            fileList={fileLists.proof_of_address}
+            fileList={getFileList(
+              documents?.proof_of_address?.file
+                ? documents.proof_of_address.file
+                : typeof documents?.proof_of_address === 'string'
+                ? documents.proof_of_address
+                : null,
+              'proof_of_address'
+            )}
           />
         </div>
       </SkeletonLoader>
+
+      <h1
+          className="text-blue-500 m-7 cursor-pointer"
+          onClick={() => setIsPasswordModalOpen(true)}
+        >
+          Change Password
+        </h1>
+
+      <ChangePasswordModal
+        open={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
+
       <DocumentPreviewModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
