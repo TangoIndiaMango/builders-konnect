@@ -1,37 +1,73 @@
 'use client';
 
 import { useState } from 'react';
-import { Collapse, Button, Space, Typography } from 'antd';
+import { Collapse, Button, Space, Typography, Checkbox, Slider } from 'antd';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import type { CollapseProps } from 'antd';
+import { useGetCategorizations, useGetInventoryAttributes } from '../../../hooks/useApis';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
 
-const categories = [
-  'Imported Tiles',
-  'Nigerian Tiles',
-  'Laminate Flooring (5)',
-  '3D Flooring (5)',
-  'Wood Plank Flooring (5)',
-  'Vinyl Planks (5)',
-  'Vinyl Tiles (5)',
-  'Carpet Tiles (5)',
-  'Epoxy Flooring (5)',
-  'Terrazzo Flooring (5)',
-  'Spanish Stamping (5)',
-];
+interface VendorSidebarProps {
+  onFiltersChange: (filters: Record<string, unknown>) => void;
+}
 
-export default function VendorSidebar() {
-  const [filters, setFilters] = useState({});
+export default function VendorSidebar({ onFiltersChange }: VendorSidebarProps) {
+  const [filters, setFilters] = useState<Record<string, unknown>>({});
   const [activeKeys, setActiveKeys] = useState<string[]>(['Categories']);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
+
+  // Fetch categories
+  const { data: categoryData = [] } = useGetCategorizations('category');
+
+  // Fetch attributes
+  const { data: attributesData = [] } = useGetInventoryAttributes();
 
   const handleReset = () => {
     setFilters({});
+    setPriceRange([0, 1000000]);
+    onFiltersChange({});
   };
 
   const handleApply = () => {
-    console.log('Applying filters:', filters);
+    const appliedFilters = {
+      ...filters,
+      'filters[price][min]': priceRange[0],
+      'filters[price][max]': priceRange[1]
+    };
+    onFiltersChange(appliedFilters);
+  };
+
+  const handleCategoryChange = (categoryId: string, checked: boolean) => {
+    setFilters(prev => {
+      const newFilters = { ...prev };
+      if (checked) {
+        newFilters['filters[categorization][category_id]'] = categoryId;
+      } else {
+        delete newFilters['filters[categorization][category_id]'];
+      }
+      return newFilters;
+    });
+  };
+
+  const handleAttributeChange = (attributeKey: string, value: string, checked: boolean) => {
+    setFilters(prev => {
+      const newFilters = { ...prev };
+      const filterKey = `filters[metadata][${attributeKey.toLowerCase()}]`;
+      const currentValues = (newFilters[filterKey] as string[] || []);
+      
+      if (checked) {
+        newFilters[filterKey] = [...currentValues, value];
+      } else {
+        newFilters[filterKey] = currentValues.filter(v => v !== value);
+        if (newFilters[filterKey].length === 0) {
+          delete newFilters[filterKey];
+        }
+      }
+      
+      return newFilters;
+    });
   };
 
   const customExpandIcon: CollapseProps['expandIcon'] = ({ isActive }) => (
@@ -57,41 +93,65 @@ export default function VendorSidebar() {
           }
         >
           <Panel
-            header={`Categories (${categories.length})`}
+            header={`Categories (${categoryData.length})`}
             key="Categories"
             style={{ background: '#fafafa', borderBottom: 'none' }}
           >
-            <ul className="space-y-2 text-sm text-gray-700">
-              {categories.map((cat) => (
-                <li key={cat} className="cursor-pointer hover:text-blue-600">
-                  {cat}
-                </li>
+            <div className="space-y-2 text-sm text-gray-700">
+              {categoryData.map((category) => (
+                <div key={category.id} className="flex items-center">
+                  <Checkbox
+                    onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
+                    checked={filters['filters[categorization][category_id]'] === category.id}
+                  >
+                    {category.name}
+                  </Checkbox>
+                </div>
               ))}
-            </ul>
+            </div>
           </Panel>
 
-          <Panel
-            header="Brand"
-            key="Brand"
-            style={{ background: '#fafafa', borderBottom: 'none' }}
-          >
-            <span className="text-sm text-gray-500">Brand filters here...</span>
-          </Panel>
+          {attributesData.map((attribute) => (
+            <Panel
+              key={attribute.name}
+              header={attribute.name}
+              style={{ background: '#fafafa', borderBottom: 'none' }}
+            >
+              <div className="space-y-2">
+                {attribute.values.map((value) => (
+                  <div key={value} className="flex items-center">
+                    <Checkbox
+                      onChange={(e) => handleAttributeChange(attribute.name, value, e.target.checked)}
+                      checked={(
+                        filters[`filters[metadata][${attribute.name.toLowerCase()}]`] as string[] || []
+                      ).includes(value)}
+                    >
+                      {value}
+                    </Checkbox>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          ))}
 
           <Panel
-            header="Color"
-            key="Color"
-            style={{ background: '#fafafa', borderBottom: 'none' }}
-          >
-            <span className="text-sm text-gray-500">Color filters here...</span>
-          </Panel>
-
-          <Panel
-            header="Price"
+            header="Price Range"
             key="Price"
             style={{ background: '#fafafa', borderBottom: 'none' }}
           >
-            <span className="text-sm text-gray-500">Price range inputs...</span>
+            <Slider
+              range
+              min={0}
+              max={1000000}
+              step={1000}
+              value={priceRange}
+              onChange={(value: [number, number]) => setPriceRange(value)}
+              tipFormatter={(value) => `₦${value?.toLocaleString()}`}
+            />
+            <div className="flex justify-between mt-2 text-sm text-gray-500">
+              <span>₦{priceRange[0].toLocaleString()}</span>
+              <span>₦{priceRange[1].toLocaleString()}</span>
+            </div>
           </Panel>
         </Collapse>
 

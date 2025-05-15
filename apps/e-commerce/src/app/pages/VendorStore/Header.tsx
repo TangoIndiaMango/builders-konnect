@@ -10,12 +10,16 @@ import {
   RightOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import type { Merchant } from '../../../hooks/useApis';
 
 const { Option } = Select;
 
-export default function ProductHeader() {
+interface ProductHeaderProps {
+  merchant: Merchant;
+}
+
+export default function ProductHeader({ merchant }: ProductHeaderProps) {
   const [sortOption, setSortOption] = useState('latest');
-  const productCount = 391;
 
   const handleChange = (value: SetStateAction<string>) => {
     setSortOption(value);
@@ -24,15 +28,15 @@ export default function ProductHeader() {
   return (
     <div className="bg-[#FAFAFA] shadow-md w-full">
       <h1 className="text-sm cursor-pointer text-[#00000073] py-8">
-        Home / <span className="text-[#000000D9]">Builder’s Hub</span>
+        Home / <span className="text-[#000000D9]">{merchant.name}</span>
       </h1>
       <div className="w-full  rounded-md bg-[#003399] p-6 flex justify-between items-center">
         <div>
           <h2 className="text-[#FFFFFF] font-medium text-base md:text-xl">
-            Builder’s Hub
+            {merchant.name}
           </h2>
           <div className="text-white hidden  lg:flex items-center">
-            <span className="text-3xl font-medium">{productCount}</span>
+            <span className="text-3xl font-medium">{merchant.total_products}</span>
             <span className="text-xl ml-2">products found</span>
           </div>
         </div>
@@ -61,7 +65,7 @@ export default function ProductHeader() {
             <StarFilled />
             <StarTwoTone twoToneColor="#f97316" />
           </div>
-          <span className="text-sm text-gray-700">4.4 from 34 reviews</span>
+          <span className="text-sm text-gray-700">{merchant.ratings.toFixed(1)} from {merchant.total_reviews} reviews</span>
         </div>
 
         {/* Successful Sales */}
@@ -74,7 +78,7 @@ export default function ProductHeader() {
               <ShoppingOutlined />
             </div>
             <div>
-              <div className="text-sm font-semibold leading-tight">833</div>
+              <div className="text-sm font-semibold leading-tight">{merchant.successful_sales}</div>
               <div className="text-xs text-gray-600 leading-tight">
                 Successful Sales
               </div>
@@ -93,10 +97,10 @@ export default function ProductHeader() {
             </div>
             <div>
               <div className="text-sm font-semibold leading-tight">
-                5 Months
+                {merchant.sales_duration}
               </div>
               <div className="text-xs text-gray-600 leading-tight">
-                Selling on builder’s Konnect
+                Selling on Builder's Connect
               </div>
             </div>
           </div>
@@ -110,7 +114,7 @@ export default function ProductHeader() {
           <Link to="/review">
           <div className="flex items-center gap-2 text-sm font-medium px-2 py-1 w-full">
             <SmileOutlined />
-            View Feedback (4)
+            View Feedback ({merchant.total_reviews})
             <RightOutlined/>
           </div>
           </Link>

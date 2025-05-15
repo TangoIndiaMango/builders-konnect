@@ -7,6 +7,7 @@ interface ProductDetails {
   category: string;
   code: string;
   retail_price: string;
+  available_quantity: number;
   discount_information: {
     id: number;
     type: string;
@@ -19,6 +20,7 @@ interface ProductDetails {
   seller: {
     name: string | null;
     location_id: string;
+    merchant_code: string
   };
   description: string | null;
   metadata: any;

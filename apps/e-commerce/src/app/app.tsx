@@ -71,7 +71,7 @@ const App = () => {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/success" element={<OrderSuccess />} />
-        <Route path="/vendor-store" element={<VendorShop />} />
+        <Route path="/vendor-store/:id" element={<VendorShop />} />
         <Route path="/review" element={<ReviewSection />} />
 
         {/* Profile Routes */}
