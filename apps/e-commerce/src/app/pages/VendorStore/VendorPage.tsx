@@ -1,16 +1,8 @@
-import {
-  ClockCircleOutlined,
-  RightOutlined,
-  ShoppingOutlined,
-  SmileOutlined,
-  StarFilled,
-  StarTwoTone,
-} from '@ant-design/icons';
 import type { CollapseProps } from 'antd';
-import { Card, Collapse, Select, Spin, Typography } from 'antd';
+import { Collapse, Select, Spin, Typography } from 'antd';
 import { useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   useGetCategorizations,
   useGetInventoryAttributes,
