@@ -1,10 +1,32 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Spin, Select, Card, Collapse, Button, Space, Typography, Checkbox, Slider, Pagination } from 'antd';
-import { StarFilled, StarTwoTone, ShoppingOutlined, ClockCircleOutlined, SmileOutlined, RightOutlined } from '@ant-design/icons';
+import {
+  Spin,
+  Select,
+  Card,
+  Collapse,
+  Button,
+  Space,
+  Typography,
+  Checkbox,
+  Slider,
+  Pagination,
+} from 'antd';
+import {
+  StarFilled,
+  StarTwoTone,
+  ShoppingOutlined,
+  ClockCircleOutlined,
+  SmileOutlined,
+  RightOutlined,
+} from '@ant-design/icons';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import type { CollapseProps } from 'antd';
-import { useGetMerchant, useGetCategorizations, useGetInventoryAttributes } from '../../../hooks/useApis';
+import {
+  useGetMerchant,
+  useGetCategorizations,
+  useGetInventoryAttributes,
+} from '../../../hooks/useApis';
 
 import type { Product } from '../../types/product';
 import ProductCard from '../../components/ProductListing/ProductListing';
@@ -18,23 +40,43 @@ const VendorShop = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeKeys, setActiveKeys] = useState<string[]>(['Categories']);
   const [filters, setFilters] = useState<{
-    attributes: Record<string, string[]>,
-    price: [number, number],
-    sort_by: string | undefined,
-    categoryIds: string[]
+    attributes: Record<string, string[]>;
+    price: [number, number];
+    sort_by: string | undefined;
+    categoryIds: string[];
   }>({
     attributes: {},
     price: [0, 1000000],
     sort_by: undefined,
-    categoryIds: []
+    categoryIds: [],
   });
-
+  // Separate state for temporary filters
+  const [tempFilters, setTempFilters] = useState(filters);
+  console.log('tempFilters', tempFilters);
   // Fetch categories and attributes
   const { data: categoryData = [] } = useGetCategorizations('category');
-  const { data: attributesData = [] } = useGetInventoryAttributes(filters.categoryIds.length > 0 ? filters.categoryIds.join(',') : undefined);
+  const { data: attributesData = [] } = useGetInventoryAttributes(
+    tempFilters.categoryIds.length > 0
+      ? tempFilters.categoryIds.join(',')
+      : undefined
+  );
   const attributes = attributesData || [];
+  // console.log('Categories', categoryData);
+  // console.log('attributesData', attributesData);
 
-  console.log('Merchant ID:', id);
+  // console.log('Merchant ID:', id);
+
+  // First, let's organize the attributes by category
+  const attributesByCategory = attributes.reduce(
+    (acc: Record<string, typeof attributesData>, attr: any) => {
+      if (!acc[attr.category]) {
+        acc[attr.category] = [];
+      }
+      acc[attr.category].push(attr);
+      return acc;
+    },
+    {} as Record<string, typeof attributesData>
+  );
 
   // Fetch merchant and products with filters
   const { data, isLoading } = useGetMerchant(id || '', {
@@ -48,17 +90,17 @@ const VendorShop = () => {
       const filterKey = `filters[metadata][${key.toLowerCase()}]`;
       return {
         ...acc,
-        [filterKey]: values
+        [filterKey]: values,
       };
-    }, {})
+    }, {}),
   });
 
-  console.log('Merchant API Response:', {
-    data,
-    merchant: data?.data,
-    isLoading,
-    filters
-  });
+  // console.log('Merchant API Response:', {
+  //   data,
+  //   merchant: data?.data,
+  //   isLoading,
+  //   filters
+  // });
   const merchant = data?.data;
   const productsData = data?.data?.products;
   const productsLoading = isLoading;
@@ -79,55 +121,64 @@ const VendorShop = () => {
     );
   }
 
-  // Filter handling functions
-  const handleReset = () => {
-    setFilters({
-      attributes: {},
-      price: [0, 1000000],
-      sort_by: undefined,
-      categoryIds: []
-    });
-  };
-
-  const handleApply = () => {
-    // No need for separate apply since we're using the filters state directly
-  };
-
   const handleCategoryChange = (categoryId: string, checked: boolean) => {
-    setFilters(prev => ({
+    setTempFilters((prev) => ({
       ...prev,
-      categoryIds: checked 
+      categoryIds: checked
         ? [...prev.categoryIds, categoryId]
-        : prev.categoryIds.filter(id => id !== categoryId)
+        : prev.categoryIds.filter((id) => id !== categoryId),
     }));
   };
 
-  const handleAttributeChange = (attributeKey: string, value: string, checked: boolean) => {
-    setFilters(prev => {
+  const handleAttributeChange = (
+    attributeKey: string,
+    value: string,
+    checked: boolean
+  ) => {
+    setTempFilters((prev) => {
       const newAttributes = { ...prev.attributes };
       const currentValues = newAttributes[attributeKey] || [];
-      
+
       if (checked) {
         newAttributes[attributeKey] = [...currentValues, value];
       } else {
-        newAttributes[attributeKey] = currentValues.filter(v => v !== value);
+        newAttributes[attributeKey] = currentValues.filter((v) => v !== value);
         if (newAttributes[attributeKey].length === 0) {
           delete newAttributes[attributeKey];
         }
       }
-      
+
       return {
         ...prev,
-        attributes: newAttributes
+        attributes: newAttributes,
       };
     });
   };
 
-  const handlePriceChange = (value: [number, number]) => {
-    setFilters(prev => ({
+  const handlePriceChange = (value: number[]) => {
+    setTempFilters((prev) => ({
       ...prev,
-      price: value
+      price: value as [number, number],
     }));
+  };
+
+  const handleApply = () => {
+    setFilters(tempFilters);
+
+    // To close the filter panel
+    // setActiveKeys([]);
+  };
+
+  // Reset both temp and actual filters
+  const handleReset = () => {
+    const defaultFilters = {
+      attributes: {},
+      price: [0, 1000000],
+      sort_by: undefined,
+      categoryIds: [],
+    };
+    setTempFilters(defaultFilters as unknown as typeof tempFilters);
+    setFilters(defaultFilters as unknown as typeof filters);
   };
 
   const customExpandIcon: CollapseProps['expandIcon'] = ({ isActive }) => (
@@ -149,15 +200,19 @@ const VendorShop = () => {
               {merchant.name}
             </h2>
             <div className="text-white hidden lg:flex items-center">
-              <span className="text-3xl font-medium">{merchant.total_products}</span>
+              <span className="text-3xl font-medium">
+                {merchant.total_products}
+              </span>
               <span className="text-xl ml-2">products found</span>
             </div>
           </div>
 
           <div>
-            <Select 
-              value={filters.sort_by || 'latest'} 
-              onChange={(value) => setFilters(prev => ({ ...prev, sort_by: value }))}
+            <Select
+              value={filters.sort_by || 'latest'}
+              onChange={(value) =>
+                setFilters((prev) => ({ ...prev, sort_by: value }))
+              }
               className="w-32"
             >
               <Option value="latest">Latest</Option>
@@ -176,7 +231,10 @@ const VendorShop = () => {
               <StarFilled />
               <StarTwoTone twoToneColor="#f97316" />
             </div>
-            <span className="text-sm text-gray-700">{merchant.ratings.toFixed(1)} from {merchant.total_reviews} reviews</span>
+            <span className="text-sm text-gray-700">
+              {merchant.ratings.toFixed(1)} from {merchant.total_reviews}{' '}
+              reviews
+            </span>
           </div>
 
           <Card
@@ -188,8 +246,12 @@ const VendorShop = () => {
                 <ShoppingOutlined />
               </div>
               <div>
-                <div className="text-sm font-semibold leading-tight">{merchant.successful_sales}</div>
-                <div className="text-xs text-gray-600 leading-tight">Successful Sales</div>
+                <div className="text-sm font-semibold leading-tight">
+                  {merchant.successful_sales}
+                </div>
+                <div className="text-xs text-gray-600 leading-tight">
+                  Successful Sales
+                </div>
               </div>
             </div>
           </Card>
@@ -203,8 +265,12 @@ const VendorShop = () => {
                 <ClockCircleOutlined />
               </div>
               <div>
-                <div className="text-sm font-semibold leading-tight">{merchant.sales_duration}</div>
-                <div className="text-xs text-gray-600 leading-tight">Selling on Builder's Connect</div>
+                <div className="text-sm font-semibold leading-tight">
+                  {merchant.sales_duration}
+                </div>
+                <div className="text-xs text-gray-600 leading-tight">
+                  Selling on Builder's Connect
+                </div>
               </div>
             </div>
           </Card>
@@ -217,7 +283,7 @@ const VendorShop = () => {
               <div className="flex items-center gap-2 text-sm font-medium px-2 py-1 w-full">
                 <SmileOutlined />
                 View Feedback ({merchant.total_reviews})
-                <RightOutlined/>
+                <RightOutlined />
               </div>
             </Link>
           </Card>
@@ -229,49 +295,65 @@ const VendorShop = () => {
         {/* Sidebar */}
         <aside className="py-8 hidden md:flex">
           <div className="bg-[#fafafa] p-4 h-fit min-w-[250px] overflow-y-auto rounded-lg w-full max-w-[320px]">
-            <Title level={5} className="mb-16 text-[#000000D9]">FILTER</Title>
+            <Title level={5} className="mb-16 text-[#000000D9]">
+              FILTER
+            </Title>
 
             <Collapse
               bordered={false}
               expandIcon={customExpandIcon}
               expandIconPosition="end"
               activeKey={activeKeys}
-              onChange={(keys) => setActiveKeys(Array.isArray(keys) ? keys : [keys])}
+              onChange={(keys) =>
+                setActiveKeys(Array.isArray(keys) ? keys : [keys])
+              }
             >
-              <Panel
-                header={`Categories (${categoryData.length})`}
-                key="Categories"
-                style={{ background: '#fafafa', borderBottom: 'none' }}
-              >
-                <div className="space-y-2 text-sm text-gray-700">
-                  {categoryData.map((category) => (
-                    <div key={category.id} className="flex items-center">
+              {categoryData.map((category) => (
+                <Panel
+                  key={category.id}
+                  header={category.name}
+                  style={{ background: '#fafafa', borderBottom: 'none' }}
+                >
+                  <div className="space-y-4">
+                    {/* Category checkbox */}
+                    <div className="flex items-center">
                       <Checkbox
-                        onChange={(e) => handleCategoryChange(category.id, e.target.checked)}
-                        checked={filters.categoryIds.includes(category.id)}
+                        onChange={(e) =>
+                          handleCategoryChange(category.id, e.target.checked)
+                        }
+                        checked={tempFilters.categoryIds.includes(category.id)}
                       >
                         {category.name}
                       </Checkbox>
                     </div>
-                  ))}
-                </div>
-              </Panel>
 
-              {attributes.map((attribute) => (
-                <Panel
-                  key={attribute.name}
-                  header={attribute.name}
-                  style={{ background: '#fafafa', borderBottom: 'none' }}
-                >
-                  <div className="space-y-2">
-                    {attribute.values.map((value) => (
-                      <div key={value} className="flex items-center">
-                        <Checkbox
-                          onChange={(e) => handleAttributeChange(attribute.name, value, e.target.checked)}
-                          checked={(filters[`filters[metadata][${attribute.name.toLowerCase()}]`] as string[] || []).includes(value)}
-                        >
-                          {value}
-                        </Checkbox>
+                    {/* Attributes for this category */}
+                    {attributesByCategory[category.name]?.map((attribute) => (
+                      <div key={attribute.id} className="ml-4">
+                        <div className="font-medium mb-2">
+                          {attribute.attribute}
+                        </div>
+                        <div className="space-y-2">
+                          {attribute.possible_values.map((value) => (
+                            <div key={value} className="flex items-center">
+                              <Checkbox
+                                onChange={(e) =>
+                                  handleAttributeChange(
+                                    attribute.attribute,
+                                    value,
+                                    e.target.checked
+                                  )
+                                }
+                                checked={(
+                                  tempFilters.attributes[attribute.attribute] ||
+                                  []
+                                ).includes(value)}
+                              >
+                                {value}
+                              </Checkbox>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -288,20 +370,22 @@ const VendorShop = () => {
                   min={0}
                   max={1000000}
                   step={1000}
-                  value={filters.price as [number, number]}
-                  onChange={(value: number[]) => handlePriceChange(value as [number, number])}
+                  value={tempFilters.price}
+                  onChange={handlePriceChange}
                   tipFormatter={(value) => `₦${value?.toLocaleString()}`}
                 />
                 <div className="flex justify-between mt-2 text-sm text-gray-500">
-                  <span>₦{filters.price[0].toLocaleString()}</span>
-                  <span>₦{filters.price[1].toLocaleString()}</span>
+                  <span>₦{tempFilters.price[0].toLocaleString()}</span>
+                  <span>₦{tempFilters.price[1].toLocaleString()}</span>
                 </div>
               </Panel>
             </Collapse>
 
             <Space className="mt-8 flex justify-between w-full">
               <Button onClick={handleReset}>Reset</Button>
-              <Button type="primary" onClick={handleApply}>OK</Button>
+              <Button type="primary" onClick={handleApply}>
+                OK
+              </Button>
             </Space>
           </div>
         </aside>
@@ -317,24 +401,22 @@ const VendorShop = () => {
               <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {(productsData?.data || []).map((item: any) => {
                   const product: Product = {
-                    id: parseInt(item.id) || 0,
+                    id: item.id,
                     name: item.name,
-                    price: parseFloat(item.retail_price) || 0,
+                    price: parseFloat(item.retail_price),
                     images: [item.primary_media_url || ''],
-                    discount: item.discount_information?.amount ? parseFloat(item.discount_information.amount) : 0,
+                    discount: item.discount_information?.amount
+                      ? parseFloat(item.discount_information.amount)
+                      : 0,
                     rating: item.ratings || 0,
                     description: item.description,
-                    category: item.category
+                    category: item.category,
                   };
-                  
-                  return (
-                    <Link to={`/product-details/${item.id}`} key={item.id}>
-                      <ProductCard item={product} />
-                    </Link>
-                  );
+
+                  return <ProductCard item={product} />;
                 })}
               </div>
-              
+
               {productsData && productsData.last_page > 1 && (
                 <div className="flex justify-center">
                   <Pagination

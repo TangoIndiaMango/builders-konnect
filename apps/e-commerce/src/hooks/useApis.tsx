@@ -199,7 +199,7 @@ export const useGetInventoryAttributes = (categoryId?: string) => {
       });
       return response.data.data || [];
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false
   });
 };
@@ -267,7 +267,7 @@ export const useGetMerchant = (id: string, params: GetProductsParams = {}) => {
           apiParams[key] = value;
         }
       });
-      
+
       // Remove undefined parameters
       Object.keys(apiParams).forEach(key => apiParams[key] === undefined && delete apiParams[key]);
 
@@ -317,10 +317,10 @@ export const useGetProducts = (params: GetProductsParams = {}) => {
           apiParams[key] = value;
         }
       });
-      
+
       // Remove undefined parameters
       Object.keys(apiParams).forEach(key => apiParams[key] === undefined && delete apiParams[key]);
-      
+
       const response = await axiosInstance.get('/customers/products', { params: apiParams });
       return response.data as ProductsResponse;
     },
