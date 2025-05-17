@@ -23,6 +23,7 @@
     "jotai": "^2.12.2",
     "lucide-react": "^0.487.0",
     "papaparse": "^5.5.2",
+    "paystack-inline-ts": "^1.0.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",

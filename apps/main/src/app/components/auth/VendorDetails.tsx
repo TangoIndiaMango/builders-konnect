@@ -83,7 +83,7 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
         name="contactName"
         rules={[{ required: true, message: 'Please enter contact name' }]}
       >
-        <Input placeholder="Enter contact name" />
+        <Input placeholder="Enter contact name" disabled/>
       </Form.Item>
 
       <Form.Item
