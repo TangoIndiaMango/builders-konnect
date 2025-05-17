@@ -43,7 +43,7 @@ const Header = () => {
               <Link to="/suggestions" className="!text-white hover:!text-gray-200 !text-xs px-6">Suggestions</Link>
               <Link to="/track-order" className="!text-white hover:!text-gray-200 !text-xs px-6">Track Order</Link>
             </div>
-        
+
           </div>
         </div>
       </div>
@@ -105,7 +105,7 @@ const Header = () => {
                 <LogoutOutlined style={{ fontSize: '20px' }} />
               </Link> */}
                 </>)}
-             
+
 
             </div>
 
@@ -131,7 +131,7 @@ const Header = () => {
                   <UserOutlined style={{ fontSize: '20px', color: 'rgba(0, 0, 0, 0.45) !important' }} />
                 </Link>
                 </>)}
-                
+
               </div>
             </div>
           </div>
@@ -155,7 +155,7 @@ const Header = () => {
         open={mobileMenuOpen}
         closable={false}
         width="85%"
-        bodyStyle={{ padding: 0 }}
+        style={{ padding: 0 }}
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
@@ -182,7 +182,7 @@ const Header = () => {
                 Profile
               </Link>
             )}
-           
+
             <button className="px-4 h-10 flex items-center justify-center !border !border-[#003399] !text-[#003399] !text-xs rounded hover:!bg-[#9CAFFC] hover:!text-white hover:!border-[#9CAFFC] transition-colors">
               Become A Vendor
             </button>

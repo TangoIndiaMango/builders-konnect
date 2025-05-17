@@ -47,7 +47,7 @@ const MainLayoutHeader = () => {
   const mobileSubcategoriesWithPaths = mobileSubcategories.map(subcategory => ({
     ...subcategory,
     path: `/category/${activeCategory}/subcategory/${subcategory.id}`
-    
+
   }));
 
   // Add default paths to categories and subcategories
@@ -122,7 +122,7 @@ const MainLayoutHeader = () => {
           open={mobileMenuOpen}
           width="85%"
           title="Categories"
-          bodyStyle={{ padding: 0 }}
+          style={{ padding: 0 }}
         >
           <div className="flex h-full">
             {/* Main Categories List */}
