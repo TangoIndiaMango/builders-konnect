@@ -63,6 +63,8 @@ import { CustomerDetails } from './components/customers/VeiwCustomer';
 import MultiVariants from './pages/inventory/components/MultiVariants';
 import ReportsOutlet from './pages/report/outlet';
 import ReportsPage from './pages/report';
+import SubscriptionPlans from './pages/onboarding';
+import SubscriptionCheckout from './pages/onboarding/onboarding';
 
 // Inventory
 
@@ -78,6 +80,9 @@ import ReportsPage from './pages/report';
 const App = () => {
   return (
     <Routes>
+      {/* Subscription */}
+      <Route path="/subscribe" element={<SubscriptionPlans />} />
+      <Route path="/subscribe/checkout" element={<SubscriptionCheckout />} />
       {/* Auth Routes */}
       <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />

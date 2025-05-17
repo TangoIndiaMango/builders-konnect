@@ -19,6 +19,13 @@ root.render(
         colorPrimary: '#003399',
         borderRadius: 2,
       },
+      components: {
+        Segmented: {
+          itemSelectedBg: '#003399',
+          itemSelectedColor: '#fff',
+          colorText: '#fff',
+        },
+      },
     }}
   >
     <Router>
