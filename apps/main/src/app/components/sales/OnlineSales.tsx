@@ -54,7 +54,7 @@ const OnlineSales = ({
       valueColor: '#722ED1',
     },
     {
-      label: 'Offline Saless',
+      label: 'Offline Sales',
       value: `${formatBalance(data?.stats?.offline_sales)}`,
       valueBgColor: '#FFFBE6',
       valueColor: '#D48806',

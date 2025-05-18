@@ -83,8 +83,8 @@ export const StoreTable = ({
       dataIndex: 'date_created',
       render: (_, record: StoreWithKey) => (
         <div>
-          <div>{dayjs(record.date).format('DD-MM-YYYY')}</div>
-          <div>{dayjs(record.date).format('h:mm A')}</div>
+          <div>{dayjs(record.date_created).format('DD-MM-YYYY')}</div>
+          <div>{dayjs(record.date_created).format('h:mm A')}</div>
         </div>
       ),
     },

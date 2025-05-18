@@ -1,42 +1,50 @@
-import { Pie as PieChart } from '@ant-design/plots';
+import { Pie as PieChart, PieConfig } from '@ant-design/plots';
 import React from 'react';
-import { PieConfig } from '@ant-design/plots';
 import useResizeContainer from '../../../../hooks/useResizeContainer';
-import { Divider } from 'antd';
+import { formatBalance } from '../../../../utils/helper';
+import { TopCategories } from '../Product';
 
 const Pie = PieChart as unknown as React.FC<PieConfig>;
 
-const ProductSalesChart = ({ data }: { data: any }) => {
+// Define an expanded color palette
+const COLORS = [
+  '#4318FF', // Purple
+  '#6AD2FF', // Light Blue
+  '#00C49F', // Teal
+  '#FFBB28', // Yellow
+  '#FF8042', // Orange
+  '#FF6384', // Pink
+  '#36A2EB', // Blue
+  '#FFCE56', // Gold
+  '#4BC0C0', // Aqua
+  '#9966FF', // Lavender
+  '#FF9F40', // Dark Orange
+  '#C9CBCF'  // Grey for fallback
+];
+
+const ProductSalesChart = ({ data }: { data: TopCategories[] }) => {
   const { containerRef, containerWidth } = useResizeContainer();
 
+  // Calculate total revenue for the statistic
+  const totalRevenueSum = data?.reduce(
+    (sum, item) => sum + parseFloat(item.total_revenue),
+    0
+  );
+
+  const numericData = data?.map(item => ({
+    ...item,
+    total_orders: Number(item.total_orders),
+  }));
+  // console.log(numericData, 'numericData');
   const config: PieConfig = {
-    data,
-    angleField: 'value',
-    colorField: 'name',
+    data: numericData,
+    angleField: 'total_orders',
+    colorField: 'category_name',
+
     radius: 1,
-    innerRadius: 0.7,
-    label: false,
-    legend: false,
-    color: ['#4318FF', '#6AD2FF', '#EFF4FB', '#FFB547', '#FF5252', '#8E96A6'],
-    statistic: {
-      title: {
-        style: {
-          color: '#4A5568',
-          fontSize: '14px',
-          lineHeight: '1',
-        },
-        content: 'Sales',
-      },
-      content: {
-        style: {
-          color: '#1A202C',
-          fontSize: '24px',
-          lineHeight: '1',
-          fontWeight: '600',
-        },
-        content: '1,125',
-      },
-    },
+    innerRadius: 0.6,
+
+
     animation: {
       appear: {
         animation: 'wave-in',
@@ -61,30 +69,30 @@ const ProductSalesChart = ({ data }: { data: any }) => {
             {/* Header row for alignment reference */}
             <div className="grid grid-cols-[24px_1fr_100px_100px] gap-4 text-sm text-gray-500">
               <div></div> {/* Space for color dot */}
-              <div>Product</div>
-              <div>Sales</div>
-              <div>Amount</div>
+              <div>Category</div> {/* Changed from Product to Category for consistency */}
+              <div>Orders</div>   {/* Changed from Sales to Orders */}
+              <div>Revenue</div>  {/* Changed from Amount to Revenue */}
             </div>
 
-            {data.map((item: any, index: number) => (
+            {data?.map((item: TopCategories, index: number) => (
               <div
-                key={index}
+                key={item.id} // Use stable item.id as key
                 className="grid grid-cols-[24px_1fr_100px_100px] gap-4 items-center"
               >
                 <div
                   className="w-3 h-3 rounded-full"
                   style={{
-                    backgroundColor: config.color?.[index],
+                    backgroundColor: COLORS[index % COLORS.length],
                   }}
                 />
-                <p className="text-sm font-medium text-gray-700">
-                  {item.name}
+                <p className="text-sm font-medium text-gray-700 truncate" title={item?.category_name}>
+                  {item?.category_name}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {item.sales} sold
+                  {item?.total_orders} sold
                 </p>
                 <p className="text-sm font-semibold">
-                  $ {item.amount.toLocaleString()}
+                  {formatBalance(item.total_revenue)}
                 </p>
               </div>
             ))}

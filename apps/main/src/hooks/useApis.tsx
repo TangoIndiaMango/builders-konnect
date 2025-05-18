@@ -121,7 +121,7 @@ export const useFetchData = (url: string) => {
     enabled: !!url,
   });
 
-  return { ...query, isLoading: query.isFetching || query.isLoading };
+  return { ...query, isLoading: query.isLoading };
 };
 
 // Fetch Post Data (POST with Query)
@@ -134,7 +134,7 @@ export const useFetchPostData = (url: string, options: any) => {
     },
   });
 
-  return { ...query, isLoading: query.isFetching || query.isLoading };
+  return { ...query, isLoading: query.isLoading };
 };
 
 export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = true) => {
@@ -149,7 +149,7 @@ export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = tr
     staleTime: 0,
   });
 
-  return { ...query, isLoading: query.isFetching || query.isLoading };
+  return { ...query, isLoading: query.isLoading };
 };
 
 

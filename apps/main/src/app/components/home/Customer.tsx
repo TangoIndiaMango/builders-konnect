@@ -1,5 +1,5 @@
 import { DollarOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Button, Divider, Select } from 'antd';
+import { Button, Divider, Select, Skeleton } from 'antd';
 import CardWithFilter from '../common/CardWithFilter';
 import EmptyState from '../common/EmptyState';
 import FilterGroup from '../common/filters/FilterGroup';
@@ -64,6 +64,7 @@ interface CustomerProps {
   reset: () => void;
   recentCustomerData: any;
   recentCustomerLoading: boolean;
+  isLoading: boolean;
 }
 
 const Customer = ({
@@ -74,13 +75,16 @@ const Customer = ({
   reset,
   recentCustomerData,
   recentCustomerLoading,
+  isLoading,
 }: CustomerProps) => {
   const customerRes = customerData?.data?.data;
-  const cusData = Object.entries(customerRes).map(([month, value]) => ({
-    month: monthAbbreviation(month),
-    value: value,
-  }));
-  // console.log(recentCustomerData?.data?.data);
+  const cusData = customerRes
+    ? Object.entries(customerRes).map(([month, value]) => ({
+        month: monthAbbreviation(month),
+        value: Number(value),
+      }))
+    : [];
+
   const navigate = useNavigate();
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
@@ -117,7 +121,11 @@ const Customer = ({
             <div className="space-y-5">
               <div>
                 {/* <h3 className="text-lg font-semibold">Customer Traffic</h3> */}
-                <CustomerTrafficChart data={cusData} />
+                {isLoading ? (
+                  <Skeleton active />
+                ) : (
+                  <CustomerTrafficChart data={cusData} />
+                )}
               </div>
             </div>
           ) : (
@@ -130,20 +138,27 @@ const Customer = ({
         <CardWithFilter title="Recent Customers">
           {recentCustomerData?.data?.data?.data?.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {recentCustomerData?.data?.data?.data?.slice(0, 5).map((customer) => (
-                <CustomerListItem
-                  key={customer.id}
-                  name={customer.name}
-                  email={customer.email}
-                  avatar={customer.avatar}
-                  onClick={() => navigate(`/pos/customers/view/${customer.id}`)}
-                />
-              ))}
-
+              {isLoading || recentCustomerLoading ? (
+                <Skeleton active />
+              ) : (
+                recentCustomerData?.data?.data?.data
+                  ?.slice(0, 5)
+                  .map((customer) => (
+                    <CustomerListItem
+                      key={customer.id}
+                      name={customer.name}
+                      email={customer.email}
+                      avatar={customer.avatar}
+                      onClick={() =>
+                        navigate(`/pos/customers/view/${customer.id}`)
+                      }
+                    />
+                  ))
+              )}
               <Button
                 type="link"
                 className="w-full"
-                onClick={() => navigate('/pos/sales')}
+                onClick={() => navigate('/pos/customers/list')}
               >
                 View All
               </Button>

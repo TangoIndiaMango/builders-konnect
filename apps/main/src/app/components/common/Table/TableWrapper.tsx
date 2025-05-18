@@ -27,6 +27,19 @@ const TableWrapper = ({
   isDashboard = false,
 }: TableFiltersProps) => {
   // console.log(selectedFilter, 'onFilterChange');
+
+  const formatSelectedFilter = (filter: string) => {
+    if (!filter) {
+      return 'Filter by';
+    }
+    if (filter === 'Filter by') {
+      return 'Filter by';
+    }
+    if (filter?.includes('_')) {
+      return filter.replace('_', ' ');
+    }
+    return filter;
+  };
   return (
     <div>
       {!isDashboard && (
@@ -38,7 +51,7 @@ const TableWrapper = ({
               label={
                 <span className="flex items-center gap-2 capitalize">
                   <FilterOutlined />
-                  {selectedFilter || 'Filter by'}
+                  {formatSelectedFilter(selectedFilter)}
                 </span>
               }
             />

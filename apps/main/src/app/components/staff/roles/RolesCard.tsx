@@ -16,7 +16,7 @@ const RolesCard = ({ role, handleToggleRole, isLoading, onClick }: RolesCardProp
     <Card
       key={role.id}
       className="transition-shadow rounded-lg shadow-sm hover:shadow-md border-[#D9D9D9] min-h-[180px]"
-      bodyStyle={{ padding: '24px' }}
+      style={{ padding: '24px' }}
     >
       <div className="flex flex-col justify-between h-full gap-5">
         <div className="space-y-3">

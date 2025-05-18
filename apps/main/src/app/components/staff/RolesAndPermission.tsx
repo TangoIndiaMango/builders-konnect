@@ -8,6 +8,7 @@ import DisplayHeader from '../common/DisplayHeader';
 import { SearchInput } from '../common/SearchInput';
 import { SkeletonLoader } from '../common/SkeletonLoader';
 import RolesCard from './roles/RolesCard';
+import { useState } from 'react';
 
 interface RolesAndPermissionProps {
   rolesData: PaginatedResponse<Role>;
@@ -24,15 +25,14 @@ const RolesAndPermission = ({
   searchValue,
   setSearchValue,
 }: RolesAndPermissionProps) => {
-  const updateRole = usePutData('merchants/roles');
+  const [roleId, setRoleId] = useState<string>('');
+  const updateRole = usePutData(`merchants/roles/${roleId}`);
   const navigate = useNavigate();
 
   const handleToggleRole = async (roleId: string, newStatus: boolean) => {
+    setRoleId(roleId);
     try {
-      await updateRole.mutateAsync({
-        id: roleId,
-        data: { isActive: newStatus },
-      });
+      await updateRole.mutateAsync({ is_active: newStatus });
       message.success('Role status updated successfully');
       refetch(); // Refresh roles data
     } catch (error) {
