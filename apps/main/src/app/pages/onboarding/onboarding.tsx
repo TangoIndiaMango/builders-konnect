@@ -6,11 +6,10 @@ import {
   CreditCardOutlined,
 } from '@ant-design/icons';
 import { Button, Card, Divider, Form, Input, message, Typography } from 'antd';
-import PaystackPop from 'paystack-inline-ts';
+
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useCreateData } from '../../../hooks/useApis';
-import { axiosInstance, baseUrl } from '../../../utils/axios-instance';
+import { usePayment } from '../../../hooks/usePayment';
 import { formatBalance } from '../../../utils/helper';
 import ActionIcon from '../../components/common/ActionIcon';
 import { frontendBaseUrl } from '../auth/auth-outlets';
@@ -92,14 +91,13 @@ export interface SuccessTransactionResponse {
   redirecturl: string;
 }
 
-const popup = new PaystackPop();
 export default function SubscriptionCheckout() {
   const { state } = useLocation();
   const plan = state?.plan as SubscriptionPlan;
   const billingInterval = state?.billingInterval as BillingInterval;
   const [form] = Form.useForm();
   const [paymentMethod, setPaymentMethod] = useState('');
-  const startSubcriptionApi = useCreateData('merchants/onboarding/subscribe');
+  const { initiatePayment, isLoading: isInitiatingPayment } = usePayment();
 
   if (!plan) return <div>No plan selected.</div>;
 
@@ -110,61 +108,29 @@ export default function SubscriptionCheckout() {
 
   const isFreeTrial = Number(selectedPlan?.free_days) > 0;
 
-  const handleTransactionSuccess = async (
-    transactionData: SuccessTransactionResponse
-  ) => {
-    // verify payment success
-    try {
-      if (
-        transactionData?.reference &&
-        transactionData?.status?.toLowerCase() === 'success'
-      ) {
-        message.success('Payment successful, redirecting to onboarding page');
-        window.location.replace(transactionData?.redirecturl);
-        form.resetFields();
-      }
-    } catch (error: any) {
-      message.error(error?.message || 'Failed to verify payment');
-    }
-  };
 
-  const onFinish = (values) => {
+
+  const onFinish = async (values) => {
     if (!paymentMethod) {
       message.error('Please select a payment method');
       return;
     }
-    const payload: StartSubscriptionPayload = {
-      name: values.name,
-      company: values.company,
-      email: values.email,
-      phone: values.phone,
-      price_item_id: selectedPlan?.id as string,
-      free_trial: isFreeTrial,
-      callback_url: `${frontendBaseUrl}/auth/register-vendor`,
-      provider: paymentMethod,
-    };
-
-    startSubcriptionApi.mutate(payload, {
-      onSuccess: (data: any) => {
-        const response = data?.data as StartSubscriptionResponse;
-
-        // open paystack popup
-        popup.resumeTransaction({
-          accessCode: response.access_code,
-          onSuccess: (transactionData) => {
-            handleTransactionSuccess(
-              transactionData as unknown as SuccessTransactionResponse
-            );
-          },
-          onCancel: () => {
-            message.error('Transaction was cancelled');
-          },
-        });
-      },
-      onError: (error: any) => {
-        message.error(error?.message || 'Something went wrong');
-      },
-    });
+    try {
+      await initiatePayment({
+        priceItemId: selectedPlan?.id as string,
+        isFreeTrial: isFreeTrial,
+        callbackUrl: `${frontendBaseUrl}/auth/register-vendor`,
+        provider: paymentMethod as 'paystack' | 'stripe',
+        userDetails: {
+          name: values.name,
+          company: values.company,
+          email: values.email,
+          phone: values.phone,
+        },
+      });
+    } catch (error: any) {
+      message.error(error?.message || 'Failed to initiate payment');
+    }
   };
 
   return (
@@ -296,7 +262,7 @@ export default function SubscriptionCheckout() {
                   !form.isFieldsTouched(true) ||
                   form.getFieldsError().some(({ errors }) => errors.length)
                 }
-                loading={startSubcriptionApi.isPending}
+                loading={isInitiatingPayment}
                 onClick={() => form.submit()}
               >
                 {isFreeTrial

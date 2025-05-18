@@ -63,6 +63,7 @@ const RegisterVendor = () => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [data, setData] = useState<any>(null);
   const [mediaUrl, setMediaUrl] = useState<any>(null);
+  const [error, setError] = useState<boolean>(false);
 
   const reference = searchParams.get('reference');
 
@@ -74,28 +75,50 @@ const RegisterVendor = () => {
   const validateBankState = useCreateData('merchants/onboarding/validate-bank');
   const fetchPaidUser = useFetchSingleData(
     `merchants/onboarding/verify-subscription/${reference}`,
-    !!reference
+    !!reference && !error
   );
   const fethedUserData = fetchPaidUser?.data?.data as ActionPayload;
 
   useEffect(() => {
-    // Only proceed if the query is not loading/fetching
     if (!fetchPaidUser?.isLoading && !fetchPaidUser?.isFetching) {
       if (fethedUserData) {
         form.setFieldsValue({
           email: fethedUserData?.metadata?.user_information?.email,
           phoneNumber: fethedUserData?.metadata?.user_information?.phone,
-          businessName: fethedUserData?.metadata?.user_information?.business_name,
+          businessName:
+            fethedUserData?.metadata?.user_information?.business_name,
           contactName: fethedUserData?.metadata?.user_information?.user_name,
         });
       } else {
-        message.error(
-          fetchPaidUser?.data?.message ||
-            'An error occured with your Payment, please contact support'
-        );
-        navigate('/auth/login');
+        setError(true);
+        notification.error({
+          message:
+            fetchPaidUser?.error?.message ||
+            'An error occured with your Payment, please contact support',
+          btn: (
+            <Button
+              type="primary"
+              size="middle"
+              onClick={() => {
+                notification.destroy();
+                navigate('/auth/login');
+              }}
+            >
+              Contact Support
+            </Button>
+          ),
+        });
       }
     }
+
+    // Just to show the error message again
+    const timer = setTimeout(() => {
+      setError(false);
+    }, 20000);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, [fetchPaidUser?.data?.data, fetchPaidUser?.isLoading]);
 
   const handleNext = async () => {
