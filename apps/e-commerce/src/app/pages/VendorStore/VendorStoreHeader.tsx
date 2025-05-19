@@ -8,7 +8,7 @@ import {
 import { RightOutlined } from '@ant-design/icons';
 import { Card, Select } from 'antd';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const { Option } = Select;
 
@@ -23,6 +23,7 @@ const VendorStoreHeader = ({
   filters,
   setFilters,
 }: VendorStoreHeader) => {
+  const { id } = useParams<{ id: string }>();
   return (
     <div className="bg-[#FAFAFA] shadow-md w-full">
       <h1 className="text-sm cursor-pointer text-[#00000073] py-8">
@@ -112,7 +113,7 @@ const VendorStoreHeader = ({
           className="border border-blue-700 text-blue-700 hover:bg-blue-50 cursor-pointer flex-1 min-w-[200px] px-4 py-3 flex items-center gap-2"
           style={{ padding: 0 }}
         >
-          <Link to="/review">
+          <Link to={`/review/${id}`}>
             <div className="flex items-center gap-2 text-sm font-medium px-2 py-1 w-full">
               <SmileOutlined />
               View Feedback ({merchant.total_reviews})

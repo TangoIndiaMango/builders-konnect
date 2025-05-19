@@ -3,10 +3,29 @@ import { Button, Collapse, Checkbox, Slider, Space, Typography } from 'antd';
 const { Title } = Typography;
 const { Panel } = Collapse;
 
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface Attribute {
+  id: string;
+  attribute: string;
+  possible_values: string[];
+  category: string;
+}
+
+interface FilterState {
+  attributes: Record<string, string[]>;
+  price?: [number, number];
+  sort_by: string | undefined;
+  categoryIds: string[];
+}
+
 interface FilterPanelProps {
-  categoryData: any;
-  attributesByCategory: any;
-  tempFilters: any;
+  categoryData: Category[];
+  attributesByCategory: Record<string, Attribute[]>;
+  tempFilters: FilterState;
   handleCategoryChange: (categoryId: string, checked: boolean) => void;
   handleAttributeChange: (
     attributeKey: string,
@@ -18,7 +37,7 @@ interface FilterPanelProps {
   handleApply: () => void;
   activeKeys: string[];
   setActiveKeys: (keys: string[]) => void;
-  customExpandIcon: (props: any) => React.ReactNode;
+  customExpandIcon: (props: { isActive?: boolean }) => React.ReactNode;
 }
 
 const FilterPanel = ({
@@ -36,10 +55,14 @@ const FilterPanel = ({
 }: FilterPanelProps) => {
   return (
     <aside className="py-8 hidden md:flex">
-      <div className="bg-[#fafafa] p-4 h-fit min-w-[250px] overflow-y-auto rounded-lg w-full max-w-[320px]">
-        <Title level={5} className="mb-16 text-[#000000D9]">
-          FILTER
-        </Title>
+      <div className="bg-[#fafafa] rounded-lg w-full max-w-[320px] min-w-[250px] flex flex-col h-[calc(100vh-150px)]">
+        <div className="p-4">
+          <Title level={5} className="mb-4 text-[#000000D9]">
+            FILTER
+          </Title>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto px-4">
 
         <Collapse
           bordered={false}
@@ -111,23 +134,26 @@ const FilterPanel = ({
               min={0}
               max={1000000}
               step={1000}
-              value={tempFilters.price}
+              value={tempFilters.price || [0, 1000000]}
               onChange={handlePriceChange}
               tipFormatter={(value) => `₦${value?.toLocaleString()}`}
             />
             <div className="flex justify-between mt-2 text-sm text-gray-500">
-              <span>₦{tempFilters.price[0].toLocaleString()}</span>
-              <span>₦{tempFilters.price[1].toLocaleString()}</span>
+              <span>₦{(tempFilters.price?.[0] || 0).toLocaleString()}</span>
+              <span>₦{(tempFilters.price?.[1] || 1000000).toLocaleString()}</span>
             </div>
           </Panel>
         </Collapse>
+        </div>
 
-        <Space className="mt-8 flex justify-between w-full">
-          <Button onClick={handleReset}>Reset</Button>
-          <Button type="primary" onClick={handleApply}>
-            OK
-          </Button>
-        </Space>
+        <div className="p-4 border-t border-gray-200 bg-[#fafafa] mt-auto">
+          <Space className="flex justify-between w-full">
+            <Button onClick={handleReset}>Reset</Button>
+            <Button type="primary" onClick={handleApply}>
+              OK
+            </Button>
+          </Space>
+        </div>
       </div>
     </aside>
   );

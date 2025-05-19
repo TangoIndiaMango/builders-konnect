@@ -23,17 +23,19 @@ const VendorShop = () => {
   const [activeKeys, setActiveKeys] = useState<string[]>(['Categories']);
   const [filters, setFilters] = useState<{
     attributes: Record<string, string[]>;
-    price: [number, number];
+    price?: [number, number];
     sort_by: string | undefined;
     categoryIds: string[];
   }>({
     attributes: {},
-    price: [0, 1000000],
     sort_by: undefined,
     categoryIds: [],
   });
   // Separate state for temporary filters
-  const [tempFilters, setTempFilters] = useState(filters);
+  const [tempFilters, setTempFilters] = useState<typeof filters>({
+    ...filters,
+    price: [0, 1000000] as [number, number] // Set default price range for the slider
+  });
   console.log('tempFilters', tempFilters);
   // Fetch categories and attributes
   const { data: categoryData = [] } = useGetCategorizations('category');
@@ -62,11 +64,10 @@ const VendorShop = () => {
 
   // Fetch merchant and products with filters
   const { data, isLoading } = useGetMerchant(id || '', {
-    sort_by: filters.sort_by,
-    minPrice: filters.price[0],
-    maxPrice: filters.price[1],
+    ...(filters.sort_by && { sort_by: filters.sort_by }),
+    ...(filters.price && { minPrice: filters.price[0], maxPrice: filters.price[1] }),
     page: currentPage,
-    categoryId: filters.categoryIds.join(','),
+    ...(filters.categoryIds.length > 0 && { categoryId: filters.categoryIds.join(',') }),
     // Convert attributes to API format
     ...Object.entries(filters.attributes).reduce((acc, [key, values]) => {
       const filterKey = `filters[metadata][${key.toLowerCase()}]`;
@@ -155,7 +156,6 @@ const VendorShop = () => {
   const handleReset = () => {
     const defaultFilters = {
       attributes: {},
-      price: [0, 1000000],
       sort_by: undefined,
       categoryIds: [],
     };

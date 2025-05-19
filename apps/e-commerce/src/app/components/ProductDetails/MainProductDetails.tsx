@@ -1,9 +1,11 @@
 import { FC, useState } from 'react';
-import { Rate, Spin, Button, Select } from 'antd';
+import { Rate, Spin, Button, Select, Form, Input, Upload, message } from 'antd';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useProductDetails } from '../../../hooks/useProductDetails';
 import { woodlikeone } from '../../lib/assets/images';
-import { ShopOutlined } from '@ant-design/icons';
+import { ShopOutlined, UploadOutlined } from '@ant-design/icons';
+import { useCreateData } from '../../../hooks/useApis';
+import type { UploadFile } from 'antd/es/upload/interface';
 
 const MainProductDetails: FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,7 +13,11 @@ const MainProductDetails: FC = () => {
   const [selectedQuantity, setSelectedQuantity] = useState('1');
   const [selectedSurface, setSelectedSurface] = useState('Wall');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const { data: productData, isLoading } = useProductDetails(id || '');
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const decodedId = id ? decodeURIComponent(id) : '';
+  const { data: productData, isLoading } = useProductDetails(decodedId);
+  const [form] = Form.useForm();
+  const createReview = useCreateData('customers/reviews');
 
   if (isLoading) {
     return (
@@ -262,83 +268,152 @@ const MainProductDetails: FC = () => {
           </div>
         </div>
 
-        {/* Customer Reviews */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-semibold mb-6">Customer Reviews</h2>
+        <div className="flex flex-col md:flex-row gap-8 mt-16">
+          {/* Write a Review */}
+          <div className="w-full md:w-1/3">
+            <h2 className="text-xl font-semibold mb-4">Write a Review</h2>
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={async (values) => {
+                try {
+                  const formData = new FormData();
+                  formData.append('feedback', values.feedback);
+                  formData.append('ratings', values.ratings);
+                  formData.append('modelable_type', 'product');
+                  formData.append('modelable_id', id || '');
 
-          <div className='lg:flex flex-row'>
-            <div className="mb-6">
-              <div className="flex items-center gap-4 mt-6">
+                  fileList.forEach((file) => {
+                    if (file.originFileObj) {
+                      formData.append('images[]', file.originFileObj);
+                    }
+                  });
+
+                  await createReview.mutateAsync(formData as any);
+                  message.success('Review submitted successfully');
+                  form.resetFields();
+                  setFileList([]);
+                } catch {
+                  message.error('Failed to submit review');
+                }
+              }}
+            >
+              <Form.Item
+                name="ratings"
+                label="Rating"
+                rules={[{ required: true, message: 'Please rate the product' }]}
+              >
+                <Rate />
+              </Form.Item>
+
+              <Form.Item
+                name="feedback"
+                rules={[{ required: true, message: 'Please write your review' }]}
+              >
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Share your experience with this product"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Upload
+                  listType="picture-card"
+                  fileList={fileList}
+                  onChange={({ fileList }) => setFileList(fileList)}
+                  beforeUpload={() => false}
+                  maxCount={5}
+                >
+                  <div>
+                    <UploadOutlined />
+                    <div className="mt-2">Add Photos</div>
+                  </div>
+                </Upload>
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={createReview.isPending}
+                  className="bg-blue-600 w-full"
+                >
+                  Submit Review
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
+
+          {/* Customer Reviews */}
+          <div className="w-full md:w-2/3">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold">Customer Reviews</h2>
+              <div className="flex items-center gap-2">
                 <Rate disabled defaultValue={product.ratings} allowHalf />
-                <span className="text-gray-500">
-                  ({product.total_reviews} reviews)
-                </span>
-              </div>{' '}
-              <div className="space-y-2">
-                {Object.entries(product.ratings_breakdown)
-                  .sort(([a], [b]) => Number(b) - Number(a))
-                  .map(([stars, count]) => (
-                    <div key={stars} className="flex items-center gap-4">
-                      <span className="w-16">{stars} stars</span>
-                      <div className="flex-1 bg-gray-200 h-2 rounded-full">
-                        <div
-                          className="bg-yellow-400 h-full rounded-full"
-                          style={{
-                            width: `${
-                              (count / product.total_reviews) * 100 || 0
-                            }%`,
-                          }}
-                        />
-                      </div>
-                      <span className="w-16 text-right text-gray-500">
-                        {count}
-                      </span>
-                    </div>
-                  ))}
+                <span className="text-gray-500">({product.total_reviews} reviews)</span>
               </div>
             </div>
+
+            <div className="space-y-4 mb-8">
+              {Object.entries(product.ratings_breakdown)
+                .sort(([a], [b]) => Number(b) - Number(a))
+                .map(([stars, count]) => (
+                  <div key={stars} className="flex items-center gap-3">
+                    <span className="w-20 text-sm">{stars} stars</span>
+                    <div className="flex-1 h-2 bg-gray-100 rounded-full">
+                      <div
+                        className="h-full bg-yellow-400 rounded-full"
+                        style={{
+                          width: `${(count / product.total_reviews) * 100 || 0}%`,
+                        }}
+                      />
+                    </div>
+                    <span className="w-12 text-right text-sm text-gray-500">{count}</span>
+                  </div>
+                ))}
+            </div>
+
             <div className="space-y-6">
               {product.reviews?.map((review) => (
                 <div key={review.id} className="border-b pb-6">
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-xl text-gray-600">
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                        <span className="text-sm text-gray-600">
                           {review.user_name[0]}
                         </span>
                       </div>
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <h3 className="font-medium">{review.user_name}</h3>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 mt-1">
                         <Rate disabled defaultValue={review.rating} />
-                        <span className="text-gray-500">{review.date}</span>
+                        <span className="text-sm text-gray-500">{review.date}</span>
                       </div>
+                      <p className="mt-2 text-gray-600">{review.comment}</p>
+                      {review.images && review.images.length > 0 && (
+                        <div className="mt-3 flex gap-2">
+                          {review.images.map((image, index) => (
+                            <div
+                              key={index}
+                              className="w-16 h-16 rounded overflow-hidden bg-gray-50"
+                            >
+                              <img
+                                src={image}
+                                alt="Review"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <p className="text-gray-600">{review.comment}</p>
-                  {review.images && review.images.length > 0 && (
-                    <div className="mt-4 flex gap-4">
-                      {review.images.map((image, index) => (
-                        <div
-                          key={index}
-                          className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100"
-                        >
-                          <img
-                            src={image}
-                            alt="Review"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* <div className="md:w-2/3">
+            {/* <div className="md:w-2/3">
             Rating Bars
             <div className="space-y-2">
               {Object.entries(product.ratings_breakdown)
@@ -361,7 +436,11 @@ const MainProductDetails: FC = () => {
                 ))}
             </div>
           </div> */}
+          </div>
         </div>
+        {/* Customer Reviews */}
+
+        {/* Review Form */}
 
         {/* Review List */}
       </div>
