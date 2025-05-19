@@ -167,3 +167,11 @@ export const useFetchDataSeperateLoading = (url: string) => {
   // Expose both isLoading (first load) and isFetching (background refetch)
   return { ...query, isLoading: query.isLoading, isFetching: query.isFetching };
 };
+
+// Get Merchant Data
+export const useGetMerchant = (id: string, options?: { limit?: number }) => {
+  const queryString = options?.limit ? `?limit=${options.limit}` : '';
+  const url = `api/v1/customers/merchants/${id}${queryString}`;
+
+  return useFetchData(url);
+};

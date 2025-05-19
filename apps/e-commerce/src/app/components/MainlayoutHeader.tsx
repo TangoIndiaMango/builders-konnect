@@ -6,7 +6,7 @@ import { useGetCategorizations } from '../../hooks/useApis';
 
 const { Header } = Layout;
 
-type Category = {
+type CategoryBase = {
   id: string;
   name: string;
   level: string;
@@ -14,7 +14,7 @@ type Category = {
   path?: string;
 };
 
-type SubCategory = {
+type SubCategoryBase = {
   id: string;
   name: string;
   level: string;
@@ -27,15 +27,16 @@ const MainLayoutHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedMobileCategory, setSelectedMobileCategory] = useState<string | undefined>(undefined);
 
-  const { data: categories = [], isLoading: isCategoriesLoading } =
-    useGetCategorizations('category') as { data: Category[]; isLoading: boolean };
+  const { data: categoriesData = [], isLoading: isCategoriesLoading } = useGetCategorizations('category');
+  const categories = (categoriesData || []) as CategoryBase[];
+
   // Get subcategories for desktop view
-  const { data: desktopSubcategories = [], isLoading: isDesktopSubcategoriesLoading } =
-    useGetCategorizations('subcategory', activeCategory) as { data: SubCategory[]; isLoading: boolean };
+  const { data: desktopSubcategoriesData = [], isLoading: isDesktopSubcategoriesLoading } = useGetCategorizations('subcategory', activeCategory);
+  const desktopSubcategories = (desktopSubcategoriesData || []) as SubCategoryBase[];
 
   // Get subcategories for mobile view
-  const { data: mobileSubcategories = [], isLoading: isMobileSubcategoriesLoading } =
-    useGetCategorizations('subcategory', selectedMobileCategory) as { data: SubCategory[]; isLoading: boolean };
+  const { data: mobileSubcategoriesData = [], isLoading: isMobileSubcategoriesLoading } = useGetCategorizations('subcategory', selectedMobileCategory);
+  const mobileSubcategories = (mobileSubcategoriesData || []) as SubCategoryBase[];
 
   // Add paths to subcategories
   const desktopSubcategoriesWithPaths = desktopSubcategories.map(subcategory => ({
@@ -46,7 +47,7 @@ const MainLayoutHeader = () => {
   const mobileSubcategoriesWithPaths = mobileSubcategories.map(subcategory => ({
     ...subcategory,
     path: `/category/${activeCategory}/subcategory/${subcategory.id}`
-    
+
   }));
 
   // Add default paths to categories and subcategories
@@ -121,7 +122,7 @@ const MainLayoutHeader = () => {
           open={mobileMenuOpen}
           width="85%"
           title="Categories"
-          bodyStyle={{ padding: 0 }}
+          style={{ padding: 0 }}
         >
           <div className="flex h-full">
             {/* Main Categories List */}

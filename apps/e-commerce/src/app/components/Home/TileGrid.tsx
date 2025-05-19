@@ -19,7 +19,7 @@ interface ProductCardProps {
     price: number;
     discount: number;
     rating: number;
-    icon: string;
+    icon?: string;
     timeleft: number;
   };
 }

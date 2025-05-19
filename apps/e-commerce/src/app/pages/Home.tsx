@@ -293,21 +293,24 @@ const Home: FC = () => {
           {isLoading ? (
             <div className="col-span-full flex justify-center py-4"><Spin /></div>
           ) : (
-            products?.data?.data?.map((product) => (
-              <RouterLink key={product.id} to={`/product-details/${product.id}`}>
-                <TileCard
-                  item={{
-                    id: Number(product.id),
-                    name: product.name,
-                    price: parseFloat(product.retail_price),
-                    discount: product.discount_information?.value ? parseFloat(product.discount_information.value) : 0,
-                    rating: product.ratings || 0,
-                    image: product.primary_media_url || woodlikeone,
-                    timeleft: 24 // Hours remaining for the deal
-                  }}
-                />
-              </RouterLink>
-            ))
+            products?.data?.data?.map((product) => {
+              console.log('Home ID:', product.id, typeof product.id);
+              return (
+                <RouterLink key={product.id} to={`/product-details/${product.id}`}>
+                  <TileCard
+                    item={{
+                      id: Number(product.id),
+                      name: product.name,
+                      price: parseFloat(product.retail_price),
+                      discount: product.discount_information?.value ? parseFloat(product.discount_information.value) : 0,
+                      rating: product.ratings || 0,
+                      image: product.primary_media_url || woodlikeone,
+                      timeleft: 24 // Hours remaining for the deal
+                    }}
+                  />
+                </RouterLink>
+              );
+            })
           )}
         </div>
       </div>

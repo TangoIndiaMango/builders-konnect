@@ -29,7 +29,7 @@ const ProductCards: FC<ProductCardProps> = ({ item }) => {
         />
       }
       className="border-none p-2 shadow-none"
-      bodyStyle={{ padding: 2 }}
+      style={{ padding: 2 }}
     >
       <div className="px-0 py-0">
         <h2 className="text-md font-medium text-gray-800 mb-1 truncate">

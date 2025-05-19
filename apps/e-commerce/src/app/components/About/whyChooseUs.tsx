@@ -19,9 +19,8 @@ export default function WhyChooseSection() {
             <Card
               hoverable
               bordered
-              className='rounded-md h-full'
-              style={{ borderColor: '#BFBFBF' }}
-              bodyStyle={{ padding: '24px' }}
+              className="rounded-md h-full"
+              style={{ borderColor: '#BFBFBF', padding: '24px' }}
             >
               <div className="mb-4">
                 <img
@@ -31,7 +30,7 @@ export default function WhyChooseSection() {
                 />
               </div>
 
-              <Title level={4} className='' style={{ color: '#000000D9' }}>
+              <Title level={4} className="" style={{ color: '#000000D9' }}>
                 {feature.title}
               </Title>
               <Paragraph
