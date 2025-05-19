@@ -21,7 +21,6 @@ import {
 } from '@ant-design/icons';
 import { MenuProps } from 'antd';
 
-
 type MenuItem = Required<MenuProps>['items'][number];
 
 function getItem(
@@ -236,6 +235,27 @@ export const filterOptions = [
     options: [
       { label: 'Active', value: 'active' },
       { label: 'Inactive', value: 'inactive' },
+    ],
+  },
+  {
+    label: 'Sort by',
+    key: 'sort_by',
+    options: [
+      { label: 'Alphabetically', value: 'alphabetically' },
+      { label: 'Date (Ascending)', value: 'date_ascending' },
+      { label: 'Date (Descending)', value: 'date_descending' },
+    ],
+  },
+];
+
+export const filterReturnsOptions = [
+  {
+    label: 'Order Status',
+    key: 'order_status',
+    options: [
+      { label: 'Pending', value: 'pending' },
+      { label: 'Approved', value: 'approved' },
+      { label: 'Declined', value: 'declined' },
     ],
   },
   {

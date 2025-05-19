@@ -47,7 +47,6 @@ const MainLayoutHeader = () => {
   const mobileSubcategoriesWithPaths = mobileSubcategories.map(subcategory => ({
     ...subcategory,
     path: `/category/${activeCategory}/subcategory/${subcategory.id}`
-
   }));
 
   // Add default paths to categories and subcategories

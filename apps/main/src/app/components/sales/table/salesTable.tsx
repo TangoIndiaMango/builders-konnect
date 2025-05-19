@@ -15,6 +15,7 @@ type SalesOrderWithKey = SalesOrder & DataType;
 interface OrdersTableProps extends DataTableProps {
   data: SalesOrder[];
   withPagination?: boolean;
+  isCustomerOrderLink?: boolean;
 }
 
 export const OrdersTable = ({
@@ -24,6 +25,7 @@ export const OrdersTable = ({
   loading,
   total,
   perPage,
+  isCustomerOrderLink = true,
   showCheckbox = true,
   updateLimitSize,
   withPagination = true,
@@ -35,10 +37,10 @@ export const OrdersTable = ({
   const navigate = useNavigate();
 
   // Map the data to include a key property
-  const dataWithKeys: SalesOrderWithKey[] = data?.map((item) => ({
+  const dataWithKeys: SalesOrderWithKey[] = Array.isArray(data) ? data.map((item) => ({
     ...item,
     key: item.id,
-  }));
+  })) : [];
 
   const columns: ColumnsType<SalesOrderWithKey> = [
     {
@@ -103,7 +105,14 @@ export const OrdersTable = ({
         <Button
           type="text"
           icon={<EyeOutlined />}
-          onClick={() => navigate(`/pos/sales/view/${record.id}`)}
+          onClick={() =>
+            navigate(
+              isCustomerOrderLink
+                ? `/pos/sales/view/${record.id}`
+                : `/pos/customers/order/view/${record.id}`,
+            
+            )
+          }
           className="text-gray-600 hover:text-blue-600"
         />
       ),

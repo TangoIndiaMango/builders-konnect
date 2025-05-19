@@ -59,7 +59,7 @@ const SalesAnalyticsStats = () => {
     [salesStats]
   );
 
-  console.log('salesStats', salesStats);
+  // console.log('salesStats', salesStats);
   const [selectedPeriod, setSelectedPeriod] = useState<string>('this_month');
 
   const periodOptions = [

@@ -31,9 +31,9 @@ const CustomerInformation = ({customer, showOrder = true}: {customer: any, showO
         <div className="text-xs text-gray-500">Email</div>
         <div className="font-medium">{customer?.customer_email}</div>
       </div>
-     {showOrder && <div className="flex-1">
+     {!showOrder && <div className="flex-1 justify-end">
         <div className="text-xs text-gray-500">No of Orders</div>
-        <div className="font-medium">{customer?.orders_count}</div>
+        <div className="font-medium">{customer?.orders_count || 0}</div>
       </div>}
     </div>
   </div>

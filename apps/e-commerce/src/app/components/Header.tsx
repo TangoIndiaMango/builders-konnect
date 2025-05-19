@@ -182,7 +182,6 @@ const Header = () => {
                 Profile
               </Link>
             )}
-
             <button className="px-4 h-10 flex items-center justify-center !border !border-[#003399] !text-[#003399] !text-xs rounded hover:!bg-[#9CAFFC] hover:!text-white hover:!border-[#9CAFFC] transition-colors">
               Become A Vendor
             </button>

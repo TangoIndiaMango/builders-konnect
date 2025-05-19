@@ -1,24 +1,24 @@
-import { Button, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 import { TabsProps } from 'antd';
-import ConfirmModal from '../../components/common/ConfirmModal';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
 import AllCustomers from '../../components/customers/AllCustomers';
 import OnlineCustomers from '../../components/customers/OnlineCustomers';
 import OfflineCustomers from '../../components/customers/OfflineCustomers';
 import CreateCustomer from './create';
 import { useGetOverviewCustomers } from '../../../service/customer/customerFN';
-import { FilterOption } from '@/app/store/table';
+import { FilterOption } from '../../store/table';
+import { useTableState } from '../../../hooks/useTable';
+import { filterOptions } from '../../lib/constant';
 
 const CustomersList: React.FC = () => {
   const [tab, setTab] = useState<string>('all');
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const [usePagination, setUsePagination] = useState<boolean>(true);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [dateFilter, setDateFilter] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('');
+  // const [currentPage, setCurrentPage] = useState<number>(1);
+  // const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  // const [usePagination, setUsePagination] = useState<boolean>(true);
+  // const [searchQuery, setSearchQuery] = useState<string>('');
+  // const [dateFilter, setDateFilter] = useState<string>('');
+  // const [sortBy, setSortBy] = useState<string>('');
 
   const periodOptions: FilterOption[] = [
     { label: 'Today', value: 'today' },
@@ -27,37 +27,34 @@ const CustomersList: React.FC = () => {
     { label: 'Custom', value: 'custom' },
   ];
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    setItemsPerPage(pageSize);
-  };
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-  };
-
-
-  const handleDateFilterChange = (value: string) => {
-    setDateFilter(value);
-  };
-
-  const handleSortByChange = (value: string) => {
-    setSortBy(value);
-  };
-
-  const handleReset = () => {
-    setSearchQuery('');
-    setDateFilter('');
-    setSortBy('');
-  }; 
+  const {
+    searchValue,
+    setSearch,
+    currentPage,
+    pageSize,
+    setPage,
+    reset,
+    customDateRange,
+    setCustomDateRange,
+    filterKey,
+    filterValue,
+    handleFilterChange,
+    exportType,
+    setExportType,
+    limitSize,
+    setLimitSize,
+  } = useTableState('customers');
 
   const { data: customerData, isLoading } = useGetOverviewCustomers({
-    paginate: usePagination ? 1 : 0,
-    limit: itemsPerPage,
+    paginate: 1,
+    limit: limitSize,
     type: tab === 'all' ? '' : tab,
-    q: searchQuery,
-    date_filter: dateFilter,
-    sort_by: sortBy,
+    q: searchValue,
+    date_filter: customDateRange,
+    sort_by: filterKey === 'sort_by' ? filterValue : '',
   });
+
+  console.log(limitSize);
 
   const onChange = (key: string) => {
     setTab(key);
@@ -72,13 +69,18 @@ const CustomersList: React.FC = () => {
           <AllCustomers
             data={customerData?.data}
             isLoading={isLoading}
-            setSearchTerm={handleSearch}
-            periodFilter={dateFilter}
-            setPeriodFilter={handleDateFilterChange}
-            periodOptions={periodOptions}
+            searchValue={searchValue}
+            pageSize={pageSize}
+            updateLimitSize={setLimitSize}
+            setSearchValue={setSearch}
+            setCustomDateRange={setCustomDateRange}
+            handleFilterChange={handleFilterChange}
+            filterValue={filterValue ?? ''}
+            onExport={setExportType}
+            filterOptions={filterOptions}
             currentPage={currentPage}
-            reset={handleReset}
-            setCurrentPage={(page: number) => handlePageChange(page, itemsPerPage)}
+            reset={reset}
+            setPage={setPage}
           />
         ),
       },
@@ -89,13 +91,18 @@ const CustomersList: React.FC = () => {
           <OnlineCustomers
             data={customerData?.data}
             isLoading={isLoading}
-            setSearchTerm={handleSearch}
-            periodFilter={dateFilter}
-            setPeriodFilter={handleDateFilterChange}
-            periodOptions={periodOptions}
+            searchValue={searchValue}
+            setSearchValue={setSearch}
+            setCustomDateRange={setCustomDateRange}
+            handleFilterChange={handleFilterChange}
+            filterValue={filterValue ?? ''}
+            onExport={setExportType}
+            filterOptions={filterOptions}
             currentPage={currentPage}
-            reset={handleReset}
-            setCurrentPage={(page: number) => handlePageChange(page, itemsPerPage)}
+            reset={reset}
+            setPage={setPage}
+            updateLimitSize={setLimitSize}
+            
           />
         ),
       },
@@ -106,18 +113,23 @@ const CustomersList: React.FC = () => {
           <OfflineCustomers
             data={customerData?.data}
             isLoading={isLoading}
-            setSearchTerm={handleSearch}
-            periodFilter={dateFilter}
-            setPeriodFilter={handleDateFilterChange}
-            periodOptions={periodOptions}
+            searchValue={searchValue}
+            setSearchValue={setSearch}
+            setCustomDateRange={setCustomDateRange}
+            handleFilterChange={handleFilterChange}
+            filterValue={filterValue ?? ''}
+            onExport={setExportType}
+            filterOptions={filterOptions}
             currentPage={currentPage}
-            reset={handleReset}
-            setCurrentPage={(page: number) => handlePageChange(page, itemsPerPage)}
+            reset={reset}
+            setPage={setPage}
+            updateLimitSize={setLimitSize}
+            
           />
         ),
       },
     ],
-    [tab, currentPage, itemsPerPage, searchQuery, dateFilter, sortBy, customerData, isLoading]
+    [tab, currentPage, pageSize, searchValue, customDateRange, filterKey, filterValue, customerData, isLoading]
   );
 
   return (
