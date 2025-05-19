@@ -13,7 +13,7 @@ import {
   useUploadData,
 } from '../../../hooks/useApis';
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
-import { StoreListResponse, VendorProfile } from './types';
+import { StoreListResponse, SubscriptionListResponse, VendorProfile } from './types';
 import StoreList from '../../components/profile/store/StoreList';
 import { data, useNavigate, useSearchParams } from 'react-router-dom';
 import { exportCsvFromString } from '../../../utils/helper';
@@ -88,6 +88,14 @@ const ProfilePage: React.FC = () => {
 
   const stores = useFetchData(
     `merchants/locations?paginate=1&page=${currentPage ?? 1}&status=${
+      filterKey === 'status' ? filterValue : ''
+    }&date_filter=${customDateRange ?? ''}&sort_by=${
+      filterKey === 'sort_by' ? filterValue : ''
+    }&q=${searchValue ?? ''}&limit=${limitSize ?? 10}`
+  );
+
+  const subscription = useFetchData(
+    `merchants/subscriptions?paginate=1&page=${currentPage ?? 1}&status=${
       filterKey === 'status' ? filterValue : ''
     }&date_filter=${customDateRange ?? ''}&sort_by=${
       filterKey === 'sort_by' ? filterValue : ''
@@ -173,6 +181,8 @@ const ProfilePage: React.FC = () => {
 
   const storeListResponse = stores?.data?.data as StoreListResponse;
 
+  const subscriptionListResponse = subscription?.data?.data as SubscriptionListResponse;
+
   const items: TabsProps['items'] = useMemo(
     () => [
       {
@@ -236,8 +246,8 @@ const ProfilePage: React.FC = () => {
         label: 'Subscription',
         children: (
           <SubscriptionList
-            data={storeListResponse}
-            isLoading={stores?.isLoading}
+            data={subscriptionListResponse}
+            isLoading={subscription?.isLoading}
             currentPage={currentPage}
             setPage={setPage}
             setSearchValue={setSearch}
@@ -250,7 +260,7 @@ const ProfilePage: React.FC = () => {
             reset={reset}
             updateLimitSize={setLimitSize}
             searchValue={searchValue}
-            refetch={stores?.refetch}
+            refetch={subscription?.refetch}
           />
         ),
       },
