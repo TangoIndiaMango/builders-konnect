@@ -1,54 +1,63 @@
-// AddressMainPage.tsx
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { Address, AddressType } from '../../../utils/types';
+import { useDeleteData, useFetchData } from '../../../hooks/useApis';
+
+interface Address {
+  id: string;
+  name: string;
+  company: string | null;
+  address: string;
+  country: string;
+  state: string;
+  city: string;
+  phone: string;
+  type: 'billing' | 'shipping';
+  is_default: boolean;
+}
 
 const AddressMainPage = () => {
-  const [addresses, setAddresses] = useState<
-    Partial<Record<AddressType, Address>>
-  >({});
-  const [deleteType, setDeleteType] = useState<AddressType | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const navigate = useNavigate();
+  
+  const { data: addressesData, isLoading, refetch } = useFetchData('customers/addresses');
+  const deleteAddressState = useDeleteData(`customers/addresses/${selectedAddress}`);
 
-  useEffect(() => {
-    const stored = localStorage.getItem('addresses');
-    if (stored) {
-      setAddresses(JSON.parse(stored));
-    }
-  }, []);
-
-  const handleDelete = () => {
-    if (deleteType) {
-      const updated = { ...addresses };
-      delete updated[deleteType];
-      localStorage.setItem('addresses', JSON.stringify(updated));
-      setAddresses(updated);
-      setDeleteType(null);
-      message.success('Address deleted');
+  const handleDelete = async () => {
+    if (selectedAddress) {
+      try {
+        await deleteAddressState.mutateAsync();
+        await refetch();
+        message.success('Address deleted successfully');
+        setSelectedAddress(null);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to delete address';
+        message.error(errorMessage);
+      }
     }
   };
 
-  const renderCard = (type: AddressType, address: Address) => (
-    <div key={type}>
+  const renderCard = (address: Address) => (
+    <div key={address.id}>
       <h2 className="text-lg md:text-2xl text-[#4E4E4E] font-medium mb-4 capitalize">
-        {type} Address
+        {address.type} Address
       </h2>
       <div className="bg-[#F9F9F9] p-6 shadow-sm">
         <div className="mb-4">
           <p className=" text-base md:text-lg font-medium text-[#4E4E4E]">
-            {address.firstName} {address.lastName}
+            {address.name}
+            {address.company && <span className="block text-sm">{address.company}</span>}
           </p>
           <p className="text-[#4E4E4E]">
-            {address.address}, {address.city}, {address.state},{' '}
-            {address.country}
+            {address.address}, {address.city}, {address.state}, {address.country}
           </p>
+          <p className="text-[#4E4E4E]">{address.phone}</p>
         </div>
         <div className="flex gap-4">
-          <Button type="primary" onClick={() => navigate(`/edit/${type}`)}>
+          <Button type="primary" onClick={() => navigate(`/edit/${address.type}/${address.id}`)}>
             Edit
           </Button>
-          <Button danger onClick={() => setDeleteType(type)}>
+          <Button danger onClick={() => setSelectedAddress(address.id)}>
             Delete
           </Button>
         </div>
@@ -63,51 +72,53 @@ const AddressMainPage = () => {
       </h1>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {!addresses.billing ? (
-          <div>
-            <div className="space-y-6 ">
-              <p className="font-medium text-base  text-[#4E4E4E]">
-                You do not have a billing address yet.
-              </p>
-              <Button
-                type="primary"
-                className="py-5 rounded-md px-10 text-white"
-                onClick={() => navigate('/edit/billing')}
-              >
-                Add Billing Address
-              </Button>
-            </div>
-          </div>
+        {isLoading ? (
+          <p>Loading addresses...</p>
         ) : (
-          renderCard('billing', addresses.billing)
-        )}
-
-        {!addresses.shipping ? (
-          <div>
-            <div className="space-y-6 ">
-              <p className="font-medium text-base  text-[#4E4E4E]">
-                You do not have a shipping address yet.
-              </p>
-              <Button
-                type="primary"
-                className="py-5 rounded-md px-10 text-white"
-                onClick={() => navigate('/edit/shipping')}
-              >
-                Add Shipping Address
-              </Button>
+          <>
+            {addressesData?.data?.length > 0 ? (
+              addressesData.data.map((address: Address) => renderCard(address))
+            ) : (
+              <div className="col-span-2 space-y-8">
+                <div className="space-y-6">
+                  <p className="font-medium text-base text-[#4E4E4E]">
+                    You do not have any addresses yet.
+                  </p>
+                </div>
+              </div>
+            )}
+            <div className="col-span-2 mt-8">
+              <div className="flex gap-4">
+                {!addressesData?.data?.some((a: Address) => a.type === 'billing') && (
+                  <Button
+                    type="primary"
+                    className="py-5 rounded-md px-10 text-white"
+                    onClick={() => navigate('/edit/billing/')}
+                  >
+                    Add Billing Address
+                  </Button>
+                )}
+                {!addressesData?.data?.some((a: Address) => a.type === 'shipping') && (
+                  <Button
+                    type="primary"
+                    className="py-5 rounded-md px-10 text-white"
+                    onClick={() => navigate('/edit/shipping/')}
+                  >
+                    Add Shipping Address
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-        ) : (
-          renderCard('shipping', addresses.shipping)
+          </>
         )}
       </div>
 
       <Modal
-        open={!!deleteType}
-        onCancel={() => setDeleteType(null)}
+        open={!!selectedAddress}
+        onCancel={() => setSelectedAddress(null)}
         onOk={handleDelete}
         okText="Yes, Delete"
-        okButtonProps={{ danger: true }}
+        okButtonProps={{ danger: true, loading: deleteAddressState.isPending }}
         cancelText="Cancel"
         title="Delete Address"
       >

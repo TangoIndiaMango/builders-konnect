@@ -119,7 +119,7 @@ const CreateSales = () => {
   // console.log(customers);
   // console.log(form.getFieldsValue());
 
-  const discountData = discounts?.data as DiscountType[];
+  const discountData = discounts?.data?.data as DiscountType[];
   const productDiscountData = productDiscounts?.data?.data as DiscountType[];
   const productData = products?.data?.data as ProductType[];
 
@@ -261,7 +261,7 @@ const CreateSales = () => {
         onError: (error: any) => {
           notification.error({
             message: 'Error',
-            description: error?.response?.data?.message || 'An error occurred',
+            description: error?.response?.data?.message || error?.message || 'An error occurred',
           });
         },
       }
@@ -284,6 +284,8 @@ const CreateSales = () => {
     setShowSuccessModal(false);
     setShowPaymentModal(false);
     setShowAmountModal(false);
+    setSelectedPaymentMethods([]);
+    setPaymentAmount([]);
   };
 
   const isLoading =

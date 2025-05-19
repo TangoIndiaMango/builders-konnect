@@ -107,7 +107,7 @@ const StoreFormModal: FC<StoreFormModalProps> = ({
     }
   };
 
-  const modalTitle = mode === 'add' ? 'Add Staff' : 'Edit Staff';
+  const modalTitle = mode === 'add' ? 'Add Store' : 'Edit Store';
 
   const handleAddressSelect = (value: string, option: any) => {
     form.setFieldsValue({

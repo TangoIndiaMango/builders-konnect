@@ -1,16 +1,21 @@
 import BankDetails from '../../components/auth/BankDetails';
 import DocumentUpload from '../../components/auth/DocumentUpload';
 import VendorDetails from '../../components/auth/VendorDetails';
-import { Steps, Form, notification } from 'antd';
+import { Steps, Form, notification, message } from 'antd';
 import Button from 'antd/es/button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import SuccessModal from '../../components/common/SuccessModal';
 import ErrorModal from '../../components/common/ErrorModal';
-import { useCreateData, useUploadData } from '../../../hooks/useApis';
+import {
+  useCreateData,
+  useFetchSingleData,
+  useUploadData,
+} from '../../../hooks/useApis';
 import { frontendBaseUrl } from './auth-outlets';
 import { useEmailProvider } from '../../../hooks/useEmailProvider';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ActionPayload } from './types';
 
 interface MediaMetadata {
   identification_number: string;
@@ -46,17 +51,21 @@ const steps = [
   { title: 'Bank Details' },
   { title: 'Document Upload' },
 ];
-
+//http://localhost:4200/auth/register-vendor?trxref=rp81h44com&reference=rp81h44com
 const RegisterVendor = () => {
   const navigate = useNavigate();
   const { openEmailProvider } = useEmailProvider();
   const [currentStep, setCurrentStep] = useState(0);
+  const [searchParams] = useSearchParams();
   const [form] = Form.useForm();
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [data, setData] = useState<any>(null);
   const [mediaUrl, setMediaUrl] = useState<any>(null);
+  const [error, setError] = useState<boolean>(false);
+
+  const reference = searchParams.get('reference');
 
   const MediaState = useUploadData('shared/media/upload');
   const createVendorState = useCreateData('merchants/onboarding/complete');
@@ -64,6 +73,53 @@ const RegisterVendor = () => {
     'merchants/onboarding/validate-merchant-details'
   );
   const validateBankState = useCreateData('merchants/onboarding/validate-bank');
+  const fetchPaidUser = useFetchSingleData(
+    `merchants/onboarding/verify-subscription/${reference}`,
+    !!reference && !error
+  );
+  const fethedUserData = fetchPaidUser?.data?.data as ActionPayload;
+
+  useEffect(() => {
+    if (!fetchPaidUser?.isLoading && !fetchPaidUser?.isFetching) {
+      if (fethedUserData) {
+        form.setFieldsValue({
+          email: fethedUserData?.metadata?.user_information?.email,
+          phoneNumber: fethedUserData?.metadata?.user_information?.phone,
+          businessName:
+            fethedUserData?.metadata?.user_information?.business_name,
+          contactName: fethedUserData?.metadata?.user_information?.user_name,
+        });
+      } else {
+        setError(true);
+        notification.error({
+          message:
+            fetchPaidUser?.error?.message ||
+            'An error occured with your Payment, please contact support',
+          btn: (
+            <Button
+              type="primary"
+              size="middle"
+              onClick={() => {
+                notification.destroy();
+                navigate('/auth/login');
+              }}
+            >
+              Contact Support
+            </Button>
+          ),
+        });
+      }
+    }
+
+    // Just to show the error message again
+    const timer = setTimeout(() => {
+      setError(false);
+    }, 20000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [fetchPaidUser?.data?.data, fetchPaidUser?.isLoading]);
 
   const handleNext = async () => {
     try {
@@ -235,11 +291,12 @@ const RegisterVendor = () => {
           form={form}
           className="flex flex-col w-full min-h-[300px]"
           layout="horizontal"
+          disabled={!fethedUserData}
           // onFinish={onFinish}
           labelCol={{ span: 6 }}
           size="middle"
         >
-          <div className="flex-1">
+          <div className="flex-1 mt-4">
             {currentStep === 0 && <VendorDetails form={form} />}
             {currentStep === 1 && <BankDetails form={form} />}
             {currentStep === 2 && <DocumentUpload />}
@@ -266,6 +323,11 @@ const RegisterVendor = () => {
                   onClick={handleNext}
                   size="large"
                   className="w-[114px]"
+                  disabled={
+                    currentStep === 0 &&
+                    !form.getFieldValue('businessName') &&
+                    !form.getFieldValue('contactName')
+                  }
                   loading={
                     validateBusinessState.isPending ||
                     validateBankState.isPending

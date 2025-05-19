@@ -125,7 +125,7 @@ export default function EditInventoryPage() {
             type="primary"
             htmlType="submit"
             form="inventoryForm"
-            loading={editInvetoryLevel.isLoading}
+            loading={editInvetoryLevel.isPending}
           >
             Save
           </Button>

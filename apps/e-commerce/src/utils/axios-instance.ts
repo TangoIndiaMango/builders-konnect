@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { removeAuthUser } from './auth';
 
 export const baseUrl = 'https://api.builderskonnect.sbscuk.co.uk/api/v1/';
 
@@ -39,6 +40,17 @@ const handleError = (error: any) => {
     data?.message ||
     messages[status as keyof typeof messages] ||
     'An unexpected error occurred.';
+
+  // Handle token expiration
+  if (status === 401) {
+    // Clear auth data
+    sessionStorage.removeItem('access_token');
+    sessionStorage.removeItem('tenant_id');
+    removeAuthUser();
+    
+    // Redirect to login page
+    window.location.href = '/auth/login';
+  }
 
   if (!isShowingError) {
     isShowingError = true;

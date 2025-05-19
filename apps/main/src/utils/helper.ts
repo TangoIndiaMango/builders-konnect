@@ -68,31 +68,27 @@ export const beforeUpload = (file: File) => {
 };
 
 
-export const exportCsvFromString = (csvData: string, fileName: string) => {
-  console.log(csvData, "CSV Data looks like this");
-
-  try {
-    // Check if the CSV data is valid (not empty or null)
-    if (!csvData || typeof csvData !== "string") {
-      console.error("Invalid CSV content.");
-      return;
-    }
-
-    // Create a Blob object from the CSV string
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-
-    // Create a download link and trigger a click to download the file
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `${fileName}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error("Error exporting CSV from string:", error);
+export const exportCsvFromString = (csvData: string | Blob, fileName: string) => {
+  if (!csvData) {
+    console.error("Invalid CSV content.");
+    return;
   }
+
+  let blob: Blob;
+  if (typeof csvData === "string") {
+    blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+  } else {
+    blob = csvData;
+  }
+
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `${fileName}.csv`);
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 export const downloadAsPdf = (data: any[], fileName: string) => {

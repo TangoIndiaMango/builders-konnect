@@ -154,12 +154,12 @@ const NotificationList = () => {
     <div className="bg-white p-6 rounded-md shadow-sm border border-gray-50">
       {/* Header with actions */}
       <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-2 text-gray-400 text-xs">
+        <div className="flex items-center gap-2 text-gray-400 text-xs flex-wrap xl:flex-nowrap">
           <CalendarOutlined className="text-gray-400 text-lg" />
           <span>NOTIFICATIONS</span>
           <div className="flex-1 border-t border-gray-200"></div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap xl:flex-nowrap">
           <Checkbox
             onChange={(e) => handleSelectAll(e.target.checked)}
             checked={
@@ -209,7 +209,7 @@ const NotificationList = () => {
                   <p className="text-sm text-gray-500">{item.message}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap xl:flex-nowrap">
                 <div className="text-xs text-gray-400 text-right whitespace-nowrap flex flex-col items-end">
                   <span className="flex items-center gap-1">
                     <span>{dayjs(item.created_at).format('HH:mm')}</span>
@@ -225,13 +225,15 @@ const NotificationList = () => {
                     Mark as Read
                   </Button>
                 )}
-                <Button
+               <div className='flex justify-end'>
+               <Button
                   type="text"
                   danger
                   icon={<DeleteOutlined />}
                   size="small"
                   onClick={() => handleDelete(item.id)}
                 />
+               </div>
               </div>
             </div>
           ))}

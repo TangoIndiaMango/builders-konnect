@@ -180,7 +180,7 @@ const StaffHome = () => {
             setSearchValue={setSearch}
             handleFilterChange={handleFilterChange}
             filterOptions={StaffFilterOptions}
-            onExport={handleExport}
+            onExport={setExportType}
             filterValue={filterValue ?? ''}
             setCustomDateRange={setCustomDateRange}
             pageSize={pageSize}

@@ -14,7 +14,7 @@ export const CustomerSection = ({
   onCustomerSelect,
   onCustomerRemove,
   customerData,
-  showCustomer = true ,
+  showCustomer = true,
 }: CustomerSectionProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -79,11 +79,9 @@ export const CustomerSection = ({
       if (onCustomerSelect) {
         onCustomerSelect(newCustomer);
       }
-
     } catch (error) {
       console.error('Validation failed:', error);
-    }
-    finally {
+    } finally {
       form.resetFields();
       setIsAdding(false);
       setIsEditing(false);
@@ -95,7 +93,7 @@ export const CustomerSection = ({
     setIsAdding(false);
     setIsEditing(false);
     form.resetFields();
-    if (onCustomerRemove) {  
+    if (onCustomerRemove) {
       onCustomerRemove();
     }
   };
@@ -120,12 +118,14 @@ export const CustomerSection = ({
               onSearch={handleCustomerSearch}
               onSelect={handleCustomerSelect}
             />
-          {!showCustomer && <Button icon={<PlusOutlined />} onClick={handleAddNew}>
-              Add New
-            </Button>}
+            {showCustomer && (
+              <Button icon={<PlusOutlined />} onClick={handleAddNew}>
+                Add New
+              </Button>
+            )}
           </div>
         )}
-        { selectedCustomer && !isEditing && !isAdding && (
+        {selectedCustomer && !isEditing && !isAdding && (
           <div className="flex flex-wrap items-center justify-end gap-3">
             <Button
               type="text"
@@ -134,9 +134,11 @@ export const CustomerSection = ({
             >
               Remove Customer
             </Button>
-           {!showCustomer && <Button icon={<EditOutlined />} onClick={handleEdit}>
-              Edit
-            </Button>}
+            {showCustomer && (
+              <Button icon={<EditOutlined />} onClick={handleEdit}>
+                Edit
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -212,7 +214,9 @@ export const CustomerSection = ({
           </div>
           <div className="space-y-1">
             <label className="text-sm text-gray-500">Source</label>
-            <p className="font-medium truncate">{selectedCustomer?.source || 'N/A'}</p>
+            <p className="font-medium truncate">
+              {selectedCustomer?.source || 'N/A'}
+            </p>
           </div>
         </div>
       )}

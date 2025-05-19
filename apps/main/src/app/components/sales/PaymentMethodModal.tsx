@@ -41,7 +41,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({
           <div
             key={method.id}
             onClick={() => onSelectPaymentMethod([method])}
-            className={`flex items-center justify-between p-4 border rounded-sm cursor-pointer hover:border-blue-600 ${
+            className={`flex items-center justify-between p-4 border border-gray-200 rounded-sm cursor-pointer hover:border-blue-600 ${
               isMethodSelected(method) ? 'border-blue-600 bg-blue-50' : ''
             }`}
           >

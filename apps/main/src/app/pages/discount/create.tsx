@@ -23,6 +23,7 @@ const DiscountCreate = () => {
   const [form] = Form.useForm();
   const allProductsValue = Form.useWatch('all_products', form);
   const categoryValue = Form.useWatch('category', form);
+  // const typeValue = Form.useWatch('type', form);
 
   // console.log(allProductsValue);
   const handleSubmit = async () => {
@@ -57,7 +58,7 @@ const DiscountCreate = () => {
       .catch((err: any) => {
         notification.error({ message: 'Error', description: err.message });
         setIsErrorModalOpen(true);
-        setErrorMessage(err?.response?.data?.message || 'An error occurred');
+        setErrorMessage(err?.response?.data?.message || err?.message || 'An error occurred');
       });
   };
 

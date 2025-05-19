@@ -1,22 +1,23 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, notification } from 'antd';
+import { Button, Form, message, Modal, notification } from 'antd';
+import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 import {
   useCreateData,
   useFetchData,
   useFetchSingleData,
+  useGetData,
 } from '../../../../hooks/useApis';
 import { FilterState } from '../../../types/table';
 import DisplayHeader from '../../common/DisplayHeader';
 import { SkeletonLoader } from '../../common/SkeletonLoader';
-import SuccessModal from '../../common/SuccessModal';
 import TableWrapper from '../../common/Table/TableWrapper';
 import TableStats from '../../common/TableStats';
-import { StoreTable } from '../table/StoreTable';
-import StoreFormModal from './AddStoreForm';
 import { SubscriptionTable } from '../table/SubscriptionTable';
 import SubscriptionModal from './SubscriptionModal';
-import dayjs from 'dayjs';
+import { Subscription } from '../../../pages/profile/types';
+import { usePayment } from '../../../../hooks/usePayment';
+import { frontendBaseUrl } from '@/app/pages/auth/auth-outlets';
+import { ActivateSubscriptionModal } from './ActivateSubscriptionModal';
 
 interface SubscriptionListProps extends FilterState {
   data: any;
@@ -40,38 +41,32 @@ const SubscriptionList = ({
   reset,
   refetch,
 }: SubscriptionListProps) => {
-  const [form] = Form.useForm();
-  const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState<'add' | 'edit'>('add');
-  const [initialValues, setInitialValues] = useState<any>(null);
-  const [state, setState] = useState('');
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
-  const StatesState = useFetchData('shared/states?paginate=0&country_id=161');
-  const CitiesState = useFetchSingleData(
-    `shared/cities?paginate=0&country_id=161&state_id=${state}`,
-    !!state
+
+  const [showActivateModal, setShowActivateModal] = useState(false);
+
+  const cancelSubscription = useGetData(
+    `merchants/subscriptions/${selectedSubscription?.id}/cancel`
   );
-  const createStore = useCreateData('merchants/locations');
 
   const tableStatsData = useMemo(
     () => [
       {
-        label: 'Total Stores',
-        value: `${data?.stats?.total}`,
+        label: 'Total Subscriptions',
+        value: `${data?.stats?.total ?? 0}`,
         valueBgColor: '#E6F7FF',
         valueColor: '#003399',
       },
       {
         label: 'Active',
-        value: `${data?.stats?.active}`,
+        value: `${data?.stats?.active ?? 0}`,
         valueBgColor: '#E6FFFB',
         valueColor: '#08979C',
       },
       {
-        label: 'Deactivated',
-        value: `${data?.stats?.inactive}`,
+        label: 'Cancelled',
+        value: `${data?.stats?.inactive ?? 0}`,
         valueBgColor: '#F9F0FF',
         valueColor: '#722ED1',
       },
@@ -79,37 +74,40 @@ const SubscriptionList = ({
     [data?.stats]
   );
 
-  const handleStateChange = (value: string) => {
-    setState(value);
-    form.setFieldsValue({
-      state: value,
-      cityRegion: undefined,
-    });
+  const handleViewSubscription = (record: Subscription) => {
+    setSelectedSubscription(record);
+    setShowSubscriptionModal(true);
   };
 
-  const onSubmit = async () => {
-    const values = await form.validateFields();
-    createStore.mutate(values, {
+  const handleCancelSubscription = () => {
+    cancelSubscription.mutate(selectedSubscription?.id, {
       onSuccess: () => {
         notification.success({
-          message: 'Store created successfully',
+          message: 'Subscription cancelled successfully',
         });
-        setOpen(false);
-        setSuccessModalOpen(true);
-        form.resetFields();
         refetch();
       },
       onError: () => {
         notification.error({
-          message: 'Store creation failed',
+          message: 'Subscription cancellation failed',
         });
       },
     });
   };
 
-  const handleViewSubscription = (record: any) => {
-    setSelectedSubscription(record);
-    setShowSubscriptionModal(true);
+  // const { activateSubscription, isLoading: isActivatingSubscription } = usePayment();
+
+  const handleActivateSubscription = async () => {
+    // try {
+    //   await activateSubscription(selectedSubscription.id, {
+    //     priceItemId: selectedSubscription.price_item_id,
+    //     callbackUrl: `${frontendBaseUrl}/profile/subscription`,
+    //     provider: 'paystack',
+    //   });
+    // } catch (error: any) {
+    //   message.error(error?.message || 'Failed to activate subscription');
+    // }
+    setShowActivateModal(true);
   };
 
   return (
@@ -147,7 +145,7 @@ const SubscriptionList = ({
         onExport={onExport}
       >
         <SubscriptionTable
-          data={data?.data?.data}
+          data={data?.data ?? []}
           currentPage={currentPage}
           onPageChange={setPage}
           loading={isLoading}
@@ -162,26 +160,24 @@ const SubscriptionList = ({
       <SubscriptionModal
         open={showSubscriptionModal}
         onClose={() => setShowSubscriptionModal(false)}
-        planName={selectedSubscription?.planName || 'Free Plan'}
-        isActive={selectedSubscription?.isActive ?? true}
-        price={selectedSubscription?.price ?? 3000}
+        planName={selectedSubscription?.plan_name || 'Free Plan'}
+        isActive={selectedSubscription?.status === 'active'}
+        price={selectedSubscription?.plan_amount ?? 3000}
         endDate={
-          selectedSubscription?.endDate
-            ? dayjs(selectedSubscription.endDate).format('DD MMM, YYYY')
+          selectedSubscription?.end_date
+            ? dayjs(selectedSubscription.end_date).format('DD MMM, YYYY')
             : '12 Jun, 2025'
         }
-        features={[
-          { label: 'List up to 20 products' },
-          { label: '1 User Seat' },
-          { label: 'Standard Support' },
-          // ...add more features as needed
-        ]}
-        onCancelSubscription={() => {
-          // TODO: implement cancel logic
-          setShowSubscriptionModal(false);
-        }}
+        features={selectedSubscription?.features ?? []}
+        onCancelSubscription={handleCancelSubscription}
+        isLoading={cancelSubscription.isPending}
+        onActivateSubscription={handleActivateSubscription}
       />
 
+      <ActivateSubscriptionModal
+        open={showActivateModal}
+        onClose={() => setShowActivateModal(false)}
+      />
     </div>
   );
 };
