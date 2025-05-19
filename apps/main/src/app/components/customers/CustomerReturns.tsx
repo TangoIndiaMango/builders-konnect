@@ -21,7 +21,7 @@ interface ReturnStats {
   total_returns: number;
 }
 
-const ReturnsPage = () => {
+const CustomerReturns = () => {
   const {
     searchValue,
     setSearch,
@@ -124,37 +124,10 @@ const ReturnsPage = () => {
 
   return (
     <div className="h-full">
-      <PageIntroBanner
-        title="Returns and Refund"
-        description="Create sales order and track order sales and performance here"
-        actionButton={
-          <div className="flex items-center gap-5">
-            {/* <Button
-              className="rounded"
-              size="large"
-              onClick={() => navigate('/pos/sales/pause')}
-            >
-              Paused Sales
-            </Button> */}
-
-            <Button
-              type="primary"
-              className="rounded"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/pos/returns/create')}
-            >
-              New Return Log
-            </Button>
-          </div>
-        }
-      />
-
-      <div className="p-5">
-        <div className="p-5 space-y-3 bg-white">
+        <div className="p-2 space-y-3 bg-white">
           <DisplayHeader
             title="All Returns and Refund"
-            description="You're viewing all sales order below."
+            description="View all returns and refunds for this customer"
             actionButton={
               <div className="flex flex-wrap items-center justify-end gap-3">
                 <Button onClick={reset}>Clear</Button>
@@ -187,6 +160,7 @@ const ReturnsPage = () => {
             onExport={handleExport}
           >
             <ReturnsTable
+              currentPath={false}
               data={returnsData}
               currentPage={currentPage}
               onPageChange={setPage}
@@ -198,9 +172,8 @@ const ReturnsPage = () => {
             />
           </TableWrapper>
         </div>
-      </div>
     </div>
   );
 };
 
-export default ReturnsPage;
+export default CustomerReturns;

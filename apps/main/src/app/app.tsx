@@ -63,6 +63,7 @@ import { CustomerDetails } from './components/customers/VeiwCustomer';
 import MultiVariants from './pages/inventory/components/MultiVariants';
 import ReportsOutlet from './pages/report/outlet';
 import ReportsPage from './pages/report';
+import ViewCustomerReturns from './components/customers/ViewCustomerReturns';
 
 // Inventory
 
@@ -198,6 +199,8 @@ const App = () => {
         <Route path="view/:id" element={<CustomerDetails />} />
         <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
         <Route path="product-review/view/:id" element={<ViewReview />} />
+        <Route path="order/view/:id" element={<SalesViewPage isCustomerOrder={false} />} />
+        <Route path="returns/view/:id" element={<ViewCustomerReturns />} />
       </Route>
 
       {/* Discounts */}

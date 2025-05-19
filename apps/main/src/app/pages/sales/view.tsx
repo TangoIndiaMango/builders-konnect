@@ -25,7 +25,11 @@ const items: MenuItem[] = [
     label: <Button type="text">Share Reciept</Button>,
   },
 ];
-const SalesViewPage = () => {
+const SalesViewPage = ({
+  isCustomerOrder = true,
+}: {
+  isCustomerOrder?: boolean;
+}) => {
   const { id } = useParams();
   const getSalesOrder = useFetchData(`merchants/sales-orders/${id}`);
   const singleSalesOrder = getSalesOrder?.data?.data as SingleSalesOrder;
@@ -42,28 +46,32 @@ const SalesViewPage = () => {
           <Typography.Title level={4} className="!mb-0">
             View order
           </Typography.Title>
-          <SkeletonLoader active={getSalesOrder.isLoading} type="simple">
-            <Tag color={getStatusColor(singleSalesOrder?.status)}>
-              {singleSalesOrder?.status}
-            </Tag>
-          </SkeletonLoader>
+          {isCustomerOrder && (
+            <SkeletonLoader active={getSalesOrder.isLoading} type="simple">
+              <Tag color={getStatusColor(singleSalesOrder?.status)}>
+                {singleSalesOrder?.status}
+              </Tag>
+            </SkeletonLoader>
+          )}
         </div>
 
-        <div className="flex items-center justify-end gap-3">
-          {/* <Select
+        {isCustomerOrder && (
+          <div className="flex items-center justify-end gap-3">
+            {/* <Select
             placeholder="Select order status"
             options={orderStatusOptions}
           /> */}
 
-          <Dropdown menu={{ items }} placement="bottomLeft">
-            <Button type="primary" className="space-x-1 rounded">
-              <span>Quick Action</span>{' '}
-              <span>
-                <DownOutlined />
-              </span>
-            </Button>
-          </Dropdown>
-        </div>
+            <Dropdown menu={{ items }} placement="bottomLeft">
+              <Button type="primary" className="space-x-1 rounded">
+                <span>Quick Action</span>{' '}
+                <span>
+                  <DownOutlined />
+                </span>
+              </Button>
+            </Dropdown>
+          </div>
+        )}
       </div>
       <OrderView
         orderId={singleSalesOrder?.order_number}

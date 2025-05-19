@@ -6,8 +6,7 @@ import { useCreateData } from '../../../hooks/useApis';
 export default function CreateCustomer() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
-  const {mutate,isLoading}= useCreateData(`merchants/customers`)
-
+  const { mutate, isPending: isLoading } = useCreateData(`merchants/customers`);
   const showModal = () => {
     setIsModalVisible(true);
   };

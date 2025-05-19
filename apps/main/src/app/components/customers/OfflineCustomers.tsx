@@ -1,13 +1,13 @@
 import { Button } from 'antd';
 import DisplayHeader from '../common/DisplayHeader';
-import TimelineFilter from '../common/filters/TimelineFilter';
 import TableStats from '../common/TableStats';
 import { CustomersTable } from './table/customerTable';
 import TableWrapper from '../common/Table/TableWrapper';
 import { Customer } from '../../lib/mockData';
 import { PaginatedResponse } from '../../types/paginatedData';
 import { SkeletonLoader } from '../common/SkeletonLoader';
-import { FilterOption } from '@/app/store/table';
+import DatePickerComp from '../date/DatePickerrComp';
+import { FilterState } from '../../types/table';
 
 export interface TabStatsinterface {
   total: number;
@@ -19,18 +19,12 @@ export interface CustomersDataInterface {
   data: PaginatedResponse<Customer>;
   stats: TabStatsinterface;
 }
-export interface CustomersProps {
+export interface CustomersProps extends FilterState{
   data: CustomersDataInterface;
   isLoading: boolean;
-  setSearchTerm: (searchTerm: string) => void;
-  periodFilter: string;
-  setPeriodFilter: (periodFilter: string) => void;
-  currentPage: number;
-  reset: () => void;
-  setCurrentPage: (currentPage: number) => void;
-  periodOptions: FilterOption[];
+  withPagination?: boolean;
 }
-const OfflineCustomers = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodFilter, periodOptions, currentPage, setCurrentPage, reset }: CustomersProps) => {
+const OfflineCustomers = ({ data, isLoading, searchValue, setSearchValue, currentPage, setCustomDateRange, handleFilterChange, filterValue, onExport, filterOptions, setPage, reset , updateLimitSize, withPagination=true}: CustomersProps) => {
 
   const tableStatsData = [
     {
@@ -61,11 +55,8 @@ const OfflineCustomers = ({ data, isLoading, setSearchTerm, periodFilter, setPer
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            <TimelineFilter
-              value={periodFilter}
-              onChange={setPeriodFilter}
-              options={periodOptions}
-            />
+            
+            <DatePickerComp onRangeChange={setCustomDateRange} />
           </div>
         }
       />
@@ -84,14 +75,24 @@ const OfflineCustomers = ({ data, isLoading, setSearchTerm, periodFilter, setPer
         </div>
       </SkeletonLoader>
 
-      <TableWrapper onSearch={setSearchTerm}>
-        <CustomersTable
+      <TableWrapper
+      searchValue={searchValue}
+      setSearchValue={setSearchValue}
+      onFilterChange={handleFilterChange}
+      selectedFilter={filterValue}
+      onExport={onExport}
+      filterOptions={filterOptions}
+      >
+        <CustomersTable 
           data={data?.data?.data}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={setPage}
           loading={isLoading}
           showCheckbox={true}
           total={data?.data?.total}
+          perPage={data?.data?.per_page}
+          updateLimitSize={updateLimitSize}
+          withPagination={withPagination}
         />
       </TableWrapper>
     </div>

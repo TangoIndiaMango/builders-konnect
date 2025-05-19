@@ -22,7 +22,7 @@ export default function ReportsPage() {
 
   const handleGenerate = () => {
     // Add generate logic here
-    console.log('Generating report:', { reportType, startDate, endDate });
+    // console.log('Generating report:', { reportType, startDate, endDate });
   };
 
   return (

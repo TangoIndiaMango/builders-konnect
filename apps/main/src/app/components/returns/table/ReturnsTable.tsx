@@ -36,6 +36,7 @@ type ReturnsDataWithKey = ReturnsData & DataType;
 
 interface ReturnsTableProps extends DataTableProps {
   data: ReturnsDataWithKey[];
+  currentPath: boolean;
 }
 
 export const ReturnsTable = ({
@@ -45,6 +46,7 @@ export const ReturnsTable = ({
   loading,
   total,
   showCheckbox = true,
+  currentPath = true,
   perPage,
   updateLimitSize,
 }: ReturnsTableProps) => {
@@ -145,7 +147,7 @@ export const ReturnsTable = ({
           variant="light"
           icon={<EyeOutlined className="text-[#1890FF]" />}
           onClick={() => {
-            navigate(`/pos/returns/view/${record.id}`);
+            navigate(currentPath  ? `/pos/returns/view/${record.id}` : `/pos/customers/returns/view/${record.id}`);
           }}
         />
       ),

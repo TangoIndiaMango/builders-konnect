@@ -1,73 +1,102 @@
 import { Button } from 'antd';
 import DisplayHeader from '../common/DisplayHeader';
-import TimelineFilter from '../common/filters/TimelineFilter';
 import TableStats from '../common/TableStats';
-import { CustomersTable } from './table/customerTable';
 import TableWrapper from '../common/Table/TableWrapper';
-import { Customer } from '../../lib/mockData';
-
 import { PaginatedResponse } from '../../types/paginatedData';
 import { SkeletonLoader } from '../common/SkeletonLoader';
-import { FilterState } from '../../types/table';
 import DatePickerComp from '../date/DatePickerrComp';
+import { FilterState } from '../../types/table';
+import { PaymentTable } from './table/paymentTable';
+import { Payment } from '../../pages/customers/types';
+
+// Dummy data for Payment interface
+const dummyPayments: Payment[] = [
+    {
+      id: 1,
+      order_number: 'ORD123456',
+      order_date: '2023-10-01',
+      amount: 150.00,
+      status: 'completed',
+      payment_method: 'credit_card'
+    },
+    {
+      id: 2,
+      order_number: 'ORD123457',
+      order_date: '2023-10-02',
+      amount: 200.00,
+      status: 'pending',
+      payment_method: 'paypal'
+    },
+    {
+      id: 3,
+      order_number: 'ORD123458',
+      order_date: '2023-10-03',
+      amount: 100.00,
+      status: 'failed',
+      payment_method: 'bank_transfer'
+    },
+    {
+      id: 4,
+      order_number: 'ORD123459',
+      order_date: '2023-10-04',
+      amount: 250.00,
+      status: 'refunded',
+      payment_method: 'credit_card'
+    }
+  ];
+  
+  
 
 export interface TabStatsinterface {
-  total: number;
-  online: number;
-  offline: number;
+  total_spent: number;
+  total_orders: number;
 }
 
-export interface CustomersDataInterface {
-  data: PaginatedResponse<Customer>;
+export interface PaymentDataInterface {
+  data: PaginatedResponse<Payment>;
   stats: TabStatsinterface;
 }
-export interface CustomersProps extends FilterState {
-  data: CustomersDataInterface;
+export interface PaymentMethodProps extends FilterState {
+  data: PaymentDataInterface;
   isLoading: boolean;
   withPagination?: boolean;
 }
-const OnlineCustomers = ({
+const PaymentMethod = ({
   data,
   isLoading,
-  searchValue,
   setSearchValue,
-  handleFilterChange,
+  searchValue,
+  currentPage,
   setCustomDateRange,
+  handleFilterChange,
   filterValue,
   onExport,
   filterOptions,
-  currentPage,
   setPage,
   reset,
   updateLimitSize,
-  withPagination=true,
-}: CustomersProps) => {
+  withPagination = true,
+}: PaymentMethodProps) => {
   const tableStatsData = [
     {
-      label: 'Total Customers',
-      value: `${data?.stats?.total || 0}`,
-      valueBgColor: '#E6F7FF',
-      valueColor: '#003399',
-    },
-    {
-      label: 'Online',
-      value: `${data?.stats?.online || 0}`,
+      label: 'Total Orders',
+      value: `${data?.stats?.total_orders || 0}`,
       valueBgColor: '#F9F0FF',
       valueColor: '#722ED1',
     },
     {
-      label: 'Offline',
-      value: `${data?.stats?.offline || 0}`,
-      valueBgColor: '#FFFBE6',
-      valueColor: '#D48806',
+      label: 'Total Spent',
+      value: `${data?.stats?.total_spent || 0}`,
+      valueBgColor: '#E6F7FF',
+      valueColor: '#003399',
     },
   ];
 
   return (
     <div className="space-y-3">
       <DisplayHeader
-        title="All Customers"
-        description="You're viewing all customers below."
+        title="Payment Method"
+        description="You're viewing all payment method below."
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
@@ -98,8 +127,8 @@ const OnlineCustomers = ({
         onExport={onExport}
         filterOptions={filterOptions}
       >
-        <CustomersTable
-          data={data?.data?.data}
+        <PaymentTable
+          data={dummyPayments}
           currentPage={currentPage}
           onPageChange={setPage}
           loading={isLoading}
@@ -114,4 +143,4 @@ const OnlineCustomers = ({
   );
 };
 
-export default OnlineCustomers;
+export default PaymentMethod;
