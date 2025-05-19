@@ -156,7 +156,13 @@ export const CustomerSection = ({
           <Form.Item
             name="phone"
             label="Phone Number"
-            rules={[{ required: true, message: 'Please enter phone number' }]}
+            rules={[
+              { required: true, message: 'Please enter phone number' },
+              { 
+                pattern: /^[0-9]{11}$/,
+                message: 'Please enter a valid phone number'
+              }
+            ]}
           >
             <Input placeholder="Enter phone number" />
           </Form.Item>

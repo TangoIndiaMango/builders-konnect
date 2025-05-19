@@ -120,9 +120,9 @@ const data = productData?.data?.data?.data
           </div>
           <h1 className="text-xl font-semibold">View Product Review</h1>
         </div>
-        <p className="text-sm text-gray-500">
+        {/* <p className="text-sm text-gray-500">
           Track and measure stock levels here
-        </p>
+        </p> */}
       </div>
       <section className="p-4 mx-4 space-y-4 bg-white">
         {inventoryLoading ? (
@@ -150,7 +150,9 @@ const data = productData?.data?.data?.data
           </div>
         </SkeletonLoader>
 
-        <TableWrapper onSearch={handleSearch}>
+        <TableWrapper 
+        
+        >
           <ReviewTable
             data={data}
             currentPage={currentPage}

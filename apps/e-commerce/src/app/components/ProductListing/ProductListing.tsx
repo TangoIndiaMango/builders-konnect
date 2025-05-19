@@ -22,7 +22,7 @@ const ProductCard: FC<ProductCardProps> = ({ item }) => {
           />
         }
         className="border-none p-2 shadow-none hover:shadow-lg transition-shadow"
-        bodyStyle={{ padding: 2 }}
+        style={{ padding: 2 }}
       >
         <div className="p-5">
           <h2 className="text-md font-medium text-gray-800 mb-1 line-clamp-2">

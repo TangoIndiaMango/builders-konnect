@@ -54,7 +54,7 @@ const Revenue = ({
   return (
     <CardWithFilter
       title="Revenue Analytics"
-      description="Create sales orders and track order sales and performance here"
+      description=""
       rightSection={
         <div className="flex items-center gap-2 justify-end flex-wrap">
           <Button onClick={reset}>Clear</Button>

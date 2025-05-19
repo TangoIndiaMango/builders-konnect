@@ -12,7 +12,7 @@ function ProductDetails() {
       <div className="mb-12">
         <MainProductDetails />
       </div>
-      <div className="mb-12">
+      {/* <div className="mb-12">
         <h2 className="text-2xl font-semibold mb-6">Similar Products</h2>
         <ProductCard />
       </div>
@@ -23,7 +23,7 @@ function ProductDetails() {
         <h2 className="text-2xl font-semibold mb-6">Customer Reviews</h2>
         <CustomerReviews />
         <CustomerReviewCard />
-      </div>
+      </div> */}
     </div>
   );
 }

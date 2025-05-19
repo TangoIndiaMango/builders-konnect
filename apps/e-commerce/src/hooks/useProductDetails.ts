@@ -7,6 +7,10 @@ interface ProductDetails {
   category: string;
   code: string;
   retail_price: string;
+<<<<<<< HEAD
+=======
+  available_quantity: number;
+>>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
   discount_information: {
     id: number;
     type: string;
@@ -19,6 +23,10 @@ interface ProductDetails {
   seller: {
     name: string | null;
     location_id: string;
+<<<<<<< HEAD
+=======
+    merchant_code: string
+>>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
   };
   description: string | null;
   metadata: any;

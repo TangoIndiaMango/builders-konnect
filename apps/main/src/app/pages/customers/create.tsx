@@ -86,13 +86,18 @@ export default function CreateCustomer() {
           >
             <Input />
           </Form.Item>
-
           <Form.Item
             label="Phone Number"
             name="phone"
-            rules={[{ required: true, message: 'Please enter a phone number' }]}
+            rules={[
+              { required: true, message: 'Please enter a phone number' },
+              { 
+                pattern: /^[0-9]{11}$/,
+                message: 'Please enter a valid phone number (11 digits)'
+              }
+            ]}
           >
-            <Input />
+            <Input placeholder="Enter phone number" />
           </Form.Item>
 
         <Form.Item

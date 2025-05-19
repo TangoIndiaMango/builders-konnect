@@ -36,7 +36,7 @@ type ReturnsDataWithKey = ReturnsData & DataType;
 
 interface ReturnsTableProps extends DataTableProps {
   data: ReturnsDataWithKey[];
-  currentPath: boolean;
+  currentPath?: boolean;
 }
 
 export const ReturnsTable = ({
@@ -61,7 +61,7 @@ export const ReturnsTable = ({
     {
       title: 'Product',
       key: 'product',
-      width: 250,
+      width: 200,
       render: (_, record) => (
         <div className="flex items-center gap-2">
           <Avatar
@@ -88,6 +88,7 @@ export const ReturnsTable = ({
     {
       title: 'Date Returned',
       key: 'date_added',
+      width: 150,
       render: (_, record) => (
         <div>
           <div>{dayjs(record.date_added).format('DD MMM YYYY')}</div>
@@ -100,8 +101,9 @@ export const ReturnsTable = ({
     {
       title: 'Order Id',
       dataIndex: 'order_id',
+      width: 200,
       key: 'SKU',
-      render: (_, record) => <span>#{record?.product_sku || 'No order id'}</span>,
+      render: (_, record) => <span className="text-nowrap">{record?.id || 'No order id'}</span>,
     },
 
     {
@@ -170,7 +172,7 @@ export const ReturnsTable = ({
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
         updateLimitSize={updateLimitSize}
-        scroll={{ x: '1000px' }} // Add scroll for responsive behavior
+        scroll={{ x: '1000px' }} 
       />
     </div>
   );

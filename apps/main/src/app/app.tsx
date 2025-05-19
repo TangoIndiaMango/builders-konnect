@@ -63,7 +63,10 @@ import { CustomerDetails } from './components/customers/VeiwCustomer';
 import MultiVariants from './pages/inventory/components/MultiVariants';
 import ReportsOutlet from './pages/report/outlet';
 import ReportsPage from './pages/report';
+<<<<<<< HEAD
 import ViewCustomerReturns from './components/customers/ViewCustomerReturns';
+=======
+>>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
 import SubscriptionPlans from './pages/onboarding';
 import SubscriptionCheckout from './pages/onboarding/onboarding';
 

@@ -50,7 +50,6 @@ function ProductList() {
     }, {})
   });
 
-  const products = productsData?.data || [];
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(prev => ({
@@ -94,24 +93,26 @@ function ProductList() {
           />
           {isLoading ? (
             <div className="text-center py-8">Loading products...</div>
-          ) : productsData?.data?.data?.length > 0 ? (
+          ): productsData?.data?.data?.length !== 0 || productsData?.data?.data?.length !== undefined ? (
             <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {productsData?.data?.data?.map((item) => (
+              {productsData?.data?.data?.map((item) => {
+                console.log('ProductList ID:', item.id, typeof item.id);
+                return (
                 <Link to={`/product-details/${item.id}`} key={item.id}>
                   <ProductCard item={{
-                    id: parseInt(item.id) || 0,
+                    id: item.id,
                     name: item.name,
-                    image: item.primary_media_url || '',
+                    images: [item.primary_media_url || ''],
                     price: parseFloat(item.retail_price) || 0,
                     discount: item.discount_information?.amount ? parseFloat(item.discount_information.amount) : 0,
                     rating: item.ratings
                   }} />
                 </Link>
-              ))}
+              )})}
             </div>
-          ) : (
+): (
             <div className="text-center py-8 text-gray-500">
-              No products found in this subcategory
+              No products found in this subcategor
             </div>
           )}
         </div>

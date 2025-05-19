@@ -91,6 +91,7 @@ const Customer = ({
       <div className="md:col-span-2">
         <CardWithFilter
           title="Customer Traffic"
+          description=""
           rightSection={
             <div className="flex items-center gap-2 justify-end flex-wrap">
               <Button onClick={reset}>Clear</Button>

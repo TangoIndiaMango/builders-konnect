@@ -10,7 +10,7 @@ import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import TableWrapper from '../../components/common/Table/TableWrapper';
 import TableStats from '../../components/common/TableStats';
 import DatePickerComp from '../../components/date/DatePickerrComp';
-import { filterOptions } from '../../lib/constant';
+import {  filterReturnsOptions } from '../../lib/constant';
 import { ReturnsTable } from '../../components/returns/table/ReturnsTable';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 
@@ -42,13 +42,14 @@ const ReturnsPage = () => {
 
 
   const exportProducts = useGetExportData(
-    `merchants/returns?export=${exportType}`
+    `merchants/returns?export=csv`
   );
 
   const handleExport = () => {
     exportProducts.mutate(null as any, {
       onSuccess: (data) => {
-        exportCsvFromString(data, 'Products');
+        console.log(data, "DATA LOOKS LIKE THIS")
+        exportCsvFromString(data?.data, 'Returns');
       },
       onError: (error) => {
         console.log(error);
@@ -58,6 +59,10 @@ const ReturnsPage = () => {
       },
     });
   };
+
+  
+
+  
 
   useEffect(() => {
     if (exportType) {
@@ -71,19 +76,20 @@ const ReturnsPage = () => {
     }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
       limitSize ?? 10
     }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
-      filterKey === 'status' ? filterValue : ''
+      filterKey === 'order_status' ? filterValue : ''
     }`
   );
+  
 
-  const products = useFetchData(
-    `merchants/inventory-products?paginate=1&page=${
-      currentPage ?? 1
-    }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
-      limitSize ?? 10
-    }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
-      filterKey === 'status' ? filterValue : ''
-    }`
-  );
+  // const products = useFetchData(
+  //   `merchants/inventory-products?paginate=1&page=${
+  //     currentPage ?? 1
+  //   }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
+  //     limitSize ?? 10
+  //   }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
+  //     filterKey === 'status' ? filterValue : ''
+  //   }`
+  // );
 
   const stats = returns?.data?.data?.stats as ReturnStats;
   const returnsData = returns?.data?.data?.data
@@ -126,7 +132,7 @@ const ReturnsPage = () => {
     <div className="h-full">
       <PageIntroBanner
         title="Returns and Refund"
-        description="Create sales order and track order sales and performance here"
+        description="View and manage all product returns and refunds here"
         actionButton={
           <div className="flex items-center gap-5">
             {/* <Button
@@ -154,7 +160,7 @@ const ReturnsPage = () => {
         <div className="p-5 space-y-3 bg-white">
           <DisplayHeader
             title="All Returns and Refund"
-            description="You're viewing all sales order below."
+            description="You're viewing all returns and refunds below."
             actionButton={
               <div className="flex flex-wrap items-center justify-end gap-3">
                 <Button onClick={reset}>Clear</Button>
@@ -179,7 +185,7 @@ const ReturnsPage = () => {
           <Divider />
 
           <TableWrapper
-            filterOptions={filterOptions}
+            filterOptions={filterReturnsOptions}
             onFilterChange={handleFilterChange}
             selectedFilter={filterValue}
             searchValue={searchValue}

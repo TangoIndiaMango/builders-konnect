@@ -37,9 +37,13 @@ const SalesViewPage = ({
   const getSalesOrder = useFetchData(`merchants/sales-orders/${id}`);
   const singleSalesOrder = getSalesOrder?.data?.data as SingleSalesOrder;
   const updateSalesOrder = usePutData(`merchants/sales-orders/${id}`);
+<<<<<<< HEAD
   const [option, setOption] = useState<string>(
     singleSalesOrder?.payment_status
   );
+=======
+  const [option, setOption] = useState<string>(singleSalesOrder?.payment_status);
+>>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
   // console.log('getSalesOrder', singleSalesOrder);
   // const onClick: MenuProps['onClick'] = (e) => {
   //   console.log('click ', e);
@@ -71,6 +75,7 @@ const SalesViewPage = ({
           )}
         </div>
 
+<<<<<<< HEAD
         {isCustomerOrder && (
           <div className="flex items-center justify-end gap-3">
             <Select
@@ -79,6 +84,15 @@ const SalesViewPage = ({
               onChange={handleUpdateSalesOrder}
               value={option}
             />
+=======
+        <div className="flex items-center justify-end gap-3">
+          <Select
+            placeholder="Select order status"
+            options={orderStatusOptions}
+            onChange={handleUpdateSalesOrder}
+            value={option}
+          />
+>>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
 
             <Dropdown menu={{ items }} placement="bottomLeft">
               <Button type="primary" className="space-x-1 rounded">
