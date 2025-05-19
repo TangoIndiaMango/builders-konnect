@@ -7,15 +7,17 @@ import ProfileInfoSection from '../../components/settings/profilenfoSection';
 import NotificationList from './views/NotificationList';
 import WelcomeSection from '../../components/profile/WelcomeSection';
 import { VendorProfile } from '../profile/types';
-import {
-  useFetchData,
-  useFetchDataSeperateLoading,
-} from '../../../hooks/useApis';
-import { StaffProfile } from './types';
+import { useFetchData } from '../../../hooks/useApis';
+// import { DocumentPreviewModal, getFileName } from "./DocumentPreviewUrl";
+import ChangePasswordModal from "../../pages/auth/ChangePasswordModal";
+import { DocumentPreviewModal } from '../../components/profile/DocumentPreviewUrl';
 
 const SettingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState('profile');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentFile, setCurrentFile] = useState('');
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -28,11 +30,8 @@ const SettingPage: React.FC = () => {
     setTab(key);
   };
 
-  const profileData = useFetchDataSeperateLoading(
-    `merchants/staff/get/profile`
-  );
-  const profile = profileData?.data?.data as StaffProfile;
-
+  const profileData = useFetchData('merchants/profile/view');
+  const profile = profileData?.data?.data as VendorProfile;
 
   const items: TabsProps['items'] = [
     {
@@ -51,20 +50,22 @@ const SettingPage: React.FC = () => {
             data={profile}
             isLoading={profileData.isLoading}
           />
+          <h1
+            className="text-blue-500 cursor-pointer"
+            onClick={() => setIsPasswordModalOpen(true)}
+          >
+            Change Password
+          </h1>
         </div>
       ),
     },
     {
       key: 'notifications',
       label: 'Notification',
-      children: (
-        <div>
-          <NotificationList
-          />
-        </div>
-      ),
+      children: <NotificationList />,
     },
   ];
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -77,11 +78,23 @@ const SettingPage: React.FC = () => {
         </div>
         <Button type="default">View Storefront</Button>
       </div>
+
       <div className="px-6 py-4">
         <Tabs activeKey={tab} onChange={onChange} items={items} />
+
+        <ChangePasswordModal
+          open={isPasswordModalOpen}
+          onClose={() => setIsPasswordModalOpen(false)}
+        />
+
+        <DocumentPreviewModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          fileUrl={currentFile}
+        />
       </div>
     </div>
   );
 };
 
-export default SettingPage;
+export default SettingPage; 
