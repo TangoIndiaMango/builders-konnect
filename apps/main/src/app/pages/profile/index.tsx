@@ -13,7 +13,11 @@ import {
   useUploadData,
 } from '../../../hooks/useApis';
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
-import { StoreListResponse, SubscriptionListResponse, VendorProfile } from './types';
+import {
+  StoreListResponse,
+  SubscriptionListResponse,
+  VendorProfile,
+} from './types';
 import StoreList from '../../components/profile/store/StoreList';
 import { data, useNavigate, useSearchParams } from 'react-router-dom';
 import { exportCsvFromString } from '../../../utils/helper';
@@ -21,6 +25,7 @@ import { useTableState } from '../../../hooks/useTable';
 import { filterOptions } from '../../lib/constant';
 import SubscriptionList from '../../components/profile/subscription/SubscriptionList';
 import { UploadedResInterface } from '../../../hooks/useUpload';
+import ChangePasswordModal from '../auth/ChangePasswordModal';
 
 const ProfilePage: React.FC = () => {
   const { user } = useSessionStorage();
@@ -85,6 +90,8 @@ const ProfilePage: React.FC = () => {
       handleExport();
     }
   }, [exportType]);
+
+
 
   const stores = useFetchData(
     `merchants/locations?paginate=1&page=${currentPage ?? 1}&status=${
@@ -181,7 +188,8 @@ const ProfilePage: React.FC = () => {
 
   const storeListResponse = stores?.data?.data as StoreListResponse;
 
-  const subscriptionListResponse = subscription?.data?.data as SubscriptionListResponse;
+  const subscriptionListResponse = subscription?.data
+    ?.data as SubscriptionListResponse;
 
   const items: TabsProps['items'] = useMemo(
     () => [
@@ -215,6 +223,7 @@ const ProfilePage: React.FC = () => {
               setSelectedFiles={setSelectedFiles}
               handleChange={handleChange}
             />
+
           </div>
         ),
       },
