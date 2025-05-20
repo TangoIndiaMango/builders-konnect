@@ -12,6 +12,7 @@ import {
   useFetchDataSeperateLoading,
 } from '../../../hooks/useApis';
 import { StaffProfile } from './types';
+import ChangePasswordModal from '../auth/ChangePasswordModal';
 
 const SettingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -32,7 +33,8 @@ const SettingPage: React.FC = () => {
     `merchants/staff/get/profile`
   );
   const profile = profileData?.data?.data as StaffProfile;
-
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
 
   const items: TabsProps['items'] = [
     {
@@ -51,6 +53,19 @@ const SettingPage: React.FC = () => {
             data={profile}
             isLoading={profileData.isLoading}
           />
+
+          <div className="grid grid-cols-1 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm lg:grid-cols-[0.3fr_0.7fr]">
+            <Button
+              type="link"
+              onClick={() => setIsChangePasswordModalOpen(true)}
+            >
+              Change Password
+            </Button>
+          </div>
+          <ChangePasswordModal
+            open={isChangePasswordModalOpen}
+            onClose={() => setIsChangePasswordModalOpen(false)}
+          />
         </div>
       ),
     },
@@ -59,8 +74,7 @@ const SettingPage: React.FC = () => {
       label: 'Notification',
       children: (
         <div>
-          <NotificationList
-          />
+          <NotificationList />
         </div>
       ),
     },
