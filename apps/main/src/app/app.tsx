@@ -29,6 +29,8 @@ import VendorProfileOutlet from './pages/profile/profile-outlet';
 import SingleStoreDetails from './pages/profile/views/single-store';
 
 // Staff
+import { CustomerDetails } from './components/customers/VeiwCustomer';
+import ViewCustomerReturns from './components/customers/ViewCustomerReturns';
 import CustomersOutlet from './pages/customers/customer-outlet';
 import CustomersList from './pages/customers/customers-list';
 import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
@@ -49,7 +51,12 @@ import InventoryOutlet from './pages/inventory/inventory-outlet';
 import ProductPreview from './pages/inventory/previewProduct';
 import TriggerReorder from './pages/inventory/triggerReorder';
 import NotFound from './pages/NotFound';
+import SubscriptionPlans from './pages/onboarding';
+import SubscriptionCheckout from './pages/onboarding/onboarding';
+import ReportsPage from './pages/report';
+import ReportsOutlet from './pages/report/outlet';
 import ReturnsPage from './pages/returns';
+import NewReturnLog from './pages/returns/create';
 import ReturnsOutlet from './pages/returns/outlet';
 import ReturnsViewPage from './pages/returns/view';
 import SettingPage from './pages/settings';
@@ -58,17 +65,6 @@ import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
-import NewReturnLog from './pages/returns/create';
-import { CustomerDetails } from './components/customers/VeiwCustomer';
-import MultiVariants from './pages/inventory/components/MultiVariants';
-import ReportsOutlet from './pages/report/outlet';
-import ReportsPage from './pages/report';
-<<<<<<< HEAD
-import ViewCustomerReturns from './components/customers/ViewCustomerReturns';
-=======
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
-import SubscriptionPlans from './pages/onboarding';
-import SubscriptionCheckout from './pages/onboarding/onboarding';
 
 // Inventory
 
@@ -207,7 +203,10 @@ const App = () => {
         <Route path="view/:id" element={<CustomerDetails />} />
         <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
         <Route path="product-review/view/:id" element={<ViewReview />} />
-        <Route path="order/view/:id" element={<SalesViewPage isCustomerOrder={false} />} />
+        <Route
+          path="order/view/:id"
+          element={<SalesViewPage isCustomerOrder={false} />}
+        />
         <Route path="returns/view/:id" element={<ViewCustomerReturns />} />
       </Route>
 
