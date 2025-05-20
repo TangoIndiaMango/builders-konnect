@@ -17,7 +17,7 @@ const CardWithFilter = ({
     <div className="p-5 space-y-5 bg-white shadow-sm">
       <div className="flex items-center justify-between gap-8">
         <div className="space-y-1">
-          <h1 className="text-lg font-medium xl:text-xl">{title}</h1>
+          <h1 className="text-lg font-medium xl:text-xl text-nowrap">{title}</h1>
           {description && <p className="text-gray-500 ">{description}</p>}
         </div>
 

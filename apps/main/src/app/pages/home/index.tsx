@@ -13,6 +13,7 @@ import Recent from '../../components/home/Recent';
 import Revenue from '../../components/home/Revenue';
 import Stats from '../../components/home/Stats';
 import { Stores } from '../../pages/staff/types';
+import { useNavigate } from 'react-router-dom';
 
 function toQueryString(params: Record<string, any>) {
   return Object.entries(params)
@@ -24,6 +25,7 @@ function toQueryString(params: Record<string, any>) {
 const DashboardHome = () => {
   const { customDateRange, setCustomDateRange, reset } =
     useTableState('dashboard');
+  const navigate = useNavigate();
   const [selectedStoreId, setSelectedStoreId] = useState<string>('');
   const stores = useFetchData('merchants/locations?q&sort_by=alphabetically');
   const storeList = stores?.data?.data as Stores[];
@@ -69,7 +71,7 @@ const DashboardHome = () => {
     <>
       <PageIntroBanner
         actionButton={
-          <Button type="primary" icon={<PlusOutlined />}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/pos/inventory/add-product')}>
             Add Product
           </Button>
         }

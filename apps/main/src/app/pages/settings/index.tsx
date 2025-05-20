@@ -17,6 +17,9 @@ import ChangePasswordModal from '../auth/ChangePasswordModal';
 const SettingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState('profile');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentFile, setCurrentFile] = useState('');
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -80,6 +83,7 @@ const SettingPage: React.FC = () => {
     },
   ];
 
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
@@ -91,8 +95,20 @@ const SettingPage: React.FC = () => {
         </div>
         <Button type="default">View Storefront</Button>
       </div>
+
       <div className="px-6 py-4">
         <Tabs activeKey={tab} onChange={onChange} items={items} />
+
+        <ChangePasswordModal
+          open={isPasswordModalOpen}
+          onClose={() => setIsPasswordModalOpen(false)}
+        />
+
+        <DocumentPreviewModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          fileUrl={currentFile}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import { Button } from 'antd';
 import DisplayHeader from '../common/DisplayHeader';
-import TimelineFilter from '../common/filters/TimelineFilter';
 import TableStats from '../common/TableStats';
 import { CustomersTable } from './table/customerTable';
 import TableWrapper from '../common/Table/TableWrapper';
@@ -8,7 +7,8 @@ import { Customer } from '../../lib/mockData';
 
 import { PaginatedResponse } from '../../types/paginatedData';
 import { SkeletonLoader } from '../common/SkeletonLoader';
-import { FilterOption } from '../../store/table';
+import DatePickerComp from '../date/DatePickerrComp';
+import { FilterState } from '../../types/table';
 
 export interface TabStatsinterface {
   total: number;
@@ -20,35 +20,43 @@ export interface CustomersDataInterface {
   data: PaginatedResponse<Customer>;
   stats: TabStatsinterface;
 }
-export interface CustomersProps {
+export interface CustomersProps extends FilterState {
   data: CustomersDataInterface;
   isLoading: boolean;
-  setSearchTerm: (searchTerm: string) => void;
-  periodFilter: string;
-  setPeriodFilter: (periodFilter: string) => void;
-  currentPage: number;
-  reset: () => void;
-  setCurrentPage: (currentPage: number) => void;
-  periodOptions: FilterOption[];
+  withPagination?: boolean;
 }
-const AllCustomers = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodFilter, periodOptions, currentPage, setCurrentPage, reset }: CustomersProps) => {
-
+const AllCustomers = ({
+  data,
+  isLoading,
+  setSearchValue,
+  searchValue,
+  currentPage,
+  setCustomDateRange,
+  handleFilterChange,
+  filterValue,
+  onExport,
+  filterOptions,
+  setPage,
+  reset,
+  updateLimitSize,
+  withPagination = true,
+}: CustomersProps) => {
   const tableStatsData = [
     {
       label: 'Total Customers',
-      value: `${data?.stats?.total || 0 }`,
+      value: `${data?.stats?.total || 0}`,
       valueBgColor: '#E6F7FF',
       valueColor: '#003399',
     },
     {
       label: 'Online',
-        value: `${data?.stats?.online || 0 }`,
-        valueBgColor: '#F9F0FF',
+      value: `${data?.stats?.online || 0}`,
+      valueBgColor: '#F9F0FF',
       valueColor: '#722ED1',
     },
     {
       label: 'Offline',
-      value: `${data?.stats?.offline || 0 }`,
+      value: `${data?.stats?.offline || 0}`,
       valueBgColor: '#FFFBE6',
       valueColor: '#D48806',
     },
@@ -62,11 +70,7 @@ const AllCustomers = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodF
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            <TimelineFilter
-              value={periodFilter}
-              onChange={setPeriodFilter}
-              options={periodOptions}
-            />
+            <DatePickerComp onRangeChange={setCustomDateRange} />
           </div>
         }
       />
@@ -85,14 +89,24 @@ const AllCustomers = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodF
         </div>
       </SkeletonLoader>
 
-      <TableWrapper onSearch={setSearchTerm} >
+      <TableWrapper
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        onFilterChange={handleFilterChange}
+        selectedFilter={filterValue}
+        onExport={onExport}
+        filterOptions={filterOptions}
+      >
         <CustomersTable
           data={data?.data?.data}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={setPage}
           loading={isLoading}
           showCheckbox={true}
           total={data?.data?.total}
+          perPage={data?.data?.per_page}
+          updateLimitSize={updateLimitSize}
+          withPagination={withPagination}
         />
       </TableWrapper>
     </div>

@@ -71,7 +71,7 @@ const PaymentPage = () => {
         closable={false}
         width={500}
         className="p-0"
-        bodyStyle={{ padding: 0 }}
+        style={{ padding: 0 }}
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
@@ -107,7 +107,7 @@ const PaymentPage = () => {
               Cancel
                   </button>
                   <Link to="/success">
-                  
+
             <button
               onClick={handleTransfer}
               className="py-3 px-4 bg-blue-800 text-white rounded-md text-base hover:bg-blue-900 transition-colors"
@@ -150,8 +150,8 @@ const PaymentPage = () => {
               <Input placeholder=" Card Expiry: MM/YY" />
               <Input placeholder="CVV: 123" />
                       </div>
-                      <div className='mt-4'>   
-                      <Link to="/success">     
+                      <div className='mt-4'>
+                      <Link to="/success">
             <Button type="primary" block>
               Pay ₦3,900
             </Button>

@@ -10,7 +10,7 @@ import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import TableWrapper from '../../components/common/Table/TableWrapper';
 import TableStats from '../../components/common/TableStats';
 import DatePickerComp from '../../components/date/DatePickerrComp';
-import {  filterReturnsOptions } from '../../lib/constant';
+import { filterOptions } from '../../lib/constant';
 import { ReturnsTable } from '../../components/returns/table/ReturnsTable';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 
@@ -21,7 +21,7 @@ interface ReturnStats {
   total_returns: number;
 }
 
-const ReturnsPage = () => {
+const CustomerReturns = () => {
   const {
     searchValue,
     setSearch,
@@ -42,14 +42,13 @@ const ReturnsPage = () => {
 
 
   const exportProducts = useGetExportData(
-    `merchants/returns?export=csv`
+    `merchants/returns?export=${exportType}`
   );
 
   const handleExport = () => {
     exportProducts.mutate(null as any, {
       onSuccess: (data) => {
-        console.log(data, "DATA LOOKS LIKE THIS")
-        exportCsvFromString(data?.data, 'Returns');
+        exportCsvFromString(data, 'Products');
       },
       onError: (error) => {
         console.log(error);
@@ -59,10 +58,6 @@ const ReturnsPage = () => {
       },
     });
   };
-
-  
-
-  
 
   useEffect(() => {
     if (exportType) {
@@ -76,20 +71,19 @@ const ReturnsPage = () => {
     }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
       limitSize ?? 10
     }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
-      filterKey === 'order_status' ? filterValue : ''
+      filterKey === 'status' ? filterValue : ''
     }`
   );
-  
 
-  // const products = useFetchData(
-  //   `merchants/inventory-products?paginate=1&page=${
-  //     currentPage ?? 1
-  //   }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
-  //     limitSize ?? 10
-  //   }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
-  //     filterKey === 'status' ? filterValue : ''
-  //   }`
-  // );
+  const products = useFetchData(
+    `merchants/inventory-products?paginate=1&page=${
+      currentPage ?? 1
+    }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
+      limitSize ?? 10
+    }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
+      filterKey === 'status' ? filterValue : ''
+    }`
+  );
 
   const stats = returns?.data?.data?.stats as ReturnStats;
   const returnsData = returns?.data?.data?.data
@@ -130,37 +124,10 @@ const ReturnsPage = () => {
 
   return (
     <div className="h-full">
-      <PageIntroBanner
-        title="Returns and Refund"
-        description="View and manage all product returns and refunds here"
-        actionButton={
-          <div className="flex items-center gap-5">
-            {/* <Button
-              className="rounded"
-              size="large"
-              onClick={() => navigate('/pos/sales/pause')}
-            >
-              Paused Sales
-            </Button> */}
-
-            <Button
-              type="primary"
-              className="rounded"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={() => navigate('/pos/returns/create')}
-            >
-              New Return Log
-            </Button>
-          </div>
-        }
-      />
-
-      <div className="p-5">
-        <div className="p-5 space-y-3 bg-white">
+        <div className="p-2 space-y-3 bg-white">
           <DisplayHeader
             title="All Returns and Refund"
-            description="You're viewing all returns and refunds below."
+            description="View all returns and refunds for this customer"
             actionButton={
               <div className="flex flex-wrap items-center justify-end gap-3">
                 <Button onClick={reset}>Clear</Button>
@@ -185,7 +152,7 @@ const ReturnsPage = () => {
           <Divider />
 
           <TableWrapper
-            filterOptions={filterReturnsOptions}
+            filterOptions={filterOptions}
             onFilterChange={handleFilterChange}
             selectedFilter={filterValue}
             searchValue={searchValue}
@@ -193,6 +160,7 @@ const ReturnsPage = () => {
             onExport={handleExport}
           >
             <ReturnsTable
+              currentPath={false}
               data={returnsData}
               currentPage={currentPage}
               onPageChange={setPage}
@@ -204,9 +172,8 @@ const ReturnsPage = () => {
             />
           </TableWrapper>
         </div>
-      </div>
     </div>
   );
 };
 
-export default ReturnsPage;
+export default CustomerReturns;

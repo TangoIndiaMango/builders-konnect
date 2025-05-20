@@ -31,3 +31,11 @@ export interface Product {
 };
  
 
+export interface Payment {
+  id: number;
+  order_number: string;
+  order_date: string;
+  amount: number;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  payment_method: string;
+}

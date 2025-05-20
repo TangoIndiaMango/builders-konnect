@@ -1,21 +1,23 @@
 import DisplayHeader from '../common/DisplayHeader';
 import TableWrapper from '../common/Table/TableWrapper';
-import { PaginatedResponse } from '../../types/paginatedData';
-import { ProductTable } from './table/productTable';
-import { Product } from '../../pages/customers/types';
 import { Button } from 'antd';
+import { ProductTable } from './table/productTable';
 import DatePickerComp from '../date/DatePickerrComp';
+import { PaginatedResponse } from '../../types/paginatedData';
+import { Product } from '../../pages/customers/types';
 import { FilterState } from '@/app/types/table';
 
-export interface ProductReviewDataInterface {
+export interface CustomerReviewDataInterface {
   data: PaginatedResponse<Product>;
 }
-export interface ProductReviewProps  extends FilterState{
-  data: ProductReviewDataInterface;
+export interface CustomerReviewProps extends FilterState {
+  data: CustomerReviewDataInterface;
   isLoading: boolean;
   withPagination?: boolean;
 }
-const ProductReview = ({ data,
+
+const CustomerTableReview = ({
+  data,
   isLoading,
   setSearchValue,
   searchValue,
@@ -28,23 +30,20 @@ const ProductReview = ({ data,
   setPage,
   reset,
   updateLimitSize,
-  withPagination = true}: ProductReviewProps) => {
-   
-  
-
+  withPagination = true,
+}: CustomerReviewProps) => {
   return (
     <div className="space-y-3">
       <DisplayHeader
-        title="Product Reviews"
-          description="You're viewing all reviews below."
-            actionButton={
+        title="Reviews"
+        description="You're viewing all reviews below."
+        actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
             <DatePickerComp onRangeChange={setCustomDateRange} />
           </div>
         }
       />
-
 
       <TableWrapper
         searchValue={searchValue}
@@ -70,4 +69,4 @@ const ProductReview = ({ data,
   );
 };
 
-export default ProductReview;
+export default CustomerTableReview;

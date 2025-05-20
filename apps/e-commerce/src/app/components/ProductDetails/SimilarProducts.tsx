@@ -30,7 +30,7 @@ const ProductCard: FC = () => {
               />
             }
             className="border-none p-2 shadow-none"
-            bodyStyle={{ padding: 2 }}
+            style={{ padding: 2 }}
           >
             <div className="px-0 py-0">
               {' '}

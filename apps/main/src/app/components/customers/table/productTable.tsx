@@ -6,22 +6,22 @@ import { PaginatedTable, type DataType } from '../../common/Table/Table';
 import { ColumnsType } from 'antd/es/table';
 import { useNavigate } from 'react-router-dom';
 import { Product } from '@/app/pages/customers/types';
+import { DataTableProps } from '@/app/types/table';
 
 // Create a type that combines SalesOrder with required key
 type ProductWithKey = Product & DataType;
 
-interface ProductTableProps {
+interface ProductTableProps extends DataTableProps {
   data: Product[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  showCheckbox?: boolean;
+  withPagination?: boolean;
 }
 
 export const ProductTable = ({
   data,
   currentPage,
+  updateLimitSize,
+  perPage,
+  withPagination,
   onPageChange,
   loading,
   total,
@@ -92,7 +92,7 @@ export const ProductTable = ({
               key={index}
               style={{
                 color:
-                  index < Math.round(record.ratings) ? '#FFD700' : '#D3D3D3',
+                  index < Math.round(record.ratings || 0) ? '#FFD700' : '#D3D3D3',
               }}
             />
           ))}
@@ -116,19 +116,21 @@ export const ProductTable = ({
   return (
     <div>
       <PaginatedTable<ProductWithKey>
-        data={dataWithKeys}
-        columns={columns}
-        currentPage={currentPage}
-        onPageChange={onPageChange}
-        loading={loading}
-        total={total}
-        showCheckbox={showCheckbox}
-        striped={true}
-        pageSize={10}
-        rowSelection={rowSelection}
-        selectedRowKeys={selectedRowKeys}
-        resetSelection={resetSelection}
-        scroll={{ x: '1000px' }}
+       data={dataWithKeys}
+       columns={columns}
+       currentPage={currentPage}
+       onPageChange={onPageChange}
+       updateLimitSize={updateLimitSize}
+       loading={loading}
+       total={total}
+       showCheckbox={showCheckbox}
+       showPagination={withPagination}
+       striped={true}
+       pageSize={perPage}
+       rowSelection={rowSelection}
+       selectedRowKeys={selectedRowKeys}
+       resetSelection={resetSelection}
+       scroll={{ x: '1000px' }}
       />
     </div>
   );

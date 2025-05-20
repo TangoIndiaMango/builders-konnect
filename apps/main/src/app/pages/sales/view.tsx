@@ -28,12 +28,22 @@ const items: MenuItem[] = [
     label: <Button type="text">Share Reciept</Button>,
   },
 ];
-const SalesViewPage = () => {
+const SalesViewPage = ({
+  isCustomerOrder = true,
+}: {
+  isCustomerOrder?: boolean;
+}) => {
   const { id } = useParams();
   const getSalesOrder = useFetchData(`merchants/sales-orders/${id}`);
   const singleSalesOrder = getSalesOrder?.data?.data as SingleSalesOrder;
   const updateSalesOrder = usePutData(`merchants/sales-orders/${id}`);
+<<<<<<< HEAD
+  const [option, setOption] = useState<string>(
+    singleSalesOrder?.payment_status
+  );
+=======
   const [option, setOption] = useState<string>(singleSalesOrder?.payment_status);
+>>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
   // console.log('getSalesOrder', singleSalesOrder);
   // const onClick: MenuProps['onClick'] = (e) => {
   //   console.log('click ', e);
@@ -56,13 +66,25 @@ const SalesViewPage = () => {
           <Typography.Title level={4} className="!mb-0">
             View order
           </Typography.Title>
-          <SkeletonLoader active={getSalesOrder.isLoading} type="simple">
-            <Tag color={getStatusColor(singleSalesOrder?.status)}>
-              {singleSalesOrder?.status}
-            </Tag>
-          </SkeletonLoader>
+          {isCustomerOrder && (
+            <SkeletonLoader active={getSalesOrder.isLoading} type="simple">
+              <Tag color={getStatusColor(singleSalesOrder?.status)}>
+                {singleSalesOrder?.status}
+              </Tag>
+            </SkeletonLoader>
+          )}
         </div>
 
+<<<<<<< HEAD
+        {isCustomerOrder && (
+          <div className="flex items-center justify-end gap-3">
+            <Select
+              placeholder="Select order status"
+              options={orderStatusOptions}
+              onChange={handleUpdateSalesOrder}
+              value={option}
+            />
+=======
         <div className="flex items-center justify-end gap-3">
           <Select
             placeholder="Select order status"
@@ -70,16 +92,18 @@ const SalesViewPage = () => {
             onChange={handleUpdateSalesOrder}
             value={option}
           />
+>>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
 
-          <Dropdown menu={{ items }} placement="bottomLeft">
-            <Button type="primary" className="space-x-1 rounded">
-              <span>Quick Action</span>{' '}
-              <span>
-                <DownOutlined />
-              </span>
-            </Button>
-          </Dropdown>
-        </div>
+            <Dropdown menu={{ items }} placement="bottomLeft">
+              <Button type="primary" className="space-x-1 rounded">
+                <span>Quick Action</span>{' '}
+                <span>
+                  <DownOutlined />
+                </span>
+              </Button>
+            </Dropdown>
+          </div>
+        )}
       </div>
       <OrderView
         orderId={singleSalesOrder?.order_number}
