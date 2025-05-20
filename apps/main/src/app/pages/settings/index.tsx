@@ -13,6 +13,7 @@ import {
 } from '../../../hooks/useApis';
 import { StaffProfile } from './types';
 import ChangePasswordModal from '../auth/ChangePasswordModal';
+import { DocumentPreviewModal } from '../../components/profile/DocumentPreviewUrl';
 
 const SettingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -82,7 +83,6 @@ const SettingPage: React.FC = () => {
       ),
     },
   ];
-
 
   return (
     <div className="min-h-screen bg-gray-100">
