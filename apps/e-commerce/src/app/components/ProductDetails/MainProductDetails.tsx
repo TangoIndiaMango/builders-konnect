@@ -1,16 +1,16 @@
 import { FC, useState } from 'react';
 import { Rate, Spin, Button, Select, Form, Input, Upload, message } from 'antd';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useProductDetails } from '../../../hooks/useProductDetails';
 import { woodlikeone } from '../../lib/assets/images';
 import { ShopOutlined, UploadOutlined } from '@ant-design/icons';
-import { useCreateData } from '../../../hooks/useApis';
+import { useCreateData, useAddToCart } from '../../../hooks/useApis';
 import type { UploadFile } from 'antd/es/upload/interface';
 
 const MainProductDetails: FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [selectedQuantity, setSelectedQuantity] = useState('1');
+  // const navigate = useNavigate(); // Removing unused variable
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [selectedSurface, setSelectedSurface] = useState('Wall');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -18,6 +18,23 @@ const MainProductDetails: FC = () => {
   const { data: productData, isLoading } = useProductDetails(decodedId);
   const [form] = Form.useForm();
   const createReview = useCreateData('customers/reviews');
+  const addToCart = useAddToCart();
+
+  const handleAddToCart = async () => {
+    try {
+      await addToCart.mutateAsync({
+        line_items: [
+          {
+            product_id: decodedId,
+            quantity: parseInt(selectedQuantity)
+          }
+        ]
+      });
+      message.success('Product added to cart successfully');
+    } catch {
+      message.error('Failed to add product to cart');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -196,13 +213,28 @@ const MainProductDetails: FC = () => {
               </div>
             )}
 
-            {/* <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-2">Category</h2>
-            <p className="text-gray-600">{product.category}</p>
-          </div> */}
-
-            <div className="mt-5">
-              <Button type="primary" size="large" className="w-full mb-6">
+            <div className="mt-5 space-y-4">
+              <div className="flex items-center gap-4">
+                <label className="text-sm font-medium text-gray-700">Quantity:</label>
+                <Select
+                  value={selectedQuantity}
+                  onChange={(value) => setSelectedQuantity(value)}
+                  className="w-24"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                    <Select.Option key={num} value={num}>
+                      {num}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+              <Button 
+                type="primary" 
+                size="large" 
+                className="w-full" 
+                onClick={handleAddToCart}
+                loading={addToCart.isLoading}
+              >
                 Add To Cart
               </Button>
             </div>

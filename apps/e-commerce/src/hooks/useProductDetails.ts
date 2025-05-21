@@ -1,16 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '../utils/axios-instance';
 
-interface ProductDetails {
+export interface Review {
+  id: string;
+  user_name: string;
+  rating: number;
+  comment: string;
+  date: string;
+  images?: string[];
+}
+
+export interface ProductDetails {
   id: string;
   name: string;
   category: string;
   code: string;
   retail_price: string;
-<<<<<<< HEAD
-=======
-  available_quantity: number;
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
   discount_information: {
     id: number;
     type: string;
@@ -23,13 +28,13 @@ interface ProductDetails {
   seller: {
     name: string | null;
     location_id: string;
-<<<<<<< HEAD
-=======
-    merchant_code: string
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
+    merchant_code: string;
   };
+  available_quantity: number;
+  similar_products?: ProductDetails[];
+  reviews?: Review[];
   description: string | null;
-  metadata: any;
+  metadata: Record<string, string | number | boolean | string[]>;
   media: string[];
   ratings_breakdown: {
     five: number;

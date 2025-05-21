@@ -1,25 +1,53 @@
-import { useState } from 'react';
-import { Button, Select, Typography, Divider, Image } from 'antd';
-import { products } from '../lib/Constants';
+
+import { Button, Select, Typography, Divider, Image, Spin, message } from 'antd';
 import Hero from '../components/ProductDetails/Hero';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
+import { useGetCart } from '../../hooks/useApis';
+import { axiosInstance, baseUrl } from '../../utils/axios-instance';
 
 
 const { Option } = Select;
 const { Text } = Typography;
 
 const CartPage = () => {
-  const [quantities, setQuantities] = useState([1, 1]);
+  const { data: cartData, isLoading, error, refetch } = useGetCart();
 
-  const handleQuantityChange = (index: number, value: number) => {
-    const newQuantities = [...quantities];
-    newQuantities[index] = value;
-    setQuantities(newQuantities);
+  const handleDeleteItem = async (itemId: string) => {
+    try {
+      await axiosInstance.delete(`${baseUrl}customers/carts/${itemId}`);
+      message.success('Item removed from cart');
+      refetch();
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
+      message.error(err?.response?.data?.message || 'Failed to remove item from cart');
+    }
   };
 
-  const subtotal = products.reduce(
-    (sum, product, i) => sum + product.price * quantities[i],
+  const handleQuantityChange = async (_productId: string, _value: number) => {
+    // TODO: Implement update quantity functionality
+    message.info('Quantity update coming soon');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-red-500">Failed to load cart</p>
+      </div>
+    );
+  }
+
+  const cartItems = cartData?.data || [];
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + parseFloat(item.total_price),
     0
   );
 
@@ -27,9 +55,9 @@ const CartPage = () => {
     <div>
       <Hero title="Your Cart" />
       <div className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="text-right text-base text-[#003399] underline cursor-pointer mb-8">
+        <Link to="/" className="block text-right text-base text-[#003399] underline cursor-pointer mb-8">
           CONTINUE SHOPPING
-        </div>
+        </Link>
 
         <div className="hidden md:grid grid-cols-3 text-base text-[#000000] font-medium mb-10">
           <span>PRODUCT</span>
@@ -37,22 +65,22 @@ const CartPage = () => {
           <span className="text-right">TOTAL</span>
         </div>
 
-        {products.map((product, i) => (
+        {cartItems.map((item) => (
           <div
-            key={product.id}
+            key={item.id}
             className="grid grid-cols-1 md:grid-cols-3 items-center border-b py-6 gap-6"
           >
             <div className="flex gap-4">
               <Image
-                src={product.image}
-                alt={product.name}
+                src={item.metadata?.primary_media_url || '/placeholder.png'}
+                alt={item.product_name}
                 width={120}
                 preview={false}
               />
               <div>
-                <Text strong>{product.name}</Text>
+                <Text strong>{item.product_name}</Text>
                 <br />
-                <Text type="secondary">₦ {product.price.toLocaleString()}</Text>
+                <Text type="secondary">₦ {parseFloat(item.price).toLocaleString()}</Text>
               </div>
             </div>
 
@@ -62,8 +90,8 @@ const CartPage = () => {
               </p>
               <div className="flex gap-4 items-center">
                 <Select
-                  value={quantities[i]}
-                  onChange={(value) => handleQuantityChange(i, value)}
+                  value={item.quantity}
+                  onChange={(value) => handleQuantityChange(item.id, value)}
                   style={{ width: 80 }}
                 >
                   {[...Array(10)].map((_, idx) => (
@@ -72,12 +100,15 @@ const CartPage = () => {
                     </Option>
                   ))}
                 </Select>
-                <RiDeleteBinLine className="text-2xl text-[#00000073] cursor-pointer" />
+                <RiDeleteBinLine 
+                  className="text-2xl text-[#00000073] cursor-pointer" 
+                  onClick={() => handleDeleteItem(item.id)}
+                />
               </div>
             </div>
 
             <div className="text-right text-[#4E4E4E] text-base md:text-xl font-medium">
-              ₦ {(product.price * quantities[i]).toLocaleString()}
+              ₦ {parseFloat(item.total_price).toLocaleString()}
             </div>
           </div>
         ))}

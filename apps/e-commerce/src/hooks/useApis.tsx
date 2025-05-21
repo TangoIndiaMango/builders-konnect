@@ -185,39 +185,25 @@ interface ProductsResponse {
 }
 
 export const useGetInventoryAttributes = (categoryId?: string) => {
-<<<<<<< HEAD
   console.log('useGetInventoryAttributes called with categoryId:', categoryId);
-=======
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
   return useQuery({
     queryKey: ['inventoryAttributes', categoryId],
     queryFn: async () => {
       if (!categoryId) {
-<<<<<<< HEAD
         console.log('No categoryId provided');
         return null;
       }
       console.log('Making API call with categoryId:', categoryId);
-=======
-        return [];
-      }
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
       const response = await axiosInstance.get(`shared/inventory-attributes`, {
         params: {
           paginate: 0,
           category_id: categoryId
         }
       });
-<<<<<<< HEAD
       return response.data.data;
     },
     enabled: !!categoryId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-=======
-      return response.data.data || [];
-    },
-    staleTime: 1000 * 60 * 5,
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
     refetchOnWindowFocus: false
   });
 };
@@ -229,17 +215,6 @@ interface GetProductsParams {
   minPrice?: number;
   maxPrice?: number;
   page?: number;
-<<<<<<< HEAD
-  [key: string]: string | number | undefined;
-}
-
-export const useGetProducts = (params: GetProductsParams = {}) => {
-
-  return useQuery({
-    queryKey: ['products', params],
-    queryFn: async () => {
-      const apiParams: Record<string, any> = {
-=======
   [key: string]: string | number | boolean | string[] | undefined;
 }
 
@@ -266,7 +241,6 @@ export const useGetMerchant = (id: string, params: GetProductsParams = {}) => {
     queryFn: async () => {
       if (!id) return null;
       const apiParams: Record<string, string | number | boolean | string[] | undefined> = {
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
         q: params.q,
         limit: params.limit,
         sort_by: params.sort_by,
@@ -287,16 +261,6 @@ export const useGetMerchant = (id: string, params: GetProductsParams = {}) => {
 
       // Add any dynamic metadata filters
       Object.entries(params).forEach(([key, value]) => {
-<<<<<<< HEAD
-        if (key.startsWith('filters[metadata]')) {
-          apiParams[key] = value;
-        }
-      });
-      
-      // Remove undefined parameters
-      Object.keys(apiParams).forEach(key => apiParams[key] === undefined && delete apiParams[key]);
-      
-=======
         if (key.startsWith('filters[metadata]') && (
           typeof value === 'string' ||
           typeof value === 'number' ||
@@ -320,13 +284,68 @@ export const useGetMerchant = (id: string, params: GetProductsParams = {}) => {
   });
 };
 
+interface CartItem {
+  id: string;
+  product_name: string;
+  metadata: Record<string, any> | null;
+  price: string;
+  quantity: number;
+  total_price: string;
+}
+
+interface CartResponse {
+  error: boolean;
+  message: string;
+  data: CartItem[];
+}
+
+interface AddToCartResponse {
+  error: boolean;
+  message: string;
+  data: {
+    id: string;
+    product_name: string;
+    merchant: string;
+    price: string;
+    quantity: number;
+    total_price: number;
+  }[];
+}
+
+interface AddToCartParams {
+  line_items: Array<{
+    product_id: string;
+    quantity: number;
+  }>;
+}
+
+export const useAddToCart = () => {
+  return useMutation<AddToCartResponse, Error, AddToCartParams>({
+    mutationFn: async (params) => {
+      const response = await axiosInstance.post('customers/carts', params);
+      return response.data;
+    }
+  });
+};
+
+export const useGetCart = (paginate = 0) => {
+  return useQuery<CartResponse>({
+    queryKey: ['cart', paginate],
+    queryFn: async () => {
+      const response = await axiosInstance.get(`customers/carts?paginate=${paginate}`);
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    refetchOnWindowFocus: true
+  });
+};
 
 export const useGetProducts = (params: GetProductsParams = {}) => {
 
   return useQuery({
     queryKey: ['products', params],
     queryFn: async () => {
-      const apiParams: Record<string, string | number | boolean | string[] | undefined> = {
+      const apiParams: Record<string, any> = {
         q: params.q,
         limit: params.limit,
         sort_by: params.sort_by,
@@ -347,21 +366,14 @@ export const useGetProducts = (params: GetProductsParams = {}) => {
 
       // Add any dynamic metadata filters
       Object.entries(params).forEach(([key, value]) => {
-        if (key.startsWith('filters[metadata]') && (
-          typeof value === 'string' ||
-          typeof value === 'number' ||
-          typeof value === 'boolean' ||
-          Array.isArray(value) ||
-          value === undefined
-        )) {
+        if (key.startsWith('filters[metadata]')) {
           apiParams[key] = value;
         }
       });
-
+      
       // Remove undefined parameters
       Object.keys(apiParams).forEach(key => apiParams[key] === undefined && delete apiParams[key]);
-
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
+      
       const response = await axiosInstance.get('/customers/products', { params: apiParams });
       return response.data as ProductsResponse;
     },
