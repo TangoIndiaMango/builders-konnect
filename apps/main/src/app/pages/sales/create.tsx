@@ -408,6 +408,12 @@ const CreateSales = () => {
                 value={`${formatBalance(orderSummary?.subtotal as number)}`}
               />
               <LabelValue
+                label="Discount"
+                value={`${formatBalance(
+                  orderSummary?.fees?.discount as number
+                )}`}
+              />
+              <LabelValue
                 label="Tax (7.5% VAT)"
                 value={`${formatBalance(orderSummary?.fees.tax as number)}`}
               />
