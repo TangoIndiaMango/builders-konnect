@@ -56,11 +56,13 @@ export const useProductDetails = (productId: string) => {
     queryKey: ['product', productId],
     queryFn: async () => {
       if (!productId) return null;
-      const response = await axiosInstance.get(`/customers/products/${productId}`);
+      const response = await axiosInstance.get(
+        `/customers/products/${productId}`
+      );
       return response.data as ProductDetailsResponse;
     },
     enabled: !!productId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 };
