@@ -6,6 +6,7 @@ import {
   SubscriptionPlan,
   BillingInterval,
 } from '../../pages/onboarding/types';
+import { useState } from 'react';
 
 const icons = {
   0: (
@@ -35,7 +36,7 @@ interface SubscriptionPlanCardProps {
   plan: SubscriptionPlan;
   index?: number;
   billingInterval: BillingInterval;
-  onSelect: (plan: SubscriptionPlan) => void;
+  onSelect: (plan: SubscriptionPlan, isFreeTrial: boolean) => void;
 }
 
 export default function SubscriptionPlanCard({
@@ -48,6 +49,7 @@ export default function SubscriptionPlanCard({
     (item) => item.interval === billingInterval
   );
   const hasFreeTrial = Number(selectedPrice?.free_days) > 0;
+
 
   return (
     <div className="relative w-full max-w-xs min-h-[420px]">
@@ -81,7 +83,7 @@ export default function SubscriptionPlanCard({
             <Button
               type="default"
               className="mb-2 font-semibold w-full"
-              onClick={() => onSelect(plan)}
+              onClick={() => onSelect(plan, true)}
             >
               Start {selectedPrice?.free_days} Days Trial
             </Button>
@@ -91,17 +93,17 @@ export default function SubscriptionPlanCard({
           <Button
             type="primary"
             className="mb-4 font-semibold w-full"
-            onClick={() => onSelect(plan)}
+            onClick={() => onSelect(plan, false)}
           >
             Get Started
           </Button>
         </div>
         <div className="px-4">
           <ul className="w-full pl-0 list-none m-0 grid grid-cols-2 gap-2">
-            {plan.features.map((feature) => (
-              <li key={feature.id} className="flex items-center text-base">
+            {plan?.features?.map((feature) => (
+              <li key={feature?.id} className="flex items-center text-base">
                 <SubscribCheckIcon className="text-[#003399] mr-2" />{' '}
-                {feature.name}
+                {feature?.name}
               </li>
             ))}
           </ul>

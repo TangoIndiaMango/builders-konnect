@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { SubscriptionPlan, BillingInterval } from './types';
 import { Radio, Segmented, Skeleton } from 'antd';
 import { useState } from 'react';
+import { useSubscription } from '../../store/subscription';
 
 const plans = [
   {
@@ -41,13 +42,23 @@ export default function SubscriptionPlans() {
   const plansApi = useFetchData('shared/subscription-plans');
   const [billingInterval, setBillingInterval] =
     useState<BillingInterval>('monthly');
-
+  const { setPlanDetails } = useSubscription();
   const plansData = plansApi?.data?.data as SubscriptionPlan[];
+  console.log(billingInterval, 'billingInterval');
 
-  const handleSelectPlan = (plan: SubscriptionPlan) => {
-    console.log(plan);
-    console.log(billingInterval);
-    navigate('/subscribe/checkout', { state: { plan, billingInterval } });
+  const handleSelectPlan = (plan: SubscriptionPlan, isFreeTrial: boolean) => {
+    const selectedPriceItem = plan?.price_items?.find(
+      (item) => item.interval === billingInterval
+    );
+    console.log(selectedPriceItem, 'selectedPriceItem');
+    setPlanDetails(
+      selectedPriceItem as SubscriptionPlan['price_items'][0],
+      plan.name,
+      billingInterval,
+      isFreeTrial
+    );
+
+    navigate('/subscribe/checkout');
   };
 
   return (
@@ -92,12 +103,13 @@ export default function SubscriptionPlans() {
         {plansApi?.isFetching ? (
           [1, 2, 3].map((item) => (
             <div className="w-full px-5" key={item}>
-            <div
-              key={item}
-              className="w-full h-[420px] bg-white rounded-lg px-5"
-            >
-              <Skeleton.Node active className="w-full h-full" />
-            </div></div>
+              <div
+                key={item}
+                className="w-full h-[420px] bg-white rounded-lg px-5"
+              >
+                <Skeleton.Node active className="w-full h-full" />
+              </div>
+            </div>
           ))
         ) : (
           <>
@@ -107,7 +119,9 @@ export default function SubscriptionPlans() {
                 index={index}
                 plan={plan}
                 billingInterval={billingInterval}
-                onSelect={handleSelectPlan}
+                onSelect={(plan, isFreeTrial) =>
+                  handleSelectPlan(plan, isFreeTrial)
+                }
               />
             ))}
           </>

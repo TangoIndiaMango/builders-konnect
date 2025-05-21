@@ -13,6 +13,8 @@ import CardWithFilter from '../common/CardWithFilter';
 import StatsCard from '../common/StatsCard';
 import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
 import { formatBalance } from '../../../utils/helper';
+import YearPicker from '../date/YearPicker';
+import { Dayjs } from 'dayjs';
 
 interface Stats {
   total_products: string;
@@ -29,6 +31,8 @@ interface StatsProps {
   setSelectedStore: (value: string) => void;
   selectedStore: string;
   isLoading: boolean;
+  year: Dayjs | null;
+  setYear: (value: Dayjs | null) => void;
 }
 
 const Stats = ({
@@ -39,6 +43,8 @@ const Stats = ({
   setSelectedStore,
   selectedStore,
   isLoading,
+  year,
+  setYear,
 }: StatsProps) => {
   const statsListData = useMemo(
     () => [
@@ -100,7 +106,7 @@ const Stats = ({
             }}
           />
 
-          <DatePickerComp onRangeChange={onRangeChange} />
+          <YearPicker onChange={setYear} value={year} />
         </div>
       }
     >

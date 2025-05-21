@@ -83,11 +83,10 @@ const RegisterVendor = () => {
     if (!fetchPaidUser?.isLoading && !fetchPaidUser?.isFetching) {
       if (fethedUserData) {
         form.setFieldsValue({
-          email: fethedUserData?.metadata?.user_information?.email,
-          phoneNumber: fethedUserData?.metadata?.user_information?.phone,
-          businessName:
-            fethedUserData?.metadata?.user_information?.business_name,
-          contactName: fethedUserData?.metadata?.user_information?.user_name,
+          email: fethedUserData?.metadata?.email,
+          phoneNumber: fethedUserData?.metadata?.phone,
+          businessName: fethedUserData?.metadata?.company,
+          contactName: fethedUserData?.metadata?.name,
         });
       } else {
         setError(true);
