@@ -330,6 +330,7 @@ const RegisterVendor = () => {
                   className="w-[114px]"
                   disabled={
                     currentStep === 0 &&
+                    Array.isArray(watchForm) &&
                     !watchForm[0] &&
                     !watchForm[1]
                   }
