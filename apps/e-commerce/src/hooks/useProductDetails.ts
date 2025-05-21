@@ -7,10 +7,7 @@ interface ProductDetails {
   category: string;
   code: string;
   retail_price: string;
-<<<<<<< HEAD
-=======
   available_quantity: number;
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
   discount_information: {
     id: number;
     type: string;
@@ -23,10 +20,7 @@ interface ProductDetails {
   seller: {
     name: string | null;
     location_id: string;
-<<<<<<< HEAD
-=======
-    merchant_code: string
->>>>>>> 168ed989ae2678824dc54376e891ca61a09e18a2
+    merchant_code: string;
   };
   description: string | null;
   metadata: any;
@@ -51,11 +45,13 @@ export const useProductDetails = (productId: string) => {
     queryKey: ['product', productId],
     queryFn: async () => {
       if (!productId) return null;
-      const response = await axiosInstance.get(`/customers/products/${productId}`);
+      const response = await axiosInstance.get(
+        `/customers/products/${productId}`
+      );
       return response.data as ProductDetailsResponse;
     },
     enabled: !!productId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 };
