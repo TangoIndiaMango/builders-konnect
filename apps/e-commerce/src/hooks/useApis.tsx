@@ -4,8 +4,10 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 // Create Data
 export const useCreateData = (url: string) => {
   const mutation = useMutation({
-    mutationFn: async (arg: Record<string, unknown>) => {
-      const response = await axiosInstance.post(baseUrl + url, arg);
+    mutationFn: async (arg: any) => {
+      const { data, config } =
+        arg && arg.data !== undefined ? arg : { data: arg, config: {} };
+      const response = await axiosInstance.post(baseUrl + url, data, config);
       return response.data;
     },
   });
@@ -105,7 +107,7 @@ export const useGetData = (url: string) => {
 };
 
 // Fetch Data (GET with Query)
-export const useFetchData = (url: string) => {
+export const useFetchData = (url: string, enabled = true) => {
   const query = useQuery({
     queryKey: ['fetchData', url],
     queryFn: async () => {
@@ -113,14 +115,32 @@ export const useFetchData = (url: string) => {
       const response = await axiosInstance.get(baseUrl + url);
       return response.data;
     },
-    enabled: !!url,
+    enabled: !!url && enabled,
   });
 
   return { ...query, isLoading: query.isFetching || query.isLoading };
 };
 
+export const useFetchDataSeperateLoading = (url: string, enabled = true) => {
+  const query = useQuery({
+    queryKey: ['fetchData', url],
+    queryFn: async () => {
+      if (!url) return null;
+      const response = await axiosInstance.get(baseUrl + url);
+      return response.data;
+    },
+    enabled: !!url && enabled,
+  });
+
+  // Expose both isLoading (first load) and isFetching (background refetch)
+  return { ...query, isLoading: query.isLoading, isFetching: query.isFetching };
+};
+
 // Fetch Post Data (POST with Query)
-export const useFetchPostData = (url: string, options: Record<string, unknown>) => {
+export const useFetchPostData = (
+  url: string,
+  options: Record<string, unknown>
+) => {
   const query = useQuery({
     queryKey: [url, options],
     queryFn: async () => {
@@ -134,7 +154,10 @@ export const useFetchPostData = (url: string, options: Record<string, unknown>) 
 
 // Get all categories
 
-export const useGetCategorizations = (level: 'category' | 'subcategory' | 'type', parentId?: string) => {
+export const useGetCategorizations = (
+  level: 'category' | 'subcategory' | 'type',
+  parentId?: string
+) => {
   return useQuery({
     queryKey: ['categorizations', level, parentId],
     queryFn: async () => {
@@ -142,15 +165,17 @@ export const useGetCategorizations = (level: 'category' | 'subcategory' | 'type'
         paginate: 0,
         table: 'inventory_products',
         level,
-        ...(parentId && { parent_id: parentId })
-      }
-      const response = await axiosInstance.get('shared/categorizations', { params })
-      return response.data.data
+        ...(parentId && { parent_id: parentId }),
+      };
+      const response = await axiosInstance.get('shared/categorizations', {
+        params,
+      });
+      return response.data.data;
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: false
-  })
-}
+    refetchOnWindowFocus: false,
+  });
+};
 
 type Product = {
   id: string;
@@ -197,8 +222,8 @@ export const useGetInventoryAttributes = (categoryId?: string) => {
       const response = await axiosInstance.get(`shared/inventory-attributes`, {
         params: {
           paginate: 0,
-          category_id: categoryId
-        }
+          category_id: categoryId,
+        },
       });
       return response.data.data;
     },
@@ -240,7 +265,10 @@ export const useGetMerchant = (id: string, params: GetProductsParams = {}) => {
     queryKey: ['merchant', id, params],
     queryFn: async () => {
       if (!id) return null;
-      const apiParams: Record<string, string | number | boolean | string[] | undefined> = {
+      const apiParams: Record<
+        string,
+        string | number | boolean | string[] | undefined
+      > = {
         q: params.q,
         limit: params.limit,
         sort_by: params.sort_by,
@@ -248,7 +276,7 @@ export const useGetMerchant = (id: string, params: GetProductsParams = {}) => {
         'filters[categorization][subcategory_id]': params.subcategoryId,
         'filters[categorization][sub_subcategory_id]': params.subSubcategoryId,
         'filters[categorization][product_type_id]': params.productTypeId,
-        collection: params.collection
+        collection: params.collection,
       };
 
       // Only add price filters if they are explicitly set
@@ -261,26 +289,31 @@ export const useGetMerchant = (id: string, params: GetProductsParams = {}) => {
 
       // Add any dynamic metadata filters
       Object.entries(params).forEach(([key, value]) => {
-        if (key.startsWith('filters[metadata]') && (
-          typeof value === 'string' ||
-          typeof value === 'number' ||
-          typeof value === 'boolean' ||
-          Array.isArray(value) ||
-          value === undefined
-        )) {
+        if (
+          key.startsWith('filters[metadata]') &&
+          (typeof value === 'string' ||
+            typeof value === 'number' ||
+            typeof value === 'boolean' ||
+            Array.isArray(value) ||
+            value === undefined)
+        ) {
           apiParams[key] = value;
         }
       });
 
       // Remove undefined parameters
-      Object.keys(apiParams).forEach(key => apiParams[key] === undefined && delete apiParams[key]);
+      Object.keys(apiParams).forEach(
+        (key) => apiParams[key] === undefined && delete apiParams[key]
+      );
 
-      const response = await axiosInstance.get(`/customers/merchants/${id}`, { params: apiParams });
+      const response = await axiosInstance.get(`/customers/merchants/${id}`, {
+        params: apiParams,
+      });
       return response.data;
     },
     enabled: !!id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -341,7 +374,6 @@ export const useGetCart = (paginate = 0) => {
 };
 
 export const useGetProducts = (params: GetProductsParams = {}) => {
-
   return useQuery({
     queryKey: ['products', params],
     queryFn: async () => {
@@ -353,7 +385,7 @@ export const useGetProducts = (params: GetProductsParams = {}) => {
         'filters[categorization][subcategory_id]': params.subcategoryId,
         'filters[categorization][sub_subcategory_id]': params.subSubcategoryId,
         'filters[categorization][product_type_id]': params.productTypeId,
-        collection: params.collection
+        collection: params.collection,
       };
 
       // Only add price filters if they are explicitly set
@@ -378,6 +410,6 @@ export const useGetProducts = (params: GetProductsParams = {}) => {
       return response.data as ProductsResponse;
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   });
-}
+};
