@@ -1,16 +1,24 @@
-
-import { Button, Select, Typography, Divider, Image, Spin, message } from 'antd';
+import {
+  Button,
+  Select,
+  Typography,
+  Divider,
+  Image,
+  Spin,
+  message,
+  InputNumber,
+} from 'antd';
 import Hero from '../components/ProductDetails/Hero';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../store/cartStore';
-import { useEffect } from 'react';
-
+import { useEffect, useState } from 'react';
 
 const { Option } = Select;
 const { Text } = Typography;
 
 const CartPage = () => {
+  const [quantity, setQuantity] = useState(1);
   const { cart, isLoading, error, fetchCart, removeFromCart } = useCart();
 
   useEffect(() => {
@@ -23,13 +31,23 @@ const CartPage = () => {
       message.success('Item removed from cart');
     } catch (error) {
       const err = error as { response?: { data?: { message?: string } } };
-      message.error(err?.response?.data?.message || 'Failed to remove item from cart');
+      message.error(
+        err?.response?.data?.message || 'Failed to remove item from cart'
+      );
     }
   };
 
-  const handleQuantityChange = (itemId: string, value: number) => {
+  const handleQuantityChange = async (itemId: string, value: number) => {
     // TODO: Implement quantity change
+
     console.log('Quantity changed:', value, 'for item:', itemId);
+    try {
+      // await updateCartItem(itemId, { quantity: value });
+      setQuantity(value);
+      // message.success('Quantity updated');
+    } catch (error) {
+      message.error('Failed to update quantity');
+    }
   };
 
   if (isLoading) {
@@ -58,7 +76,10 @@ const CartPage = () => {
     <div>
       <Hero title="Your Cart" />
       <div className="py-16 px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="block text-right text-base text-[#003399] underline cursor-pointer mb-8">
+        <Link
+          to="/"
+          className="block text-right text-base text-[#003399] underline cursor-pointer mb-8"
+        >
           CONTINUE SHOPPING
         </Link>
 
@@ -73,45 +94,53 @@ const CartPage = () => {
             key={item.id}
             className="grid grid-cols-1 md:grid-cols-3 items-center border-b py-6 gap-6"
           >
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
               <Image
-                src={(item.metadata as Record<string, string>)?.primary_media_url || '/placeholder.png'}
-                alt={item.product_name}
+                src={
+                  item?.metadata?.primary_media_url ??
+                  `https://placehold.co/60x60/E6F7FF/black?fontSize=10&text=${item?.product_name
+                    ?.charAt(0)
+                    ?.toUpperCase()}`
+                }
+                alt={item?.product_name}
                 width={120}
+                height={120}
                 preview={false}
               />
               <div>
-                <Text strong>{item.product_name}</Text>
-                <br />
-                <Text type="secondary">₦ {parseFloat(item.price).toLocaleString()}</Text>
+                <p className="text-base font-medium capitalize max-w-[130px] line-clamp-1 hover:line-clamp-3">
+                  {item?.product_name}
+                </p>
+                <p className="text-sm text-[#4E4E4E]">
+                  ₦ {parseFloat(item?.price).toLocaleString()}
+                </p>
               </div>
             </div>
 
-            <div className="flex flex-col md:items-center gap-2">
-              <p className="text-sm text-[#000000D9] md:text-left">
-                Quantity :
-              </p>
-              <div className="flex gap-4 items-center">
-                <Select
+            <div className="flex gap-4 items-center justify-center">
+              <div className=''>
+                <h1 className="text-sm text-[#4E4E4E]">Quantity:</h1>
+                <InputNumber
+                  min={1}
+                  max={1000}
                   value={item.quantity}
-                  onChange={(value) => handleQuantityChange(item.id, value)}
+                  onChange={(value) =>
+                    handleQuantityChange(item?.id, value ?? 1)
+                  }
                   style={{ width: 80 }}
-                >
-                  {[...Array(10)].map((_, idx) => (
-                    <Option key={idx + 1} value={idx + 1}>
-                      {idx + 1}
-                    </Option>
-                  ))}
-                </Select>
-                <RiDeleteBinLine 
-                  className="text-2xl text-[#00000073] cursor-pointer" 
-                  onClick={() => handleDeleteItem(item.id)}
+                  controls={true}
+                  size="middle"
                 />
               </div>
+
+              <RiDeleteBinLine
+                className="text-2xl text-[#00000073] cursor-pointer"
+                onClick={() => handleDeleteItem(item?.id)}
+              />
             </div>
 
-            <div className="text-right text-[#4E4E4E] text-base md:text-xl font-medium">
-              ₦ {parseFloat(item.total_price).toLocaleString()}
+            <div className="text-right text-[#4E4E4E] font-medium">
+              ₦ {parseFloat(item?.total_price).toLocaleString()}
             </div>
           </div>
         ))}
@@ -120,7 +149,7 @@ const CartPage = () => {
           <div className="w-full max-w-md text-right">
             <div className="flex justify-between items-center mb-2">
               <Text className="text-[#4E4E4E] text-base">Subtotal</Text>
-              <Text className="text-base text-[#4E4E4E] md:text-xl">
+              <Text className="">
                 ₦ {subtotal.toLocaleString()}
               </Text>
             </div>
@@ -130,15 +159,15 @@ const CartPage = () => {
             >
               Taxes and Shipping will be calculated at checkout
             </Text>
-            <Link to="/checkout">       
-            <Button
-              type="primary"
-              size="large"
-              block
-              style={{ backgroundColor: '#003399' }}
-            >
-              Check Out
-            </Button>
+            <Link to="/checkout">
+              <Button
+                type="primary"
+                size="large"
+                block
+                style={{ backgroundColor: '#003399' }}
+              >
+                Check Out
+              </Button>
             </Link>
           </div>
         </div>

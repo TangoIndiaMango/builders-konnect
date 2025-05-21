@@ -4,17 +4,9 @@ import {
   ShopOutlined,
   TruckOutlined,
 } from '@ant-design/icons';
-import {
-  App,
-  Button,
-  Checkbox,
-  Divider,
-  Form,
-  Input,
-  message
-} from 'antd';
+import { App, Button, Checkbox, Divider, Form, Input, message } from 'antd';
 import { useAtom } from 'jotai';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   useCreateData,
@@ -29,6 +21,8 @@ import { marble } from '../../lib/assets/images';
 import CheckoutBreadcrumb from '../BreadCrumb';
 import AddressComp from './AddressComp';
 import { AddressI } from './types';
+import { useCart } from '../../../store/cartStore';
+import CartitemCard from './CartitemCard';
 
 interface CreateAddressPayload {
   name: string;
@@ -72,17 +66,42 @@ function Index() {
   const user = getAuthUser();
   const { notification } = App.useApp();
   const [cart, setCart] = useAtom(persistedCartAtom);
+  const {
+    cart: cartItemsStore,
+    isLoading,
+    error,
+    fetchCart,
+    removeFromCart,
+  } = useCart();
+  console.log(cartItemsStore);
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
+  const handleDeleteItem = async (itemId: string) => {
+    try {
+      await removeFromCart(itemId);
+      message.success('Item removed from cart');
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
+      message.error(
+        err?.response?.data?.message || 'Failed to remove item from cart'
+      );
+    }
+  };
   const createAddress = useCreateData('customers/addresses');
 
   const existingShippingAddress = useFetchDataSeperateLoading(
     `customers/addresses?type=shipping`,
     !!user
   );
-
   const existingBillingAddress = useFetchDataSeperateLoading(
     `customers/addresses?type=billing`,
     !!user
+  );
+
+  const purchaseAmountBreakdown = useCreateData(
+    'customers/sales-orders/amount-breakdown'
   );
 
   const initalShippingAddress = existingShippingAddress?.data
@@ -242,6 +261,37 @@ function Index() {
     }
   };
 
+  const handlePurchaseAmountBreakdown = () => {
+    const formData = new FormData();
+    cartItemsStore.forEach((item) => {
+      formData.append('line_items[]', item?.id);
+    });
+    formData.append('discounts[]', discountCode);
+
+    purchaseAmountBreakdown.mutate(
+      {
+        formData,
+        config: {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      },
+      {
+        onSuccess: (data) => {
+          console.log(data);
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    handlePurchaseAmountBreakdown();
+  }, []);
+
   return (
     <div className="min-h-screen w-full">
       <div className="flex bg-[#F9F9F9]  flex-col lg:flex-row min-h-screen space-y-5">
@@ -387,25 +437,8 @@ function Index() {
         {/* Cart Items */}
         <div className="w-full xl:w-1/3 bg-[#F9F9F9] px-6 xl:px-8 py-24">
           <div className="space-y-4">
-            {cartItems.map((product) => (
-              <div
-                key={product.id}
-                className="flex items-center justify-between py-3 border-b last:border-none border-gray-200"
-              >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={marble}
-                    alt={product.name}
-                    className="w-14 h-14 object-cover border"
-                  />
-                  <div className="text-base">
-                    <p className="text-[#4E4E4E]">{product.name}</p>
-                  </div>
-                </div>
-                <div className="font-medium text-[#4E4E4E]">
-                  ₦ {product.price.toLocaleString()}
-                </div>
-              </div>
+            {cartItemsStore.map((item) => (
+              <CartitemCard key={item.id} product={item} />
             ))}
 
             <div className="flex gap-6">

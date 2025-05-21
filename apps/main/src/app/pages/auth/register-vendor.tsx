@@ -44,6 +44,7 @@ interface CreateTenantPayload {
   callback_url: string;
   create_password_url: string;
   media: MediaItem[];
+  provider_reference: string;
 }
 
 const steps = [
@@ -78,6 +79,10 @@ const RegisterVendor = () => {
     !!reference && !error
   );
   const fethedUserData = fetchPaidUser?.data?.data as ActionPayload;
+
+  // Watch form for bussinessName and contntactName
+  const watchForm = Form.useWatch(['businessName', 'contactName']);
+
 
   useEffect(() => {
     if (!fetchPaidUser?.isLoading && !fetchPaidUser?.isFetching) {
@@ -233,6 +238,7 @@ const RegisterVendor = () => {
         account_name: data?.account_name,
         callback_url: frontendBaseUrl + '/auth/create-password',
         create_password_url: frontendBaseUrl + '/auth/create-password',
+        provider_reference: String(reference),
         media: mediaUrl?.length
           ? mediaUrl.map((url: string, index: number) => ({
               name: ['cac', 'address', 'tin'][index],
@@ -245,7 +251,7 @@ const RegisterVendor = () => {
           : [],
       };
 
-      const res = await createVendorState.mutateAsync({
+      await createVendorState.mutateAsync({
         data: payload,
         config: { tenant_id: false },
       });
@@ -324,8 +330,8 @@ const RegisterVendor = () => {
                   className="w-[114px]"
                   disabled={
                     currentStep === 0 &&
-                    !form.getFieldValue('businessName') &&
-                    !form.getFieldValue('contactName')
+                    !watchForm[0] &&
+                    !watchForm[1]
                   }
                   loading={
                     validateBusinessState.isPending ||

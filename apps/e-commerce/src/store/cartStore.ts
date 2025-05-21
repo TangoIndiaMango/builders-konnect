@@ -3,10 +3,10 @@ import { axiosInstance, baseUrl } from '../utils/axios-instance';
 import { AxiosError } from 'axios';
 import { useCallback } from 'react';
 
-interface CartItem {
+export interface CartItem {
   id: string;
   product_name: string;
-  metadata: Record<string, unknown> | null;
+  metadata: Record<string, unknown> | null | any;
   price: string;
   quantity: number;
   total_price: string;
