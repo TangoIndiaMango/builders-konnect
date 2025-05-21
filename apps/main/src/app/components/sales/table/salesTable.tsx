@@ -79,7 +79,7 @@ export const OrdersTable = ({
       title: 'Amount',
       dataIndex: 'amount',
       render: (_, record: SalesOrderWithKey) => (
-        <span className="font-medium">{formatBalance(record.amount)}</span>
+        <span className="font-medium">{record.amount}</span>
       ),
     },
     {
@@ -110,7 +110,7 @@ export const OrdersTable = ({
               isCustomerOrderLink
                 ? `/pos/sales/view/${record.id}`
                 : `/pos/customers/order/view/${record.id}`,
-            
+
             )
           }
           className="text-gray-600 hover:text-blue-600"
