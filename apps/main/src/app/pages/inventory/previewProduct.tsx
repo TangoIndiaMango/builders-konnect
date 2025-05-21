@@ -64,7 +64,7 @@ const ProductPreview = () => {
 
   const [previewImg, setPreviewImg] = useState(
     mediaList[0] ||
-      `https://placehold.co/500x500/E6F7FF/black?text=${product.name
+      `https://placehold.co/500x500/E6F7FF/black?text=${product?.name
         ?.split(' ')
         .map((word) => word[0]?.toUpperCase())
         .join('')}`
@@ -85,7 +85,7 @@ const ProductPreview = () => {
   };
 
   const handleAddProduct = () => {
-    navigate(`/pos/inventory/product-edit/${product.id}`, {
+    navigate(`/pos/inventory/product-edit/${product?.id}`, {
       state: product,
     });
   };
@@ -149,7 +149,7 @@ const ProductPreview = () => {
                       key={img + idx}
                       src={
                         img ||
-                        `https://placehold.co/150x150/E6F7FF/black?text=${product.name
+                        `https://placehold.co/150x150/E6F7FF/black?text=${product?.name
                           ?.split(' ')
                           .map((word) => word[0]?.toUpperCase())
                           .join('')}`

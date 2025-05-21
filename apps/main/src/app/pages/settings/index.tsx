@@ -33,6 +33,8 @@ const SettingPage: React.FC = () => {
   const profileData = useFetchData('merchants/profile/view');
   const profile = profileData?.data?.data as VendorProfile;
 
+  // console.log(profile,"profile")
+
   const items: TabsProps['items'] = [
     {
       key: 'profile',
@@ -47,7 +49,7 @@ const SettingPage: React.FC = () => {
             refetch={profileData.refetch}
           />
           <ProfileInfoSection
-            data={profile}
+            data={profile?.business}
             isLoading={profileData.isLoading}
           />
           <h1

@@ -1,42 +1,54 @@
-import React, { useState } from 'react';
-import { Select, DatePicker, Button, Form } from 'antd';
-import dayjs from 'dayjs';
+import  { useState } from 'react';
+import { Select, Button, Form, message } from 'antd';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
+import { useGetExportData } from '../../../hooks/useApis';
+import { exportCsvFromString } from '../../../utils/helper';
 
 export default function ReportsPage() {
   const [reportType, setReportType] = useState<string>('');
-  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
+  const [dateFilter, setDateFilter] = useState<string>('');
 
   const handleReportTypeChange = (value: string) => {
     setReportType(value);
   };
-
-  const handleStartDateChange = (date: dayjs.Dayjs | null) => {
-    setStartDate(date);
+  
+  const handleDateFilterChange = (value: string) => {
+    setDateFilter(value);
   };
 
-  const handleEndDateChange = (date: dayjs.Dayjs | null) => {
-    setEndDate(date);
-  };
+  const { isPending, mutate } = useGetExportData(
+    `merchants/reporting?name=${reportType}&date_filter=${dateFilter}&export=csv`
+  );
 
   const handleGenerate = () => {
-    // Add generate logic here
-    // console.log('Generating report:', { reportType, startDate, endDate });
+    mutate(null as any, {
+      onSuccess: (data) => {
+        exportCsvFromString(data?.data, 'Report');
+        message.success('Report generated successfully');
+      },
+      onError: (error) => {
+        message.error(error?.message || 'Failed to generate report');
+      },
+      // onSettled: () => {
+      //   setReportType('');
+      //   setDateFilter('');
+      // }
+    });
   };
+
+ 
 
   return (
     <div className="w-full">
       <PageIntroBanner
         title="Reports"
         description="Generate reports for your business"
-        
       />
       
       <div className="flex flex-col h-full items-center justify-center gap-4 p-24 bg-white mx-4 my-4">
         <div className="flex flex-col items-center gap-2">
-            <h1 className="text-2xl font-bold">Generate Report</h1>
-            <p className="text-sm text-gray-500">Fill the information below to generate a report</p>
+          <h1 className="text-2xl font-bold">Generate Report</h1>
+          <p className="text-sm text-gray-500">Fill the information below to generate a report</p>
         </div>
         <Form
           layout="horizontal"
@@ -45,11 +57,13 @@ export default function ReportsPage() {
           <Form.Item
             label="Report Type"
             name="reportType"
+            rules={[{ required: true, message: 'Please select a report type' }]}
           >
             <Select
               placeholder="Select Report Type"
               onChange={handleReportTypeChange}
               options={[
+                { value: 'sales-orders', label: 'Sales Orders' },
                 { value: 'product', label: 'Products' },
                 { value: 'orders', label: 'Orders' },
                 { value: 'inventory', label: 'Inventory' },
@@ -58,29 +72,28 @@ export default function ReportsPage() {
             />
           </Form.Item>
           <Form.Item
-            label="Start Date"
-            name="startDate"
-            rules={[{ required: true, message: 'Please select a start date!' }]}
+            label="Date Filter"
+            name="dateFilter"
+            rules={[{ required: true, message: 'Please select a date filter' }]}
           >
-            <DatePicker
-              onChange={handleStartDateChange}
-              style={{ width: '100%' }}
-              placeholder="Start Date"
-            />
-          </Form.Item>
-          <Form.Item
-            label="End Date"
-            name="endDate"
-            rules={[{ required: true, message: 'Please select an end date!' }]}
-          >
-            <DatePicker
-              onChange={handleEndDateChange}
-              style={{ width: '100%' }}
-              placeholder="End Date"
+            <Select
+              placeholder="Select Date Filter"
+              onChange={handleDateFilterChange}
+              options={[
+                { value: 'Today', label: 'Today' },
+                { value: '3 days', label: '3 Days' },
+                { value: '7 days', label: '7 Days' },
+                { value: '14 days', label: '14 Days' },
+                { value: 'this month', label: 'This Month' },
+                { value: '3 months', label: '3 Months' },
+                { value: 'this year', label: 'This Year' },
+                { value: '2025', label: '2025' },
+                { value: '2025-03-01|2025-03-31', label: 'March 2025' }
+              ]}
             />
           </Form.Item>
           <div className="ml-[120px] w-full">
-            <Button type="primary" onClick={handleGenerate} style={{ width: 200 }}>
+            <Button type="primary" onClick={handleGenerate} style={{ width: 200 }} loading={isPending}>
               Generate
             </Button>
           </div>

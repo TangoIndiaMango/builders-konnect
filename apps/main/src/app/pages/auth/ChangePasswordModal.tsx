@@ -63,10 +63,10 @@ export default function ChangePasswordModal({
       notification.error({
         message: "Password Change Failed",
         description:
-          error?.response?.data?.message ||
+          error?.message ||
           "Something went wrong. Please try again.",
       });
-      console.error("Password change error:", error);
+      // console.error("Password change error:", error);
     }
   };
 

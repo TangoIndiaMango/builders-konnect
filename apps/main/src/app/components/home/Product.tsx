@@ -167,7 +167,7 @@ const Product = ({
                         name={product.name}
                         SKU={product.SKU}
                         primary_media_url={product.primary_media_url}
-                        onClick={() => navigate(`/pos/inventory/${product.id}`)}
+                        onClick={() => navigate(`/pos/inventory/preview-product/${product.id}`)}
                       />
                     ))}
                   <Button
