@@ -86,7 +86,7 @@ const SalesViewPage = ({
                 </span>
               </Button>
             </Dropdown>
-          </div>
+        </div>
         )}
       </div>
       <OrderView

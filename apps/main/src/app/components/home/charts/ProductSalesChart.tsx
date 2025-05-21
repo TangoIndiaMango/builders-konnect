@@ -55,7 +55,7 @@ const ProductSalesChart = ({ data }: { data: TopCategories[] }) => {
 
   return (
     <div className="p-6 bg-white rounded-xl">
-      <div className="grid grid-cols-1 xl:grid-cols-2">
+      <div className="grid grid-cols-1 2xl:grid-cols-2 overflow-auto">
         <div className="" ref={containerRef}>
           {containerWidth > 0 && (
             <div className="h-[300px]">

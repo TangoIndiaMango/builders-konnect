@@ -16,6 +16,7 @@ import {
   Upload,
   UploadFile,
   message,
+  Tooltip,
 } from 'antd';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -96,13 +97,17 @@ const CreateProductBySearch = () => {
     } else {
       const found = searchResults?.data?.find((p) => p.id.toString() === value);
       if (found) {
-        const images = found?.media
-          ? found.media.map((url: string, idx: number) => ({
-              uid: String(idx),
-              name: `image-${idx + 1}.jpg`,
-              status: 'done',
-              url,
-            }))
+        const images = Array.isArray(found?.media)
+          ? found.media
+              .filter(
+                (url: string) => typeof url === 'string' && url.trim() !== ''
+              )
+              .map((url: string, idx: number) => ({
+                uid: String(idx),
+                name: `image-${idx + 1}.jpg`,
+                status: 'done',
+                url,
+              }))
           : [];
         setSelectedProduct(found);
         setFileList(images);
@@ -148,6 +153,7 @@ const CreateProductBySearch = () => {
       }
     }
 
+
     const productData = {
       product_creation_format: 'catalogue' as const,
       name: selectedProduct?.name || '',
@@ -159,7 +165,7 @@ const CreateProductBySearch = () => {
       description: values.description,
       tags: values.tags,
       size: values.measurement_unit,
-      catalogue_id: selectedProduct?.identifier_no,
+      catalogue_id: selectedProduct?.id || '',
       media: imagesRes,
     };
 
@@ -171,8 +177,8 @@ const CreateProductBySearch = () => {
         setFormData(values);
         setIsModalVisible(true);
       },
-      onError: () => {
-        message.error('Failed to create product. Please try again.');
+      onError: (error: any) => {
+        message.error(error?.message || 'Failed to create product. Please try again.');
       },
     });
   };
@@ -357,24 +363,29 @@ const CreateProductBySearch = () => {
                   getValueFromEvent={(e) =>
                     Array.isArray(e) ? e : e?.fileList
                   }
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please upload at least one image',
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Please upload at least one image',
+                  //   },
+                  // ]}
                 >
-                  <Upload
-                    name="images"
-                    listType="picture-card"
-                    beforeUpload={beforeUpload}
-                    onPreview={handlePreview}
-                    maxCount={4}
-                    onChange={handleChange}
-                    fileList={fileList}
-                  >
-                    {fileList.length >= 4 ? null : uploadButton}
-                  </Upload>
+                  <Tooltip title="You can't upload an image to a catalogue product">
+                    <div>
+                      <Upload
+                        name="images"
+                        listType="picture-card"
+                        beforeUpload={beforeUpload}
+                        onPreview={handlePreview}
+                        maxCount={4}
+                        onChange={handleChange}
+                        fileList={fileList}
+                        disabled
+                      >
+                        {fileList.length >= 4 ? null : uploadButton}
+                      </Upload>
+                    </div>
+                  </Tooltip>
 
                   <div>
                     {previewImage && (

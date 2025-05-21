@@ -114,8 +114,10 @@ const ProductPreview = () => {
 
         <div className="flex flex-wrap gap-2">
           {/* <Button onClick={handleContinueEditing}>Continue Editing</Button> */}
-          <Button type="primary" onClick={handleAddProduct}>
-            Edit Product
+          {/* <Button type="primary" onClick={handleAddProduct}>
+            Edit Product */}
+          <Button type="primary" onClick={() => navigate('/pos/inventory')}>
+            All Products
           </Button>
         </div>
       </div>
@@ -180,9 +182,9 @@ const ProductPreview = () => {
                 <Title level={4} style={{ marginTop: 0, marginBottom: 8 }}>
                   {product?.name}
                 </Title>
-                <Text className="text-blue-600">
+                {/* <Text className="text-blue-600">
                   <a href="#">Added by Builder's Hub Construction</a>
-                </Text>
+                </Text> */}
                 <div className="mt-2 mb-2">
                   <Text strong>Product Code (SKU): </Text>
                   <Text>{product?.SKU || 'N/A'}</Text>

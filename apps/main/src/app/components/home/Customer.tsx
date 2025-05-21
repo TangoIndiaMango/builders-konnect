@@ -11,6 +11,8 @@ import { customerData as dummyData } from './constant';
 import { useNavigate } from 'react-router-dom';
 import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
 import { monthAbbreviation } from '../../../utils/helper';
+import { Dayjs } from 'dayjs';
+import YearPicker from '../date/YearPicker';
 const data = [
   { name: 'Cement', sales: 200, value: 30, amount: 4544 },
   { name: 'Paint', sales: 126, value: 25, amount: 4544 },
@@ -65,6 +67,8 @@ interface CustomerProps {
   recentCustomerData: any;
   recentCustomerLoading: boolean;
   isLoading: boolean;
+  year: Dayjs | null;
+  setYear: (value: Dayjs | null) => void;
 }
 
 const Customer = ({
@@ -76,6 +80,8 @@ const Customer = ({
   recentCustomerData,
   recentCustomerLoading,
   isLoading,
+  year,
+  setYear,
 }: CustomerProps) => {
   const customerRes = customerData?.data?.data;
   const cusData = customerRes
@@ -114,7 +120,7 @@ const Customer = ({
                 onChange={(value) => setSelectedStore(value)}
               />
 
-              <DatePickerComp onRangeChange={onRangeChange} />
+              <YearPicker onChange={setYear} value={year} />
             </div>
           }
         >

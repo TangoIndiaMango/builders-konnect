@@ -14,6 +14,7 @@ import Revenue from '../../components/home/Revenue';
 import Stats from '../../components/home/Stats';
 import { Stores } from '../../pages/staff/types';
 import { useNavigate } from 'react-router-dom';
+import dayjs, { Dayjs } from 'dayjs';
 
 function toQueryString(params: Record<string, any>) {
   return Object.entries(params)
@@ -23,21 +24,31 @@ function toQueryString(params: Record<string, any>) {
 }
 
 const DashboardHome = () => {
-  const { customDateRange, setCustomDateRange, reset } =
+  const { customDateRange, setCustomDateRange, reset, year, setYear } =
     useTableState('dashboard');
+
   const navigate = useNavigate();
   const [selectedStoreId, setSelectedStoreId] = useState<string>('');
   const stores = useFetchData('merchants/locations?q&sort_by=alphabetically');
   const storeList = stores?.data?.data as Stores[];
   const queryParams = {
     ...(customDateRange && { date_filter: customDateRange }),
+    ...(year && { date_filter: year.year() }),
     ...(selectedStoreId && { location_id: selectedStoreId }),
   };
   const queryString = toQueryString(queryParams);
-  const url = `merchants/dashboard/stats${queryString ? `?${queryString}` : ''}`;
-  const revenueUrl = `merchants/dashboard/revenue-analytics${queryString ? `?${queryString}` : ''}`;
-  const productUrl = `merchants/dashboard/product-overview${queryString ? `?${queryString}` : ''}`;
-  const customerUrl = `merchants/dashboard/customer-traffic${queryString ? `?${queryString}` : ''}`;
+  const url = `merchants/dashboard/stats${
+    queryString ? `?${queryString}` : ''
+  }`;
+  const revenueUrl = `merchants/dashboard/revenue-analytics${
+    queryString ? `?${queryString}` : ''
+  }`;
+  const productUrl = `merchants/dashboard/product-overview${
+    queryString ? `?${queryString}` : ''
+  }`;
+  const customerUrl = `merchants/dashboard/customer-traffic${
+    queryString ? `?${queryString}` : ''
+  }`;
 
   const { data: recentCustomerData, isLoading: recentCustomerLoading } =
     useGetOverviewCustomers({
@@ -47,7 +58,9 @@ const DashboardHome = () => {
       // location_id: selectedStoreId,
     });
   const products = useFetchData(
-    `merchants/inventory-products?paginate=1&limit=5${queryString ? `&${queryString}` : ''}`
+    `merchants/inventory-products?paginate=1&limit=5${
+      queryString ? `&${queryString}` : ''
+    }`
   );
   const statsData = useFetchData(url);
   const revenueData = useFetchData(revenueUrl);
@@ -71,7 +84,11 @@ const DashboardHome = () => {
     <>
       <PageIntroBanner
         actionButton={
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/pos/inventory/add-product')}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/pos/inventory/add-product')}
+          >
             Add Product
           </Button>
         }
@@ -87,6 +104,8 @@ const DashboardHome = () => {
             setSelectedStore={setSelectedStoreId}
             reset={handleReset}
             isLoading={isLoading}
+            year={year ? dayjs(year) : null}
+            setYear={setYear as (value: Dayjs | null) => void}
           />
           <Revenue
             revenueData={revenueData}
@@ -95,6 +114,8 @@ const DashboardHome = () => {
             setSelectedStore={setSelectedStoreId}
             reset={handleReset}
             isLoading={isLoading}
+            year={year ? dayjs(year) : null}
+            setYear={setYear as (value: Dayjs | null) => void}
           />
           <Customer
             customerData={customerData}
@@ -105,6 +126,8 @@ const DashboardHome = () => {
             recentCustomerData={recentCustomerData}
             recentCustomerLoading={recentCustomerLoading}
             isLoading={isLoading}
+            year={year ? dayjs(year) : null}
+            setYear={setYear as (value: Dayjs | null) => void}
           />
           <Product
             productData={productData}
@@ -115,6 +138,8 @@ const DashboardHome = () => {
             recentProductData={products}
             recentProductLoading={isLoading}
             isLoading={isLoading}
+            year={year ? dayjs(year) : null}
+            setYear={setYear as (value: Dayjs | null) => void}
           />
         </>
         <Recent />

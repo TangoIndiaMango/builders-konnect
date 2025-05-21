@@ -7,9 +7,12 @@ import ProfileInfoSection from '../../components/settings/profilenfoSection';
 import NotificationList from './views/NotificationList';
 import WelcomeSection from '../../components/profile/WelcomeSection';
 import { VendorProfile } from '../profile/types';
-import { useFetchData } from '../../../hooks/useApis';
-// import { DocumentPreviewModal, getFileName } from "./DocumentPreviewUrl";
-import ChangePasswordModal from "../../pages/auth/ChangePasswordModal";
+import {
+  useFetchData,
+  useFetchDataSeperateLoading,
+} from '../../../hooks/useApis';
+import { StaffProfile } from './types';
+import ChangePasswordModal from '../auth/ChangePasswordModal';
 import { DocumentPreviewModal } from '../../components/profile/DocumentPreviewUrl';
 
 const SettingPage: React.FC = () => {
@@ -30,8 +33,12 @@ const SettingPage: React.FC = () => {
     setTab(key);
   };
 
-  const profileData = useFetchData('merchants/profile/view');
-  const profile = profileData?.data?.data as VendorProfile;
+  const profileData = useFetchDataSeperateLoading(
+    `merchants/staff/get/profile`
+  );
+  const profile = profileData?.data?.data as StaffProfile;
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
 
   // console.log(profile,"profile")
 
@@ -52,22 +59,32 @@ const SettingPage: React.FC = () => {
             data={profile?.business}
             isLoading={profileData.isLoading}
           />
-          <h1
-            className="text-blue-500 cursor-pointer"
-            onClick={() => setIsPasswordModalOpen(true)}
-          >
-            Change Password
-          </h1>
+
+          <div className="grid grid-cols-1 gap-5 p-6 mb-6 bg-white rounded-lg shadow-sm lg:grid-cols-[0.3fr_0.7fr]">
+            <Button
+              type="link"
+              onClick={() => setIsChangePasswordModalOpen(true)}
+            >
+              Change Password
+            </Button>
+          </div>
+          <ChangePasswordModal
+            open={isChangePasswordModalOpen}
+            onClose={() => setIsChangePasswordModalOpen(false)}
+          />
         </div>
       ),
     },
     {
       key: 'notifications',
       label: 'Notification',
-      children: <NotificationList />,
+      children: (
+        <div>
+          <NotificationList />
+        </div>
+      ),
     },
   ];
-  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -99,4 +116,4 @@ const SettingPage: React.FC = () => {
   );
 };
 
-export default SettingPage; 
+export default SettingPage;

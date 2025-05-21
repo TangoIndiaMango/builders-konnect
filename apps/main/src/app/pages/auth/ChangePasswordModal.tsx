@@ -1,8 +1,8 @@
-"use client";
-import { Modal, Input, Button, Form, App } from "antd";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { useCreateData } from "../../../hooks/useApis"; 
-import { useLocation, useNavigate } from "react-router-dom";
+'use client';
+import { Modal, Input, Button, Form, App } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { useCreateData, usePutData } from '../../../hooks/useApis';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function ChangePasswordModal({
   open,
@@ -17,57 +17,52 @@ export default function ChangePasswordModal({
   const searchParams = new URLSearchParams(location.search);
   const { notification } = App.useApp();
 
-  const ChangePasswordRequest = useCreateData("auth/signup/add-password");
+  const ChangePasswordRequest = usePutData('merchants/staff/update/profile');
 
-  const token = searchParams.get("token");
-  const code = searchParams.get("code");
+  // const token = searchParams.get("token");
+  // const code = searchParams.get("code");
 
   const handleSubmit = async () => {
-    try {
-      const values = await form.validateFields();
+    const values = await form.validateFields();
 
-      const payload = {
-        token,
-        code,
-        current_password: values.currentPassword,
-        password: values.newPassword,
-        password_confirmation: values.confirmPassword,
-        entity: "merchant",
-      };
+    const payload = {
+      current_password: values.currentPassword,
+      password: values.newPassword,
+      password_confirmation: values.confirmPassword,
+      // entity: "merchant",
+    };
 
-      await ChangePasswordRequest.mutateAsync({
-        data: payload,
-        config: { tenant_id: false },
-      });
+    ChangePasswordRequest.mutate(payload, {
+      onSuccess: () => {
+        notification.success({
+          message: 'Password Changed Successfully',
+          description: 'You can now login with your new password.',
+          btn: (
+            <Button
+              type="primary"
+              onClick={() => {
+                notification.destroy();
+                onClose();
+                navigate('/auth/login');
+              }}
+            >
+              Go to Login
+            </Button>
+          ),
+        });
 
-      notification.success({
-        message: "Password Changed Successfully",
-        description: "You can now login with your new password.",
-        btn: (
-          <Button
-            type="primary"
-            onClick={() => {
-              notification.destroy();
-              onClose();
-              navigate("/auth/login");
-            }}
-          >
-            Go to Login
-          </Button>
-        ),
-      });
-
-      form.resetFields();
-      onClose();
-    } catch (error: any) {
-      notification.error({
-        message: "Password Change Failed",
-        description:
-          error?.message ||
-          "Something went wrong. Please try again.",
-      });
-      // console.error("Password change error:", error);
-    }
+        form.resetFields();
+        onClose();
+      },
+      onError: (error: any) => {
+        notification.error({
+          message: 'Password Change Failed',
+          description:
+            error?.response?.data?.message ||
+            'Something went wrong. Please try again.',
+        });
+      },
+    });
   };
 
   return (
@@ -78,12 +73,15 @@ export default function ChangePasswordModal({
       footer={null}
       width={400}
       destroyOnClose
+      centered
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
           name="currentPassword"
           label="Current Password"
-          rules={[{ required: true, message: "Please enter your current password" }]}
+          rules={[
+            { required: true, message: 'Please enter your current password' },
+          ]}
         >
           <Input.Password
             placeholder="Enter current password"
@@ -97,8 +95,8 @@ export default function ChangePasswordModal({
           name="newPassword"
           label="New Password"
           rules={[
-            { required: true, message: "Please enter your new password" },
-            { min: 8, message: "Password must be at least 8 characters" },
+            { required: true, message: 'Please enter your new password' },
+            { min: 8, message: 'Password must be at least 8 characters' },
           ]}
         >
           <Input.Password
@@ -112,15 +110,17 @@ export default function ChangePasswordModal({
         <Form.Item
           name="confirmPassword"
           label="Confirm Password"
-          dependencies={["newPassword"]}
+          dependencies={['newPassword']}
           rules={[
-            { required: true, message: "Please confirm your new password" },
+            { required: true, message: 'Please confirm your new password' },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || getFieldValue("newPassword") === value) {
+                if (!value || getFieldValue('newPassword') === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error("The two passwords do not match"));
+                return Promise.reject(
+                  new Error('The two passwords do not match')
+                );
               },
             }),
           ]}
@@ -138,7 +138,7 @@ export default function ChangePasswordModal({
           <Button
             type="primary"
             htmlType="submit"
-            loading={ChangePasswordRequest.isLoading}
+            loading={ChangePasswordRequest.isPending}
           >
             Change Password
           </Button>

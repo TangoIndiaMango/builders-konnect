@@ -5,13 +5,33 @@ import { useState } from 'react';
 import CheckoutBreadcrumb from '../BreadCrumb';
 import { details, shippingProducts, steps } from '../../lib/Constants';
 import { useCheckout } from '../../../hooks/useContext';
-
+import { useShippingInfo } from '../../../store/shippingInfo';
+import { getAuthUser } from '../../../utils/auth';
 const CheckoutShippingPage = () => {
   const [discountCode, setDiscountCode] = useState('');
-   const { setStep } = useCheckout();
+  const { setStep } = useCheckout();
+  const user = getAuthUser();
+
+  const { shippingInfo } = useShippingInfo();
+  console.log(shippingInfo);
+
+  const details = [
+    {
+      label: 'Contact',
+      value: user?.user?.email,
+    },
+    {
+      label: 'Phone',
+      value: user?.user?.name,
+    },
+    {
+      label: 'Ship to',
+      value: `${shippingInfo.addresses.shipping?.address}, ${shippingInfo.addresses.shipping?.city}, ${shippingInfo.addresses.shipping?.state}, ${shippingInfo.addresses.shipping?.country}`,
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] flex flex-col xl:flex-row">
+    <div className="min-h-screen bg-[#F9F9F9] flex flex-col lg:flex-row">
       <div className="w-full xl:w-[60%] bg-white px-4 md:px-10 xl:px-24 py-8 md:py-12">
         <h2 className="text-lg md:text-2xl font-medium text-[#1E1E1E] mb-6 md:mb-8">
           Builder Konnect

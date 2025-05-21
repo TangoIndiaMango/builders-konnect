@@ -28,7 +28,6 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
     });
   };
 
-
   return (
     <div className="">
       <Form.Item
@@ -54,7 +53,9 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
           }))}
           showSearch
           filterOption={(input, option) =>
-            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label?.toString() ?? '')
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
         />
       </Form.Item>
@@ -72,7 +73,9 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
             label: b?.name,
           }))}
           filterOption={(input, option) =>
-            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label?.toString() ?? '')
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
           showSearch
         />
@@ -83,7 +86,7 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
         name="contactName"
         rules={[{ required: true, message: 'Please enter contact name' }]}
       >
-        <Input placeholder="Enter contact name" disabled/>
+        <Input placeholder="Enter contact name" disabled />
       </Form.Item>
 
       <Form.Item
@@ -94,7 +97,7 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
           { type: 'email', message: 'Please enter a valid email' },
         ]}
       >
-        <Input placeholder="Enter email address" />
+        <Input placeholder="Enter email address" disabled />
       </Form.Item>
 
       <Form.Item
@@ -102,7 +105,10 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
         name="phoneNumber"
         rules={[{ required: true, message: 'Please enter phone number' }]}
       >
-        <NumericInput maxLength={11} placeholder="Enter phone number" />
+        <NumericInput
+          maxLength={11}
+          placeholder="Enter phone number"
+        />
       </Form.Item>
 
       <Form.Item
@@ -128,7 +134,9 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
           }))}
           onChange={handleStateChange}
           filterOption={(input, option) =>
-            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label?.toString() ?? '')
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
           showSearch
         />
@@ -147,7 +155,9 @@ const VendorDetails = ({ form }: { form: FormInstance<any> }) => {
             label: b?.name,
           }))}
           filterOption={(input, option) =>
-            (option?.label?.toString() ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label?.toString() ?? '')
+              .toLowerCase()
+              .includes(input.toLowerCase())
           }
           showSearch
         />
