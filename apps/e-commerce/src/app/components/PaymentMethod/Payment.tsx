@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Input } from 'antd';
+import { Button, Card, Checkbox, Input, message } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
@@ -11,23 +11,79 @@ import {
 } from '../../lib/Constants';
 import CheckoutBreadcrumb from '../BreadCrumb';
 import { useCheckout } from '../../../hooks/useContext';
+import { getAuthUser } from '../../../utils/auth';
+import { useShippingInfo } from '../../../store/shippingInfo';
+import PaymentOptionCard from './PaymentOptionCard';
+import PaymentOptImage from './PaymentOptImage';
+import { frontendBaseUrl } from '../../layouts/Applayout';
+import { usePayment } from '../../../hooks/usePayment';
 
 const CheckoutPaymentPage = () => {
   const [selected, setSelected] = useState('paystack');
-   const [selectedMethod, setSelectedMethod] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState('');
   const [useOther, setUseOther] = useState(false);
-const [useDifferentPaymentMethod, setUseDifferentPaymentMethod] = useState(false);
+  const [useDifferentPaymentMethod, setUseDifferentPaymentMethod] =
+    useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
+  const user = getAuthUser();
+
+  const { shippingInfo } = useShippingInfo();
+  console.log(shippingInfo);
+
+  const details = [
+    {
+      label: 'Contact',
+      value: user?.user?.email,
+    },
+    {
+      label: 'Phone',
+      value: user?.user?.name,
+    },
+    {
+      label: 'Ship to',
+      value: `${shippingInfo.addresses.shipping?.address}, ${shippingInfo.addresses.shipping?.city}, ${shippingInfo.addresses.shipping?.state}, ${shippingInfo.addresses.shipping?.country}`,
+    },
+    {
+      label: 'Billing Address',
+      value: `${shippingInfo.addresses.billing?.address}, ${shippingInfo.addresses.billing?.city}, ${shippingInfo.addresses.billing?.state}, ${shippingInfo.addresses.billing?.country}`,
+    },
+    {
+      label: 'Method',
+      value: 'Standard ( Delivered within 3-5 working days)',
+    },
+  ];
 
   const { setStep } = useCheckout();
-  
+
   function handleChange() {
     setUseDifferentPaymentMethod(!useDifferentPaymentMethod);
   }
 
+  const { initiatePayment, isLoading: isInitiatingPayment } = usePayment();
+  const handlePayment = async (values) => {
+    if (!selected) {
+      message.error('Please select a payment method');
+      return;
+    }
+    try {
+      await initiatePayment({
+        payload: {
+          line_items: ['1'],
+          discounts: ['1'],
+          fulfilment_type: 'delivery',
+          shipping_address_id: '1',
+          callback_url: `${frontendBaseUrl}/auth/register-vendor`,
+        },
+        provider: selected as 'paystack' | 'stripe',
+      });
+    } catch (error: any) {
+      message.error(error?.message || 'Failed to initiate payment');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#F9F9F9] flex flex-col xl:flex-row">
+    <div className="min-h-screen bg-[#F9F9F9] flex flex-col lg:flex-row">
       {/* Left side - Form */}
       <div className="w-full xl:w-[60%] bg-white px-4 md:px-10 xl:px-24 py-10 xl:py-16">
         <h2 className="text-lg md:text-2xl font-medium text-[#1E1E1E] mb-6 md:mb-8">
@@ -39,11 +95,11 @@ const [useDifferentPaymentMethod, setUseDifferentPaymentMethod] = useState(false
         </div>
 
         <Card className="mb-6 rounded-md border-[#A4A4A4]">
-          {paymentDetails.map((item, index) => (
+          {details.map((item, index) => (
             <div
               key={item.label}
               className={`flex flex-wrap items-center justify-between text-sm gap-x-4 ${
-                index !== paymentDetails.length - 1
+                index !== details.length - 1
                   ? 'py-3 border-b border-[#A4A4A4]'
                   : 'py-3'
               }`}
@@ -63,34 +119,15 @@ const [useDifferentPaymentMethod, setUseDifferentPaymentMethod] = useState(false
         <p className="text-sm text-[#4E4E4E] mb-4">
           All transactions are secure and encrypted
         </p>
-        {isLoggedIn ? (
+        {user ? (
           <div className="space-y-4">
             {loggedinpaymentOptions.map((method) => (
-              <div
+              <PaymentOptionCard
                 key={method.id}
-                onClick={() => setSelectedMethod(method.id)}
-                className={`flex items-center justify-between border rounded-md p-4 cursor-pointer ${
-                  selectedMethod === method.id
-                    ? 'border-black'
-                    : 'border-gray-300'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <img src={method.icon} alt="images" className="w-[20px]" />
-                  <span className="font-medium text-black">{method.label}</span>
-                </div>
-                <div
-                  className={`w-5 h-5 border-2 rounded-full ${
-                    selectedMethod === method.id
-                      ? 'border-black'
-                      : 'border-gray-400'
-                  } flex items-center justify-center`}
-                >
-                  {selectedMethod === method.id && (
-                    <div className="w-2.5 h-2.5 bg-black rounded-full" />
-                  )}
-                </div>
-              </div>
+                method={method}
+                selectedMethod={selectedMethod}
+                setSelectedMethod={setSelectedMethod}
+              />
             ))}
 
             <Checkbox
@@ -104,37 +141,12 @@ const [useDifferentPaymentMethod, setUseDifferentPaymentMethod] = useState(false
             {useDifferentPaymentMethod && (
               <div className="flex flex-col gap-3">
                 {paymentOptions.map((option) => (
-                  <div
+                  <PaymentOptImage
                     key={option.value}
-                    className={`w-full border p-3 rounded-md cursor-pointer flex justify-between items-center ${
-                      selected === option.value
-                        ? 'border-blue-500'
-                        : 'border-gray-200'
-                    }`}
-                    onClick={() => setSelected(option.value)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-4 h-4 rounded-full border-2 ${
-                          selected === option.value
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-400'
-                        }`}
-                      />
-                      <span className="text-sm text-[#1E1E1E]">
-                        {option.label}
-                      </span>
-                    </div>
-                    {option.image && (
-                      <div className="flex justify-end">
-                        <img
-                          src={option.image}
-                          alt={option.label}
-                          className="h-6"
-                        />
-                      </div>
-                    )}
-                  </div>
+                    option={option}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
                 ))}
               </div>
             )}
@@ -142,35 +154,12 @@ const [useDifferentPaymentMethod, setUseDifferentPaymentMethod] = useState(false
         ) : (
           <div className="flex flex-col gap-3">
             {paymentOptions.map((option) => (
-              <div
+              <PaymentOptImage
                 key={option.value}
-                className={`w-full border p-3 rounded-md cursor-pointer flex justify-between items-center ${
-                  selected === option.value
-                    ? 'border-blue-500'
-                    : 'border-gray-200'
-                }`}
-                onClick={() => setSelected(option.value)}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-4 h-4 rounded-full border-2 ${
-                      selected === option.value
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-gray-400'
-                    }`}
-                  />
-                  <span className="text-sm text-[#1E1E1E]">{option.label}</span>
-                </div>
-                {option.image && (
-                  <div className="flex justify-end">
-                    <img
-                      src={option.image}
-                      alt={option.label}
-                      className="h-6"
-                    />
-                  </div>
-                )}
-              </div>
+                option={option}
+                selected={selected}
+                setSelected={setSelected}
+              />
             ))}
           </div>
         )}
@@ -183,7 +172,7 @@ const [useDifferentPaymentMethod, setUseDifferentPaymentMethod] = useState(false
             <LeftOutlined className="mt-1" /> Return to Information
           </div>
           <Button
-            onClick={() => setStep('payment')}
+            onClick={handlePayment}
             type="primary"
             className="rounded-md px-10 py-4 w-full sm:w-auto"
           >
