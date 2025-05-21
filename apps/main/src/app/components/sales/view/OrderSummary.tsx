@@ -21,17 +21,17 @@ export const OrderSummary = ({
     <div className="space-y-3">
       <div className="flex justify-between text-gray-600">
         <span>Subtotal ({itemCount} item)</span>
-        <span>{formatBalance(subtotal)}</span>
+        <span>{subtotal}</span>
       </div>
 
       <div className="flex justify-between text-gray-600">
         <span>Discount</span>
-        <span>{discount ? formatBalance(discount) : '-'}</span>
+        <span>{discount ? discount : '-'}</span>
       </div>
 
       <div className="flex justify-between text-gray-600">
         <span>Tax (7.5%VAT)</span>
-        <span>{formatBalance(tax)}</span>
+        <span>{tax}</span>
       </div>
 
       <div className="flex justify-between text-gray-600">
@@ -41,12 +41,12 @@ export const OrderSummary = ({
             ⓘ
           </span>
         </span>
-        <span>{formatBalance(serviceFee)}</span>
+        <span>{serviceFee}</span>
       </div>
 
       <div className="flex justify-between pt-3 text-lg font-semibold border-t">
         <span>TOTAL</span>
-        <span>{formatBalance(total)}</span>
+        <span>{total}</span>
       </div>
     </div>
   );
