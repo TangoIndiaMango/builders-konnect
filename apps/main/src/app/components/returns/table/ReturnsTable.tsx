@@ -132,7 +132,7 @@ export const ReturnsTable = ({
       render: (_, record) => {
         return (
           <Tag
-            color={record.status === 'pending' ? 'orange' : 'green'}
+            color={record.status === 'pending' ?  'orange' : record.status === 'approved' ? 'green' : 'red'}
             className="capitalize"
           >
             {record.status || 'No status'}
@@ -172,7 +172,7 @@ export const ReturnsTable = ({
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}
         updateLimitSize={updateLimitSize}
-        scroll={{ x: '1000px' }} 
+        scroll={{ x: '1000px' }}
       />
     </div>
   );
