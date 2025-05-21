@@ -161,7 +161,10 @@ const AddressComp = ({
 
       <Modal
         open={showModal}
-        onCancel={() => setShowModal(false)}
+        onCancel={() => {
+          setShowModal(false);
+          form.resetFields();
+        }}
         onOk={() => {
           handleCreateAddress(addressType);
         }}
