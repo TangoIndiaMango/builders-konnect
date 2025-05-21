@@ -81,15 +81,15 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         type: initialValues?.type ?? 'percentage',
         value:
           typeValue === 'percentage'
-            ? Number(initialValues?.percent)
-            : Number(initialValues?.amount),
+            ? parseFloat(initialValues?.percent)
+            : parseFloat(initialValues?.amount),
         all_products:
           initialValues?.category?.toLowerCase() === 'products' ? true : false,
         discounted_products: discountedProducts,
       });
       setSearchedProducts(initialValues.products);
     }
-  }, [initialValues, form]);
+  }, [initialValues, form, typeValue]);
 
   const handleProductSelect = (ids: string[], products: ProductType[]) => {
     setSelectedProducts(ids);

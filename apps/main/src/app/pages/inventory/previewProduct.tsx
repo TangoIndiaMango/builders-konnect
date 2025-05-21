@@ -192,12 +192,12 @@ const ProductPreview = () => {
                 <Title level={3} style={{ margin: '16px 0' }}>
                   {formatBalance(product?.retail_price)}
                 </Title>
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <Text type="secondary">Size:</Text>
                   <div className="border text-sm w-fit mt-1 border-[#003399] text-[#003399] px-3 py-2 rounded-sm">
                     {(dummyVariants[0] && dummyVariants[0].size) || 'N/A'}
                   </div>
-                </div>
+                </div> */}
                 <div className="mb-2">
                   <Text strong>Stock: </Text>
                   <Text>{product?.quantity ?? 0} in stock</Text>

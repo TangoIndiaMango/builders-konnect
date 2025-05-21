@@ -14,15 +14,14 @@ import {
 } from '../../../hooks/useApis';
 import { useCheckout } from '../../../hooks/useContext';
 import { persistedCartAtom } from '../../../store/cart';
+import { useCart } from '../../../store/cartStore';
 import { useShippingInfo } from '../../../store/shippingInfo';
 import { getAuthUser } from '../../../utils/auth';
 import { cartItems, steps } from '../../lib/Constants';
-import { marble } from '../../lib/assets/images';
 import CheckoutBreadcrumb from '../BreadCrumb';
 import AddressComp from './AddressComp';
-import { AddressI } from './types';
-import { useCart } from '../../../store/cartStore';
 import CartitemCard from './CartitemCard';
+import { AddressI } from './types';
 
 interface CreateAddressPayload {
   name: string;
@@ -101,7 +100,7 @@ function Index() {
   );
 
   const purchaseAmountBreakdown = useCreateData(
-    'customers/sales-orders/amount-breakdown'
+    'customers/sales-orders/amount/breakdown'
   );
 
   const initalShippingAddress = existingShippingAddress?.data
@@ -270,7 +269,7 @@ function Index() {
 
     purchaseAmountBreakdown.mutate(
       {
-        formData,
+        data:formData,
         config: {
           headers: {
             'Content-Type': 'multipart/form-data',
