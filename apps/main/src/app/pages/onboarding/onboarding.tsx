@@ -8,12 +8,12 @@ import {
 import { Button, Card, Divider, Form, Input, message, Typography } from 'antd';
 
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { usePayment } from '../../../hooks/usePayment';
 import { formatBalance } from '../../../utils/helper';
 import ActionIcon from '../../components/common/ActionIcon';
+import { useSubscription } from '../../store/subscription';
 import { frontendBaseUrl } from '../auth/auth-outlets';
-import { BillingInterval, SubscriptionPlan } from './types';
 
 const { Title, Text } = Typography;
 
@@ -92,23 +92,14 @@ export interface SuccessTransactionResponse {
 }
 
 export default function SubscriptionCheckout() {
-  const { state } = useLocation();
-  const plan = state?.plan as SubscriptionPlan;
-  const billingInterval = state?.billingInterval as BillingInterval;
+  const { subscription } = useSubscription();
+  const { selectedPlan, planName, billingInterval, isFreeTrial } = subscription;
   const [form] = Form.useForm();
   const [paymentMethod, setPaymentMethod] = useState('');
   const { initiatePayment, isLoading: isInitiatingPayment } = usePayment();
-
-  if (!plan) return <div>No plan selected.</div>;
-
-  const selectedPlan = plan.price_items.find(
-    (item) => item.interval === billingInterval
-  );
   const navigate = useNavigate();
 
-  const isFreeTrial = Number(selectedPlan?.free_days) > 0;
-
-
+  if (!selectedPlan) return <div>No plan selected.</div>;
 
   const onFinish = async (values) => {
     if (!paymentMethod) {
@@ -117,8 +108,8 @@ export default function SubscriptionCheckout() {
     }
     try {
       await initiatePayment({
-        priceItemId: selectedPlan?.id as string,
-        isFreeTrial: isFreeTrial,
+        priceItemId: selectedPlan.id,
+        isFreeTrial,
         callbackUrl: `${frontendBaseUrl}/auth/register-vendor`,
         provider: paymentMethod as 'paystack' | 'stripe',
         userDetails: {
@@ -210,18 +201,18 @@ export default function SubscriptionCheckout() {
             <Card>
               <div className=" divide-y divide-gray-200 space-y-5">
                 <div className="py-2 flex justify-between">
-                  <span>{plan.name}</span>
+                  <span>{planName}</span>
                   <span
                     className={`${
                       isFreeTrial ? 'text-gray-500 line-through' : ''
                     }`}
                   >
-                    {formatBalance(Number(selectedPlan?.amount))}
+                    {formatBalance(Number(selectedPlan.amount))}
                   </span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span>VAT</span>
-                  <span>{formatBalance(Number(selectedPlan?.vat))}</span>
+                  <span>{formatBalance(Number(selectedPlan.vat))}</span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span>Total Cost</span>
@@ -230,7 +221,7 @@ export default function SubscriptionCheckout() {
                       isFreeTrial ? 'text-gray-500 line-through' : ''
                     }`}
                   >
-                    {formatBalance(Number(selectedPlan?.amount))}
+                    {formatBalance(Number(selectedPlan.amount))}
                   </span>
                 </div>
               </div>
@@ -266,8 +257,8 @@ export default function SubscriptionCheckout() {
                 onClick={() => form.submit()}
               >
                 {isFreeTrial
-                  ? `Start ${selectedPlan?.free_days} days free trial`
-                  : `Pay ${formatBalance(Number(selectedPlan?.amount))}`}
+                  ? `Start ${selectedPlan.free_days} days free trial`
+                  : `Pay ${formatBalance(Number(selectedPlan.amount))}`}
               </Button>
             </Card>
           </div>

@@ -154,7 +154,7 @@ const DocumentsSection = ({
         </div>
       </SkeletonLoader>
 
-      <h1
+      {/* <h1
           className="text-blue-500 m-7 cursor-pointer"
           onClick={() => setIsPasswordModalOpen(true)}
         >
@@ -164,7 +164,7 @@ const DocumentsSection = ({
       <ChangePasswordModal
         open={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
-      />
+      /> */}
 
       <DocumentPreviewModal
         open={modalOpen}
