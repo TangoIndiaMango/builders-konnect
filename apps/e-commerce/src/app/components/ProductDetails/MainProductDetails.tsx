@@ -3,8 +3,9 @@ import { Rate, Spin, Button, Select, Form, Input, Upload, message } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import { useProductDetails } from '../../../hooks/useProductDetails';
 import { woodlikeone } from '../../lib/assets/images';
-import { ShopOutlined, UploadOutlined } from '@ant-design/icons';
-import { useCreateData, useAddToCart } from '../../../hooks/useApis';
+import { UploadOutlined } from '@ant-design/icons';
+import { useCreateData } from '../../../hooks/useApis';
+import { useCart } from '../../../store/cartStore';
 import type { UploadFile } from 'antd/es/upload/interface';
 
 const MainProductDetails: FC = () => {
@@ -15,28 +16,32 @@ const MainProductDetails: FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const decodedId = id ? decodeURIComponent(id) : '';
-  const { data: productData, isLoading } = useProductDetails(decodedId);
+  const { data: productData, isLoading: productLoading } = useProductDetails(decodedId);
   const [form] = Form.useForm();
   const createReview = useCreateData('customers/reviews');
-  const addToCart = useAddToCart();
+  const { addToCart, isLoading: cartLoading } = useCart();
 
   const handleAddToCart = async () => {
     try {
-      await addToCart.mutateAsync({
+      await addToCart({
         line_items: [
           {
             product_id: decodedId,
-            quantity: parseInt(selectedQuantity)
+            quantity: selectedQuantity
           }
         ]
       });
       message.success('Product added to cart successfully');
-    } catch {
-      message.error('Failed to add product to cart');
+    } catch (error) {
+      if (error instanceof Error) {
+        message.error(error.message || 'Failed to add product to cart');
+      } else {
+        message.error('Failed to add product to cart');
+      }
     }
   };
 
-  if (isLoading) {
+  if (productLoading || cartLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Spin size="large" />
@@ -233,7 +238,7 @@ const MainProductDetails: FC = () => {
                 size="large" 
                 className="w-full" 
                 onClick={handleAddToCart}
-                loading={addToCart.isLoading}
+                loading={cartLoading}
               >
                 Add To Cart
               </Button>
@@ -321,7 +326,7 @@ const MainProductDetails: FC = () => {
                     }
                   });
 
-                  await createReview.mutateAsync(formData as any);
+                  await createReview.mutateAsync(formData as FormData);
                   message.success('Review submitted successfully');
                   form.resetFields();
                   setFileList([]);

@@ -317,61 +317,8 @@ export const useGetMerchant = (id: string, params: GetProductsParams = {}) => {
   });
 };
 
-interface CartItem {
-  id: string;
-  product_name: string;
-  metadata: Record<string, any> | null;
-  price: string;
-  quantity: number;
-  total_price: string;
-}
 
-interface CartResponse {
-  error: boolean;
-  message: string;
-  data: CartItem[];
-}
 
-interface AddToCartResponse {
-  error: boolean;
-  message: string;
-  data: {
-    id: string;
-    product_name: string;
-    merchant: string;
-    price: string;
-    quantity: number;
-    total_price: number;
-  }[];
-}
-
-interface AddToCartParams {
-  line_items: Array<{
-    product_id: string;
-    quantity: number;
-  }>;
-}
-
-export const useAddToCart = () => {
-  return useMutation<AddToCartResponse, Error, AddToCartParams>({
-    mutationFn: async (params) => {
-      const response = await axiosInstance.post('customers/carts', params);
-      return response.data;
-    }
-  });
-};
-
-export const useGetCart = (paginate = 0) => {
-  return useQuery<CartResponse>({
-    queryKey: ['cart', paginate],
-    queryFn: async () => {
-      const response = await axiosInstance.get(`customers/carts?paginate=${paginate}`);
-      return response.data;
-    },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: true
-  });
-};
 
 export const useGetProducts = (params: GetProductsParams = {}) => {
   return useQuery({

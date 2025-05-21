@@ -3,30 +3,33 @@ import { Button, Select, Typography, Divider, Image, Spin, message } from 'antd'
 import Hero from '../components/ProductDetails/Hero';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
-import { useGetCart } from '../../hooks/useApis';
-import { axiosInstance, baseUrl } from '../../utils/axios-instance';
+import { useCart } from '../../store/cartStore';
+import { useEffect } from 'react';
 
 
 const { Option } = Select;
 const { Text } = Typography;
 
 const CartPage = () => {
-  const { data: cartData, isLoading, error, refetch } = useGetCart();
+  const { cart, isLoading, error, fetchCart, removeFromCart } = useCart();
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   const handleDeleteItem = async (itemId: string) => {
     try {
-      await axiosInstance.delete(`${baseUrl}customers/carts/${itemId}`);
+      await removeFromCart(itemId);
       message.success('Item removed from cart');
-      refetch();
     } catch (error) {
       const err = error as { response?: { data?: { message?: string } } };
       message.error(err?.response?.data?.message || 'Failed to remove item from cart');
     }
   };
 
-  const handleQuantityChange = async (_productId: string, _value: number) => {
-    // TODO: Implement update quantity functionality
-    message.info('Quantity update coming soon');
+  const handleQuantityChange = (itemId: string, value: number) => {
+    // TODO: Implement quantity change
+    console.log('Quantity changed:', value, 'for item:', itemId);
   };
 
   if (isLoading) {
@@ -45,7 +48,7 @@ const CartPage = () => {
     );
   }
 
-  const cartItems = cartData?.data || [];
+  const cartItems = cart || [];
   const subtotal = cartItems.reduce(
     (sum, item) => sum + parseFloat(item.total_price),
     0
@@ -72,7 +75,7 @@ const CartPage = () => {
           >
             <div className="flex gap-4">
               <Image
-                src={item.metadata?.primary_media_url || '/placeholder.png'}
+                src={(item.metadata as Record<string, string>)?.primary_media_url || '/placeholder.png'}
                 alt={item.product_name}
                 width={120}
                 preview={false}
