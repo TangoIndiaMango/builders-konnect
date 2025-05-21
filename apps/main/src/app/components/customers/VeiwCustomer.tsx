@@ -66,25 +66,25 @@ export const CustomerDetails = () => {
               label: 'Reviews',
               children: <CustomerReviews />,
             },
-            {
-              key: 'payment',
-              label: 'Payment Method',
-              children: <PaymentMethod 
-                filterValue={''}
-                onExport={() => {}}
-                updateLimitSize={() => {}}
-                filterOptions={[]}
-                searchValue={''}
-                setSearchValue={() => {}}
-                reset={() => {}}
-                data={customerData} 
-                isLoading={isLoading} 
-                currentPage={1}
-                setPage={() => {}}
-                setCustomDateRange={() => {}}
-                handleFilterChange={() => {}}
-              />,
-            },
+            // {
+            //   key: 'payment',
+            //   label: 'Payment Method',
+            //   children: <PaymentMethod
+            //     filterValue={''}
+            //     onExport={() => {}}
+            //     updateLimitSize={() => {}}
+            //     filterOptions={[]}
+            //     searchValue={''}
+            //     setSearchValue={() => {}}
+            //     reset={() => {}}
+            //     data={customerData}
+            //     isLoading={isLoading}
+            //     currentPage={1}
+            //     setPage={() => {}}
+            //     setCustomDateRange={() => {}}
+            //     handleFilterChange={() => {}}
+            //   />,
+            // },
           ]}
         />
       </div>

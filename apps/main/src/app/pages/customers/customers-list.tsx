@@ -102,7 +102,7 @@ const CustomersList: React.FC = () => {
             reset={reset}
             setPage={setPage}
             updateLimitSize={setLimitSize}
-            
+
           />
         ),
       },
@@ -124,7 +124,7 @@ const CustomersList: React.FC = () => {
             reset={reset}
             setPage={setPage}
             updateLimitSize={setLimitSize}
-            
+
           />
         ),
       },
@@ -138,9 +138,10 @@ const CustomersList: React.FC = () => {
         title="Customer Management"
         description="View and manage customer details and all customer related issues."
         actionButton={
-          <div className="flex items-center gap-5">
-            <CreateCustomer />
-          </div>
+          <></>
+          // <div className="flex items-center gap-5">
+          //   <CreateCustomer />
+          // </div>
         }
       />
 

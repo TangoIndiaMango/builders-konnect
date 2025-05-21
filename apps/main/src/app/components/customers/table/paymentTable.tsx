@@ -28,14 +28,14 @@ export const PaymentTable = ({
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as PaymentWithKey[],
   });
-  
+
   const dataWithKeys: PaymentWithKey[] = data?.map((item) => ({
     ...item,
     key: item.id.toString(),
   }));
 
   const columns: ColumnsType<PaymentWithKey> = [
-  
+
     {
       title: 'Order Number',
       dataIndex: 'order_number',
@@ -63,7 +63,7 @@ export const PaymentTable = ({
         render: (_, record) => {
           return (
             <Tag
-              color={record.status === 'pending' ? 'orange' : 'green'}
+              color={record.status === 'pending' ? 'orange' : record.status === 'completed' ? 'green' : 'red'}
               className="capitalize"
             >
               {record.status || 'No status'}
