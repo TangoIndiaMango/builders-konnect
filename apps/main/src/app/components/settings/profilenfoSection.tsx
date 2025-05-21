@@ -1,7 +1,7 @@
 import { Typography } from 'antd';
 import { handleCopy } from '../../../utils/helper';
 import { CopyIcon } from '../../lib/CustomIcon';
-import { VendorProfile } from '../../pages/profile/types';
+// import { VendorProfile } from '../../pages/profile/types';
 import { SkeletonLoader } from '../common/SkeletonLoader';
 import { StaffProfile } from '../../pages/settings/types';
 
@@ -38,7 +38,7 @@ const ProfileInfoSection = ({
               </div>
               <div>
                 <p className="text-xs text-gray-400">Role</p>
-                <p className="font-medium">{data?.role || 'N/A'}</p>
+                <p className="font-medium">{data?.role || data?.type}</p>
               </div>
             </div>
 
@@ -56,7 +56,7 @@ const ProfileInfoSection = ({
                 >
                   <CopyIcon color="blue" />
                   <Text className="hover:text-blue-600 cursor-pointer">
-                    {data?.staffID}
+                    {data?.staffID || data?.vendorID}
                   </Text>
                 </div>
               </div>

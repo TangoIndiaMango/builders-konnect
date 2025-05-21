@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { formatBalance } from '../../../utils/helper';
 import { useFetchData } from '../../../hooks/useApis';
 import { PaginatedTable } from '../common/Table/Table';
+import { WarningOutlined } from '@ant-design/icons';
 
 interface OrderSectionProps {
   onOrderSelect?: (order: any) => void;
@@ -15,6 +16,7 @@ interface OrderSectionProps {
   showOrder?: boolean;
  customerId?: string;
  onLineItemsSelect?: (lineItemIds: string[]) => void;
+ showText?: boolean;
 }
 
 export default function OrderSection({
@@ -23,6 +25,7 @@ export default function OrderSection({
   showOrder = true,
   customerId,
   onLineItemsSelect,
+  showText = false,
 }: OrderSectionProps) {
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [options, setOptions] = useState<any[]>([]);
@@ -158,7 +161,13 @@ export default function OrderSection({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between w-full gap-5">
+        <div className="flex flex-col gap-2">
         <h3 className="font-medium md:text-lg">Order Information</h3>
+        {showText &&<div className="flex items-center gap-2">
+          <WarningOutlined style={{ color: '#FAAD14' }} className="text-lg" />
+          <p className="text-sm text-gray-500">Select the products to be returned in the order list</p>
+        </div>}
+        </div>
 
         {!selectedOrder ? (
           <div className="flex flex-wrap items-center justify-end w-full gap-3">

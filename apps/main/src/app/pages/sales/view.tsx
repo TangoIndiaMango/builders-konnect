@@ -69,13 +69,14 @@ const SalesViewPage = ({
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3">
-          <Select
-            placeholder="Select order status"
-            options={orderStatusOptions}
-            onChange={handleUpdateSalesOrder}
-            value={option}
-          />
+        {isCustomerOrder && (
+          <div className="flex items-center justify-end gap-3">
+            <Select
+              placeholder="Select order status"
+              options={orderStatusOptions}
+              onChange={handleUpdateSalesOrder}
+              value={option}
+            />
 
             <Dropdown menu={{ items }} placement="bottomLeft">
               <Button type="primary" className="space-x-1 rounded">
@@ -86,6 +87,7 @@ const SalesViewPage = ({
               </Button>
             </Dropdown>
         </div>
+        )}
       </div>
       <OrderView
         orderId={singleSalesOrder?.order_number}
