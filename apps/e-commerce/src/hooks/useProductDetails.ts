@@ -1,13 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '../utils/axios-instance';
 
-interface ProductDetails {
+export interface Review {
+  id: string;
+  user_name: string;
+  rating: number;
+  comment: string;
+  date: string;
+  images?: string[];
+}
+
+export interface ProductDetails {
   id: string;
   name: string;
   category: string;
   code: string;
   retail_price: string;
-  available_quantity: number;
   discount_information: {
     id: number;
     type: string;
@@ -22,8 +30,11 @@ interface ProductDetails {
     location_id: string;
     merchant_code: string;
   };
+  available_quantity: number;
+  similar_products?: ProductDetails[];
+  reviews?: Review[];
   description: string | null;
-  metadata: any;
+  metadata: Record<string, string | number | boolean | string[]>;
   media: string[];
   ratings_breakdown: {
     five: number;
