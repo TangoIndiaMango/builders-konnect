@@ -8,6 +8,7 @@ interface CustomerSectionProps {
   onCustomerRemove?: () => void;
   customerData?: CustomerType[];
   showCustomer?: boolean;
+  showAddNew?: boolean;
 }
 
 export const CustomerSection = ({
@@ -15,6 +16,7 @@ export const CustomerSection = ({
   onCustomerRemove,
   customerData,
   showCustomer = true,
+  showAddNew = true,
 }: CustomerSectionProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -118,7 +120,7 @@ export const CustomerSection = ({
               onSearch={handleCustomerSearch}
               onSelect={handleCustomerSelect}
             />
-            {showCustomer && (
+            {showAddNew && (
               <Button icon={<PlusOutlined />} onClick={handleAddNew}>
                 Add New
               </Button>

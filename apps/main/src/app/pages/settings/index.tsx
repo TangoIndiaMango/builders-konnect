@@ -40,6 +40,8 @@ const SettingPage: React.FC = () => {
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
     useState(false);
 
+  // console.log(profile,"profile")
+
   const items: TabsProps['items'] = [
     {
       key: 'profile',
@@ -54,7 +56,7 @@ const SettingPage: React.FC = () => {
             refetch={profileData.refetch}
           />
           <ProfileInfoSection
-            data={profile}
+            data={profile?.business}
             isLoading={profileData.isLoading}
           />
 
