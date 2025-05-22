@@ -33,11 +33,17 @@ export const usePurchaseBreakdown = () => {
         },
         {
           onSuccess: (data) => {
-            setBreakdown(data?.data as PurchaseBreakdown);
+            setBreakdown({
+              data: data?.data as PurchaseBreakdown,
+              loading: false,
+            });
           },
           onError: (error) => {
             // Optionally handle error
-            setBreakdown(null);
+            setBreakdown({
+              data: null,
+              loading: false,
+            });
           },
         }
       );
@@ -47,6 +53,5 @@ export const usePurchaseBreakdown = () => {
 
   return {
     handlePurchaseAmountBreakdown,
-    isLoading: purchaseAmountBreakdown.isPending,
   };
 };

@@ -5,7 +5,7 @@ import {
   TruckOutlined,
 } from '@ant-design/icons';
 import { App, Button, Checkbox, Form, Input, message } from 'antd';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -16,7 +16,10 @@ import { useCheckout } from '../../../hooks/useContext';
 import { usePurchaseBreakdown } from '../../../hooks/usePurchaseBreakdown';
 import { persistedCartAtom } from '../../../store/cart';
 import { useCart } from '../../../store/cartStore';
-import { purchaseBreakdownAtom } from '../../../store/purchaseBreakdown';
+import {
+  fulfilmentTypeAtom,
+  purchaseBreakdownAtom,
+} from '../../../store/purchaseBreakdown';
 import { useShippingInfo } from '../../../store/shippingInfo';
 import { getAuthUser } from '../../../utils/auth';
 import { cartItems, steps } from '../../lib/Constants';
@@ -38,7 +41,6 @@ interface CreateAddressPayload {
   lon: number;
   lat: number;
 }
-
 
 const options = [
   {
@@ -101,8 +103,9 @@ function Index() {
     `customers/addresses?type=billing`,
     !!user
   );
-  const { handlePurchaseAmountBreakdown, isLoading } = usePurchaseBreakdown();
+  const { handlePurchaseAmountBreakdown} = usePurchaseBreakdown();
   const purchaseBreakdown = useAtomValue(purchaseBreakdownAtom);
+  const setFulfilmentType = useSetAtom(fulfilmentTypeAtom);
 
   const initalShippingAddress = existingShippingAddress?.data
     ?.data as AddressI[];
@@ -115,7 +118,8 @@ function Index() {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateAddress, updateContactInfo, updateSelectedShippingAddress } = useShippingInfo();
+  const { updateAddress, resetShippingInfo, updateSelectedShippingAddress } =
+    useShippingInfo();
 
   const handleNotSinedInAction = () => {
     navigate('/auth/login', {
@@ -254,10 +258,28 @@ function Index() {
       cartItemsStore,
       value,
       discountCode,
-      selectedShippingAddress?.id ||
-        ''
+      selectedShippingAddress?.id || ''
     );
   }, [cartItemsStore, value, discountCode, selectedShippingAddress]);
+
+  const handleFulfilmentTypeChange = (type: string) => {
+    setFulfilmentType(type);
+    setValue(type);
+    if (type === 'delivery') {
+      handleAddressSelect(
+        'shipping',
+        existingShippingAddress?.data?.data[0] || null
+      );
+      handleAddressSelect(
+        'billing',
+        existingBillingAddress?.data?.data[0] || null
+      );
+    } else {
+      setSelectedShippingAddress(null);
+      setSelectedBillingAddress(null);
+      resetShippingInfo();
+    }
+  };
 
   return (
     <div className="min-h-screen w-full">
@@ -300,15 +322,7 @@ function Index() {
                 <div
                   key={option.key}
                   onClick={() => {
-                    setValue(option.key);
-                    if (option.key === 'delivery') {
-                      setSelectedShippingAddress(
-                        existingShippingAddress?.data?.data[0] || null
-                      );
-                      updateAddress('shipping',
-                        existingShippingAddress?.data?.data[0] || null
-                      );
-                    }
+                    handleFulfilmentTypeChange(option.key);
                   }}
                   className={`flex items-start gap-3 w-full border rounded-md px-4 py-3 cursor-pointer ${
                     value === option.key ? 'border-blue-500' : 'border-gray-200'
@@ -359,6 +373,8 @@ function Index() {
                   onAddressSelect={handleAddressSelect}
                   showModal={showModal}
                   setShowModal={setShowModal}
+                  selectedShippingAddress={selectedShippingAddress}
+                  selectedBillingAddress={selectedBillingAddress}
                 />
               </div>
             ) : (

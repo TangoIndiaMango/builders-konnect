@@ -19,7 +19,7 @@ const CartSummary = ({
   setDiscountCode,
   handlePurchaseAmountBreakdown,
 }: CartSummaryProps) => {
-  const breakdown = useAtomValue(purchaseBreakdownAtom);
+  const { data: breakdown, loading } = useAtomValue(purchaseBreakdownAtom);
   return (
     <div className="w-full xl:w-1/3 bg-[#F9F9F9] px-6 xl:px-8 py-24">
       <div className="space-y-4">
@@ -46,24 +46,44 @@ const CartSummary = ({
         <Divider className="my-4" />
 
         <div className="text-sm space-y-2">
-          <div className="flex justify-between">
-            <span className="text-sm text-[#4E4E4E]">Subtotal</span>
-            <span className=" text-base font-medium md:text-lg text-[#4E4E4E] ">
-              ₦ {breakdown?.subtotal.toLocaleString()}
-            </span>
-          </div>
-          <div className="flex justify-between text-gray-500">
-            <span className="text-sm text-[#4E4E4E]">Shipping</span>
-            <span className=" text-base  text-[#4E4E4E] ">
-              Calculated at the next step
-            </span>
-          </div>
-          <div className="flex justify-between font-semibold text-base pt-2">
-            <span className="text-sm text-[#1E1E1E]">Total</span>
-            <span className=" text-base font-medium md:text-lg text-[#4E4E4E] ">
-              ₦ {breakdown?.total.toLocaleString()}
-            </span>
-          </div>
+          {loading ? (
+            <div className="text-center py-8">Calculating...</div>
+          ) : (
+            <div className="text-sm space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-[#4E4E4E]">Subtotal</span>
+                <span className="text-base font-medium md:text-lg text-[#4E4E4E]">
+                  ₦ {breakdown?.subtotal?.toLocaleString() ?? '0'}
+                </span>
+              </div>
+              <div className="flex justify-between text-gray-500">
+                <span className="text-sm text-[#4E4E4E]">Shipping</span>
+                <span className="text-base text-[#4E4E4E]">
+                  {breakdown?.shipping_breakdown?.delivery_fee
+                    ? `₦ ${breakdown?.shipping_breakdown?.delivery_fee?.toLocaleString()}`
+                    : '₦ 0'}
+                </span>
+              </div>
+              <div className="flex justify-between text-gray-500">
+                <span className="text-sm text-[#4E4E4E]">Service Fee</span>
+                <span className="text-base text-[#4E4E4E]">
+                  ₦ {breakdown?.fees?.service_fee?.toLocaleString() ?? '0'}
+                </span>
+              </div>
+              <div className="flex justify-between text-gray-500">
+                <span className="text-sm text-[#4E4E4E]">Tax</span>
+                <span className="text-base text-[#4E4E4E]">
+                  ₦ {breakdown?.fees?.tax?.toLocaleString() ?? '0'}
+                </span>
+              </div>
+              <div className="flex justify-between font-semibold text-base pt-2">
+                <span className="text-sm text-[#1E1E1E]">Total</span>
+                <span className="text-base font-medium md:text-lg text-[#4E4E4E]">
+                  ₦ {breakdown?.total?.toLocaleString() ?? '0'}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -15,6 +15,8 @@ interface AddressCompProps {
   onAddressSelect: (type: 'billing' | 'shipping', address: AddressI) => void;
   showModal: boolean;
   setShowModal: (showModal: boolean) => void;
+  selectedShippingAddress: AddressI | null;
+  selectedBillingAddress: AddressI | null;
 }
 const AddressComp = ({
   value,
@@ -26,6 +28,8 @@ const AddressComp = ({
   onAddressSelect,
   showModal,
   setShowModal,
+  selectedShippingAddress,
+  selectedBillingAddress,
 }: AddressCompProps) => {
   const [addressType, setAddressType] = useState<'billing' | 'shipping'>(
     'billing'
@@ -38,22 +42,22 @@ const AddressComp = ({
     setShowModal(true);
   };
 
-  const [selectedShippingAddress, setSelectedShippingAddress] =
-    useState<AddressI | null>(null);
-  const [selectedBillingAddress, setSelectedBillingAddress] =
-    useState<AddressI | null>(null);
+  // const [selectedShippingAddress, setSelectedShippingAddress] =
+  //   useState<AddressI | null>(null);
+  // const [selectedBillingAddress, setSelectedBillingAddress] =
+  //   useState<AddressI | null>(null);
 
-  const handleAddressSelect = (
-    type: 'billing' | 'shipping',
-    address: AddressI
-  ) => {
-    if (type === 'billing') {
-      setSelectedBillingAddress(address);
-    } else {
-      setSelectedShippingAddress(address);
-    }
-    onAddressSelect(type, address);
-  };
+  // const handleAddressSelect = (
+  //   type: 'billing' | 'shipping',
+  //   address: AddressI
+  // ) => {
+  //   if (type === 'billing') {
+  //     setSelectedBillingAddress(address);
+  //   } else {
+  //     setSelectedShippingAddress(address);
+  //   }
+  //   onAddressSelect(type, address);
+  // };
 
   return (
     <div>
@@ -86,7 +90,9 @@ const AddressComp = ({
                       country={address?.country || ''}
                       loading={isLoading}
                       isSelected={selectedShippingAddress?.id === address.id}
-                      onSelect={() => handleAddressSelect('shipping', address)}
+                      onSelect={() =>
+                        onAddressSelect('shipping', address)
+                      }
                     />
                   ))
                 ) : (
@@ -146,7 +152,9 @@ const AddressComp = ({
                     country={address?.country || ''}
                     loading={isLoading}
                     isSelected={selectedBillingAddress?.id === address.id}
-                    onSelect={() => handleAddressSelect('billing', address)}
+                    onSelect={() =>
+                      onAddressSelect('billing', address)
+                    }
                   />
                 ))
               ) : (

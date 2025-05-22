@@ -20,18 +20,18 @@ import { usePayment } from '../../../hooks/usePayment';
 import CartSummary from '../Checkout/CartSummary';
 import { useCart } from '../../../store/cartStore';
 import { useAtomValue } from 'jotai';
-import { purchaseBreakdownAtom } from '../../../store/purchaseBreakdown';
+import {
+  purchaseBreakdownAtom,
+  fulfilmentTypeAtom,
+} from '../../../store/purchaseBreakdown';
 
 const CheckoutPaymentPage = () => {
   const [selected, setSelected] = useState('paystack');
-  const [selectedMethod, setSelectedMethod] = useState('');
-  const [useOther, setUseOther] = useState(false);
   const [useDifferentPaymentMethod, setUseDifferentPaymentMethod] =
     useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
   const user = getAuthUser();
-
+  const fulfilmentType = useAtomValue(fulfilmentTypeAtom);
   const {
     cart: cartItemsStore,
     isLoading,
@@ -69,10 +69,6 @@ const CheckoutPaymentPage = () => {
       label: 'Phone',
       value: user?.user?.name,
     },
-    {
-      label: 'Method',
-      value: 'Standard ( Delivered within 3-5 working days)',
-    },
   ];
 
   const addressInfo = [
@@ -86,9 +82,20 @@ const CheckoutPaymentPage = () => {
     },
   ];
 
+  const paymentMethod = [
+    {
+      label: 'Method',
+      value:
+        fulfilmentType === 'delivery'
+          ? 'Standard ( Delivered within 3-5 working days)'
+          : 'Pickup',
+    },
+  ];
+
   const details = [
     ...userInfo,
     ...(shippingInfo.addresses.shipping?.id ? addressInfo : []),
+    ...paymentMethod,
   ];
 
   const { setStep } = useCheckout();
@@ -96,7 +103,7 @@ const CheckoutPaymentPage = () => {
   function handleChange() {
     setUseDifferentPaymentMethod(!useDifferentPaymentMethod);
   }
-
+  console.log(selected);
   const { initiatePayment, isLoading: isInitiatingPayment } = usePayment();
   const handlePayment = async (values) => {
     if (!selected) {
@@ -108,9 +115,9 @@ const CheckoutPaymentPage = () => {
         payload: {
           line_items: cartItemsStore.map((item) => item.id),
           discounts: [discountCode],
-          fulfilment_type: 'delivery',
+          fulfilment_type: fulfilmentType,
           shipping_address_id: shippingInfo.selectedShippingAddressId?.id || '',
-          callback_url: `${frontendBaseUrl}/profile/orders`,
+          callback_url: `${frontendBaseUrl}/success`,
         },
         provider: selected as 'paystack' | 'stripe',
       });
@@ -214,17 +221,20 @@ const CheckoutPaymentPage = () => {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
           <div
-            onClick={() => setStep('shipping')}
-            className="text-[#003399] flex items-center gap-2 text-sm"
+            onClick={() =>
+              setStep(fulfilmentType === 'delivery' ? 'shipping' : 'checkout')
+            }
+            className="text-[#003399] flex items-center gap-2 text-sm cursor-pointer hover:text-[#003399] transition-colors hover:underline"
           >
-            <LeftOutlined className="mt-1" /> Return to Information
+            <LeftOutlined className="" /> Return to Information
           </div>
           <Button
             onClick={handlePayment}
             type="primary"
             className="rounded-md px-10 py-4 w-full sm:w-auto"
+            loading={isInitiatingPayment}
           >
-            Pay ₦{purchaseBreakdown?.total.toLocaleString()}
+            Pay ₦{purchaseBreakdown?.data?.total.toLocaleString()}
           </Button>
         </div>
       </div>

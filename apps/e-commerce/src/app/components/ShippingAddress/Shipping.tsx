@@ -64,7 +64,10 @@ const CheckoutShippingPage = () => {
         </h2>
 
         <div className="text-sm text-gray-600 mb-6 space-x-1">
-          <CheckoutBreadcrumb steps={steps} activeStep="Shipping" />
+          <CheckoutBreadcrumb
+            steps={steps}
+            activeStep="Shipping"
+          />
         </div>
 
         <Card className="mb-4 rounded-md border-[#A4A4A4]">
@@ -95,9 +98,9 @@ const CheckoutShippingPage = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
           <div
             onClick={() => setStep('checkout')}
-            className="text-[#3B43FF] flex items-center gap-2 text-sm"
+            className="text-[#003399] flex items-center gap-2 text-sm cursor-pointer hover:text-[#003399] transition-colors hover:underline"
           >
-            <LeftOutlined className="mt-1" /> Return to information
+            <LeftOutlined className="" /> Return to information
           </div>
 
           <Button
