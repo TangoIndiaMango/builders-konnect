@@ -12,6 +12,7 @@ export interface shippingInfoState {
     phoneNumber: string;
     email: string;
   };
+  selectedShippingAddressId: AddressI | null;
 }
 
 const initialState: shippingInfoState = {
@@ -19,7 +20,8 @@ const initialState: shippingInfoState = {
   contactInfo: {
     phoneNumber: '',
     email: '',
-  }
+  },
+  selectedShippingAddressId: null,
 };
 
 export const shippingInfoAtom = atom<shippingInfoState>(initialState);
@@ -36,6 +38,13 @@ export const useShippingInfo = () => {
         [type]: address,
         [`${type}AddyId`]: address.id
       }
+    }));
+  };
+
+  const updateSelectedShippingAddress = (address: AddressI) => {
+    setShippingInfo(prev => ({
+      ...prev,
+      selectedShippingAddressId: address
     }));
   };
 
@@ -57,6 +66,7 @@ export const useShippingInfo = () => {
     shippingInfo,
     updateAddress,
     updateContactInfo,
+    updateSelectedShippingAddress,
     resetShippingInfo
   };
 };

@@ -1,8 +1,10 @@
-import { Form, FormInstance, Input, Select } from 'antd';
+import { AutoComplete, Form, FormInstance, Input, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { useFetchData } from '../../../hooks/useApis';
 import { getAuthUser } from '../../../utils/auth';
 import { AddressI } from './types';
+import useDebounce from '../../../hooks/useDebounce';
+
 interface BillingOrShippingAddyFormProps {
   form: FormInstance<any>;
   type: 'billing' | 'shipping';
@@ -10,6 +12,8 @@ interface BillingOrShippingAddyFormProps {
   isEdit?: boolean;
   data?: AddressI;
 }
+
+const NIGERIA_ID = '161';
 
 const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
   form,
@@ -19,27 +23,46 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
   data,
 }) => {
   const user = getAuthUser();
-  const [state, setState] = useState('');
-  const [country, setCountry] = useState('161');
 
+  // Use form state as source of truth
+  const country = Form.useWatch([type, 'country_id'], form) || NIGERIA_ID;
+  const state = Form.useWatch([type, 'state_id'], form);
+
+  // Fetch countries only once (on mount)
   const countries = useFetchData('shared/countries?&paginate=0', !!user);
 
+  // Fetch states when country changes
   const StatesState = useFetchData(
-    `shared/states?paginate=0&country_id=${country}`,
-    !!user
-  );
-  const CitiesState = useFetchData(
-    state
-      ? `shared/cities?paginate=0&country_id=${country}&state_id=${state}`
-      : '',
-    !!user
+    country ? `shared/states?paginate=0&country_id=${country}` : '',
+    !!user && !!country
   );
 
+  // Fetch cities when state changes
+  const CitiesState = useFetchData(
+    state ? `shared/cities?paginate=0&country_id=${country}&state_id=${state}` : '',
+    !!user && !!country && !!state
+  );
+
+  // Address autocomplete
+  const [addressInput, setAddressInput] = useState('');
+  const debouncedAddressInput = useDebounce(addressInput, 400);
+  const shouldFetchAddress = !!debouncedAddressInput;
+  const addressSuggestions = useFetchData(
+    shouldFetchAddress ? `shared/search-address?q=${encodeURIComponent(debouncedAddressInput)}` : '',
+    shouldFetchAddress
+  );
+  const addressOptions = (addressSuggestions.data || [])?.map((item: any) => ({
+    value: item.display_name,
+    label: item.display_name,
+    data: { lon: item.lon, lat: item.lat },
+  }));
+
+  // Set form values only on mount or when editing
   useEffect(() => {
     if (isEdit && data) {
       const formValues = {
         [type]: {
-          country_id: data?.country || '161',
+          country_id: data?.country || NIGERIA_ID,
           state_id: data?.state,
           city_id: data?.city,
           name: data?.name || user?.user?.name,
@@ -48,12 +71,11 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
           phone: data?.phone,
         },
       };
-      console.log(`Setting ${type} form values:`, formValues);
       form.setFieldsValue(formValues);
-    } else {
+    } else if (!isEdit) {
       const defaultValues = {
         [type]: {
-          country_id: '161',
+          country_id: NIGERIA_ID,
           name: user?.user?.name,
         },
       };
@@ -62,23 +84,40 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
   }, [isEdit, data, form, type, user]);
 
   const handleStateChange = (value: string) => {
-    setState(value);
     form.setFieldsValue({
-      state_id: value,
-      city_id: undefined,
+      [type]: {
+        ...form.getFieldValue(type),
+        state_id: value,
+        city_id: undefined,
+      },
     });
   };
 
   const handleCountryChange = (value: string) => {
-    setCountry(value);
     form.setFieldsValue({
-      country_id: value,
+      [type]: {
+        ...form.getFieldValue(type),
+        country_id: value,
+        state_id: undefined,
+        city_id: undefined,
+      },
+    });
+  };
+
+  const handleAddressSelect = (value: string, option: any) => {
+    form.setFieldsValue({
+      [type]: {
+        ...form.getFieldValue(type),
+        address: value,
+      },
+      longitude: option.data.lon,
+      latitude: option.data.lat,
     });
   };
 
   // Get the default country label
   const defaultCountryLabel =
-    countries?.data?.data?.find((item: any) => item.id === '161')?.name ||
+    countries?.data?.data?.find((item: any) => item.id === NIGERIA_ID)?.name ||
     'Nigeria';
 
   return (
@@ -88,16 +127,14 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
           {type === 'billing' ? 'Billing Address' : 'Shipping Address'}
         </h3>
       )}
-      <div className="">
-        <Form.Item
-          name={[type, 'name']}
-          label="Name"
-          initialValue={user?.user?.name}
-          rules={[{ required: true, message: 'Please enter name' }]}
-        >
-          <Input placeholder="Enter name" />
-        </Form.Item>
-      </div>
+      <Form.Item
+        name={[type, 'name']}
+        label="Name"
+        initialValue={user?.user?.name}
+        rules={[{ required: true, message: 'Please enter name' }]}
+      >
+        <Input placeholder="Enter name" />
+      </Form.Item>
 
       <Form.Item name={[type, 'company']} label="Company">
         <Input placeholder="Enter company name (optional)" />
@@ -120,15 +157,21 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
       <Form.Item
         label="Country"
         name={[type, 'country_id']}
-        initialValue="161"
+        initialValue={NIGERIA_ID}
         rules={[{ required: true, message: 'Please select country' }]}
       >
         <Select
           placeholder="Select country"
           loading={countries.isLoading}
           disabled={countries.isLoading}
-          value="161"
-          options={[{ value: '161', label: defaultCountryLabel }]}
+          value={country}
+          options={
+            countries?.data?.data?.map((item: any) => ({
+              value: item.id,
+              label: item.name,
+            })) || [{ value: NIGERIA_ID, label: defaultCountryLabel }]
+          }
+          onChange={handleCountryChange}
         />
       </Form.Item>
 
@@ -181,7 +224,22 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
         label="Address"
         rules={[{ required: true, message: 'Please enter address' }]}
       >
-        <Input placeholder="Enter street address" />
+        <AutoComplete
+          placeholder="Enter address"
+          size="large"
+          className="rounded"
+          options={addressOptions}
+          onSelect={handleAddressSelect}
+          onSearch={setAddressInput}
+          filterOption={false}
+        />
+      </Form.Item>
+
+      <Form.Item name="longitude" hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item name="latitude" hidden>
+        <Input />
       </Form.Item>
     </div>
   );

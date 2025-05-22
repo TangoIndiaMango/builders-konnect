@@ -55,7 +55,7 @@ confirmation / receipt page that show success or failure alongside order details
 
 export const usePayment = () => {
   const popup = new PaystackPop();
-  const checkoutApi = useCreateData('customers/sales-orders',);
+  const checkoutApi = useCreateData('customers/sales-orders/checkout/initiate');
 
   const handleTransactionSuccess = async (transactionData: any) => {
     try {
@@ -65,7 +65,7 @@ export const usePayment = () => {
       ) {
         message.success('Payment successful, redirecting...');
         console.log(transactionData);
-        // window.location.replace(transactionData?.redirecturl);
+        window.location.replace(transactionData?.redirecturl);
         return true;
       }
       return false;
@@ -77,20 +77,22 @@ export const usePayment = () => {
 
   const initiatePayment = async (config: PaymentConfig) => {
     try {
-      const payload = {
-
-      };
 
       const formData = new FormData();
       config.payload?.line_items.forEach((item) => {
         formData.append('line_items[]', item);
       });
-      config.payload?.discounts.forEach((item) => {
-        formData.append('discounts[]', item);
-      });
+
+      // if (config.payload?.discounts) {
+      //   config.payload?.discounts.forEach((item) => {
+      //     formData.append('discounts[]', item);
+      //   });
+      // }
+
       formData.append('fulfilment_type', config.payload?.fulfilment_type);
       formData.append('shipping_address_id', config.payload?.shipping_address_id);
       formData.append('callback_url', config.payload?.callback_url);
+      formData.append('provider', config.provider);
 
       const response = await checkoutApi.mutateAsync({
         data: formData,

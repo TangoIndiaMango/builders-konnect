@@ -59,13 +59,13 @@ const ProductsPage = () => {
           navigate('/pos/inventory/create-product-by-search');
         },
       },
-      {
-        key: '2',
-        label: 'Add Bulk Products',
-        onClick: () => {
-          navigate('/pos/inventory/add-bulk-product');
-        },
-      },
+      // {
+      //   key: '2',
+      //   label: 'Add Bulk Products',
+      //   onClick: () => {
+      //     navigate('/pos/inventory/add-bulk-product');
+      //   },
+      // },
     ],
   };
 

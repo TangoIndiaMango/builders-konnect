@@ -34,7 +34,7 @@ export default function OrderSection({
     selectedOrder?.id ? `merchants/sales-orders/${selectedOrder.id}` : ''
   );
 
- 
+
   useEffect(() => {
     if (customerId === null) {
       setSelectedOrder(null);
@@ -59,7 +59,7 @@ export default function OrderSection({
     }
   };
 
-  
+
   useEffect(() => {
     if (orderData && orderData?.data && Array.isArray(orderData?.data)) {
       const formattedOptions = orderData?.data.map((order: any) => ({
@@ -107,7 +107,7 @@ export default function OrderSection({
     {
       title: 'Unit Price',
       dataIndex: 'unit_cost',
-      render: (price: number) => <span>{formatBalance(price)}</span>,
+      render: (price: number) => <span>{price}</span>,
     },
     {
       title: 'Quantity',
@@ -117,13 +117,13 @@ export default function OrderSection({
     {
       title: 'Total Price',
       dataIndex: 'total_cost',
-      render: (price: number) => <span>{formatBalance(price)}</span>,
+      render: (price: number) => <span>{price}</span>,
     },
   ];
 
   const handleSearch = (searchText: string) => {
     let filteredOptions = options;
-    
+
     if (customerId) {
       filteredOptions = filteredOptions.filter(
         option => option.order?.customer?.id === customerId
@@ -182,7 +182,7 @@ export default function OrderSection({
             />
           </div>
         ) : (
-          <button 
+          <button
             onClick={handleRemoveOrder}
             className="text-sm text-red-500 hover:text-red-700"
           >

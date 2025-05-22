@@ -121,7 +121,7 @@ const NewReturnLog = () => {
   const handleConfirm = async () => {
     try {
       if (!selectedCustomer || !selectedOrder) return;
-
+      //TODO: Looks like you want to select the line item here right?
       const returnData: any = {
         user_id: selectedCustomer.id,
         order_id: selectedOrder.id,
@@ -129,7 +129,9 @@ const NewReturnLog = () => {
         refund_type: refundType,
         return_reason: returnReason,
         description: description,
-        total_amount_refunded: Number(selectedLineItemIds.line_items[0]?.total_cost?.replace(/[^0-9.]/g, '')),
+        total_amount_refunded: Number(
+          selectedLineItemIds.line_items[0]?.total_cost?.replace(/[^0-9.]/g, '')
+        ),
         quantity: selectedLineItemIds.line_items[0]?.quantity,
       };
 
@@ -139,6 +141,7 @@ const NewReturnLog = () => {
             message: 'Return created successfully',
           });
           setIsConfirmModalVisible(false);
+          navigate(-1);
         },
         onError: () => {
           notification.error({
@@ -183,7 +186,12 @@ const NewReturnLog = () => {
               type="primary"
               size="large"
               className="rounded"
-              disabled={selectedCustomer === null || selectedOrder === null || !refundType || !returnReason}
+              disabled={
+                selectedCustomer === null ||
+                selectedOrder === null ||
+                !refundType ||
+                !returnReason
+              }
               onClick={showConfirmModal}
             >
               Next
@@ -217,7 +225,9 @@ const NewReturnLog = () => {
         <Container>
           <div className="flex items-center justify-between">
             <div>
-              <Typography.Title level={5} className="font-normal">Reason for return</Typography.Title>
+              <Typography.Title level={5} className="font-normal">
+                Reason for return
+              </Typography.Title>
             </div>
 
             <div className="flex gap-2">
@@ -241,7 +251,9 @@ const NewReturnLog = () => {
         <Container>
           <div className="flex items-center justify-between">
             <div>
-              <Typography.Title level={5} className="font-normal">Refund Type</Typography.Title>
+              <Typography.Title level={5} className="font-normal">
+                Refund Type
+              </Typography.Title>
             </div>
             <div className="flex gap-2">
               <Select

@@ -47,6 +47,7 @@ export interface OrderSummary {
   fees: {
     tax: number;
     service_fee: number;
+    discount: number;
   };
   items_count: number;
   sales_order_discount: number;

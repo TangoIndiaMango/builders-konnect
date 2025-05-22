@@ -35,8 +35,8 @@ const DiscountCreate = () => {
       category: Array.isArray(values.category)
         ? values.category.join(',')
         : values.category,
-      start_date: values.start_date.format('YYYY-MM-DD'),
-      end_date: values.end_date.format('YYYY-MM-DD'),
+      start_date: values.start_date,
+      end_date: values.end_date,
       type: values.type, // "percentage" or "amount"
       value: Number(values.value),
       all_products: values.all_products || false,

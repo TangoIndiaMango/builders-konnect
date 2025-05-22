@@ -1,5 +1,5 @@
 import { Modal, Button, Form, Input } from 'antd';
-
+import { useNavigate } from 'react-router-dom';
 interface ActionReasonModalProps {
   open: boolean;
   onCancel: () => void;
@@ -9,10 +9,12 @@ interface ActionReasonModalProps {
 
 const ActionReasonModal = ({ open, onCancel, onSubmit, type }: ActionReasonModalProps) => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const handleFinish = (values: { reason: string }) => {
     onSubmit(values.reason);
     form.resetFields();
+    navigate(-1);
   };
 
   return (

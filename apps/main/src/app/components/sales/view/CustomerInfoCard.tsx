@@ -77,7 +77,7 @@ export const CustomerInfoCard = ({
             {paymentMethod?.map((method, idx) => (
               <li key={idx} className="flex items-center justify-between">
                 <span className="font-medium">{method.method}</span>
-                <span className="text-gray-700">{formatBalance(method.amount)}</span>
+                <span className="text-gray-700">{method.amount}</span>
               </li>
             ))}
           </ul>

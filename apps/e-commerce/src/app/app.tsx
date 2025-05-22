@@ -1,37 +1,37 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './layouts/Applayout';
 
-import Login from './pages/auth/login';
-import Register from './pages/auth/register';
-import ForgotPassword from './pages/auth/forgot-password';
-import NotFound from './pages/NotFound';
-import MainLayout from './layouts/MainLayout';
-import Home from './pages/Home';
-import NewPassword from './pages/auth/new-password';
-import About from './pages/About';
-import Sell from './pages/sell';
-import Advertise from './pages/advertise';
-import VerifyEmail from './pages/auth/verify-email';
-import CheckYourMail from './pages/auth/check-your-mail';
-import ProductDetails from './pages/ProductDetails';
-import Profile from './pages/Profile';
-import Orders from './pages/Profile/Orders';
-import Addresses from './pages/Profile/Addresses';
-import PaymentMethods from './pages/Profile/PaymentMethods';
-import AccountDetails from './pages/Profile/AccountDetails';
-import ContactPage from './pages/Contact';
-import CheckoutPage from './pages/CheckoutPage';
-import OrderSuccess from './pages/PaymentSuccessfulPage';
-import EmptyCart from './pages/EmptyCartPage';
-import CartSummary from './pages/CartSummaryPage';
-import CartPage from './pages/Cart';
 import { CheckoutProvider } from '../hooks/useContext';
-import VendorShop from './pages/VendorStore/VendorPage';
-import ReviewSection from './pages/ReviewSection';
-import BillingAddressEditPage from './pages/Profile/BillingAddressEditPage';
-import ShippingAddressEditPage from './pages/Profile/ShippingAddressEditPage';
-import SubcategoryList from './pages/SubcategoryList';
+import MainLayout from './layouts/MainLayout';
+import About from './pages/About';
+import Advertise from './pages/advertise';
+import CheckYourMail from './pages/auth/check-your-mail';
+import ForgotPassword from './pages/auth/forgot-password';
+import Login from './pages/auth/login';
+import NewPassword from './pages/auth/new-password';
+import Register from './pages/auth/register';
+import VerifyEmail from './pages/auth/verify-email';
+import CartPage from './pages/Cart';
+import CartSummary from './pages/CartSummaryPage';
+import CheckoutPage from './pages/CheckoutPage';
+import ContactPage from './pages/Contact';
+import EmptyCart from './pages/EmptyCartPage';
+import Home from './pages/Home';
+import NotFound from './pages/NotFound';
+import OrderSuccess from './pages/PaymentSuccessfulPage';
+import ProductDetails from './pages/ProductDetails';
 import ProductList from './pages/ProductList';
+import Profile from './pages/Profile';
+import AccountDetails from './pages/Profile/AccountDetails';
+import Addresses from './pages/Profile/Addresses';
+import BillingAddressEditPage from './pages/Profile/BillingAddressEditPage';
+import Orders from './pages/Profile/Orders';
+import PaymentMethods from './pages/Profile/PaymentMethods';
+import ShippingAddressEditPage from './pages/Profile/ShippingAddressEditPage';
+import ReviewSection from './pages/ReviewSection';
+import Sell from './pages/sell';
+import SubcategoryList from './pages/SubcategoryList';
+import VendorShop from './pages/VendorStore/VendorPage';
 
 const App = () => {
   return (
@@ -83,7 +83,10 @@ const App = () => {
           <Route path="account" element={<AccountDetails />} />
         </Route>
         <Route path="/edit/billing/:id?" element={<BillingAddressEditPage />} />
-        <Route path="/edit/shipping/:id?" element={<ShippingAddressEditPage />} />
+        <Route
+          path="/edit/shipping/:id?"
+          element={<ShippingAddressEditPage />}
+        />
       </Route>
 
       {/* 404 */}

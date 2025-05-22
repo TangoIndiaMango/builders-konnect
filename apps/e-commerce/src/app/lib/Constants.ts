@@ -1572,7 +1572,7 @@ export const paymentDetails = [
   },
   {
     label: 'Method',
-    value: 'Standard ( Delivered within 3-5 working days)', 
+    value: 'Standard ( Delivered within 3-5 working days)',
   }
 ];
 export  const loggedinpaymentOptions = [
@@ -1603,8 +1603,8 @@ export const cartItems = [
 
 export const paymentOptions = [
   { value: 'paystack', label: 'Paystack', image: payment },
-  { value: 'flutterwave', label: 'Flutterwave', image: payment },
-  { value: 'bank', label: 'Bank Transfer' },
+  // { value: 'flutterwave', label: 'Flutterwave', image: payment },
+  // { value: 'bank', label: 'Bank Transfer' },
 ];
 
 export const shippingProducts = [

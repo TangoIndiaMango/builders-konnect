@@ -8,14 +8,14 @@ const mainNavigationTabs = [
     key: 'pos',
     label: 'Point of Sale',
   },
-  {
-    key: 'accounting',
-    label: 'Accounting',
-  },
-  {
-    key: 'procurement',
-    label: 'Procurement Management',
-  },
+  // {
+  //   key: 'accounting',
+  //   label: 'Accounting',
+  // },
+  // {
+  //   key: 'procurement',
+  //   label: 'Procurement Management',
+  // },
 ];
 
 const SubHeaderTabs = () => {

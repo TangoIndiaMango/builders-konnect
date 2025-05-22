@@ -43,7 +43,7 @@ const Home: FC = () => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         let { days, hours, minutes, seconds } = prev;
-        
+
         if (seconds > 0) {
           seconds--;
         } else {
@@ -294,7 +294,6 @@ const Home: FC = () => {
             <div className="col-span-full flex justify-center py-4"><Spin /></div>
           ) : (
             products?.data?.data?.map((product) => {
-              console.log('Home ID:', product.id, typeof product.id);
               return (
                 <RouterLink key={product.id} to={`/product-details/${product.id}`}>
                   <TileCard
