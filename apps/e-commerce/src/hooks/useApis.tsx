@@ -349,14 +349,15 @@ export const useGetProducts = (params: GetProductsParams = {}) => {
           apiParams[key] = value;
         }
       });
-      
+
       // Remove undefined parameters
       Object.keys(apiParams).forEach(key => apiParams[key] === undefined && delete apiParams[key]);
-      
+
       const response = await axiosInstance.get('/customers/products', { params: apiParams });
       return response.data as ProductsResponse;
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     refetchOnWindowFocus: false,
+    retry: false,
   });
 };

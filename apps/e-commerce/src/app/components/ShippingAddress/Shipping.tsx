@@ -1,12 +1,14 @@
-import { Button, Card, Input } from 'antd';
+import { Button, Card, Input, message } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CheckoutBreadcrumb from '../BreadCrumb';
 import { details, shippingProducts, steps } from '../../lib/Constants';
 import { useCheckout } from '../../../hooks/useContext';
 import { useShippingInfo } from '../../../store/shippingInfo';
 import { getAuthUser } from '../../../utils/auth';
+import CartSummary from '../Checkout/CartSummary';
+import { useCart } from '../../../store/cartStore';
 const CheckoutShippingPage = () => {
   const [discountCode, setDiscountCode] = useState('');
   const { setStep } = useCheckout();
@@ -29,6 +31,30 @@ const CheckoutShippingPage = () => {
       value: `${shippingInfo.addresses.shipping?.address}, ${shippingInfo.addresses.shipping?.city}, ${shippingInfo.addresses.shipping?.state}, ${shippingInfo.addresses.shipping?.country}`,
     },
   ];
+
+  const {
+    cart: cartItemsStore,
+    isLoading,
+    error,
+    fetchCart,
+    removeFromCart,
+  } = useCart();
+  console.log(cartItemsStore);
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
+
+  const handleDeleteItem = async (itemId: string) => {
+    try {
+      await removeFromCart(itemId);
+      message.success('Item removed from cart');
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
+      message.error(
+        err?.response?.data?.message || 'Failed to remove item from cart'
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col lg:flex-row">
@@ -84,68 +110,11 @@ const CheckoutShippingPage = () => {
         </div>
       </div>
 
-      <div className="w-full xl:w-1/3 bg-[#F9F9F9] px-4 md:px-8 py-10 md:py-16">
-        <div className="space-y-4 mb-6">
-          {shippingProducts.map((product) => (
-            <div
-              key={product.id}
-              className="flex items-center justify-between py-3 border-b last:border-none border-gray-200"
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-14 h-14 object-cover border"
-                />
-                <div className="text-sm md:text-base">
-                  <p className="text-[#4E4E4E]">{product.name}</p>
-                </div>
-              </div>
-              <div className="font-medium text-[#4E4E4E] text-sm md:text-base">
-                {product.price}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mb-6">
-          <Input
-            value={discountCode}
-            onChange={(e) => setDiscountCode(e.target.value)}
-            placeholder="Gift Card or Discount Code"
-          />
-          <Button className="bg-[#A4A4A4] text-white font-bold py-2 sm:py-5 rounded-md px-4 sm:px-6 w-full sm:w-auto">
-            Apply
-          </Button>
-        </div>
-
-        <div className="text-sm space-y-2">
-          <div className="flex justify-between">
-            <span className="text-[#4E4E4E]">Subtotal</span>
-            <span className="font-medium md:text-lg text-[#4E4E4E]">
-              ₦3,900
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[#4E4E4E]">Shipping Address 1</span>
-            <span className="text-[#4E4E4E]">₦1,000</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[#4E4E4E]">Shipping Address 2</span>
-            <span className="text-[#4E4E4E]">₦1,000</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-[#4E4E4E]">Total Shipping</span>
-            <span className="text-[#4E4E4E]">₦2,000</span>
-          </div>
-          <div className="flex justify-between font-semibold pt-2">
-            <span className="text-[#1E1E1E]">Total</span>
-            <span className="font-medium md:text-lg text-[#4E4E4E]">
-              ₦5,900
-            </span>
-          </div>
-        </div>
-      </div>
+      <CartSummary
+        cartItemsStore={cartItemsStore}
+        discountCode={discountCode}
+        setDiscountCode={setDiscountCode}
+      />
     </div>
   );
 };

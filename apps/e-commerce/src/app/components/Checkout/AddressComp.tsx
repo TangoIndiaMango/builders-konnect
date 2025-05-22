@@ -6,7 +6,7 @@ import AddressCard from '../AddressCard';
 import BillingOrShippingAddyForm from './BillingOrShippingAddyForm';
 import { AddressI } from './types';
 interface AddressCompProps {
-  value: 'ship' | 'pickup';
+  value: 'delivery' | 'pickup';
   form: FormInstance;
   initialShippingAddress: AddressI[];
   initialBillingAddress: AddressI[];
@@ -57,7 +57,7 @@ const AddressComp = ({
 
   return (
     <div>
-      {value === 'ship' && (
+      {value === 'delivery' && (
         <div className="space-y-5">
           <div className="space-y-3">
             <div>
