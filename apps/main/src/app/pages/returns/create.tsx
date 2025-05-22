@@ -95,7 +95,7 @@ const NewReturnLog = () => {
       }>;
     }>
   >([]);
-  const [refundType, setRefundType] = useState<string>('full');
+  const [refundType, setRefundType] = useState<string>('');
 
   const { data: customers } = useGetCustomers();
   const customerData = customers?.data as CustomerType[];
@@ -104,7 +104,7 @@ const NewReturnLog = () => {
     `merchants/sales-orders?paginate=0&sales_type=pos&customer_id=${selectedCustomer?.id}`
   );
 
-  const { mutate: createReturn, isLoading: isCreatingReturn } =
+  const { mutate: createReturn, isPending: isCreatingReturn } =
     useCreateData('merchants/returns');
   const showConfirmModal = () => {
     setIsConfirmModalVisible(true);
@@ -121,7 +121,7 @@ const NewReturnLog = () => {
   const handleConfirm = async () => {
     try {
       if (!selectedCustomer || !selectedOrder) return;
-
+      //TODO: Looks like you want to select the line item here right?
       const returnData: any = {
         user_id: selectedCustomer.id,
         order_id: selectedOrder.id,
@@ -129,7 +129,9 @@ const NewReturnLog = () => {
         refund_type: refundType,
         return_reason: returnReason,
         description: description,
-        total_amount_refunded: selectedLineItemIds.line_items[0]?.total_cost,
+        total_amount_refunded: Number(
+          selectedLineItemIds.line_items[0]?.total_cost?.replace(/[^0-9.]/g, '')
+        ),
         quantity: selectedLineItemIds.line_items[0]?.quantity,
       };
 
@@ -139,6 +141,7 @@ const NewReturnLog = () => {
             message: 'Return created successfully',
           });
           setIsConfirmModalVisible(false);
+          navigate(-1);
         },
         onError: () => {
           notification.error({
@@ -183,7 +186,12 @@ const NewReturnLog = () => {
               type="primary"
               size="large"
               className="rounded"
-              disabled={selectedCustomer === null || orderData?.length === 0}
+              disabled={
+                selectedCustomer === null ||
+                selectedOrder === null ||
+                !refundType ||
+                !returnReason
+              }
               onClick={showConfirmModal}
             >
               Next
@@ -199,6 +207,7 @@ const NewReturnLog = () => {
             onCustomerSelect={handleCustomerSelect}
             onCustomerRemove={handleCustomerRemove}
             showCustomer={true}
+            showAddNew={false}
             customerData={customerData}
           />
         </Container>
@@ -209,13 +218,16 @@ const NewReturnLog = () => {
             onOrderSelect={handleOrderSelect}
             customerId={selectedCustomerId as string}
             onLineItemsSelect={handleLineItemsSelect}
+            showText={true}
           />
         </Container>
 
         <Container>
           <div className="flex items-center justify-between">
             <div>
-              <Typography.Title level={5}>Reason for return</Typography.Title>
+              <Typography.Title level={5} className="font-normal">
+                Reason for return
+              </Typography.Title>
             </div>
 
             <div className="flex gap-2">
@@ -239,7 +251,9 @@ const NewReturnLog = () => {
         <Container>
           <div className="flex items-center justify-between">
             <div>
-              <Typography.Title level={5}>Refund Type</Typography.Title>
+              <Typography.Title level={5} className="font-normal">
+                Refund Type
+              </Typography.Title>
             </div>
             <div className="flex gap-2">
               <Select

@@ -1,4 +1,4 @@
-
+import { Dayjs } from 'dayjs';
 /**
  * This is the table atom/store.
  * We have some atoms destructured because we want to be able to call them independently in components without getting the whole table state.
@@ -30,6 +30,10 @@ export interface TableStateData {
   limitSize?: number;
   exportType?: string;
   customDateRange?: string;
+
+  // Year picker
+  year?: Dayjs | null;
+
 }
 
 // atoms.ts
@@ -58,6 +62,7 @@ export const defaultTableState: TableStateData = {
     { label: 'Custom Range', value: 'custom' },
   ],
   customFilterOptions: [],
+  year: null,
 };
 
 // Main atom storing all table states
@@ -123,6 +128,13 @@ export const createTableAtoms = (tableName: string) => {
     }
   );
 
+  const yearAtom = atom(
+    (get) => get(tableStateAtom).year,
+    (get, set, newValue: Dayjs | null) => {
+      set(tableStateAtom, { year: newValue });
+    }
+  );
+
 
   return {
     tableState: tableStateAtom,
@@ -132,6 +144,8 @@ export const createTableAtoms = (tableName: string) => {
     filterValue: filterValueAtom,
     exportType: exportTypeAtom,
     customDateRange: customDateRangeAtom,
+    year: yearAtom,
+
     // ... other atoms
   };
 };

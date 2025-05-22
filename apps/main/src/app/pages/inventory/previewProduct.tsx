@@ -64,7 +64,7 @@ const ProductPreview = () => {
 
   const [previewImg, setPreviewImg] = useState(
     mediaList[0] ||
-      `https://placehold.co/500x500/E6F7FF/black?text=${product.name
+      `https://placehold.co/500x500/E6F7FF/black?text=${product?.name
         ?.split(' ')
         .map((word) => word[0]?.toUpperCase())
         .join('')}`
@@ -85,7 +85,7 @@ const ProductPreview = () => {
   };
 
   const handleAddProduct = () => {
-    navigate(`/pos/inventory/product-edit/${product.id}`, {
+    navigate(`/pos/inventory/product-edit/${product?.id}`, {
       state: product,
     });
   };
@@ -114,8 +114,10 @@ const ProductPreview = () => {
 
         <div className="flex flex-wrap gap-2">
           {/* <Button onClick={handleContinueEditing}>Continue Editing</Button> */}
-          <Button type="primary" onClick={handleAddProduct}>
-            Edit Product
+          {/* <Button type="primary" onClick={handleAddProduct}>
+            Edit Product */}
+          <Button type="primary" onClick={() => navigate('/pos/inventory')}>
+            All Products
           </Button>
         </div>
       </div>
@@ -149,7 +151,7 @@ const ProductPreview = () => {
                       key={img + idx}
                       src={
                         img ||
-                        `https://placehold.co/150x150/E6F7FF/black?text=${product.name
+                        `https://placehold.co/150x150/E6F7FF/black?text=${product?.name
                           ?.split(' ')
                           .map((word) => word[0]?.toUpperCase())
                           .join('')}`
@@ -180,9 +182,9 @@ const ProductPreview = () => {
                 <Title level={4} style={{ marginTop: 0, marginBottom: 8 }}>
                   {product?.name}
                 </Title>
-                <Text className="text-blue-600">
+                {/* <Text className="text-blue-600">
                   <a href="#">Added by Builder's Hub Construction</a>
-                </Text>
+                </Text> */}
                 <div className="mt-2 mb-2">
                   <Text strong>Product Code (SKU): </Text>
                   <Text>{product?.SKU || 'N/A'}</Text>
@@ -190,12 +192,12 @@ const ProductPreview = () => {
                 <Title level={3} style={{ margin: '16px 0' }}>
                   {formatBalance(product?.retail_price)}
                 </Title>
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <Text type="secondary">Size:</Text>
                   <div className="border text-sm w-fit mt-1 border-[#003399] text-[#003399] px-3 py-2 rounded-sm">
                     {(dummyVariants[0] && dummyVariants[0].size) || 'N/A'}
                   </div>
-                </div>
+                </div> */}
                 <div className="mb-2">
                   <Text strong>Stock: </Text>
                   <Text>{product?.quantity ?? 0} in stock</Text>

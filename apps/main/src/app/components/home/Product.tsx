@@ -7,6 +7,8 @@ import StatsCard from '../common/StatsCard';
 import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
 import ProductSalesChart from './charts/ProductSalesChart';
 import ProductListItem from './ProductListItem';
+import YearPicker from '../date/YearPicker';
+import { Dayjs } from 'dayjs';
 
 // const data = [
 //   { name: 'Cement', sales: 200, value: 30, amount: 4544 },
@@ -61,6 +63,8 @@ interface ProductProps {
   recentProductData: any;
   recentProductLoading: boolean;
   isLoading: boolean;
+  year: Dayjs | null;
+  setYear: (value: Dayjs | null) => void;
 }
 
 const Product = ({
@@ -72,6 +76,8 @@ const Product = ({
   recentProductData,
   recentProductLoading,
   isLoading,
+  year,
+  setYear,
 }: ProductProps) => {
   const productOverview = productData?.data?.data as ProductOverview;
   const navigate = useNavigate();
@@ -118,7 +124,7 @@ const Product = ({
                 onChange={(value) => setSelectedStore(value)}
               />
 
-              <DatePickerComp onRangeChange={onRangeChange} />
+              <YearPicker onChange={setYear} value={year} />
             </div>
           }
         >
@@ -167,7 +173,7 @@ const Product = ({
                         name={product.name}
                         SKU={product.SKU}
                         primary_media_url={product.primary_media_url}
-                        onClick={() => navigate(`/pos/inventory/${product.id}`)}
+                        onClick={() => navigate(`/pos/inventory/preview-product/${product.id}`)}
                       />
                     ))}
                   <Button

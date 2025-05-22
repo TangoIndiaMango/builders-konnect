@@ -7,6 +7,8 @@ import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
 import { Select, Skeleton } from 'antd';
 import { Button } from 'antd';
 import { monthAbbreviation } from '../../../utils/helper';
+import { Dayjs } from 'dayjs';
+import YearPicker from '../date/YearPicker';
 
 const data = [
   { year: '1991', value: 3 },
@@ -30,6 +32,8 @@ interface RevenueProps {
   reset: () => void;
   setSelectedStore: (value: string) => void;
   isLoading: boolean;
+  year: Dayjs | null;
+  setYear: (value: Dayjs | null) => void;
 }
 
 const Revenue = ({
@@ -39,17 +43,18 @@ const Revenue = ({
   reset,
   setSelectedStore,
   isLoading,
+  year,
+  setYear,
 }: RevenueProps) => {
   // console.log(revenueData?.data);
 
-
   const revenueRes = revenueData?.data?.data;
   const revData = revenueRes
-  ? Object.entries(revenueRes).map(([month, value]) => ({
-      month: monthAbbreviation(month),
-      value: value,
-    }))
-  : [];
+    ? Object.entries(revenueRes).map(([month, value]) => ({
+        month: monthAbbreviation(month),
+        value: value,
+      }))
+    : [];
   // console.log(revData);
   return (
     <CardWithFilter
@@ -77,7 +82,7 @@ const Revenue = ({
             onChange={(value) => setSelectedStore(value)}
           />
 
-          <DatePickerComp onRangeChange={onRangeChange} />
+          <YearPicker onChange={setYear} value={year} />
         </div>
       }
     >

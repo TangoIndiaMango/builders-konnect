@@ -4,30 +4,28 @@ import {
   ShopOutlined,
   TruckOutlined,
 } from '@ant-design/icons';
-import {
-  App,
-  Button,
-  Checkbox,
-  Divider,
-  Form,
-  Input,
-  message
-} from 'antd';
-import { useAtom } from 'jotai';
-import { useState } from 'react';
+import { App, Button, Checkbox, Form, Input, message } from 'antd';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   useCreateData,
   useFetchDataSeperateLoading,
 } from '../../../hooks/useApis';
 import { useCheckout } from '../../../hooks/useContext';
+import { usePurchaseBreakdown } from '../../../hooks/usePurchaseBreakdown';
 import { persistedCartAtom } from '../../../store/cart';
+import { useCart } from '../../../store/cartStore';
+import {
+  fulfilmentTypeAtom,
+  purchaseBreakdownAtom,
+} from '../../../store/purchaseBreakdown';
 import { useShippingInfo } from '../../../store/shippingInfo';
 import { getAuthUser } from '../../../utils/auth';
 import { cartItems, steps } from '../../lib/Constants';
-import { marble } from '../../lib/assets/images';
 import CheckoutBreadcrumb from '../BreadCrumb';
 import AddressComp from './AddressComp';
+import CartSummary from './CartSummary';
 import { AddressI } from './types';
 
 interface CreateAddressPayload {
@@ -46,7 +44,7 @@ interface CreateAddressPayload {
 
 const options = [
   {
-    key: 'ship',
+    key: 'delivery',
     icon: <TruckOutlined className="text-xl text-gray-700" />,
     title: 'Ship',
     description: '',
@@ -62,7 +60,7 @@ const options = [
 
 function Index() {
   const [discountCode, setDiscountCode] = useState('');
-  const [value, setValue] = useState('ship');
+  const [value, setValue] = useState('pickup');
   const { setStep } = useCheckout();
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -72,18 +70,42 @@ function Index() {
   const user = getAuthUser();
   const { notification } = App.useApp();
   const [cart, setCart] = useAtom(persistedCartAtom);
+  const {
+    cart: cartItemsStore,
+    isLoading: cartIsLoading,
+    error,
+    fetchCart,
+    removeFromCart,
+  } = useCart();
 
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const handleDeleteItem = async (itemId: string) => {
+    try {
+      await removeFromCart(itemId);
+      message.success('Item removed from cart');
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
+      message.error(
+        err?.response?.data?.message || 'Failed to remove item from cart'
+      );
+    }
+  };
   const createAddress = useCreateData('customers/addresses');
 
   const existingShippingAddress = useFetchDataSeperateLoading(
     `customers/addresses?type=shipping`,
     !!user
   );
-
   const existingBillingAddress = useFetchDataSeperateLoading(
     `customers/addresses?type=billing`,
     !!user
   );
+  const { handlePurchaseAmountBreakdown} = usePurchaseBreakdown();
+  const purchaseBreakdown = useAtomValue(purchaseBreakdownAtom);
+  const setFulfilmentType = useSetAtom(fulfilmentTypeAtom);
 
   const initalShippingAddress = existingShippingAddress?.data
     ?.data as AddressI[];
@@ -96,10 +118,11 @@ function Index() {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { updateAddress, updateContactInfo } = useShippingInfo();
+  const { updateAddress, resetShippingInfo, updateSelectedShippingAddress } =
+    useShippingInfo();
 
   const handleNotSinedInAction = () => {
-    navigate('/login', {
+    navigate('/auth/login', {
       state: {
         from: location.pathname,
         message: 'Please login to continue with your checkout',
@@ -112,19 +135,6 @@ function Index() {
     try {
       const values = await form.validateFields();
 
-      // If user is not logged in
-      // if (!user) {
-      //   const address = {
-      //     ...values,
-      //     type: addressType,
-      //     is_default: addressType === 'billing',
-      //   };
-
-      //   updateAddress(addressType, address);
-      //   updateContactInfo(values.phone, values.email);
-      //   handleNotSinedInAction();
-
-      // If user is not logged in
       if (!user) {
         const values = await form.validateFields();
         const address = {
@@ -222,10 +232,10 @@ function Index() {
   };
 
   const handleNextStepAction = () => {
-    if (value === 'ship') {
+    if (value === 'delivery') {
       setStep('shipping');
     } else {
-      setStep('payment');
+      setStep('paymentmethod');
     }
   };
 
@@ -239,6 +249,35 @@ function Index() {
     } else {
       setSelectedShippingAddress(address);
       updateAddress(type, address);
+      updateSelectedShippingAddress(address);
+    }
+  };
+
+  useEffect(() => {
+    handlePurchaseAmountBreakdown(
+      cartItemsStore,
+      value,
+      discountCode,
+      selectedShippingAddress?.id || ''
+    );
+  }, [cartItemsStore, value, discountCode, selectedShippingAddress]);
+
+  const handleFulfilmentTypeChange = (type: string) => {
+    setFulfilmentType(type);
+    setValue(type);
+    if (type === 'delivery') {
+      handleAddressSelect(
+        'shipping',
+        existingShippingAddress?.data?.data[0] || null
+      );
+      handleAddressSelect(
+        'billing',
+        existingBillingAddress?.data?.data[0] || null
+      );
+    } else {
+      setSelectedShippingAddress(null);
+      setSelectedBillingAddress(null);
+      resetShippingInfo();
     }
   };
 
@@ -282,7 +321,9 @@ function Index() {
               {options.map((option) => (
                 <div
                   key={option.key}
-                  onClick={() => setValue(option.key)}
+                  onClick={() => {
+                    handleFulfilmentTypeChange(option.key);
+                  }}
                   className={`flex items-start gap-3 w-full border rounded-md px-4 py-3 cursor-pointer ${
                     value === option.key ? 'border-blue-500' : 'border-gray-200'
                   }`}
@@ -319,7 +360,7 @@ function Index() {
             {user ? (
               <div>
                 <AddressComp
-                  value={value as 'ship' | 'pickup'}
+                  value={value as 'delivery' | 'pickup'}
                   form={form}
                   initialShippingAddress={initalShippingAddress}
                   initialBillingAddress={initalBillingAddress}
@@ -332,10 +373,12 @@ function Index() {
                   onAddressSelect={handleAddressSelect}
                   showModal={showModal}
                   setShowModal={setShowModal}
+                  selectedShippingAddress={selectedShippingAddress}
+                  selectedBillingAddress={selectedBillingAddress}
                 />
               </div>
             ) : (
-              value === 'ship' && (
+              value === 'delivery' && (
                 <div>
                   <div className="flex flex-col gap-3">
                     <h1>Please Login to add an Address</h1>
@@ -378,71 +421,18 @@ function Index() {
                 type="primary"
                 className="bg-blue-600 hover:bg-blue-700 px-6"
               >
-                {`Continue To ${value === 'ship' ? 'Shipping' : 'Payment'}`}
+                {`Continue To ${value === 'delivery' ? 'Shipping' : 'Payment'}`}
               </Button>
             </div>
           </Form>
         </div>
 
         {/* Cart Items */}
-        <div className="w-full xl:w-1/3 bg-[#F9F9F9] px-6 xl:px-8 py-24">
-          <div className="space-y-4">
-            {cartItems.map((product) => (
-              <div
-                key={product.id}
-                className="flex items-center justify-between py-3 border-b last:border-none border-gray-200"
-              >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={marble}
-                    alt={product.name}
-                    className="w-14 h-14 object-cover border"
-                  />
-                  <div className="text-base">
-                    <p className="text-[#4E4E4E]">{product.name}</p>
-                  </div>
-                </div>
-                <div className="font-medium text-[#4E4E4E]">
-                  ₦ {product.price.toLocaleString()}
-                </div>
-              </div>
-            ))}
-
-            <div className="flex gap-6">
-              <Input
-                placeholder="Gift Card or Discount Code"
-                value={discountCode}
-                onChange={(e) => setDiscountCode(e.target.value)}
-              />
-              <Button className="bg-[#A4A4A4] text-white font-bold py-5 rounded-md px-6">
-                APPLY
-              </Button>
-            </div>
-
-            <Divider className="my-4" />
-
-            <div className="text-sm space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-[#4E4E4E]">Subtotal</span>
-                <span className=" text-base font-medium md:text-lg text-[#4E4E4E] ">
-                  ₦ {subtotal.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between text-gray-500">
-                <span className="text-sm text-[#4E4E4E]">Shipping</span>
-                <span className=" text-base  text-[#4E4E4E] ">
-                  Calculated at the next step
-                </span>
-              </div>
-              <div className="flex justify-between font-semibold text-base pt-2">
-                <span className="text-sm text-[#1E1E1E]">Total</span>
-                <span className=" text-base font-medium md:text-lg text-[#4E4E4E] ">
-                  ₦ {subtotal.toLocaleString()}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CartSummary
+          cartItemsStore={cartItemsStore}
+          discountCode={discountCode}
+          setDiscountCode={setDiscountCode}
+        />
       </div>
     </div>
   );

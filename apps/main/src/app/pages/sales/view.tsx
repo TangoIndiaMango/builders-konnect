@@ -11,10 +11,10 @@ import ErrorModal from '../../components/common/ErrorModal';
 import { useState } from 'react';
 
 type MenuItem = Required<MenuProps>['items'][number];
-const orderStatusOptions = [
+const paymentDetailsStatusOptions = [
   { label: 'Paid', value: 'paid' },
   { label: 'Failed', value: 'failed' },
-  { label: 'Pending', value: 'pending' },
+  // { label: 'Pending', value: 'pending' },
   // { label: 'Cancelled', value: 'cancelled' },
 ];
 
@@ -37,7 +37,9 @@ const SalesViewPage = ({
   const getSalesOrder = useFetchData(`merchants/sales-orders/${id}`);
   const singleSalesOrder = getSalesOrder?.data?.data as SingleSalesOrder;
   const updateSalesOrder = usePutData(`merchants/sales-orders/${id}`);
-  const [option, setOption] = useState<string>(singleSalesOrder?.payment_status);
+  const [option, setOption] = useState<string>(
+    singleSalesOrder?.payment_status
+  );
   // console.log('getSalesOrder', singleSalesOrder);
   // const onClick: MenuProps['onClick'] = (e) => {
   //   console.log('click ', e);
@@ -69,13 +71,14 @@ const SalesViewPage = ({
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3">
-          <Select
-            placeholder="Select order status"
-            options={orderStatusOptions}
-            onChange={handleUpdateSalesOrder}
-            value={option}
-          />
+        {isCustomerOrder && (
+          <div className="flex items-center justify-end gap-3">
+            <Select
+              placeholder="Select payment status"
+              options={paymentDetailsStatusOptions}
+              onChange={handleUpdateSalesOrder}
+              value={option}
+            />
 
             <Dropdown menu={{ items }} placement="bottomLeft">
               <Button type="primary" className="space-x-1 rounded">
@@ -85,7 +88,8 @@ const SalesViewPage = ({
                 </span>
               </Button>
             </Dropdown>
-        </div>
+          </div>
+        )}
       </div>
       <OrderView
         orderId={singleSalesOrder?.order_number}

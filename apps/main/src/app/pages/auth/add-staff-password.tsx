@@ -111,7 +111,7 @@ const ChangePassword = () => {
                 onClick={handleSubmit}
                 size="large"
                 className="w-[114px]"
-                loading={RecoverPasswordState.isLoading}
+                loading={RecoverPasswordState.isPending}
               >
                 Send
               </Button>

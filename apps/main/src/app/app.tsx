@@ -65,6 +65,7 @@ import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
+import MultiVariants from './pages/inventory/components/MultiVariants';
 
 // Inventory
 
