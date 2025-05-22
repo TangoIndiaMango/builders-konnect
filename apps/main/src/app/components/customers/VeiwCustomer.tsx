@@ -1,12 +1,12 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useFetchData } from '../../../hooks/useApis';
-import { Button, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import BasicInfomation from './BasicInfomation';
 import CustomerReturns from './CustomerReturns';
 import CustomerOrder from './CustomerOrder';
 import CustomerReviews from './CustomerReviews';
-import PaymentMethod from './PaymentMethod';
+// import PaymentMethod from './PaymentMethod';
 import EditCustomer from '../../pages/customers/edit';
 
 export const CustomerDetails = () => {
@@ -54,22 +54,22 @@ export const CustomerDetails = () => {
             {
               key: 'orders',
               label: 'Orders',
-              children: <CustomerOrder />,
+              children: <CustomerOrder customerId={id ?? ''} />,
             },
             {
               key: 'returns',
               label: 'Returns',
-              children: <CustomerReturns />,
+              children: <CustomerReturns customerId={id ?? ''} />,
             },
             {
               key: 'reviews',
               label: 'Reviews',
-              children: <CustomerReviews />,
+              children: <CustomerReviews customerId={id ?? ''} />,
             },
             // {
             //   key: 'payment',
             //   label: 'Payment Method',
-            //   children: <PaymentMethod
+            //   children: <PaymentMethod 
             //     filterValue={''}
             //     onExport={() => {}}
             //     updateLimitSize={() => {}}
@@ -77,8 +77,8 @@ export const CustomerDetails = () => {
             //     searchValue={''}
             //     setSearchValue={() => {}}
             //     reset={() => {}}
-            //     data={customerData}
-            //     isLoading={isLoading}
+            //     data={customerData} 
+            //     isLoading={isLoading} 
             //     currentPage={1}
             //     setPage={() => {}}
             //     setCustomDateRange={() => {}}
