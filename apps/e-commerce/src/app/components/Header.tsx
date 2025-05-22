@@ -14,8 +14,20 @@ const Header = () => {
   const [user, setUser] = useState(getAuthUser());
 
   useEffect(() => {
-    setIsLoggedIn(isAuthenticated());
-    setUser(getAuthUser());
+    const checkAuth = () => {
+      setIsLoggedIn(isAuthenticated());
+      setUser(getAuthUser());
+    };
+
+    // Check auth initially
+    checkAuth();
+
+    // Listen for auth changes
+    window.addEventListener('auth-change', checkAuth);
+
+    return () => {
+      window.removeEventListener('auth-change', checkAuth);
+    };
   }, []);
 
 
