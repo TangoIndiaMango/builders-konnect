@@ -18,7 +18,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
     if (!user && cart.items.length > 0) {
       // Save the current path to redirect back after login
       localStorage.setItem('redirectPath', location.pathname);
-      navigate('/login', {
+      navigate('/auth/login', {
         state: {
           from: location.pathname,
           message: 'Please login to continue with your checkout'

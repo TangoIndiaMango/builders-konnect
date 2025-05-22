@@ -1,7 +1,3 @@
-// components/CheckoutBreadcrumb.tsx
-
-'use client';
-
 import { Breadcrumb } from 'antd';
 import React from 'react';
 

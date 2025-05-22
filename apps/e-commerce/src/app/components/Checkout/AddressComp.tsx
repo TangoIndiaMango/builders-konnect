@@ -6,7 +6,7 @@ import AddressCard from '../AddressCard';
 import BillingOrShippingAddyForm from './BillingOrShippingAddyForm';
 import { AddressI } from './types';
 interface AddressCompProps {
-  value: 'ship' | 'pickup';
+  value: 'delivery' | 'pickup';
   form: FormInstance;
   initialShippingAddress: AddressI[];
   initialBillingAddress: AddressI[];
@@ -15,6 +15,8 @@ interface AddressCompProps {
   onAddressSelect: (type: 'billing' | 'shipping', address: AddressI) => void;
   showModal: boolean;
   setShowModal: (showModal: boolean) => void;
+  selectedShippingAddress: AddressI | null;
+  selectedBillingAddress: AddressI | null;
 }
 const AddressComp = ({
   value,
@@ -26,6 +28,8 @@ const AddressComp = ({
   onAddressSelect,
   showModal,
   setShowModal,
+  selectedShippingAddress,
+  selectedBillingAddress,
 }: AddressCompProps) => {
   const [addressType, setAddressType] = useState<'billing' | 'shipping'>(
     'billing'
@@ -38,26 +42,26 @@ const AddressComp = ({
     setShowModal(true);
   };
 
-  const [selectedShippingAddress, setSelectedShippingAddress] =
-    useState<AddressI | null>(null);
-  const [selectedBillingAddress, setSelectedBillingAddress] =
-    useState<AddressI | null>(null);
+  // const [selectedShippingAddress, setSelectedShippingAddress] =
+  //   useState<AddressI | null>(null);
+  // const [selectedBillingAddress, setSelectedBillingAddress] =
+  //   useState<AddressI | null>(null);
 
-  const handleAddressSelect = (
-    type: 'billing' | 'shipping',
-    address: AddressI
-  ) => {
-    if (type === 'billing') {
-      setSelectedBillingAddress(address);
-    } else {
-      setSelectedShippingAddress(address);
-    }
-    onAddressSelect(type, address);
-  };
+  // const handleAddressSelect = (
+  //   type: 'billing' | 'shipping',
+  //   address: AddressI
+  // ) => {
+  //   if (type === 'billing') {
+  //     setSelectedBillingAddress(address);
+  //   } else {
+  //     setSelectedShippingAddress(address);
+  //   }
+  //   onAddressSelect(type, address);
+  // };
 
   return (
     <div>
-      {value === 'ship' && (
+      {value === 'delivery' && (
         <div className="space-y-5">
           <div className="space-y-3">
             <div>
@@ -86,7 +90,9 @@ const AddressComp = ({
                       country={address?.country || ''}
                       loading={isLoading}
                       isSelected={selectedShippingAddress?.id === address.id}
-                      onSelect={() => handleAddressSelect('shipping', address)}
+                      onSelect={() =>
+                        onAddressSelect('shipping', address)
+                      }
                     />
                   ))
                 ) : (
@@ -146,7 +152,9 @@ const AddressComp = ({
                     country={address?.country || ''}
                     loading={isLoading}
                     isSelected={selectedBillingAddress?.id === address.id}
-                    onSelect={() => handleAddressSelect('billing', address)}
+                    onSelect={() =>
+                      onAddressSelect('billing', address)
+                    }
                   />
                 ))
               ) : (

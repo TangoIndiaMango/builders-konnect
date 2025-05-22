@@ -13,6 +13,7 @@ import { RiDeleteBinLine } from 'react-icons/ri';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../store/cartStore';
 import { useEffect, useState } from 'react';
+import EmptyCart from '../components/EmptyCart';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -67,6 +68,11 @@ const CartPage = () => {
   }
 
   const cartItems = cart || [];
+
+  if (cartItems.length === 0) {
+    return <EmptyCart />;
+  }
+
   const subtotal = cartItems.reduce(
     (sum, item) => sum + parseFloat(item.total_price),
     0
