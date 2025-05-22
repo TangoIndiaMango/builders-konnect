@@ -199,7 +199,7 @@ const NewReturnLog = () => {
             onCustomerSelect={handleCustomerSelect}
             onCustomerRemove={handleCustomerRemove}
             showCustomer={true}
-            showAddNew={false}
+            showAddNew={true}
             customerData={customerData}
           />
         </Container>

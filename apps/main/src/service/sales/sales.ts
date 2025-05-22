@@ -50,6 +50,7 @@ export interface GetSalesParams {
   payment_status?:string;
   order_status?:string;
   page?: number;
+  customer_id?: string;
 }
 
 export const getSales = async (params?: GetSalesParams) => {

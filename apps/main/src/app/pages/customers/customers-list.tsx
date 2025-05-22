@@ -137,11 +137,11 @@ const CustomersList: React.FC = () => {
       <PageIntroBanner
         title="Customer Management"
         description="View and manage customer details and all customer related issues."
-        actionButton={
-          <div className="flex items-center gap-5">
-            <CreateCustomer />
-          </div>
-        }
+        // actionButton={
+        //   <div className="flex items-center gap-5">
+        //     <CreateCustomer />
+        //   </div>
+        // }
       />
 
       <div className="px-5 bg-white">

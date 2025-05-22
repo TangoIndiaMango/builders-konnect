@@ -19,9 +19,10 @@ interface ReturnStats {
   cancelled_request: number;
   total_refund_value: number;
   total_returns: number;
+  
 }
 
-const CustomerReturns = () => {
+const CustomerReturns = ({customerId}: {customerId: string}) => {
   const {
     searchValue,
     setSearch,
@@ -72,7 +73,7 @@ const CustomerReturns = () => {
       limitSize ?? 10
     }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
       filterKey === 'status' ? filterValue : ''
-    }`
+    }&customer_id=${customerId}`
   );
 
   const products = useFetchData(
