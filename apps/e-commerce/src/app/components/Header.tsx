@@ -1,17 +1,18 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { SearchOutlined, ShoppingCartOutlined, MenuOutlined, CloseOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Layout, Input, Badge, Drawer } from 'antd';
+import { Link } from 'react-router-dom';
+import { SearchOutlined, ShoppingCartOutlined, MenuOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons';
+import { Layout, Input, Badge, Drawer, Modal, Button } from 'antd';
 import { header_logo } from '../lib/assets/logo';
 import { useEffect, useState } from 'react';
-import { getAuthUser, isAuthenticated, removeAuthUser } from '../../utils/auth';
+import { getAuthUser, isAuthenticated } from '../../utils/auth';
 
 const { Header: AntHeader } = Layout;
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  const [suggestionsModalOpen, setSuggestionsModalOpen] = useState(false);
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(getAuthUser());
+  const [, setUser] = useState(getAuthUser());
 
   useEffect(() => {
     const checkAuth = () => {
@@ -31,12 +32,7 @@ const Header = () => {
   }, []);
 
 
-  const handleLogout = () => {
-    removeAuthUser();
-    setIsLoggedIn(false);
-    setUser(null);
-    navigate('/auth/login');
-  };
+
 
   return (
     <div className="sticky top-0 z-50">
@@ -46,14 +42,14 @@ const Header = () => {
           <div className="flex justify-between items-center h-8">
             <div className="hidden md:flex items-center divide-x divide-white">
                 {/* <Link to="/" className="!text-white hover:!text-gray-200 !text-xs px-6 first:pl-0">Builders konnect Loyalty</Link> */}
-              <Link to="/customer-support" className="!text-white hover:!text-gray-200 !text-xs px-6">Customer Support</Link>
+              {/* <Link to="/customer-support" className="!text-white hover:!text-gray-200 !text-xs px-6">Customer Support</Link> */}
             </div>
             <div className="hidden md:flex items-center divide-x divide-white">
-              <Link to="/bulk-orders" className="!text-white hover:!text-gray-200 !text-xs px-6">Bulk Orders</Link>
+              {/* <Link to="/bulk-orders" className="!text-white hover:!text-gray-200 !text-xs px-6">Bulk Orders</Link> */}
               {/* <Link to="/artisan-hub" className="!text-white hover:!text-gray-200 !text-xs px-6">Artisan Hub</Link> */}
               {/* <Link to="/learning" className="!text-white hover:!text-gray-200 !text-xs px-6">Learning</Link> */}
-              <Link to="/suggestions" className="!text-white hover:!text-gray-200 !text-xs px-6">Suggestions</Link>
-              <Link to="/track-order" className="!text-white hover:!text-gray-200 !text-xs px-6">Track Order</Link>
+              {/* <a onClick={() => setSuggestionsModalOpen(true)} className="cursor-pointer !text-white hover:!text-gray-200 !text-xs px-6">Suggestions</a> */}
+              <Link to="/profile/orders" className="!text-white hover:!text-gray-200 !text-xs px-6">Track Orders</Link>
             </div>
 
           </div>
@@ -204,6 +200,30 @@ const Header = () => {
           </div>
         </div>
       </Drawer>
+
+      {/* Suggestions Modal */}
+      <Modal
+        title="Suggestions"
+        open={suggestionsModalOpen}
+        onCancel={() => setSuggestionsModalOpen(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setSuggestionsModalOpen(false)}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" style={{ backgroundColor: '#003399' }} onClick={() => setSuggestionsModalOpen(false)}>
+            Request Feature
+          </Button>
+        ]}
+      >
+        <div className="py-4">
+          <p className="mb-4">Kindly drop your suggestions here.</p>
+          <Input.TextArea
+            rows={4}
+            placeholder="Enter"
+            className="w-full"
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

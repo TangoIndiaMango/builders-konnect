@@ -105,7 +105,7 @@ const ContactPage = () => {
                   <MobileOutlined />
                   Connect With Us
                 </h4>
-                <div className="flex gap-4 text-2xl text-black">
+                <div className="flex gap-4 text-2xl text-blackapp">
                   <a href="#" target="_blank" rel="noopener noreferrer">
                     <FacebookFilled />
                   </a>

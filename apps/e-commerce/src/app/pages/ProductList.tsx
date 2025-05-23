@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import CategoryBreadcrumb from '../components/CategoryBreadcrumb';
 import FilterPanel from '../components/ProductListing/filter';
 import ProductHeader from '../components/ProductListing/ProductHeader';
 import ProductCard from '../components/ProductListing/ProductListing';
@@ -68,16 +69,15 @@ function ProductList() {
 
   return (
     <div>
-      <h1 className="text-sm cursor-pointer text-[#00000073] py-8">
-        Home /{' '}
-        <span className="text-[#00000073]">
-          {currentCategory?.name || 'Category'}
-        </span>{' '}
-        /
-        <span className="text-[#000000D9]">
-          {currentSubcategory?.name || 'Subcategory'}
-        </span>
-      </h1>
+      <div className="py-8">
+        <CategoryBreadcrumb
+          items={[
+            { title: 'Home', path: '/' },
+            { title: currentCategory?.name || 'Category', path: '/' },
+            { title: currentSubcategory?.name || 'Subcategory' }
+          ]}
+        />
+      </div>
       <div className="flex w-full overflow-hidden">
         <FilterPanel 
           onFilterChange={handleFilterChange}

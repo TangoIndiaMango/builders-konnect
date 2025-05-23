@@ -1,5 +1,5 @@
 import type { CollapseProps } from 'antd';
-import { Collapse, Select, Spin, Typography } from 'antd';
+import { Spin } from 'antd';
 import { useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
@@ -12,10 +12,9 @@ import {
 import FilterPanel from './FilterPanel';
 import ProductsGrid from './ProductsGrid';
 import VendorStoreHeader from './VendorStoreHeader';
+import CategoryBreadcrumb from '../../components/CategoryBreadcrumb';
 
-const { Option } = Select;
-const { Panel } = Collapse;
-const { Title } = Typography;
+
 
 const VendorShop = () => {
   const { id } = useParams<{ id: string }>();
@@ -52,7 +51,7 @@ const VendorShop = () => {
 
   // First, let's organize the attributes by category
   const attributesByCategory = attributes.reduce(
-    (acc: Record<string, typeof attributesData>, attr: any) => {
+    (acc: Record<string, typeof attributesData>, attr: { category: string }) => {
       if (!acc[attr.category]) {
         acc[attr.category] = [];
       }
@@ -171,6 +170,12 @@ const VendorShop = () => {
 
   return (
     <div className="min-h-screen p-6 bg-white">
+      <CategoryBreadcrumb
+        items={[
+          { title: 'Home', path: '/' },
+          { title: merchant?.store_name || '' }
+        ]}
+      />
       {/* Header Section */}
       <VendorStoreHeader
         merchant={merchant}

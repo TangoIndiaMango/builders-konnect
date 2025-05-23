@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { useGetCategorizations } from '../../hooks/useApis';
+import CategoryBreadcrumb from '../components/CategoryBreadcrumb';
 
 type SubCategory = {
   id: string;
@@ -12,7 +13,7 @@ type SubCategory = {
 const SubcategoryList = () => {
   const { category } = useParams();
 
-  const { data: categoryData = [], isLoading: isCategoryLoading } =
+  const { data: categoryData = [] } =
     useGetCategorizations('category', category) as { data: { id: string; name: string }[]; isLoading: boolean };
 
   const { data: subcategories = [], isLoading: isSubcategoriesLoading } =
@@ -22,12 +23,12 @@ const SubcategoryList = () => {
 
   return (
     <div className="min-h-screen bg-white p-8 md:p-20">
-      <h1 className="text-sm text-[#00000073] py-8">
-        Home /{' '}
-        <span className="text-[#000000D9]">
-          {currentCategory?.name}
-        </span>
-      </h1>
+      <CategoryBreadcrumb
+        items={[
+          { title: 'Home', path: '/' },
+          { title: currentCategory?.name || '', path: '/' }
+        ]}
+      />
 
       {isSubcategoriesLoading ? (
         <div className="text-center py-8">Loading subcategories...</div>
