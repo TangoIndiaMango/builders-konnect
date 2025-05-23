@@ -111,7 +111,7 @@ const useCreateProductHook = ({
           [`variants[${index}][measurement_unit]`]: variant.measurement_unit,
         };
 
-        // Add attributes
+        // Add Product Attributes
         variant.attributes.forEach((attr: any) => {
           if (attr.value) {
             transformedVariant[

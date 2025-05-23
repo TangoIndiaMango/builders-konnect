@@ -83,8 +83,8 @@ const ProductOptionModalMulti = ({
       open={open}
       title={
         editingVariantIndex !== null
-          ? 'Edit Product Variants'
-          : 'Add Product Variants'
+          ? 'Edit Product Attributes'
+          : 'Add Product Attributes'
       }
       onCancel={() => {
         setEditingVariantIndex(null);

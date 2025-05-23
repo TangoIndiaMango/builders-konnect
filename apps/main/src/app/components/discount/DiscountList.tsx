@@ -12,6 +12,7 @@ import DatePickerComp from '../date/DatePickerrComp';
 interface DiscountListProps extends FilterState {
   data: DiscountListResponse;
   isLoading: boolean;
+  dateRange: string | null;
 }
 const DiscountList = ({
   data,
@@ -28,6 +29,7 @@ const DiscountList = ({
   searchValue,
   setSearchValue,
   reset,
+  dateRange,
 }: DiscountListProps) => {
   const tableStatsData = [
     {
@@ -76,6 +78,7 @@ const DiscountList = ({
             </Button>
             <DatePickerComp
               onRangeChange={setCustomDateRange}
+              value={dateRange}
             />
           </div>
         }

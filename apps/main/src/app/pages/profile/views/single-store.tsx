@@ -203,6 +203,7 @@ const SingleStoreDetails = () => {
             reset={reset}
             updateLimitSize={setLimitSize}
             searchValue={searchValue}
+            dateRange={customDateRange || null}
           />
         </div>
       </div>

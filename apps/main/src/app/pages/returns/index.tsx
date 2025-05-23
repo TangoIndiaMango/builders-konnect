@@ -60,9 +60,9 @@ const ReturnsPage = () => {
     });
   };
 
-  
 
-  
+
+
 
   useEffect(() => {
     if (exportType) {
@@ -79,7 +79,7 @@ const ReturnsPage = () => {
       filterKey === 'order_status' ? filterValue : ''
     }`
   );
-  
+
 
   // const products = useFetchData(
   //   `merchants/inventory-products?paginate=1&page=${
@@ -94,7 +94,7 @@ const ReturnsPage = () => {
   const stats = returns?.data?.data?.stats as ReturnStats;
   const returnsData = returns?.data?.data?.data
   // console.log(returnsData,"returnsData")
- 
+
   const navigate = useNavigate();
 
   const tableStatsData = useMemo(
@@ -164,7 +164,10 @@ const ReturnsPage = () => {
             actionButton={
               <div className="flex flex-wrap items-center justify-end gap-3">
                 <Button onClick={reset}>Clear</Button>
-                <DatePickerComp onRangeChange={setCustomDateRange} />
+                <DatePickerComp
+                  onRangeChange={setCustomDateRange}
+                  value={customDateRange}
+                />
               </div>
             }
           />

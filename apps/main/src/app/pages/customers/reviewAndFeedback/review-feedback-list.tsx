@@ -117,6 +117,7 @@ const ReviewAndFeedbackList: React.FC = () => {
             onExport={setExportType}
             filterOptions={filterOptions}
             currentPage={currentPage}
+            dateRange={customDateRange || null}
             reset={reset}
             setPage={setPage}
           />
@@ -139,6 +140,7 @@ const ReviewAndFeedbackList: React.FC = () => {
             onExport={vendorSetExportType}
             filterOptions={filterOptions}
             currentPage={vendorCurrentPage}
+            dateRange={vendorCustomDateRange || null}
             reset={vendorReset}
             setPage={vendorSetPage}
           />

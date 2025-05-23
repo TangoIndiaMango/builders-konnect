@@ -15,6 +15,7 @@ import CreateStepTwo from './createInventory/CreateStepTwo';
 import ProductOptionModal from './createInventory/ProductOptionModal';
 import useCreateProductHook from './hooks/useCreateProduct';
 import { SingleProductResponse } from './types';
+import NavigationBack from '../../components/common/NavigationBack';
 
 type CategoryResponse = {
   id: string;
@@ -379,27 +380,11 @@ const CreateProduct = () => {
 
   // console.log(variants);
   return (
-    <>
-      <div className="p-3 h-fit bg-gray-50">
-        <div className="flex items-center justify-between p-4 mb-4 bg-white rounded-lg shadow-sm">
-          <div>
-            <div className="flex items-center gap-4">
-              <Button
-                type="text"
-                icon={<ArrowLeftOutlined />}
-                onClick={handleCancel}
-                disabled={isCreateProductLoading || isUploading}
-              >
-                Back
-              </Button>
-              <Title level={4} className="!m-0">
-                Request to Add Product
-              </Title>
-            </div>
-            <p className="text-sm text-gray-500">
-              Fill the form below to add a new product
-            </p>
-          </div>
+    <div className="space-y-3">
+      <NavigationBack
+        title="Request to Add Product"
+        description="Fill the form below to add a new product"
+        actionButton={
           <div className="flex gap-2">
             <Button
               onClick={handleCancel}
@@ -421,68 +406,67 @@ const CreateProduct = () => {
               </Button>
             )}
           </div>
+        }
+      />
+      <div className='p-5'>
+      <div className="p-6 bg-white shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          {currentStep > 0 && (
+            <Button onClick={handlePrevious}>Previous</Button>
+          )}
+          <span className="text-gray-500">Step {currentStep + 1} of 2</span>
         </div>
 
-        <div className="p-6 bg-white rounded-lg shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            {currentStep > 0 && (
-              <Button onClick={handlePrevious}>Previous</Button>
-            )}
-            <span className="text-gray-500">Step {currentStep + 1} of 2</span>
-          </div>
+        <Form
+          form={form}
+          layout="horizontal"
+          className="w-full max-w-3xl mx-auto"
+          onFinish={handleSubmit}
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+        >
+          {currentStep === 0 && (
+            <CreateStepOne
+              form={form}
+              categories={categories}
+              subcategories={subcategories}
+              productTypes={productTypes}
+              selectedCategoryId={selectedCategoryId}
+              selectedSubcategoryId={selectedSubcategoryId}
+              handleCategoryChange={handleCategoryChange}
+              handleSubcategoryChange={handleSubcategoryChange}
+              setSelectedProductTypeId={setSelectedProductTypeId}
+              variants={variants}
+              handleEditVariant={handleEditVariant}
+              handleDeleteVariant={handleDeleteVariant}
+              setIsVariantModalVisible={setIsVariantModalVisible}
+              isLoading={isLoading}
+              additionType={additionType}
+              measuringUnits={additionType === 'multiple' ? measuringUnits : []}
+              handleMeasuringUnitChange={handleMeasuringUnitChange}
+              isEdit={isEdit}
+            />
+          )}
 
-          <Form
-            form={form}
-            layout="horizontal"
-            className="w-full max-w-3xl mx-auto"
-            onFinish={handleSubmit}
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 16 }}
-          >
-            {currentStep === 0 && (
-              <CreateStepOne
-                form={form}
-                categories={categories}
-                subcategories={subcategories}
-                productTypes={productTypes}
-                selectedCategoryId={selectedCategoryId}
-                selectedSubcategoryId={selectedSubcategoryId}
-                handleCategoryChange={handleCategoryChange}
-                handleSubcategoryChange={handleSubcategoryChange}
-                setSelectedProductTypeId={setSelectedProductTypeId}
-                variants={variants}
-                handleEditVariant={handleEditVariant}
-                handleDeleteVariant={handleDeleteVariant}
-                setIsVariantModalVisible={setIsVariantModalVisible}
-                isLoading={isLoading}
-                additionType={additionType}
-                measuringUnits={
-                  additionType === 'multiple' ? measuringUnits : []
-                }
-                handleMeasuringUnitChange={handleMeasuringUnitChange}
-                isEdit={isEdit}
-              />
-            )}
-
-            {currentStep === 1 && (
-              <CreateStepTwo
-                additionType={additionType}
-                measuringUnits={measuringUnits}
-                handleMeasuringUnitChange={handleMeasuringUnitChange}
-                isEdit={isEdit}
-                isVariantModalVisible={isVariantModalVisible}
-                setIsVariantModalVisible={setIsVariantModalVisible}
-                variantAttributesData={variantAttributesData}
-                setVariants={setVariants}
-                variants={variants}
-                selectedCategoryId={selectedCategoryId}
-                setIsColorModalVisible={setIsColorModalVisible}
-                editingVariantIndex={editingVariantIndex}
-                setEditingVariantIndex={setEditingVariantIndex}
-              />
-            )}
-          </Form>
-        </div>
+          {currentStep === 1 && (
+            <CreateStepTwo
+              additionType={additionType}
+              measuringUnits={measuringUnits}
+              handleMeasuringUnitChange={handleMeasuringUnitChange}
+              isEdit={isEdit}
+              isVariantModalVisible={isVariantModalVisible}
+              setIsVariantModalVisible={setIsVariantModalVisible}
+              variantAttributesData={variantAttributesData}
+              setVariants={setVariants}
+              variants={variants}
+              selectedCategoryId={selectedCategoryId}
+              setIsColorModalVisible={setIsColorModalVisible}
+              editingVariantIndex={editingVariantIndex}
+              setEditingVariantIndex={setEditingVariantIndex}
+            />
+          )}
+        </Form>
+      </div>
       </div>
 
       {/* Add Product Successfully Modal */}
@@ -549,7 +533,7 @@ const CreateProduct = () => {
           </div>
         </Form>
       </Modal>
-    </>
+    </div>
   );
 };
 

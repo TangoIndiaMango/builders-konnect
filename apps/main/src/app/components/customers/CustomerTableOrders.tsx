@@ -15,7 +15,7 @@ import { OrdersTable } from '../sales/table/salesTable';
 export interface TabStatsinterface {
   total_orders: number;
   total_amount_spent: string;
-  
+
 }
 
 export interface SalesDataInterface {
@@ -28,6 +28,7 @@ export interface SalesProps extends FilterState {
   title: string;
   description: string;
   withPagination?: boolean;
+  dateRange: string | null;
 }
 const CustomerTableOrders = ({
   data,
@@ -46,6 +47,7 @@ const CustomerTableOrders = ({
   updateLimitSize,
   filterOptions,
   withPagination = true,
+  dateRange,
 }: SalesProps) => {
   const tableStatsData = useMemo(
     () => [
@@ -73,7 +75,10 @@ const CustomerTableOrders = ({
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            <DatePickerComp onRangeChange={setCustomDateRange} />
+            <DatePickerComp
+              onRangeChange={setCustomDateRange}
+              value={dateRange}
+            />
           </div>
         }
       />
@@ -92,7 +97,7 @@ const CustomerTableOrders = ({
           ))}
           </div>
         </SkeletonLoader>
-      
+
 
       <TableWrapper
         searchValue={searchValue}
