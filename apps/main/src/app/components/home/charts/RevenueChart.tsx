@@ -25,11 +25,36 @@ const RevenueChart = ({ data }: { data: any }) => {
     yField: 'value',
     smooth: true,
     yAxis: {
-      type: 'log',
+      label: {
+        formatter: (v) => {
+          // Format as Naira with commas
+          return `₦${v.toLocaleString()}`;
+        },
+        style: {
+          fontSize: 12,
+          fill: '#888',
+        },
+      },
+      title: {
+        text: 'Revenue',
+        style: {
+          fontWeight: 600,
+          fontSize: 14,
+          fill: '#222',
+        },
+      },
     },
     xAxis: {
       tickCount: 10,
       type: 'linear',
+      title: {
+        text: 'Month',
+        style: {
+          fontWeight: 600,
+          fontSize: 14,
+          fill: '#222',
+        },
+      },
     },
     color: '#303F9E',
     style: {
