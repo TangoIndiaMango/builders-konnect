@@ -48,7 +48,7 @@ const ReturnsPage = () => {
   const handleExport = () => {
     exportProducts.mutate(null as any, {
       onSuccess: (data) => {
-        console.log(data, "DATA LOOKS LIKE THIS")
+        // console.log(data, "DATA LOOKS LIKE THIS")
         exportCsvFromString(data?.data, 'Returns');
       },
       onError: (error) => {
@@ -92,7 +92,7 @@ const ReturnsPage = () => {
   // );
 
   const stats = returns?.data?.data?.stats as ReturnStats;
-  const returnsData = returns?.data?.data?.data
+  const returnsData = returns?.data?.data?.data 
   // console.log(returnsData,"returnsData")
 
   const navigate = useNavigate();

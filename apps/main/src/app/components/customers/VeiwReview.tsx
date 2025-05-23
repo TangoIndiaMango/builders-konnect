@@ -154,6 +154,7 @@ const data = productData?.data?.data?.data
         
         >
           <ReviewTable
+          
             data={data}
             currentPage={currentPage}
             onPageChange={handlePageChange}
