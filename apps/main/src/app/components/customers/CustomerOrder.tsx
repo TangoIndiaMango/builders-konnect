@@ -6,7 +6,7 @@ import { exportCsvFromString } from '../../../utils/helper';
 import { SalesFilterOptions } from '../../pages/sales/constant';
 import Orders from './CustomerTableOrders';
 
-export default function CustomerOrder() {
+export default function CustomerOrder({customerId}: {customerId: string}) {
   const {
     searchValue,
     setSearch,
@@ -34,6 +34,7 @@ export default function CustomerOrder() {
     payment_status: filterKey === 'payment_status' ? filterValue : '',
     order_status: filterKey === 'order_status' ? filterValue : '',
     date_filter: customDateRange,
+    customer_id: customerId,
     page: currentPage,
   });
 
