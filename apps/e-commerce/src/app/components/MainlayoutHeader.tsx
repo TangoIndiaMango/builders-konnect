@@ -71,8 +71,8 @@ const MainLayoutHeader = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="relative hidden md:block">
-          <ul className="flex items-center justify-between text-sm">
+        <nav className="relative hidden md:block overflow-x-auto">
+          <ul className="flex items-center text-sm whitespace-nowrap min-w-max px-4">
             {isCategoriesLoading ? (
               <li>Loading...</li>
             ) : (
@@ -93,7 +93,7 @@ const MainLayoutHeader = () => {
 
                   {/* Desktop Dropdown */}
                   {activeCategory === category.id && !isDesktopSubcategoriesLoading && desktopSubcategories.length > 0 && (
-                    <div className="absolute left-0 top-full w-48 bg-white shadow-lg rounded-b border-t border-gray-100 py-2 z-50">
+                    <div className="absolute left-0 top-full w-48 bg-white shadow-lg rounded-b border-t border-gray-100 py-2 z-[50]">
                       {desktopSubcategoriesWithPaths.map((subcategory) => (
                         <Link
                           key={subcategory.id}

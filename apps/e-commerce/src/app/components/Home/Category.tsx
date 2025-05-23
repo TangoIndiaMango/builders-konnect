@@ -55,7 +55,7 @@ const CategoryFilter: FC = () => {
         {productsLoading ? (
           <div className="col-span-full flex justify-center py-4"><Spin /></div>
         ) : (
-          products?.data?.data?.map((product) => (
+          products?.data?.data?.slice(0, 4).map((product) => (
             <ProductCards 
               key={product.id} 
               item={{

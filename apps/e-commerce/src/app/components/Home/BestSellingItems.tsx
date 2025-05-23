@@ -26,7 +26,7 @@ const BestSellingItems: FC = () => {
         {isLoading ? (
           <div className="col-span-full flex justify-center py-4"><Spin /></div>
         ) : (
-          products?.data?.data?.map((product) => (
+          products?.data?.data?.slice(0, 5).map((product) => (
             <Link key={product.id} to={`/product-details/${product.id}`}>
               <ProductCards
                 item={{

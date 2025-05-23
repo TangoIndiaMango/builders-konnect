@@ -74,7 +74,7 @@ const MainProductDetails: FC = () => {
           </Link>
           <span className="mx-2">/</span>
           <Link
-            to={`/category/${product.category}`}
+            to="/"
             className="text-gray-500 hover:text-gray-700"
           >
             {product.category}

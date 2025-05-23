@@ -33,6 +33,7 @@ import Sell from './pages/sell';
 import SubcategoryList from './pages/SubcategoryList';
 import VendorShop from './pages/VendorStore/VendorPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import DealsPage from './pages/DealsPage';
 
 const App = () => {
   return (
@@ -61,7 +62,8 @@ const App = () => {
         />
         <Route path="/product-details/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/customer-support" element={<ContactPage />} />
+        <Route path="/deals" element={<DealsPage />} />
         <Route path="/vendor-store/:id" element={<VendorShop />} />
         <Route path="/review/:id" element={<ReviewSection />} />
         <Route path="carts" element={<EmptyCart />} />
