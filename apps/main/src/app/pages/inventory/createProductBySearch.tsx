@@ -43,6 +43,8 @@ interface ProductFormData {
   description: string;
   tags: string;
   catalogue_id: string;
+  dimension: number;
+  weight: number;
 }
 
 const CreateProductBySearch = () => {
@@ -170,6 +172,8 @@ const CreateProductBySearch = () => {
       tags: values.tags,
       size: values.measurement_unit,
       catalogue_id: selectedProduct?.id || '',
+      dimension: values.dimension,
+      weight: values.weight,
       media: imagesRes?.join('|'),
     };
 
@@ -482,6 +486,32 @@ const CreateProductBySearch = () => {
                   ]}
                 >
                   <InputNumber min={0} style={{ width: '100%' }} />
+                </Form.Item>
+
+                <Form.Item
+                  label="Dimension"
+                  name="dimension"
+                  help="Enter the dimension of the product in w x b x h"
+                  rules={[{ required: true, message: 'Required' }]}
+                >
+                  <Input
+                    placeholder="Enter dimension"
+                    type="number"
+                    style={{ width: '100%' }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Weight"
+                  help="Enter the weight of the product in grams"
+                  name="weight"
+                  rules={[{ required: true, message: 'Required' }]}
+                >
+                  <Input
+                    placeholder="Enter weight"
+                    type="number"
+                    style={{ width: '100%' }}
+                  />
                 </Form.Item>
 
                 <Form.Item

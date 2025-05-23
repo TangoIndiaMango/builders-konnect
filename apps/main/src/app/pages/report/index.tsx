@@ -11,7 +11,7 @@ export default function ReportsPage() {
   const handleReportTypeChange = (value: string) => {
     setReportType(value);
   };
-  
+
   const handleDateFilterChange = (value: string) => {
     setDateFilter(value);
   };
@@ -20,10 +20,18 @@ export default function ReportsPage() {
     `merchants/reporting?name=${reportType}&date_filter=${dateFilter}&export=csv`
   );
 
+  const todayWithTime = new Date()?.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
   const handleGenerate = () => {
     mutate(null as any, {
       onSuccess: (data) => {
-        exportCsvFromString(data?.data, 'Report');
+        exportCsvFromString(data, `${reportType}-${todayWithTime}-Report`);
         message.success('Report generated successfully');
       },
       onError: (error) => {
@@ -36,7 +44,7 @@ export default function ReportsPage() {
     });
   };
 
- 
+
 
   return (
     <div className="w-full">
@@ -44,7 +52,7 @@ export default function ReportsPage() {
         title="Reports"
         description="Generate reports for your business"
       />
-      
+
       <div className="flex flex-col h-full items-center justify-center gap-4 p-24 bg-white mx-4 my-4">
         <div className="flex flex-col items-center gap-2">
           <h1 className="text-2xl font-bold">Generate Report</h1>
@@ -64,9 +72,9 @@ export default function ReportsPage() {
               onChange={handleReportTypeChange}
               options={[
                 { value: 'sales-orders', label: 'Sales Orders' },
-                { value: 'product', label: 'Products' },
-                { value: 'orders', label: 'Orders' },
-                { value: 'inventory', label: 'Inventory' },
+                { value: 'products', label: 'Products' },
+                // { value: 'orders', label: 'Orders' },
+                // { value: 'inventory', label: 'Inventory' },
                 { value: 'customers', label: 'Customers' },
               ]}
             />
