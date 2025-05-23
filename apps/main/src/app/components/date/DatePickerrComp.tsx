@@ -22,29 +22,29 @@ const DatePickerComp = ({ onRangeChange, value }: DatePickerCompProps) => {
 
     try {
       const [startDate, endDate] = value.split('|');
-      return [
-        dayjs(startDate),
-        dayjs(endDate)
-      ];
+      return [dayjs(startDate), dayjs(endDate)];
     } catch (error) {
       console.error('Error parsing date:', error);
       return null;
     }
   }, [value]);
 
-  const handleChange = React.useCallback((dates: DateRange, dateStrings: string[]) => {
-    if (dates) {
-      onRangeChange(dates, dateStrings);
-    }
-  }, [onRangeChange]);
+  const handleChange = React.useCallback(
+    (dates: DateRange, dateStrings: string[]) => {
+      if (dates) {
+        onRangeChange(dates, dateStrings);
+      }
+    },
+    [onRangeChange]
+  );
 
   return (
     <RangePicker
+      size="large"
       presets={rangePresets}
       onChange={handleChange}
       placeholder={['From', 'To']}
       value={parsedValue as any}
-
     />
   );
 };

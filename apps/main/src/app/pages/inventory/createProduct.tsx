@@ -305,6 +305,8 @@ const CreateProduct = () => {
         quantity: submittedData.quantity,
         reorder_value: submittedData.reorder_value,
         description: submittedData.description,
+        dimension: submittedData.dimension,
+        weight: submittedData.weight,
         tags: submittedData.tags,
         ...(additionType === 'multiple' && {
           variants: extendedVaraint,

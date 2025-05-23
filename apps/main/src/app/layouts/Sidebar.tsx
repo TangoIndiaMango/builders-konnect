@@ -65,14 +65,32 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 
   // 👇 Helper to find the key based on current location path
   const findActiveKey = (items: MenuProps['items'], path: string): string | undefined => {
+    let matchedKey: string | undefined;
+    let maxMatchLength = 0;
+
     for (const item of items || []) {
-      if (item && 'href' in item && item.href === path) return item.key as string;
+      if (item && 'href' in item && typeof item.href === 'string') {
+        // Special case for dashboard
+        if (item.href === '/' && path === '/') {
+          if (item.href.length > maxMatchLength) {
+            matchedKey = item.key as string;
+            maxMatchLength = item.href.length;
+          }
+        }
+        // For all other items, match if path starts with href
+        else if (item.href !== '/' && path.startsWith(item.href)) {
+          if (item.href.length > maxMatchLength) {
+            matchedKey = item.key as string;
+            maxMatchLength = item.href.length;
+          }
+        }
+      }
       if (item && 'children' in item && item.children) {
         const found = findActiveKey(item.children, path);
         if (found) return found;
       }
     }
-    return undefined;
+    return matchedKey;
   };
 
   const activeKey = findActiveKey(menuItems, location.pathname);
@@ -110,6 +128,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           left: isMobile && !showMobileSidebar ? '-250px' : '0',
           boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
           top: 0,
+          overflowX: 'visible',
         }}
         className="!bg-white h-screen"
       >
@@ -121,7 +140,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
           mode="inline"
           selectedKeys={[activeKey || '']}
           items={menuItems}
-          style={{ borderRight: 0 }}
+          style={{ borderRight: 0, width: 240 }}
           onClick={({ key }) => {
             const href = findHref(menuItems, key);
             if (href) {

@@ -20,6 +20,12 @@ root.render(
         borderRadius: 2,
       },
       components: {
+        Menu: {
+          itemSelectedBg: '#E6F7FF',
+          itemSelectedColor: '#003399',
+          colorText: '#434343',
+          activeBarWidth: 2,
+        },
         Segmented: {
           itemSelectedBg: '#003399',
           itemSelectedColor: '#fff',

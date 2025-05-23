@@ -15,7 +15,7 @@ const ProfileInfoSection = ({
 }) => {
   return (
     <div className="p-6 bg-white border border-gray-50 rounded-md shadow-sm">
-      <div className="grid grid-cols-6 gap-6 text-sm text-gray-700">
+      <div className="grid md:grid-cols-6 grid-cols-1 gap-6 text-sm text-gray-700">
         {/* Left label only */}
         <div className="col-span-1">
           <h3 className="text-sm font-semibold text-black">
@@ -25,7 +25,7 @@ const ProfileInfoSection = ({
 
         {/* Right content */}
         <SkeletonLoader active={isLoading} type="list" rows={1}>
-          <div className="grid grid-cols-2 col-span-5 gap-y-5">
+          <div className="grid md:grid-cols-2 col-span-5 gap-y-5">
             {/* Left Sub-Column */}
             <div className="space-y-2">
               <div>
@@ -38,7 +38,7 @@ const ProfileInfoSection = ({
               </div>
               <div>
                 <p className="text-xs text-gray-400">Role</p>
-                <p className="font-medium">{data?.role || data?.type}</p>
+                <p className="font-medium">{data?.role || 'N/A'}</p>
               </div>
             </div>
 
@@ -56,14 +56,14 @@ const ProfileInfoSection = ({
                 >
                   <CopyIcon color="blue" />
                   <Text className="hover:text-blue-600 cursor-pointer">
-                    {data?.staffID || data?.vendorID}
+                    {data?.staffID || 'N/A'}
                   </Text>
                 </div>
               </div>
               <div>
                 <p className="text-xs text-gray-400">Store Assigned</p>
                 <span className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full">
-                  {data?.store}
+                  {data?.store?.[0]?.name || 'N/A'}
                 </span>
               </div>
             </div>
