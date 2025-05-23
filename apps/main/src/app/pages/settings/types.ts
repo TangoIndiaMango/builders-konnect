@@ -12,8 +12,12 @@ export interface StaffProfile {
   role: string | null;
   role_id: string | null;
   status: string;
-  store: string;
-  store_id: string;
+  // store: string;
+  // store_id: string;
+  store: {
+    id: string;
+    name: string;
+  };
   staffID: string;
   last_active: string | null;
   merchant_account: MerchantAccount[];

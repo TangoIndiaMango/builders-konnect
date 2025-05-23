@@ -8,7 +8,9 @@ import { getStatusColor } from '../../../utils/helper';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import SuccessModal from '../../components/common/SuccessModal';
 import ErrorModal from '../../components/common/ErrorModal';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import useSharePDF from '../../../hooks/sharePdF';
+import { mapPDF } from './utils/mapPDF';
 
 type MenuItem = Required<MenuProps>['items'][number];
 const paymentDetailsStatusOptions = [
@@ -18,16 +20,6 @@ const paymentDetailsStatusOptions = [
   // { label: 'Cancelled', value: 'cancelled' },
 ];
 
-const items: MenuItem[] = [
-  {
-    key: 'download',
-    label: <Button type="text">Download Reciept</Button>,
-  },
-  {
-    key: 'share',
-    label: <Button type="text">Share Reciept</Button>,
-  },
-];
 const SalesViewPage = ({
   isCustomerOrder = true,
 }: {
@@ -53,6 +45,30 @@ const SalesViewPage = ({
       payment_status: status,
     });
   };
+
+  const { handleDownload, handleSharePDF } = useSharePDF();
+  const pdfData = useMemo(() => mapPDF(singleSalesOrder), [singleSalesOrder]);
+  const items: MenuItem[] = useMemo(
+    () => [
+      {
+        key: 'download',
+        label: <Button type="text">Download Reciept</Button>,
+        onClick: () => {
+          handleDownload(singleSalesOrder?.order_number, pdfData);
+        },
+      },
+      {
+        key: 'share',
+        label: <Button type="text">Share Reciept</Button>,
+        onClick: () => {
+          handleSharePDF(singleSalesOrder?.order_number, pdfData);
+        },
+      },
+    ],
+    [singleSalesOrder?.order_number, handleDownload, handleSharePDF]
+  );
+
+  // console.log('singleSalesOrder', singleSalesOrder);
 
   return (
     <div>

@@ -66,6 +66,7 @@ import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
 import MultiVariants from './pages/inventory/components/MultiVariants';
+import ReceiptPreview from './pages/sales/RecieptReview';
 
 // Inventory
 
@@ -134,6 +135,7 @@ const App = () => {
         <Route path="view/:id" element={<SalesViewPage />} />
         <Route path="pause" element={<PauseSales />} />
         <Route path="analytics" element={<SalesAnalytics />} />
+        <Route path="receipt-preview" element={<ReceiptPreview />} />
       </Route>
 
       {/* Staff */}
