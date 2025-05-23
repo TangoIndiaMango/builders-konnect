@@ -42,6 +42,7 @@ export const PaginatedTable = <T extends DataType>({
   updateLimitSize,
   ...rest // Spread remaining props for further customization (including scroll)
 }: CustomTableProps<T>) => {
+  // console.log('selectedRowKeys', selectedRowKeys?.length);
   return (
     <div className="w-full overflow-x-auto">
       {selectedRowKeys && selectedRowKeys.length > 0 && (

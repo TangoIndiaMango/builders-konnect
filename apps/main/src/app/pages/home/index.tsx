@@ -15,6 +15,7 @@ import Stats from '../../components/home/Stats';
 import { Stores } from '../../pages/staff/types';
 import { useNavigate } from 'react-router-dom';
 import dayjs, { Dayjs } from 'dayjs';
+import { DateRange } from '../../components/date/DatePickerrComp';
 
 function toQueryString(params: Record<string, any>) {
   return Object.entries(params)
@@ -31,36 +32,52 @@ const DashboardHome = () => {
   const [selectedStoreId, setSelectedStoreId] = useState<string>('');
   const stores = useFetchData('merchants/locations?q&sort_by=alphabetically');
   const storeList = stores?.data?.data as Stores[];
-  const queryParams = {
-    ...(customDateRange && { date_filter: customDateRange }),
-    ...(year && { date_filter: year.year() }),
+
+  // Base query params without year
+  const baseQueryParams = {
     ...(selectedStoreId && { location_id: selectedStoreId }),
   };
-  const queryString = toQueryString(queryParams);
+
+  const customDateRangeQueryParams = {
+    ...baseQueryParams,
+    ...(customDateRange && { date_filter: customDateRange }),
+  };
+
+  const yearQueryParams = {
+    ...baseQueryParams,
+    ...(year && { date_filter: year.year() }),
+  };
+
+  // Create separate query strings
+  // const baseQueryString = toQueryString(baseQueryParams);
+  const customDateRangeQueryString = toQueryString(customDateRangeQueryParams);
+  const yearQueryString = toQueryString(yearQueryParams);
+
+  // Stats URL without year filter
   const url = `merchants/dashboard/stats${
-    queryString ? `?${queryString}` : ''
+    customDateRangeQueryString ? `?${customDateRangeQueryString}` : ''
   }`;
+
+  // Other URLs with year filter
   const revenueUrl = `merchants/dashboard/revenue-analytics${
-    queryString ? `?${queryString}` : ''
+    yearQueryString ? `?${yearQueryString}` : ''
   }`;
   const productUrl = `merchants/dashboard/product-overview${
-    queryString ? `?${queryString}` : ''
+    yearQueryString ? `?${yearQueryString}` : ''
   }`;
   const customerUrl = `merchants/dashboard/customer-traffic${
-    queryString ? `?${queryString}` : ''
+    yearQueryString ? `?${yearQueryString}` : ''
   }`;
 
   const { data: recentCustomerData, isLoading: recentCustomerLoading } =
     useGetOverviewCustomers({
       paginate: 1,
       limit: 5,
-      date_filter: customDateRange,
+      // date_filter: customDateRange || '',
       // location_id: selectedStoreId,
     });
   const products = useFetchData(
-    `merchants/inventory-products?paginate=1&limit=5${
-      queryString ? `&${queryString}` : ''
-    }`
+    `merchants/inventory-products?paginate=1&limit=5`
   );
   const statsData = useFetchData(url);
   const revenueData = useFetchData(revenueUrl);
@@ -106,6 +123,7 @@ const DashboardHome = () => {
             isLoading={isLoading}
             year={year ? dayjs(year) : null}
             setYear={setYear as (value: Dayjs | null) => void}
+            dateRange={customDateRange || null}
           />
           <Revenue
             revenueData={revenueData}

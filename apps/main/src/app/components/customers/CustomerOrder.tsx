@@ -33,7 +33,7 @@ export default function CustomerOrder({customerId}: {customerId: string}) {
     sort_by: filterKey === 'sort_by' ? filterValue : '',
     payment_status: filterKey === 'payment_status' ? filterValue : '',
     order_status: filterKey === 'order_status' ? filterValue : '',
-    date_filter: customDateRange,
+    date_filter: customDateRange || '',
     customer_id: customerId,
     page: currentPage,
   });
@@ -76,6 +76,7 @@ export default function CustomerOrder({customerId}: {customerId: string}) {
     title="Orders"
     description="You are viewing all sales order below"
     setCustomDateRange={setCustomDateRange}
+    dateRange={customDateRange || null}
     handleFilterChange={handleFilterChange}
     filterValue={filterValue ?? ''}
     onExport={setExportType}

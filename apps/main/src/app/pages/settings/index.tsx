@@ -56,7 +56,7 @@ const SettingPage: React.FC = () => {
             refetch={profileData.refetch}
           />
           <ProfileInfoSection
-            data={profile?.business}
+            data={profile}
             isLoading={profileData.isLoading}
           />
 

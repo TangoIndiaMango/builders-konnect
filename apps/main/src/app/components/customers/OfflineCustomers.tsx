@@ -23,8 +23,9 @@ export interface CustomersProps extends FilterState{
   data: CustomersDataInterface;
   isLoading: boolean;
   withPagination?: boolean;
+  dateRange: string | null;
 }
-const OfflineCustomers = ({ data, isLoading, searchValue, setSearchValue, currentPage, setCustomDateRange, handleFilterChange, filterValue, onExport, filterOptions, setPage, reset , updateLimitSize, withPagination=true}: CustomersProps) => {
+const OfflineCustomers = ({ data, isLoading, searchValue, setSearchValue, currentPage, setCustomDateRange, handleFilterChange, filterValue, onExport, filterOptions, setPage, reset , updateLimitSize, withPagination=true, dateRange}: CustomersProps) => {
 
   const tableStatsData = [
     {
@@ -55,8 +56,10 @@ const OfflineCustomers = ({ data, isLoading, searchValue, setSearchValue, curren
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            
-            <DatePickerComp onRangeChange={setCustomDateRange} />
+            <DatePickerComp
+              onRangeChange={setCustomDateRange}
+              value={dateRange}
+            />
           </div>
         }
       />
@@ -83,7 +86,7 @@ const OfflineCustomers = ({ data, isLoading, searchValue, setSearchValue, curren
       onExport={onExport}
       filterOptions={filterOptions}
       >
-        <CustomersTable 
+        <CustomersTable
           data={data?.data?.data}
           currentPage={currentPage}
           onPageChange={setPage}

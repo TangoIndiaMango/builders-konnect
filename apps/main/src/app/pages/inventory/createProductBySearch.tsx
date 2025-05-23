@@ -143,17 +143,21 @@ const CreateProductBySearch = () => {
       const toUpload = values.images.filter(
         (img) => !img.url || !img.url.startsWith('http')
       );
-      imagesRes = alreadyUploaded.map((img) => img.url || '');
+      imagesRes = alreadyUploaded.map((img) => img.url || '').filter(Boolean);
 
       if (toUpload.length > 0) {
-        const uploadedImages = await Promise.all(
-          toUpload.map((image) => handleFileUpload(image.thumbUrl || image))
+        const uploadedImages = (
+          await Promise.all(
+            toUpload.map((image) => handleFileUpload(image.thumbUrl || image))
+          )
+        ).flat();
+
+        imagesRes = imagesRes.concat(
+          uploadedImages.map((img) => img.url).filter(Boolean)
         );
-        imagesRes = imagesRes.concat(uploadedImages.map((img) => img.url));
       }
     }
-
-
+    console.log('imageres', imagesRes);
     const productData = {
       product_creation_format: 'catalogue' as const,
       name: selectedProduct?.name || '',
@@ -166,7 +170,7 @@ const CreateProductBySearch = () => {
       tags: values.tags,
       size: values.measurement_unit,
       catalogue_id: selectedProduct?.id || '',
-      media: imagesRes,
+      media: imagesRes?.join('|'),
     };
 
     createProduct(productData, {
@@ -178,7 +182,9 @@ const CreateProductBySearch = () => {
         setIsModalVisible(true);
       },
       onError: (error: any) => {
-        message.error(error?.message || 'Failed to create product. Please try again.');
+        message.error(
+          error?.message || 'Failed to create product. Please try again.'
+        );
       },
     });
   };
@@ -264,24 +270,6 @@ const CreateProductBySearch = () => {
                   loading={isSearching}
                   options={[
                     {
-                      value: 'add-new',
-                      label: (
-                        <div>
-                          <p
-                            onClick={() =>
-                              navigate('/pos/inventory/add-product')
-                            }
-                            className="text-sm text-wrap"
-                          >
-                            Can't find the product you want to add?{' '}
-                            <span className="text-[#003399] cursor-pointer">
-                              Request to add single variation product
-                            </span>
-                          </p>
-                        </div>
-                      ),
-                    },
-                    {
                       value: 'add-multiple',
                       label: (
                         <div>
@@ -295,12 +283,32 @@ const CreateProductBySearch = () => {
                           >
                             Can't find the product you want to add?{' '}
                             <span className="text-[#003399] cursor-pointer">
-                              Request to add multiple variation product
+                              Request to add product
                             </span>
                           </p>
                         </div>
                       ),
                     },
+                    // {
+                    //   value: 'add-multiple',
+                    //   label: (
+                    //     <div>
+                    //       <p
+                    //         onClick={() =>
+                    //           navigate(
+                    //             '/pos/inventory/add-product?type=multiple'
+                    //           )
+                    //         }
+                    //         className="text-sm text-wrap"
+                    //       >
+                    //         Can't find the product you want to add?{' '}
+                    //         <span className="text-[#003399] cursor-pointer">
+                    //           Request to add multiple variation product
+                    //         </span>
+                    //       </p>
+                    //     </div>
+                    //   ),
+                    // },
                     ...(searchResults?.data?.map((product) => ({
                       key: product.id.toString(),
                       value: product.id.toString(),
@@ -370,22 +378,23 @@ const CreateProductBySearch = () => {
                   //   },
                   // ]}
                 >
-                  <Tooltip title="You can't upload an image to a catalogue product">
-                    <div>
-                      <Upload
-                        name="images"
-                        listType="picture-card"
-                        beforeUpload={beforeUpload}
-                        onPreview={handlePreview}
-                        maxCount={4}
-                        onChange={handleChange}
-                        fileList={fileList}
-                        disabled
-                      >
-                        {fileList.length >= 4 ? null : uploadButton}
-                      </Upload>
-                    </div>
-                  </Tooltip>
+                  {/* <Tooltip title="You can't upload an image to a catalogue product">
+
+                  </Tooltip> */}
+                  <div>
+                    <Upload
+                      name="images"
+                      listType="picture-card"
+                      beforeUpload={beforeUpload}
+                      onPreview={handlePreview}
+                      maxCount={4}
+                      onChange={handleChange}
+                      fileList={fileList}
+                      // disabled
+                    >
+                      {fileList.length >= 4 ? null : uploadButton}
+                    </Upload>
+                  </div>
 
                   <div>
                     {previewImage && (

@@ -119,6 +119,7 @@ const DiscountHome = () => {
             onExport={handleExport}
             filterValue={filterValue ?? ''}
             setCustomDateRange={setCustomDateRange}
+            dateRange={customDateRange || null}
             pageSize={pageSize}
             reset={reset}
             updateLimitSize={setLimitSize}

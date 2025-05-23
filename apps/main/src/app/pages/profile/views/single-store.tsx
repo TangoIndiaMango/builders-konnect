@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import {
   Button,
@@ -7,25 +6,32 @@ import {
   Modal,
   notification,
   Skeleton,
-  Tag,
+  Tabs,
+  TabsProps,
   Typography,
 } from 'antd';
-import { SkeletonLoader } from '../../../components/common/SkeletonLoader';
-import { exportCsvFromString, getStatusColor } from '../../../../utils/helper';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import SalesOverview from '../../../components/profile/store/OrderDetails';
 import {
   useFetchData,
   useFetchSingleData,
   useGetExportData,
   usePutData,
 } from '../../../../hooks/useApis';
-import StoreDetailsnfo from '../../../components/profile/store/StoreDetailsnfo';
-import { SingleStoreResponse } from '../types';
 import { useTableState } from '../../../../hooks/useTable';
-import { SalesFilterOptions } from '../../sales/constant';
-import StoreFormModal from '../../../components/profile/store/AddStoreForm';
+import { exportCsvFromString } from '../../../../utils/helper';
 import SuccessModal from '../../../components/common/SuccessModal';
+import {
+  ProductTable,
+  ProductTableData,
+} from '../../../components/inventory/product-table';
+import StoreFormModal from '../../../components/profile/store/AddStoreForm';
+import SalesOverview from '../../../components/profile/store/OrderDetails';
+import StoreDetailsnfo from '../../../components/profile/store/StoreDetailsnfo';
+import { PaginatedResponse } from '../../../types/paginatedData';
+import { SalesFilterOptions } from '../../sales/constant';
+import { SingleStoreResponse } from '../types';
+import { useDeleteProduct } from '../../../../service/inventory/inventoryFN';
 
 const SingleStoreDetails = () => {
   const { id } = useParams();
@@ -86,12 +92,24 @@ const SingleStoreDetails = () => {
   );
   const updateStore = usePutData(`merchants/locations/${id}`);
   const singleSalesOrder = getSalesOrder?.data?.data as SingleStoreResponse;
+  const products = useFetchData(
+    `merchants/inventory-products?paginate=1&page=${
+      currentPage ?? 1
+    }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
+      limitSize ?? 10
+    }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
+      filterKey === 'status' ? filterValue : ''
+    }`
+  );
   const navigate = useNavigate();
-
+  const productsData = products?.data?.data
+    ?.data as PaginatedResponse<ProductTableData>;
   const [isModalOpen, setIsModalOpen] = useState(false);
   // const [modalType, setModalType] = useState<'deactivate' | 'activate'>(
   //   singleSalesOrder?.status === 'active' ? 'deactivate' : 'activate'
   // );
+
+  const deleteProduct = useDeleteProduct();
   const handleDeactivateStore = () => {
     updateStore.mutate(
       {
@@ -143,6 +161,107 @@ const SingleStoreDetails = () => {
       },
     });
   };
+
+  const [tab, setTab] = useState('sales-overview');
+
+  const onChange = (key: string) => {
+    setTab(key);
+  };
+
+  const handleEdit = (record: ProductTableData) => {
+    navigate(`/pos/inventory/product-edit/${record.id}`, { state: record });
+  };
+
+  const handleViewDetails = (record: ProductTableData) => {
+    navigate(`/pos/inventory/preview-product/${record.id}`, { state: record });
+  };
+
+  const handleDelete = (record: ProductTableData) => {
+    Modal.confirm({
+      title: 'Delete Product',
+      content: `Are you sure you want to delete ${record.name}?`,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      okButtonProps: {
+        loading: deleteProduct.isPending,
+        disabled: deleteProduct.isPending,
+      },
+      centered: true,
+      styles: {
+        content: {
+          minWidth: 400,
+          borderRadius: '0px',
+        },
+      },
+      onOk: async () => {
+        try {
+          await deleteProduct.mutateAsync(record.id, {
+            onSuccess: () => {
+              message.success('Product deleted successfully');
+              products.refetch();
+            },
+            onError: (error) => {
+              // console.log(error);
+              message.error(error?.message || 'Failed to delete product');
+            },
+          });
+        } catch (err) {
+          console.error('Failed to delete product:', err);
+          // message.error('Failed to delete product');
+        }
+      },
+    });
+  };
+
+  const items: TabsProps['items'] = useMemo(
+    () => [
+      {
+        key: 'sales-overview',
+        label: 'Sales Overview',
+        children: (
+          <SalesOverview
+            data={singleSalesOrder}
+            isLoading={getSalesOrder.isLoading}
+            currentPage={currentPage}
+            setPage={setPage}
+            setSearchValue={setSearch}
+            handleFilterChange={handleFilterChange}
+            filterOptions={SalesFilterOptions}
+            onExport={handleExport}
+            filterValue={filterValue ?? ''}
+            setCustomDateRange={setCustomDateRange}
+            pageSize={pageSize}
+            reset={reset}
+            updateLimitSize={setLimitSize}
+            searchValue={searchValue}
+            dateRange={customDateRange || null}
+          />
+        ),
+      },
+      {
+        key: 'products-list',
+        label: 'Products/ Inventory List',
+        children: (
+          <ProductTable
+            data={productsData?.data}
+            currentPage={currentPage}
+            onPageChange={setPage}
+            loading={products?.isLoading}
+            showCheckbox={true}
+            total={productsData?.total}
+            perPage={productsData?.per_page}
+            updateLimitSize={setLimitSize}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onViewDetails={handleViewDetails}
+          />
+        ),
+      },
+    ],
+    [tab]
+  );
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-5 p-5 bg-white">
@@ -188,21 +307,11 @@ const SingleStoreDetails = () => {
             data={singleSalesOrder}
             isLoading={getSalesOrder.isLoading}
           />
-          <SalesOverview
-            data={singleSalesOrder}
-            isLoading={getSalesOrder.isLoading}
-            currentPage={currentPage}
-            setPage={setPage}
-            setSearchValue={setSearch}
-            handleFilterChange={handleFilterChange}
-            filterOptions={SalesFilterOptions}
-            onExport={handleExport}
-            filterValue={filterValue ?? ''}
-            setCustomDateRange={setCustomDateRange}
-            pageSize={pageSize}
-            reset={reset}
-            updateLimitSize={setLimitSize}
-            searchValue={searchValue}
+
+          <Tabs
+            defaultActiveKey="all-sales"
+            onChange={onChange}
+            items={items}
           />
         </div>
       </div>

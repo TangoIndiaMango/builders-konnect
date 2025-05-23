@@ -16,6 +16,7 @@ import useDebounce from './useDebounce';
 import { useCallback, useMemo, useState } from 'react';
 import type { Dayjs } from 'dayjs';
 import { DatePickerProps } from 'antd';
+import { DateRange } from '@/app/components/date/DatePickerrComp';
 
 export const useTableState = (tableName: string) => {
   const atoms = useMemo(() => createTableAtoms(tableName), [tableName]);
@@ -31,19 +32,26 @@ export const useTableState = (tableName: string) => {
   const [exportType, setExportType] = useAtom(atoms.exportType);
   const [year, setYear] = useAtom(atoms.year);
 
-  const onRangeChange = (
-    dates: null | (Dayjs | null)[],
-    dateStrings: string[]
-  ) => {
+  // const onRangeChange = (
+  //   dates: null | (Dayjs | null)[],
+  //   dateStrings : string[] | null
+  // ) => {
+  //   if (dates) {
+  //     // console.log('From: ', dates[0], ', to: ', dates[1]);
+  //     // console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+  //     setDateRange(dateStrings?.[0] + '|' + dateStrings?.[1]);
+  //   } else {
+  //     setDateRange(null);
+  //   }
+  // };
+
+  const onRangeChange = (dates: DateRange, dateStrings: string[]) => {
     if (dates) {
-      // console.log('From: ', dates[0], ', to: ', dates[1]);
-      // console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
-      setDateRange(dateStrings[0] + '|' + dateStrings[1]);
-    } else {
-      setDateRange('');
+      const [start, end] = dates;
+      const formattedDate = `${start?.format('YYYY-MM-DD')}|${end?.format('YYYY-MM-DD')}`;
+      setDateRange(formattedDate);
     }
   };
-
   const handleYearChange: DatePickerProps['onChange'] = useCallback(
     (date: Dayjs | null, _: string | string[]) => {
       // console.log(date, dateString);

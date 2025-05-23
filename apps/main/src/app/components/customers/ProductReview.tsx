@@ -14,6 +14,7 @@ export interface ProductReviewProps  extends FilterState{
   data: ProductReviewDataInterface;
   isLoading: boolean;
   withPagination?: boolean;
+  dateRange: string | null;
 }
 const ProductReview = ({ data,
   isLoading,
@@ -28,9 +29,10 @@ const ProductReview = ({ data,
   setPage,
   reset,
   updateLimitSize,
+  dateRange,
   withPagination = true}: ProductReviewProps) => {
-   
-  
+
+
 
   return (
     <div className="space-y-3">
@@ -40,7 +42,10 @@ const ProductReview = ({ data,
             actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            <DatePickerComp onRangeChange={setCustomDateRange} />
+            <DatePickerComp
+              onRangeChange={setCustomDateRange}
+              value={dateRange}
+            />
           </div>
         }
       />

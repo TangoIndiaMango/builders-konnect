@@ -247,6 +247,7 @@ const ProfilePage: React.FC = () => {
             updateLimitSize={setLimitSize}
             searchValue={searchValue}
             refetch={stores?.refetch}
+            dateRange={customDateRange || null}
           />
         ),
       },
@@ -270,6 +271,7 @@ const ProfilePage: React.FC = () => {
             updateLimitSize={setLimitSize}
             searchValue={searchValue}
             refetch={subscription?.refetch}
+            dateRange={customDateRange || null}
           />
         ),
       },
