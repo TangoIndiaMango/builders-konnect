@@ -49,14 +49,13 @@ const Login = () => {
           description: 'You have successfully logged in.',
           duration: 2,
         });
-        // Add a small delay before navigation to ensure notification is seen
-        setTimeout(() => {
-          if (from) {
-            navigate(from);
-          } else {
-            navigate('/');
-          }
-        }, 1000);
+
+        // Navigate immediately after login
+        if (from) {
+          navigate(from);
+        } else {
+          navigate('/');
+        }
       } else {
         throw new Error('Invalid response from server');
       }

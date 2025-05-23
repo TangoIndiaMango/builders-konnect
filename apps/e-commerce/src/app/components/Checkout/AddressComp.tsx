@@ -17,6 +17,7 @@ interface AddressCompProps {
   setShowModal: (showModal: boolean) => void;
   selectedShippingAddress: AddressI | null;
   selectedBillingAddress: AddressI | null;
+  isInitialized: boolean;
 }
 const AddressComp = ({
   value,
@@ -30,6 +31,7 @@ const AddressComp = ({
   setShowModal,
   selectedShippingAddress,
   selectedBillingAddress,
+  isInitialized,
 }: AddressCompProps) => {
   const [addressType, setAddressType] = useState<'billing' | 'shipping'>(
     'billing'
@@ -89,7 +91,10 @@ const AddressComp = ({
                       state={address?.state || ''}
                       country={address?.country || ''}
                       loading={isLoading}
-                      isSelected={selectedShippingAddress?.id === address.id}
+                      isSelected={
+                        isInitialized &&
+                        selectedShippingAddress?.id === address.id
+                      }
                       onSelect={() =>
                         onAddressSelect('shipping', address)
                       }
@@ -151,7 +156,10 @@ const AddressComp = ({
                     state={address?.state || ''}
                     country={address?.country || ''}
                     loading={isLoading}
-                    isSelected={selectedBillingAddress?.id === address.id}
+                    isSelected={
+                      isInitialized &&
+                      selectedBillingAddress?.id === address.id
+                    }
                     onSelect={() =>
                       onAddressSelect('billing', address)
                     }

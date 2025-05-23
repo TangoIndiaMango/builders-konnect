@@ -92,12 +92,31 @@ export const useCart = () => {
     }
   }, [setCart, setIsLoading, setError, fetchCart]);
 
+  const updateQuantity = useCallback(async (itemId: string, quantity: number): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await axiosInstance.patch(`${baseUrl}customers/carts/${itemId}`, { quantity });
+      await fetchCart(); // Refresh cart after updating quantity
+    } catch (error) {
+      let errorMessage = 'Failed to update item quantity';
+      if (error instanceof AxiosError && error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      setError(errorMessage);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [setCart, setIsLoading, setError, fetchCart]);
+
   return {
     cart,
     isLoading,
     error,
     fetchCart,
     addToCart,
-    removeFromCart
+    removeFromCart,
+    updateQuantity,
   };
 };

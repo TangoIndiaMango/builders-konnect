@@ -32,6 +32,7 @@ import ReviewSection from './pages/ReviewSection';
 import Sell from './pages/sell';
 import SubcategoryList from './pages/SubcategoryList';
 import VendorShop from './pages/VendorStore/VendorPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
@@ -48,16 +49,7 @@ const App = () => {
 
       {/* Main Site Routes */}
       <Route path="/" element={<MainLayout />}>
-        <Route
-          path="checkout"
-          element={
-            <CheckoutProvider>
-              <CheckoutPage />
-            </CheckoutProvider>
-          }
-        />
-        <Route path="carts" element={<EmptyCart />} />
-        <Route path="order-summary" element={<CartSummary />} />
+        {/* Public Routes */}
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="sell" element={<Sell />} />
@@ -70,22 +62,46 @@ const App = () => {
         <Route path="/product-details/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/success" element={<OrderSuccess />} />
         <Route path="/vendor-store/:id" element={<VendorShop />} />
         <Route path="/review/:id" element={<ReviewSection />} />
+        <Route path="carts" element={<EmptyCart />} />
+        <Route path="order-summary" element={<CartSummary />} />
 
-        {/* Profile Routes */}
-        <Route path="/profile" element={<Profile />}>
+        {/* Protected Routes - Require Authentication */}
+        <Route
+          path="checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutProvider>
+                <CheckoutPage />
+              </CheckoutProvider>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
+        
+        {/* Protected Profile Routes */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Navigate to="/profile/orders" replace />} />
           <Route path="orders" element={<Orders />} />
           <Route path="addresses" element={<Addresses />} />
           <Route path="payment" element={<PaymentMethods />} />
           <Route path="account" element={<AccountDetails />} />
         </Route>
-        <Route path="/edit/billing/:id?" element={<BillingAddressEditPage />} />
+        <Route
+          path="/edit/billing/:id?"
+          element={<ProtectedRoute><BillingAddressEditPage /></ProtectedRoute>}
+        />
         <Route
           path="/edit/shipping/:id?"
-          element={<ShippingAddressEditPage />}
+          element={<ProtectedRoute><ShippingAddressEditPage /></ProtectedRoute>}
         />
       </Route>
 
