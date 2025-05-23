@@ -53,5 +53,3 @@ vitest.config.*.timestamp*
 .env
 
 helper
-
-package-lock.json
