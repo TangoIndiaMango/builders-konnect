@@ -244,7 +244,10 @@ const ProductsPage = () => {
           actionButton={
             <div className="flex flex-wrap items-center justify-end gap-3">
               <Button onClick={reset}>Clear</Button>
-              <DatePickerComp onRangeChange={setCustomDateRange} />
+              <DatePickerComp
+                onRangeChange={setCustomDateRange}
+                value={customDateRange}
+              />
             </div>
           }
         />

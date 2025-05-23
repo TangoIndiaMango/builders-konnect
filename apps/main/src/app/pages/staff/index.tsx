@@ -187,6 +187,7 @@ const StaffHome = () => {
             reset={reset}
             updateLimitSize={setLimitSize}
             searchValue={searchValue}
+            dateRange={customDateRange || null}
           />
         ),
       },

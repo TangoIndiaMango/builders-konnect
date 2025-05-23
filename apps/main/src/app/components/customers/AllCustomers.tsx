@@ -24,6 +24,7 @@ export interface CustomersProps extends FilterState {
   data: CustomersDataInterface;
   isLoading: boolean;
   withPagination?: boolean;
+  dateRange: string | null;
 }
 const AllCustomers = ({
   data,
@@ -40,6 +41,7 @@ const AllCustomers = ({
   reset,
   updateLimitSize,
   withPagination = true,
+  dateRange,
 }: CustomersProps) => {
   const tableStatsData = [
     {
@@ -70,7 +72,10 @@ const AllCustomers = ({
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            <DatePickerComp onRangeChange={setCustomDateRange} />
+            <DatePickerComp
+              onRangeChange={setCustomDateRange}
+              value={dateRange}
+            />
           </div>
         }
       />

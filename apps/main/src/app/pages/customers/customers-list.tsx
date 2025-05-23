@@ -50,7 +50,7 @@ const CustomersList: React.FC = () => {
     limit: limitSize,
     type: tab === 'all' ? '' : tab,
     q: searchValue,
-    date_filter: customDateRange,
+    date_filter: customDateRange || '',
     sort_by: filterKey === 'sort_by' ? filterValue : '',
   });
 
@@ -81,6 +81,7 @@ const CustomersList: React.FC = () => {
             currentPage={currentPage}
             reset={reset}
             setPage={setPage}
+            dateRange={customDateRange || null}
           />
         ),
       },
@@ -102,7 +103,7 @@ const CustomersList: React.FC = () => {
             reset={reset}
             setPage={setPage}
             updateLimitSize={setLimitSize}
-
+            dateRange={customDateRange || null}
           />
         ),
       },
@@ -124,7 +125,7 @@ const CustomersList: React.FC = () => {
             reset={reset}
             setPage={setPage}
             updateLimitSize={setLimitSize}
-
+            dateRange={customDateRange || null}
           />
         ),
       },

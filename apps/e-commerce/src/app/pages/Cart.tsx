@@ -124,19 +124,19 @@ const CartPage = () => {
             </div>
 
             <div className="flex gap-4 items-center justify-center">
-              <div className=''>
+              <div className="">
                 <h1 className="text-sm text-[#4E4E4E]">Quantity:</h1>
-                <InputNumber
-                  min={1}
-                  max={1000}
+                <Select
                   value={item.quantity}
-                  onChange={(value) =>
-                    handleQuantityChange(item?.id, value ?? 1)
-                  }
+                  onChange={(value) => handleQuantityChange(item.id, value)}
                   style={{ width: 80 }}
-                  controls={true}
-                  size="middle"
-                />
+                >
+                  {[...Array(10)].map((_, idx) => (
+                    <Option key={idx + 1} value={idx + 1}>
+                      {idx + 1}
+                    </Option>
+                  ))}
+                </Select>
               </div>
 
               <RiDeleteBinLine
@@ -155,9 +155,7 @@ const CartPage = () => {
           <div className="w-full max-w-md text-right">
             <div className="flex justify-between items-center mb-2">
               <Text className="text-[#4E4E4E] text-base">Subtotal</Text>
-              <Text className="">
-                ₦ {subtotal.toLocaleString()}
-              </Text>
+              <Text className="">₦ {subtotal.toLocaleString()}</Text>
             </div>
             <Text
               type="secondary"

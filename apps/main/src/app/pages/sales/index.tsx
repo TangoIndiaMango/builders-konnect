@@ -43,7 +43,7 @@ const SalesHome = () => {
     sort_by: filterKey === 'sort_by' ? filterValue : '',
     payment_status: filterKey === 'payment_status' ? filterValue : '',
     order_status: filterKey === 'order_status' ? filterValue : '',
-    date_filter: customDateRange,
+    date_filter: customDateRange || '',
     page: currentPage,
   });
 
@@ -98,6 +98,7 @@ const SalesHome = () => {
             filterValue={filterValue ?? ''}
             onExport={setExportType}
             updateLimitSize={setLimitSize}
+            dateRange={customDateRange || null}
           />
         ),
       })),

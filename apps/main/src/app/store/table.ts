@@ -29,7 +29,7 @@ export interface TableStateData {
   sortOrder?: string;
   limitSize?: number;
   exportType?: string;
-  customDateRange?: string;
+  customDateRange?: string | null;
 
   // Year picker
   year?: Dayjs | null;
@@ -39,6 +39,7 @@ export interface TableStateData {
 // atoms.ts
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
+import { DateRange } from '../components/date/DatePickerrComp';
 
 export const defaultTableState: TableStateData = {
   searchTerm: '',
@@ -54,7 +55,7 @@ export const defaultTableState: TableStateData = {
   sortOrder: '',
   limitSize: 10,
   exportType: '',
-  customDateRange: '',
+  customDateRange: null,
   periodOptions: [
     { label: 'This Month', value: 'this_month' },
     { label: 'Last Month', value: 'last_month' },
@@ -123,7 +124,7 @@ export const createTableAtoms = (tableName: string) => {
 
   const customDateRangeAtom = atom(
     (get) => get(tableStateAtom).customDateRange,
-    (get, set, newValue: string) => {
+    (get, set, newValue: string | null) => {
       set(tableStateAtom, { customDateRange: newValue });
     }
   );

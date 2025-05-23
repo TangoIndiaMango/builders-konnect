@@ -25,6 +25,7 @@ export interface VendorReviewProps extends FilterState {
   data: VendorReviewDataInterface;
   isLoading: boolean;
   withPagination?: boolean;
+  dateRange: string | null;
 }
 const VendorReview = ({
   data,
@@ -39,6 +40,7 @@ const VendorReview = ({
   setPage,
   reset,
   updateLimitSize,
+  dateRange,
   withPagination = true,
 }: VendorReviewProps) => {
   const tableStatsData = [

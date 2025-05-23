@@ -31,6 +31,7 @@ export interface SalesProps extends FilterState {
   description: string;
   isDashboard?: boolean;
   withPagination?: boolean;
+  dateRange: string | null;
 }
 const AllSales = ({
   data,
@@ -50,6 +51,7 @@ const AllSales = ({
   filterOptions,
   isDashboard = false,
   withPagination = true,
+  dateRange,
 }: SalesProps) => {
   const tableStatsData = useMemo(
     () => [
@@ -89,9 +91,11 @@ const AllSales = ({
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-        
 
-            <DatePickerComp onRangeChange={setCustomDateRange} />
+            <DatePickerComp
+              onRangeChange={setCustomDateRange}
+              value={dateRange}
+            />
           </div>
         }
       />

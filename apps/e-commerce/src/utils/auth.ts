@@ -9,6 +9,7 @@ interface AuthUser {
 
 export const setAuthUser = (data: AuthUser) => {
   sessionStorage.setItem('auth_user', JSON.stringify(data));
+  window.dispatchEvent(new Event('auth-change'));
 };
 
 export const getAuthUser = (): AuthUser | null => {
@@ -18,6 +19,7 @@ export const getAuthUser = (): AuthUser | null => {
 
 export const removeAuthUser = () => {
   sessionStorage.removeItem('auth_user');
+  window.dispatchEvent(new Event('auth-change'));
 };
 
 export const isAuthenticated = (): boolean => {

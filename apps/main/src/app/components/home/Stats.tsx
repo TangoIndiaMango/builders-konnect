@@ -33,6 +33,7 @@ interface StatsProps {
   isLoading: boolean;
   year: Dayjs | null;
   setYear: (value: Dayjs | null) => void;
+  dateRange: string | null;
 }
 
 const Stats = ({
@@ -43,8 +44,7 @@ const Stats = ({
   setSelectedStore,
   selectedStore,
   isLoading,
-  year,
-  setYear,
+  dateRange,
 }: StatsProps) => {
   const statsListData = useMemo(
     () => [
@@ -106,7 +106,7 @@ const Stats = ({
             }}
           />
 
-          <YearPicker onChange={setYear} value={year} />
+          <DatePickerComp onRangeChange={onRangeChange} value={dateRange} />
         </div>
       }
     >
