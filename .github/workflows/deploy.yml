@@ -29,25 +29,25 @@ jobs:
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_MAIN_APP }}
 
-  # build-e-commerce:
-  #   name: Build e-commerce
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  build-e-commerce:
+    name: Build e-commerce
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 22
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-  #     - name: Install dependencies
-  #       run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-  #     - name: Build e-commerce
-  #       run: npx nx run e-commerce:build --verbose
+      - name: Build e-commerce
+        run: npx nx run e-commerce:build --verbose
 
-  #     - name: Trigger Render Deploy Hook (e-commerce)
-  #       if: success()
-  #       run: |
-  #         curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_ECOMMERCE }}
+      - name: Trigger Render Deploy Hook (e-commerce)
+        if: success()
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_ECOMMERCE }}
