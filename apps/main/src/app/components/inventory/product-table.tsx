@@ -71,7 +71,7 @@ export const ProductTable = ({
             src={
               record.primary_media_url
                 ? record.primary_media_url
-                : `https://placehold.co/150x150/E6F7FF/black?text=${record.name
+                : `https://placehold.co/150x150/E6F7FF/black.png?text=${record.name
                     ?.split(' ')
                     .map((word) => word[0]?.toUpperCase())
                     .join('')}`

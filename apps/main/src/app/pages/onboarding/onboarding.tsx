@@ -151,9 +151,9 @@ export default function SubscriptionCheckout() {
             in minutes.
           </div>
         </div>
-        <div className="flex gap-4 items-center justify-evenly">
-          <div className="w-full md:w-1/2">
-            <Card style={{ borderRadius: 12 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="w-full">
+            <Card style={{ borderRadius: 10 }}>
               <Form
                 form={form}
                 layout="vertical"
@@ -167,10 +167,10 @@ export default function SubscriptionCheckout() {
                     { required: true, message: 'Please enter your name' },
                   ]}
                 >
-                  <Input />
+                  <Input size="large" />
                 </Form.Item>
                 <Form.Item label="Company Name" name="company">
-                  <Input />
+                  <Input size="large" />
                 </Form.Item>
                 <Form.Item
                   label="Email Address"
@@ -180,7 +180,7 @@ export default function SubscriptionCheckout() {
                     { type: 'email', message: 'Enter a valid email' },
                   ]}
                 >
-                  <Input />
+                  <Input size="large" />
                 </Form.Item>
                 <Form.Item
                   label="Phone Number"
@@ -192,13 +192,28 @@ export default function SubscriptionCheckout() {
                     },
                   ]}
                 >
-                  <Input />
+                  <Input size="large" />
                 </Form.Item>
               </Form>
             </Card>
           </div>
-          <div className="w-full md:w-1/2">
-            <Card>
+          <div className="!space-y-3 w-full">
+            <Card style={{ borderRadius: 10 }}>
+              <div className=" w-full">
+                <div className="space-y-3">
+                  <Title level={5}>Discount</Title>
+                  <Text type="secondary">Apply discount code</Text>
+                  <div className="flex items-center gap-3">
+                    <Input placeholder="Enter discount code" size="large" />
+                    <Button type="primary"size="large">
+                      Apply
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card style={{ borderRadius: 10 }}>
               <div className=" divide-y divide-gray-200 space-y-5">
                 <div className="py-2 flex justify-between">
                   <span>{planName}</span>
@@ -209,6 +224,10 @@ export default function SubscriptionCheckout() {
                   >
                     {formatBalance(Number(selectedPlan.amount))}
                   </span>
+                </div>
+                <div className="py-2 flex justify-between">
+                  <span>Discount</span>
+                  <span>{formatBalance(Number(selectedPlan.discount))}</span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span>VAT</span>
