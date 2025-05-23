@@ -59,7 +59,9 @@ const CreateStepOne = ({
     if (images && Array.isArray(images)) {
       setFileList(images);
       // Also update media state if needed
-      const mediaUrls = images.map((file) => file.url || file.thumbUrl).filter(Boolean);
+      const mediaUrls = images
+        .map((file) => file.url || file.thumbUrl)
+        .filter(Boolean);
       setMedia(mediaUrls);
     }
   }, [form, form.getFieldValue('productImages')]);
@@ -242,18 +244,46 @@ const CreateStepOne = ({
           </Form.Item>
         </>
       ) : (
-        <Form.Item
-          label="Unit Type"
-          name="measurement_unit"
-          rules={[{ required: true, message: 'Required' }]}
-        >
-          <Select
-            placeholder="Select measuring unit"
-            options={measuringUnits}
-            onChange={handleMeasuringUnitChange}
-            style={{ width: '100%' }}
-          />
-        </Form.Item>
+        <>
+          <Form.Item
+            label="Unit Type"
+            name="measurement_unit"
+            rules={[{ required: true, message: 'Required' }]}
+          >
+            <Select
+              placeholder="Select measuring unit"
+              options={measuringUnits}
+              onChange={handleMeasuringUnitChange}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Dimension"
+            name="dimension"
+            help="Enter the dimension of the product in w x b x h"
+            rules={[{ required: true, message: 'Required' }]}
+          >
+            <Input
+              placeholder="Enter dimension"
+              type="number"
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Weight"
+            help="Enter the weight of the product in grams"
+            name="weight"
+            rules={[{ required: true, message: 'Required' }]}
+          >
+            <Input
+              placeholder="Enter weight"
+              type="number"
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+        </>
       )}
     </div>
   );
