@@ -18,6 +18,7 @@ interface StoreListProps extends FilterState {
   data: any;
   isLoading: boolean;
   refetch: () => void;
+  dateRange: string | null;
 }
 
 const StoreList = ({
@@ -36,6 +37,7 @@ const StoreList = ({
   setSearchValue,
   reset,
   refetch,
+  dateRange,
 }: StoreListProps) => {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);

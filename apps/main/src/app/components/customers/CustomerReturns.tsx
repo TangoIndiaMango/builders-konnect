@@ -1,4 +1,3 @@
-import { PlusOutlined } from '@ant-design/icons';
 import { Button, Divider } from 'antd';
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,19 +9,17 @@ import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import TableWrapper from '../../components/common/Table/TableWrapper';
 import TableStats from '../../components/common/TableStats';
 import DatePickerComp from '../../components/date/DatePickerrComp';
-import { filterOptions } from '../../lib/constant';
 import { ReturnsTable } from '../../components/returns/table/ReturnsTable';
-import PageIntroBanner from '../../components/common/PageIntroBanner';
+import { filterOptions } from '../../lib/constant';
 
 interface ReturnStats {
   approved_request: number;
   cancelled_request: number;
   total_refund_value: number;
   total_returns: number;
-  
 }
 
-const CustomerReturns = ({customerId}: {customerId: string}) => {
+const CustomerReturns = ({ customerId }: { customerId: string }) => {
   const {
     searchValue,
     setSearch,
@@ -40,7 +37,6 @@ const CustomerReturns = ({customerId}: {customerId: string}) => {
     limitSize,
     setLimitSize,
   } = useTableState('returns');
-
 
   const exportProducts = useGetExportData(
     `merchants/returns?export=${exportType}`
@@ -67,11 +63,11 @@ const CustomerReturns = ({customerId}: {customerId: string}) => {
   }, [exportType]);
 
   const returns = useFetchData(
-    `merchants/returns?paginate=1&page=${
-      currentPage ?? 1
-    }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
-      limitSize ?? 10
-    }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
+    `merchants/returns?paginate=1&page=${currentPage ?? 1}&date_filter=${
+      customDateRange ?? ''
+    }&q=${searchValue ?? ''}&limit=${limitSize ?? 10}&sort_by=${
+      filterKey === 'sort_by' ? filterValue : ''
+    }&status=${
       filterKey === 'status' ? filterValue : ''
     }&customer_id=${customerId}`
   );
@@ -87,9 +83,9 @@ const CustomerReturns = ({customerId}: {customerId: string}) => {
   );
 
   const stats = returns?.data?.data?.stats as ReturnStats;
-  const returnsData = returns?.data?.data?.data
+  const returnsData = returns?.data?.data?.data;
   // console.log(returnsData,"returnsData")
- 
+
   const navigate = useNavigate();
 
   const tableStatsData = useMemo(
@@ -122,57 +118,64 @@ const CustomerReturns = ({customerId}: {customerId: string}) => {
     [stats]
   );
 
-
   return (
     <div className="h-full">
-        <div className="p-2 space-y-3 bg-white">
-          <DisplayHeader
-            title="All Returns and Refund"
-            description="View all returns and refunds for this customer"
-            actionButton={
-              <div className="flex flex-wrap items-center justify-end gap-3">
-                <Button onClick={reset}>Clear</Button>
-                <DatePickerComp onRangeChange={setCustomDateRange} />
-              </div>
-            }
-          />
-
-          <SkeletonLoader active={returns?.isLoading} type="table" columns={4} rows={1}>
-            <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
-              {tableStatsData?.map((item, index) => (
-                <TableStats
-                  key={index}
-                  label={item?.label}
-                  value={item?.value}
-                  valueBgColor={item?.valueBgColor}
-                  valueColor={item?.valueColor}
-                />
-              ))}
+      <div className="p-2 space-y-3 bg-white">
+        <DisplayHeader
+          title="All Returns and Refund"
+          description="View all returns and refunds for this customer"
+          actionButton={
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <Button onClick={reset}>Clear</Button>
+              <DatePickerComp
+                onRangeChange={setCustomDateRange}
+                value={customDateRange}
+              />
             </div>
-          </SkeletonLoader>
-          <Divider />
+          }
+        />
 
-          <TableWrapper
-            filterOptions={filterOptions}
-            onFilterChange={handleFilterChange}
-            selectedFilter={filterValue}
-            searchValue={searchValue}
-            setSearchValue={setSearch}
-            onExport={handleExport}
-          >
-            <ReturnsTable
-              currentPath={false}
-              data={returnsData}
-              currentPage={currentPage}
-              onPageChange={setPage}
-              loading={returns?.isLoading}
-              showCheckbox={true}
-              total={returnsData?.total}
-              perPage={returnsData?.per_page}
-              updateLimitSize={setLimitSize}
-            />
-          </TableWrapper>
-        </div>
+        <SkeletonLoader
+          active={returns?.isLoading}
+          type="table"
+          columns={4}
+          rows={1}
+        >
+          <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
+            {tableStatsData?.map((item, index) => (
+              <TableStats
+                key={index}
+                label={item?.label}
+                value={item?.value}
+                valueBgColor={item?.valueBgColor}
+                valueColor={item?.valueColor}
+              />
+            ))}
+          </div>
+        </SkeletonLoader>
+        <Divider />
+
+        <TableWrapper
+          filterOptions={filterOptions}
+          onFilterChange={handleFilterChange}
+          selectedFilter={filterValue}
+          searchValue={searchValue}
+          setSearchValue={setSearch}
+          onExport={handleExport}
+        >
+          <ReturnsTable
+            currentPath={false}
+            data={returnsData}
+            currentPage={currentPage}
+            onPageChange={setPage}
+            loading={returns?.isLoading}
+            showCheckbox={true}
+            total={returnsData?.total}
+            perPage={returnsData?.per_page}
+            updateLimitSize={setLimitSize}
+          />
+        </TableWrapper>
+      </div>
     </div>
   );
 };

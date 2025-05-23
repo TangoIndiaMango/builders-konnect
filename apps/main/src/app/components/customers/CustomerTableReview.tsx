@@ -14,6 +14,7 @@ export interface CustomerReviewProps extends FilterState {
   data: CustomerReviewDataInterface;
   isLoading: boolean;
   withPagination?: boolean;
+  dateRange: string | null;
 }
 
 const CustomerTableReview = ({
@@ -31,6 +32,7 @@ const CustomerTableReview = ({
   reset,
   updateLimitSize,
   withPagination = true,
+  dateRange,
 }: CustomerReviewProps) => {
   return (
     <div className="space-y-3">
@@ -40,7 +42,10 @@ const CustomerTableReview = ({
         actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            <DatePickerComp onRangeChange={setCustomDateRange} />
+            <DatePickerComp
+              onRangeChange={setCustomDateRange}
+              value={dateRange}
+            />
           </div>
         }
       />

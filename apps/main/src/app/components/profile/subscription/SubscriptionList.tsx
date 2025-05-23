@@ -23,6 +23,7 @@ interface SubscriptionListProps extends FilterState {
   data: any;
   isLoading: boolean;
   refetch: () => void;
+  dateRange: string | null;
 }
 const SubscriptionList = ({
   data,
@@ -40,6 +41,7 @@ const SubscriptionList = ({
   setSearchValue,
   reset,
   refetch,
+  dateRange,
 }: SubscriptionListProps) => {
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<any>(null);

@@ -69,6 +69,7 @@ export default function CustomerReviews({customerId}: {customerId: string}) {
       reset={reset}
       setPage={setPage}
       withPagination={true}
+      dateRange={customDateRange || null}
     />
   );
 }

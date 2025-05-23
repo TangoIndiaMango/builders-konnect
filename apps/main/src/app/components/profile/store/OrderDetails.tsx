@@ -13,6 +13,7 @@ import { OrdersTable } from '../../sales/table/salesTable';
 interface OrderDetailsProps extends FilterState {
   data: SingleStoreResponse;
   isLoading: boolean;
+  dateRange: string | null;
 }
 
 const SalesOverview = ({
@@ -30,6 +31,7 @@ const SalesOverview = ({
   searchValue,
   setSearchValue,
   reset,
+  dateRange,
 }: OrderDetailsProps) => {
 
   const tableStatsData = useMemo(
@@ -81,6 +83,7 @@ const SalesOverview = ({
           </Button>
           <DatePickerComp
             onRangeChange={setCustomDateRange}
+            value={dateRange}
           />
         </div>}
       />

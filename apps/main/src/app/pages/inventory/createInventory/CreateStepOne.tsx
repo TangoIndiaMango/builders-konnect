@@ -232,10 +232,10 @@ const CreateStepOne = ({
                   onClick={() => setIsVariantModalVisible(true)}
                   icon={<PlusOutlined />}
                 >
-                  Add product variant
+                  Add product attribute
                 </Button>
                 <p className="text-sm text-gray-400">
-                  Select the product variations of the product you want to add.
+                  Select the product attributes of the product you want to add.
                 </p>
               </div>
             )}

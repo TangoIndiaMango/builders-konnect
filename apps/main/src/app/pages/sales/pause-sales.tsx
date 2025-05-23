@@ -35,7 +35,7 @@ const PausedSales = () => {
     sort_by: filterKey === 'sort_by' ? filterValue : '',
     payment_status: filterKey === 'payment_status' ? filterValue : '',
     order_status: filterKey === 'order_status' ? filterValue : '',
-    date_filter: customDateRange,
+    date_filter: customDateRange || '',
     page: currentPage,
   });
 
@@ -54,7 +54,10 @@ const PausedSales = () => {
               <div className="flex flex-wrap items-center gap-3">
                 <Button onClick={reset}>Clear</Button>
 
-                <DatePickerComp onRangeChange={setCustomDateRange} />
+                <DatePickerComp
+                  onRangeChange={setCustomDateRange}
+                  value={customDateRange}
+                />
               </div>
             }
           />

@@ -269,7 +269,7 @@ const MultiVariants = ({
       {/* Bulk Actions */}
       <div className=" flex flex-wrap gap-2">
         <Button type="primary" onClick={() => setMultiOptionModalOpen(true)}>
-          Add Variant
+          Add Product Attributes
         </Button>
 
         <Button
