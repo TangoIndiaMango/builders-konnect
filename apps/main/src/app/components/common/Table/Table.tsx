@@ -61,8 +61,8 @@ export const PaginatedTable = <T extends DataType>({
       ) : (
         <AntTable
           columns={columns}
-          dataSource={data}
-          loading={false} // We handle loading with our skeleton
+          dataSource={Array.isArray(data) ? data : []} 
+          loading={false} 
           rowSelection={showCheckbox ? rowSelection : undefined}
           pagination={
             showPagination
@@ -75,7 +75,6 @@ export const PaginatedTable = <T extends DataType>({
                   showQuickJumper: true,
                   showTotal: (total) => `Total ${total} items`,
                   onShowSizeChange: updateLimitSize,
-
                 }
               : false
           }
