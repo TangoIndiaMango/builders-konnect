@@ -45,13 +45,13 @@ const Header = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center h-8">
             <div className="hidden md:flex items-center divide-x divide-white">
-              <Link to="/" className="!text-white hover:!text-gray-200 !text-xs px-6 first:pl-0">Builders konnect Loyalty</Link>
+                {/* <Link to="/" className="!text-white hover:!text-gray-200 !text-xs px-6 first:pl-0">Builders konnect Loyalty</Link> */}
               <Link to="/customer-support" className="!text-white hover:!text-gray-200 !text-xs px-6">Customer Support</Link>
             </div>
             <div className="hidden md:flex items-center divide-x divide-white">
               <Link to="/bulk-orders" className="!text-white hover:!text-gray-200 !text-xs px-6">Bulk Orders</Link>
-              <Link to="/artisan-hub" className="!text-white hover:!text-gray-200 !text-xs px-6">Artisan Hub</Link>
-              <Link to="/learning" className="!text-white hover:!text-gray-200 !text-xs px-6">Learning</Link>
+              {/* <Link to="/artisan-hub" className="!text-white hover:!text-gray-200 !text-xs px-6">Artisan Hub</Link> */}
+              {/* <Link to="/learning" className="!text-white hover:!text-gray-200 !text-xs px-6">Learning</Link> */}
               <Link to="/suggestions" className="!text-white hover:!text-gray-200 !text-xs px-6">Suggestions</Link>
               <Link to="/track-order" className="!text-white hover:!text-gray-200 !text-xs px-6">Track Order</Link>
             </div>
@@ -85,11 +85,9 @@ const Header = () => {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-2" >
-              <button className="!text-[#003399] !text-xs px-6 !border !border-[rgba(217, 217, 217, 1)] rounded py-1.5 ">
-                <a href="https://builders-konnect-app.netlify.app/vendor/auth/login" target="_blank" rel="noopener noreferrer">
+              <Link to="/sell" className="!text-[#003399] !text-xs px-6 !border !border-[rgba(217, 217, 217, 1)] rounded py-1.5 flex items-center">
                 Become A Vendor
-                </a>
-              </button>
+              </Link>
               <div className='w-[3px] h-[40px] !bg-[#9CAFFC]'></div>
               {!isLoggedIn && (
                 <>
@@ -194,9 +192,9 @@ const Header = () => {
                 Profile
               </Link>
             )}
-            <button className="px-4 h-10 flex items-center justify-center !border !border-[#003399] !text-[#003399] !text-xs rounded hover:!bg-[#9CAFFC] hover:!text-white hover:!border-[#9CAFFC] transition-colors">
+            <Link to="/sell" className="px-4 h-10 flex items-center justify-center !border !border-[#003399] !text-[#003399] !text-xs rounded hover:!bg-[#9CAFFC] hover:!text-white hover:!border-[#9CAFFC] transition-colors">
               Become A Vendor
-            </button>
+            </Link>
             <div className="h-[1px] !bg-gray-200 my-2"></div>
             <Link to="/bulk-orders" className="px-4 py-2 !text-xs !text-gray-600 hover:!text-[#003399]">Bulk Orders</Link>
             <Link to="/artisan-hub" className="px-4 py-2 !text-xs !text-gray-600 hover:!text-[#003399]">Artisan Hub</Link>

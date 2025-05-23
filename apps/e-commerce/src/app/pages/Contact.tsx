@@ -8,14 +8,39 @@ import {
   MobileOutlined,
 } from '@ant-design/icons';
 import Hero from '../components/ProductDetails/Hero';
-import { Input, Button, Form, Row, Col } from 'antd';
+import { Input, Button, Form, Row, Col, message } from 'antd';
+import { useState } from 'react';
+
+interface ContactFormValues {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  message: string;
+}
 
 const ContactPage = () => {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+
+  const onFinish = async (values: ContactFormValues) => {
+    setLoading(true);
+    try {
+      // TODO: Implement actual form submission
+      console.log('Form values:', values);
+      message.success('Message sent successfully!');
+      form.resetFields();
+    } catch {
+      message.error('Failed to send message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div>
       <Hero title="Contact Us" />
 
-      <div className="py-16 px-4 md:px-12">
+      <div className="container mx-auto py-16 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div>
             <h3 className="text-[#000000D9] text-2xl md:text-3xl lg:text-4xl font-medium mb-4">
@@ -80,7 +105,7 @@ const ContactPage = () => {
                   <MobileOutlined />
                   Connect With Us
                 </h4>
-                <div className="flex gap-4 text-2xl text-[#000000D9]">
+                <div className="flex gap-4 text-2xl text-black">
                   <a href="#" target="_blank" rel="noopener noreferrer">
                     <FacebookFilled />
                   </a>
@@ -99,29 +124,57 @@ const ContactPage = () => {
           </div>
 
           <div>
-            <Form layout="vertical" className="space-y-4">
+            <Form 
+              form={form}
+              layout="vertical" 
+              className="space-y-4"
+              onFinish={onFinish}
+            >
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item label="First Name" name="firstName">
+                  <Form.Item 
+                    label="First Name" 
+                    name="firstName"
+                    rules={[{ required: true, message: 'Please enter your first name' }]}
+                  >
                     <Input placeholder="First Name" />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label="Last Name" name="lastName">
+                  <Form.Item 
+                    label="Last Name" 
+                    name="lastName"
+                    rules={[{ required: true, message: 'Please enter your last name' }]}
+                  >
                     <Input placeholder="Last Name" />
                   </Form.Item>
                 </Col>
               </Row>
 
-              <Form.Item label="Email Address" name="email">
+              <Form.Item 
+                label="Email Address" 
+                name="email"
+                rules={[
+                  { required: true, message: 'Please enter your email address' },
+                  { type: 'email', message: 'Please enter a valid email address' }
+                ]}
+              >
                 <Input type="email" placeholder="Enter" />
               </Form.Item>
 
-              <Form.Item label="Phone Number" name="phone">
+              <Form.Item 
+                label="Phone Number" 
+                name="phone"
+                rules={[{ required: true, message: 'Please enter your phone number' }]}
+              >
                 <Input placeholder="Enter" />
               </Form.Item>
 
-              <Form.Item label="Message" name="message">
+              <Form.Item 
+                label="Message" 
+                name="message"
+                rules={[{ required: true, message: 'Please enter your message' }]}
+              >
                 <Input.TextArea rows={4} placeholder="Enter" />
               </Form.Item>
 
@@ -129,7 +182,8 @@ const ContactPage = () => {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="bg-[#1d3b87] hover:bg-[#152b6c] text-white w-full"
+                  loading={loading}
+                  className="bg-[#003399] hover:bg-[#002766] text-white w-full h-[40px]"
                 >
                   Send Message
                 </Button>

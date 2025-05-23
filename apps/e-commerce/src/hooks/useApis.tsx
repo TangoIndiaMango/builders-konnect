@@ -167,7 +167,7 @@ export const useGetCategorizations = (
         level,
         ...(parentId && { parent_id: parentId }),
       };
-      const response = await axiosInstance.get('shared/categorizations', {
+      const response = await axiosInstance.get(baseUrl + 'shared/categorizations', {
         params,
       });
       return response.data.data;
@@ -219,13 +219,25 @@ export const useGetInventoryAttributes = (categoryId?: string) => {
         return null;
       }
       console.log('Making API call with categoryId:', categoryId);
-      const response = await axiosInstance.get(`shared/inventory-attributes`, {
-        params: {
-          paginate: 0,
-          category_id: categoryId,
-        },
-      });
-      return response.data.data;
+      try {
+        const response = await axiosInstance.get(baseUrl + `shared/inventory-attributes`, {
+          params: {
+            paginate: 0,
+            category_id: categoryId,
+          },
+        });
+        console.log('Attributes API response:', response.data);
+        // Ensure we return an array of attributes
+        const attributes = response.data.data || [];
+        if (!Array.isArray(attributes)) {
+          console.error('Expected array of attributes but got:', typeof attributes);
+          return [];
+        }
+        return attributes;
+      } catch (error) {
+        console.error('Error fetching attributes:', error);
+        return [];
+      }
     },
     enabled: !!categoryId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
