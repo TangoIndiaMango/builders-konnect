@@ -1,31 +1,33 @@
-import  { useEffect } from 'react';
-import {
-  Typography,
-  Avatar,
-  AutoComplete,
-} from 'antd';
+import { useEffect } from 'react';
+import { Typography, Avatar, AutoComplete, Checkbox } from 'antd';
 import { useState } from 'react';
-import { formatBalance } from '../../../utils/helper';
+
 import { useFetchData } from '../../../hooks/useApis';
-import { PaginatedTable } from '../common/Table/Table';
+import { DataType, PaginatedTable } from '../common/Table/Table';
 import { WarningOutlined } from '@ant-design/icons';
+import { useSelection } from '../../../hooks/useSelection';
+
 
 interface OrderSectionProps {
   onOrderSelect?: (order: any) => void;
   orderData?: any;
   showOrder?: boolean;
- customerId?: string;
- onLineItemsSelect?: (lineItemIds: string[]) => void;
- showText?: boolean;
+  customerId?: string;
+  onLineItemsSelect?: (lineItems: any[]) => void; 
+  showText?: boolean;
+  showCheckbox?: boolean;
+  handleQuantityChange?: (newQuantity: string, record: any) => void;
 }
 
 export default function OrderSection({
   onOrderSelect,
   orderData,
   showOrder = true,
+  showCheckbox = false,
   customerId,
   onLineItemsSelect,
   showText = false,
+  handleQuantityChange,
 }: OrderSectionProps) {
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [options, setOptions] = useState<any[]>([]);
@@ -34,6 +36,9 @@ export default function OrderSection({
     selectedOrder?.id ? `merchants/sales-orders/${selectedOrder.id}` : ''
   );
 
+  const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
+    data: products?.data?.line_items || [],
+  });
 
   useEffect(() => {
     if (customerId === null) {
@@ -44,10 +49,12 @@ export default function OrderSection({
 
   useEffect(() => {
     if (products?.data?.line_items && onLineItemsSelect) {
-      const lineItemIds = products.data;
-      onLineItemsSelect(lineItemIds);
+      const selectedLineItems = (products.data.line_items || []).filter((item: any) =>
+        selectedRowKeys.includes(item.line_item_id)
+      );
+      onLineItemsSelect(selectedLineItems);
     }
-  }, [products, onLineItemsSelect]);
+  }, [products, onLineItemsSelect, selectedRowKeys]); 
 
   const handleRemoveOrder = () => {
     setSelectedOrder(null);
@@ -58,7 +65,6 @@ export default function OrderSection({
       onLineItemsSelect([]);
     }
   };
-
 
   useEffect(() => {
     if (orderData && orderData?.data && Array.isArray(orderData?.data)) {
@@ -77,10 +83,8 @@ export default function OrderSection({
         value: order.order_number || order.id,
         order: order,
       }));
-      //   console.log("Formatted options:", formattedOptions);
       setOptions(formattedOptions);
     } else {
-    //   console.log('No valid orderData.data array found');
       setOptions([]);
     }
   }, [orderData]);
@@ -88,7 +92,7 @@ export default function OrderSection({
   const columns = [
     {
       title: 'Product',
-      dataIndex: 'name',
+      dataIndex: 'name', // This should likely be 'product' based on your data example
       render: (_: string, record: any) => (
         <div className="flex items-center gap-3">
           <Avatar
@@ -98,8 +102,7 @@ export default function OrderSection({
             src="https://api.dicebear.com/7.x/miniavs/svg?seed=2"
           />
           <div>
-            <div className="font-medium">{record.product}</div>
-            {/* <div className="text-sm text-gray-500">{record}</div> */}
+            <div className="font-medium">{record.product}</div> {/* Use record.product */}
           </div>
         </div>
       ),
@@ -112,7 +115,16 @@ export default function OrderSection({
     {
       title: 'Quantity',
       dataIndex: 'quantity',
-      render: (quantity: number) => <span>{quantity}</span>,
+      render: showCheckbox
+        ? (quantity: number, record: any) => (
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => handleQuantityChange?.(e.target.value, record)}
+              className="w-16 h-10 border rounded"
+            />
+          )
+        : (quantity: number) => <span>{quantity}</span>,
     },
     {
       title: 'Total Price',
@@ -126,7 +138,7 @@ export default function OrderSection({
 
     if (customerId) {
       filteredOptions = filteredOptions.filter(
-        option => option.order?.customer?.id === customerId
+        (option) => option.order?.customer?.id === customerId
       );
     }
 
@@ -156,17 +168,22 @@ export default function OrderSection({
     }
   };
 
-
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between w-full gap-5">
         <div className="flex flex-col gap-2">
-        <h3 className="font-medium md:text-lg">Order Information</h3>
-        {showText &&<div className="flex items-center gap-2">
-          <WarningOutlined style={{ color: '#FAAD14' }} className="text-lg" />
-          <p className="text-sm text-gray-500">Select the products to be returned in the order list</p>
-        </div>}
+          <h3 className="font-medium md:text-lg">Order Information</h3>
+          {showText && (
+            <div className="flex items-center gap-2">
+              <WarningOutlined
+                style={{ color: '#FAAD14' }}
+                className="text-lg"
+              />
+              <p className="text-sm text-gray-500">
+                Select the products to be returned in the order list
+              </p>
+            </div>
+          )}
         </div>
 
         {!selectedOrder ? (
@@ -196,13 +213,16 @@ export default function OrderSection({
           <Typography.Text className="block mb-3 font-medium">
             Products in Order
           </Typography.Text>
-
           <PaginatedTable
             data={products?.data?.line_items || []}
             columns={columns}
             showPagination={false}
-            showCheckbox={true}
+            showCheckbox={showCheckbox}
             loading={isLoadingProducts}
+            rowSelection={rowSelection}
+            selectedRowKeys={selectedRowKeys}
+            resetSelection={resetSelection}
+            rowKey="line_item_id"
           />
         </div>
       )}

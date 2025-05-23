@@ -193,7 +193,7 @@ const ReturnsPage = () => {
             onExport={handleExport}
           >
             <ReturnsTable
-              data={returnsData}
+              data={Array.isArray(returnsData) ? returnsData : []}
               currentPage={currentPage}
               onPageChange={setPage}
               loading={returns?.isLoading}

@@ -1,5 +1,14 @@
-import { Button, Form, Modal, notification, Select, Typography } from 'antd';
-import { useState } from 'react';
+import {
+  Button,
+  Form,
+  Modal,
+  notification,
+  Select,
+  Typography,
+  Upload,
+  UploadFile,
+} from 'antd';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCreateData, useFetchData } from '../../../hooks/useApis';
 import { useGetCustomers } from '../../../service/customer/customerFN';
@@ -7,9 +16,19 @@ import Container from '../../components/common/Container';
 import NavigationBack from '../../components/common/NavigationBack';
 import { CustomerSection } from '../../components/sales/CustomerSection';
 import OrderSection from '../../components/returns/OrderSection';
-import { WarningOutlined } from '@ant-design/icons';
+import { UploadOutlined, WarningOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
 import { CustomerType } from '../sales/types';
+
+interface LineItem {
+  line_item_id: string;
+  product: string;
+  quantity: number; 
+  originalQuantity?: number; // Add this to track original ordered quantity
+  unit_cost: string; 
+  discounted_amount: string;
+  total_cost: string; 
+}
 
 export interface calculateAmountInterface {
   line_items: {
@@ -30,47 +49,6 @@ export interface paymentMethodInterface {
   updated_at: string;
   amount?: number;
 }
-/**
- *
- * @returns [
-    {
-        "id": "pm_9cxAy5WmxEx9KZqPxoqYp",
-        "name": "Credit Card",
-        "slug": "credit-card",
-        "is_balance": 0,
-        "is_active": true,
-        "created_at": "2025-04-23T16:38:07.000000Z",
-        "updated_at": "2025-04-23T16:38:07.000000Z"
-    },
-    {
-        "id": "pm_Ua7A67U8oK0HM8RliUMOM",
-        "name": "Bank Transfer",
-        "slug": "bank-transfer",
-        "is_balance": 0,
-        "is_active": true,
-        "created_at": "2025-04-23T16:38:07.000000Z",
-        "updated_at": "2025-04-23T16:38:07.000000Z"
-    },
-    {
-        "id": "pm_WDoEYvS37Ufw4pb0NDbfe",
-        "name": "Credit Note",
-        "slug": "credit-note",
-        "is_balance": 1,
-        "is_active": true,
-        "created_at": "2025-04-23T16:38:07.000000Z",
-        "updated_at": "2025-04-23T16:38:07.000000Z"
-    },
-    {
-        "id": "pm_XA2HTbgjBYQMybMMFwHdB",
-        "name": "Cash",
-        "slug": "cash",
-        "is_balance": 0,
-        "is_active": true,
-        "created_at": "2025-04-23T16:38:07.000000Z",
-        "updated_at": "2025-04-23T16:38:07.000000Z"
-    }
-]
- */
 
 const NewReturnLog = () => {
   const navigate = useNavigate();
@@ -83,18 +61,10 @@ const NewReturnLog = () => {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(
     null
   );
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [returnReason, setReturnReason] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [selectedLineItemIds, setSelectedLineItemIds] = useState<
-    Array<{
-      id: string;
-      line_items: Array<{
-        line_item_id: string;
-        total_cost: number;
-        quantity: number;
-      }>;
-    }>
-  >([]);
+  const [selectedLineItems, setSelectedLineItems] = useState<LineItem[]>([]);
   const [refundType, setRefundType] = useState<string>('');
 
   const { data: customers } = useGetCustomers();
@@ -106,6 +76,7 @@ const NewReturnLog = () => {
 
   const { mutate: createReturn, isPending: isCreatingReturn } =
     useCreateData('merchants/returns');
+  
   const showConfirmModal = () => {
     setIsConfirmModalVisible(true);
   };
@@ -114,27 +85,95 @@ const NewReturnLog = () => {
     setIsConfirmModalVisible(false);
   };
 
-  const handleLineItemsSelect = (lineItemIds: any) => {
-    setSelectedLineItemIds(lineItemIds);
-  };
+  const handleLineItemsSelect = useCallback((lineItems: LineItem[]) => {
+    const itemsWithOriginalQuantity = lineItems.map(item => ({
+      ...item,
+      originalQuantity: item.quantity,
+      quantity: 1
+    }));
+    setSelectedLineItems(itemsWithOriginalQuantity); 
+  }, []);
+
+  const handleQuantityChange = useCallback(
+    (newQuantity: string, record: LineItem) => {
+      const parsedQuantity = parseInt(newQuantity, 10);
+      const quantity = isNaN(parsedQuantity) ? 0 : parsedQuantity;
+
+      const originalQuantity = record.originalQuantity || record.quantity;
+      if (quantity > originalQuantity) {
+        notification.error({
+          message: 'Quantity returned cannot be greater than quantity ordered',
+        });
+        return;
+      }
+
+      setSelectedLineItems((prevSelectedItems) =>
+        prevSelectedItems.map((item) =>
+          item.line_item_id === record.line_item_id
+            ? { ...item, quantity: quantity } 
+            : item
+        )
+      );
+    },
+    []
+  );
 
   const handleConfirm = async () => {
     try {
-      if (!selectedCustomer || !selectedOrder) return;
-      //TODO: Looks like you want to select the line item here right?
+      if (!selectedCustomer || !selectedOrder || selectedLineItems.length === 0) {
+        notification.error({
+          message: 'Please select a customer, order, and at least one product for return.',
+        });
+        return;
+      }
+
+
+      const hasInvalidQuantities = selectedLineItems.some(item => {
+        const returnQuantity = item.quantity;
+        const orderedQuantity = item.originalQuantity || 0;
+        console.log(`Item ${item.line_item_id}: returning ${returnQuantity}, ordered ${orderedQuantity}`);
+        return returnQuantity > orderedQuantity || returnQuantity <= 0;
+      });
+      
+      if (hasInvalidQuantities) {
+        notification.error({
+          message: 'Invalid quantities detected',
+          description: 'One or more items have invalid quantities. Return quantity must be greater than 0 and not exceed the ordered amount.',
+        });
+        return;
+      }
+
+      const invalidItems = selectedLineItems.filter(item => 
+        item.quantity <= 0 || item.quantity > (item.originalQuantity || 0)
+      );
+      
+      if (invalidItems.length > 0) {
+        console.log('Invalid items found:', invalidItems);
+        notification.error({
+          message: 'Invalid return quantities',
+          description: 'Please check the return quantities for all selected items.',
+        });
+        return;
+      }
+
+      const formattedLineItemsForReturn = selectedLineItems.map((item) => ({
+        line_item_id: item.line_item_id,
+        quantity: item.quantity,
+        total_cost: parseFloat(item.total_cost.replace(/[^0-9.-]+/g, "")),
+      }));
+
       const returnData: any = {
-        user_id: selectedCustomer.id,
-        order_id: selectedOrder.id,
-        order_line_item_id: selectedLineItemIds?.line_items[0]?.line_item_id,
+        user_id: selectedCustomer?.id,
+        order_id: selectedOrder?.id,
+        order_line_item_id: formattedLineItemsForReturn[0]?.line_item_id || '',
         refund_type: refundType,
         return_reason: returnReason,
         description: description,
-        total_amount_refunded: Number(
-          selectedLineItemIds.line_items[0]?.total_cost?.replace(/[^0-9.]/g, '')
-        ),
-        quantity: selectedLineItemIds.line_items[0]?.quantity,
+        total_amount_refunded: formattedLineItemsForReturn.reduce((sum, item) => sum + item.total_cost, 0),
+        quantity: formattedLineItemsForReturn[0]?.quantity,
+        images: fileList.map((file) => file?.thumbUrl),
       };
-
+      console.log('returnData', returnData);
       await createReturn(returnData, {
         onSuccess: () => {
           notification.success({
@@ -143,18 +182,24 @@ const NewReturnLog = () => {
           setIsConfirmModalVisible(false);
           navigate(-1);
         },
-        onError: () => {
+        onError: (error: any) => {
           notification.error({
             message: 'Failed to create return',
+            description: error.message || 'An unexpected error occurred.',
           });
           setIsConfirmModalVisible(false);
         },
       });
     } catch (error) {
-      // Optionally handle unexpected errors here
+      console.error('Error during return confirmation:', error);
+      notification.error({
+        message: 'An error occurred',
+        description: 'Could not process the return request.',
+      });
       setIsConfirmModalVisible(false);
     }
   };
+
   const handleCustomerSelect = (customer: CustomerType) => {
     setSelectedCustomer(customer);
     setSelectedCustomerId(String(customer.id));
@@ -163,10 +208,13 @@ const NewReturnLog = () => {
   const handleCustomerRemove = () => {
     setSelectedCustomer(null);
     setSelectedCustomerId(null);
+    setSelectedOrder(null); 
+    setSelectedLineItems([]); 
   };
 
   const handleOrderSelect = (order: any) => {
     setSelectedOrder(order);
+    setSelectedLineItems([]); 
   };
 
   return (
@@ -189,6 +237,7 @@ const NewReturnLog = () => {
               disabled={
                 selectedCustomer === null ||
                 selectedOrder === null ||
+                selectedLineItems.length === 0 || 
                 !refundType ||
                 !returnReason
               }
@@ -202,7 +251,6 @@ const NewReturnLog = () => {
 
       <div className="p-5 space-y-3">
         <Container>
-          {/* {!selectedCustomer ? ( */}
           <CustomerSection
             onCustomerSelect={handleCustomerSelect}
             onCustomerRemove={handleCustomerRemove}
@@ -219,6 +267,8 @@ const NewReturnLog = () => {
             customerId={selectedCustomerId as string}
             onLineItemsSelect={handleLineItemsSelect}
             showText={true}
+            showCheckbox={true}
+            handleQuantityChange={handleQuantityChange} 
           />
         </Container>
 
@@ -244,10 +294,12 @@ const NewReturnLog = () => {
                   },
                 ]}
                 onChange={(value) => setReturnReason(value)}
+                value={returnReason} 
               />
             </div>
           </div>
         </Container>
+        
         <Container>
           <div className="flex items-center justify-between">
             <div>
@@ -269,6 +321,46 @@ const NewReturnLog = () => {
             </div>
           </div>
         </Container>
+        
+        <Container>
+          <div className="flex items-center justify-between">
+            <div>
+              <Typography.Title level={5} className="font-normal">
+                Upload images
+              </Typography.Title>
+              <Typography.Text
+                type="secondary"
+                className="flex items-center gap-2"
+              >
+                <WarningOutlined
+                  style={{ color: '#FAAD14' }}
+                  className="text-lg"
+                />
+                Upload image evidence of damage product(s)
+              </Typography.Text>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Upload
+                listType="picture-card"
+                fileList={fileList}
+                onChange={({ fileList }) => setFileList(fileList)}
+                beforeUpload={() => false}
+                maxCount={5}
+                action="/upload.do" 
+              >
+                <div>
+                  <UploadOutlined />
+                  <div className="mt-2">Add Photos</div>
+                </div>
+              </Upload>
+              <p className="text-sm text-gray-500">
+                Recommended file is less than 2MB(File supports .jpg, .jpeg,
+                .png)
+              </p>
+            </div>
+          </div>
+        </Container>
+        
         <Container>
           <div className="flex items-center justify-between">
             <div>
@@ -281,11 +373,13 @@ const NewReturnLog = () => {
                 className=""
                 rows={8}
                 onChange={(e) => setDescription(e.target.value)}
+                value={description} 
               />
             </div>
           </div>
         </Container>
       </div>
+      
       <Modal
         title={
           <div className="flex items-center gap-2">
