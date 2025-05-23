@@ -1,5 +1,6 @@
 import CoreValues from "../components/About/CoreValues";
 import Banner from "../components/Banners";
+import SubscriptionCheckout from "../components/onboarding/onboarding";
 import HeroBanner from "../components/Sell/HeroBanner";
 import HowToSell from "../components/Sell/HowToSellOnBuildersKonnect";
 import TestimonialCarousel from "../components/Sell/testimonialCarousel";
@@ -32,6 +33,8 @@ function Sell() {
         onButtonClick={() => console.log('clicked')}
         backgroundImage={startSellingBg}
       />
+
+      <SubscriptionCheckout />
     </div>
   );
 }

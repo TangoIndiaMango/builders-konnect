@@ -289,11 +289,11 @@ const Home: FC = () => {
         </div>
       </section>
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading ? (
             <div className="col-span-full flex justify-center py-4"><Spin /></div>
           ) : (
-            products?.data?.data?.map((product) => {
+            products?.data?.data?.slice(0, 4).map((product) => {
               return (
                 <RouterLink key={product.id} to={`/product-details/${product.id}`}>
                   <TileCard
