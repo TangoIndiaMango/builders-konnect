@@ -9,7 +9,8 @@ export interface StaffProfile {
   name: string;
   email: string;
   phone: string;
-  role: string | null;
+  roles: { id: string, name: string }[];
+  assigned_roles: string;
   role_id: string | null;
   status: string;
   // store: string;

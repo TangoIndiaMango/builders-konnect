@@ -17,9 +17,11 @@ interface UserProfile {
   email: string;
   phone: string;
   role: string | null;
+  assigned_roles: string;
+  roles: { id: string, name: string }[];
   role_id: string | null;
   status: 'active' | 'inactive';
-  store: string;
+  store: { id: string, name: string }[];
   store_id: string;
   staffID: string;
   last_active: string | null;
