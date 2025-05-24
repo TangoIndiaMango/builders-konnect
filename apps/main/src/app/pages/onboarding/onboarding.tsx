@@ -1,4 +1,4 @@
-// SubscriptionCheckout.tsx
+
 import {
   AppleOutlined,
   ArrowLeftOutlined,
