@@ -11,6 +11,14 @@ export interface Review {
 }
 
 export interface ProductDetails {
+  product_type: {
+    id: string;
+    name: string;
+  };
+  sub_category: {
+    id: string;
+    name: string;
+  };
   id: string;
   name: string;
   category: string;
