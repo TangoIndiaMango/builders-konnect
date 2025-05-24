@@ -3,6 +3,7 @@ import Banner from "../components/Banners";
 import SubscriptionCheckout from "../components/onboarding/onboarding";
 import HeroBanner from "../components/Sell/HeroBanner";
 import HowToSell from "../components/Sell/HowToSellOnBuildersKonnect";
+import SubscriptionPlans from "../components/Sell/SubscriptionPlans";
 import TestimonialCarousel from "../components/Sell/testimonialCarousel";
 import { startSellingBg } from "../lib/assets/background";
 import { WhySellOnBuildersConnectData } from "../lib/Constants";
@@ -34,7 +35,7 @@ function Sell() {
         backgroundImage={startSellingBg}
       />
 
-      <SubscriptionCheckout />
+      <SubscriptionPlans />
     </div>
   );
 }

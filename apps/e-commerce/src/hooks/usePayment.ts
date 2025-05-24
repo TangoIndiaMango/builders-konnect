@@ -26,6 +26,18 @@ interface PaymentResponse {
   redirecturl: string;
 }
 
+interface SubscriptionPaymentConfig {
+  price_item_id: string;
+  isFreeTrial?: boolean;
+  callbackUrl: string;
+  provider: 'paystack' | 'stripe';
+  userDetails?: {
+    name: string;
+    company?: string;
+    email: string;
+    phone: string;
+  };
+}
 
 
 /**
@@ -56,6 +68,7 @@ confirmation / receipt page that show success or failure alongside order details
 export const usePayment = () => {
   const popup = new PaystackPop();
   const checkoutApi = useCreateData('customers/sales-orders/checkout/initiate');
+  const startPaymentApi = useCreateData('merchants/onboarding/subscribe');
 
   const handleTransactionSuccess = async (transactionData: any) => {
     try {
@@ -123,10 +136,42 @@ export const usePayment = () => {
     }
   };
 
+  const initiateSubscriptionPayment = async (config: SubscriptionPaymentConfig) => {
+    try {
+      const payload = {
+        ...(config.userDetails && { ...config.userDetails }),
+        price_item_id: config.price_item_id,
+        free_trial: config.isFreeTrial,
+        callback_url: config.callbackUrl,
+        provider: config.provider,
+      };
+
+      const response = await startPaymentApi.mutateAsync(payload);
+      const data = response?.data as PaymentResponse;
+
+      return new Promise((resolve, reject) => {
+        popup.resumeTransaction({
+          accessCode: data.access_code,
+          onSuccess: async (transactionData) => {
+            const success = await handleTransactionSuccess(transactionData);
+            resolve(success);
+          },
+          onCancel: () => {
+            message.error('Transaction was cancelled');
+            reject(new Error('Transaction cancelled'));
+          },
+        });
+      });
+    } catch (error: any) {
+      message.error(error?.message || 'Something went wrong');
+      throw error;
+    }
+  };
 
 
   return {
     initiatePayment,
-    isLoading: checkoutApi.isPending,
+    isLoading: checkoutApi.isPending || startPaymentApi.isPending,
+    initiateSubscriptionPayment,
   };
 };
