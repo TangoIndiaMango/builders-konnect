@@ -72,9 +72,12 @@ console.log(product, "pppp")
           items={[
             { title: 'Home', path: '/' },
             ...(product.category ? [
-              { title: product.category, path: `/category/${encodeURIComponent(product.id)}` }
+              { title: product.category, path: `/category/${encodeURIComponent(product.product_type.id)}` }
+            ] : []), 
+            ...(product.sub_category ? [
+              { title: product.sub_category.name, path: `/category/${encodeURIComponent(product.product_type.id)}/subcategory/${encodeURIComponent(product.sub_category.id)}` }
             ] : []),
-            { title: product.name },
+            { title: product.name }
           ]}
         />
 

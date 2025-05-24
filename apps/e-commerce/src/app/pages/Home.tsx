@@ -16,6 +16,13 @@ const Home: FC = () => {
   const carouselRef = useRef<CarouselRef>(null);
   const [current, setCurrent] = useState(0);
 
+  const scrollToProducts = () => {
+    const productsSection = document.getElementById('products-section');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const handleDotClick = (index: number) => {
     setCurrent(index);
     carouselRef.current?.goTo(index);
@@ -118,6 +125,7 @@ const Home: FC = () => {
                     type="primary"
                     size="large"
                     className="bg-white text-black hover:bg-gray-100"
+                    onClick={scrollToProducts}
                   >
                     {slide.buttonText}
                   </Button>
@@ -230,6 +238,7 @@ const Home: FC = () => {
                       <Button
                         type="primary"
                         className="bg-white text-black hover:bg-gray-100 mt-2 border-0 shadow-md font-semibold"
+                        onClick={scrollToProducts}
                       >
                         {item.buttonText}
                       </Button>
@@ -313,7 +322,7 @@ const Home: FC = () => {
           )}
         </div>
       </div>
-      <div>
+      <div id="products-section">
         <CategoryFilter/>
       </div>
       <div>
