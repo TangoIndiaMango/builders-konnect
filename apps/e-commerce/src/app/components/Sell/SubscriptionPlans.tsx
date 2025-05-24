@@ -1,10 +1,11 @@
 import { useFetchData } from '../../../hooks/useApis';
 import { useNavigate } from 'react-router-dom';
-import { SubscriptionPlan, BillingInterval } from './types';
 import { Radio, Segmented, Skeleton } from 'antd';
 import { useState } from 'react';
 import { useSubscription } from '../../../store/subscription';
-import SubscriptionPlanCard from './SubscriptionCard';
+import { SubscriptionPlan } from '../onboarding/types';
+import { BillingInterval } from '../../types/subscription';
+import SubscriptionPlanCard from '../onboarding/SubscriptionCard';
 
 const plans = [
   {
