@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
 import { Rate, Spin, Button, Select, Form, Input, Upload, message } from 'antd';
+import CategoryBreadcrumb from '../CategoryBreadcrumb';
 import { Link, useParams } from 'react-router-dom';
 import { useProductDetails } from '../../../hooks/useProductDetails';
 import { woodlikeone } from '../../lib/assets/images';
@@ -63,25 +64,19 @@ const MainProductDetails: FC = () => {
     ? parseFloat(product.discount_information.value)
     : 0;
   const finalPrice = originalPrice - discountAmount;
-
+console.log(product, "pppp")
   return (
     <div className="container mx-auto px-4 space-y-6 py-8">
       <div>
-        {/* Breadcrumb */}
-        <div className="flex items-center text-sm mb-6">
-          <Link to="/" className="text-gray-500 hover:text-gray-700">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <Link
-            to="/"
-            className="text-gray-500 hover:text-gray-700"
-          >
-            {product.category}
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-gray-900">{product.name}</span>
-        </div>
+        <CategoryBreadcrumb
+          items={[
+            { title: 'Home', path: '/' },
+            ...(product.category ? [
+              { title: product.category, path: `/category/${encodeURIComponent(product.id)}` }
+            ] : []),
+            { title: product.name },
+          ]}
+        />
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Product Image */}

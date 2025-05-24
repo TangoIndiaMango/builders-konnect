@@ -73,7 +73,7 @@ function ProductList() {
         <CategoryBreadcrumb
           items={[
             { title: 'Home', path: '/' },
-            { title: currentCategory?.name || 'Category' },
+            { title: currentCategory?.name || 'Category', path: `/category/${category}` },
             { title: currentSubcategory?.name || 'Subcategory' }
           ]}
         />
