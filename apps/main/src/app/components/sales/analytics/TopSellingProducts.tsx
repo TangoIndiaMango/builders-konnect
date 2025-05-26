@@ -1,9 +1,9 @@
-import { Avatar, Typography } from 'antd';
-import { useState } from 'react';
+import { Avatar, Button, Typography } from 'antd';
 import { useFetchData } from '../../../../hooks/useApis';
+import { useTableState } from '../../../../hooks/useTable';
 import CardWithFilter from '../../common/CardWithFilter';
-import FilterDropdown from '../../common/filters/FilterDropdown';
 import { SkeletonLoader } from '../../common/SkeletonLoader';
+import DatePickerComp, { DateRange } from '../../date/DatePickerrComp';
 
 const { Text } = Typography;
 
@@ -47,44 +47,50 @@ export const ProductListItem = ({ product, id }: { product: TopSellingProducts, 
   );
 };
 
+interface TopSellingProductsProps {
+  reset: () => void;
+  onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
+  dateRange: string | null;
+}
+
 const TopSellingProducts = () => {
-  const [selectedStore, setSelectedStore] = useState<string>('all');
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('this_month');
+  const {reset, setCustomDateRange, customDateRange} = useTableState("sales-analytics")
+
   const topProducts = useFetchData(`merchants/sales-orders/analytics/top-selling-products`)
   const topProductsStats = topProducts?.data?.data as TopSellingProducts[]
-
-
-
-  const storeOptions = [
-    { label: 'All orders', value: 'all' },
-    { label: 'Order 1', value: 'order_1' },
-    { label: 'Order 2', value: 'order_2' },
-  ];
-
-  const periodOptions = [
-    { label: 'This Month', value: 'this_month' },
-    { label: 'Last Month', value: 'last_month' },
-    { label: 'This Year', value: 'this_year' },
-    { label: 'Custom Range', value: 'custom' },
-  ];
 
   return (
     <CardWithFilter
       title="Top Selling Products"
       description="See your top performing products here."
       rightSection={
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <FilterDropdown
-            options={storeOptions}
-            value={selectedStore}
-            onChange={setSelectedStore}
-          />
-          <FilterDropdown
-            options={periodOptions}
-            value={selectedPeriod}
-            onChange={setSelectedPeriod}
-          />
-        </div>
+        <div className="flex items-center gap-2 justify-end flex-wrap">
+        <Button onClick={reset}>Clear</Button>
+        {/* <Select
+          placeholder="Select store"
+          // mode="multiple"
+          allowClear
+          size="large"
+          className="rounded w-[200px]"
+          showSearch
+          value={selectedStore || undefined}
+          filterOption={(input, option) =>
+            (option?.label?.toString() ?? '')
+              .toLowerCase()
+              .includes(input.toLowerCase())
+          }
+          options={storeList?.map((store) => ({
+            value: store.id,
+            label: store.name,
+          }))}
+          onChange={(value) => {
+            setSelectedStore(value);
+            console.log(value, 'value');
+          }}
+        /> */}
+
+        <DatePickerComp onRangeChange={setCustomDateRange} value={customDateRange} />
+      </div>
       }
     >
       <SkeletonLoader active={topProducts?.isLoading} type="list" rows={4}>
