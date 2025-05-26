@@ -5,6 +5,7 @@ import { ConfigProvider, App as AntApp } from 'antd';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import useGetPermissions from './hooks/useGetPermissions';
+import ErrorBoundary from './app/components/ErrorBoundary';
 
 const PermissionsProvider = ({ children }: { children: React.ReactNode }) => {
   useGetPermissions();
@@ -44,7 +45,9 @@ root.render(
       <QueryClientProvider client={queryClient}>
         <AntApp notification={{ placement: 'topRight', maxCount: 3 }}>
           <PermissionsProvider>
-            <App />
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
           </PermissionsProvider>
         </AntApp>
       </QueryClientProvider>

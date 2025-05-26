@@ -69,7 +69,29 @@ const handleError = (error: any) => {
   return Promise.reject(new Error(errorMessage));
 };
 
-axiosInstance.interceptors.request.use(attachTokenAndTenantID, Promise.reject);
-axiosInstance.interceptors.response.use((res) => res, handleError);
+axiosInstance.interceptors.request.use(
+
+  (config) => {
+    attachTokenAndTenantID(config);
+    console.log('Request:', config.url, config);
+    return config;
+  },
+  (error) => {
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    // handleError(response);
+    console.log('Response:', response.config.url, response);
+    return response;
+  },
+  (error) => {
+    console.error('Response error:', error.config?.url, error);
+    return Promise.reject(error);
+  }
+);
 
 export { axiosInstance };
