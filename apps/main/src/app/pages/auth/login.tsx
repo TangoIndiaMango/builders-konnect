@@ -40,7 +40,7 @@ const Login = () => {
       // notification.success({
       //   message: 'Login Successful',
       // });
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      
       const merchantRes = await getMerchantDetailState.mutateAsync();
       if (merchantRes?.data?.length <= 1) {
         sessionStorage.setItem(

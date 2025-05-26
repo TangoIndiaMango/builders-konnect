@@ -15,7 +15,6 @@ import Recent from '../../components/home/Recent';
 import Revenue from '../../components/home/Revenue';
 import Stats from '../../components/home/Stats';
 import { Stores } from '../../pages/staff/types';
-import { usePermission } from '../../store/permission';
 export interface IUserPermissions {
   access_type: string;
   module: string;
