@@ -108,6 +108,7 @@ export interface CustomerType {
     subtotal: number;
     discount_breakdown: DiscountBreakdown;
     fees: Fees;
+    total_discount: number;
   }
 
 
