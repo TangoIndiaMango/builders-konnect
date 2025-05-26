@@ -59,14 +59,13 @@ import ReturnsPage from './pages/returns';
 import NewReturnLog from './pages/returns/create';
 import ReturnsOutlet from './pages/returns/outlet';
 import ReturnsViewPage from './pages/returns/view';
+import ReceiptPreview from './pages/sales/RecieptReview';
 import SettingPage from './pages/settings';
 import SettingOutlet from './pages/settings/setting-outlet';
 import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
-import MultiVariants from './pages/inventory/components/MultiVariants';
-import ReceiptPreview from './pages/sales/RecieptReview';
 
 // Inventory
 
