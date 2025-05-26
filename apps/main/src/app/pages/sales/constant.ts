@@ -7,7 +7,7 @@ export const SalesTabConfigs = [
     description: "You're viewing all sales order below.",
   },
   {
-    key: 'mop',
+    key: 'omp',
     label: 'Online Sales',
     title: 'Online Sales',
     description: "You're viewing all online sales order below.",

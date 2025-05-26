@@ -39,7 +39,9 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
 
   // Fetch cities when state changes
   const CitiesState = useFetchData(
-    state ? `shared/cities?paginate=0&country_id=${country}&state_id=${state}` : '',
+    state
+      ? `shared/cities?paginate=0&country_id=${country}&state_id=${state}`
+      : '',
     !!user && !!country && !!state
   );
 
@@ -48,14 +50,19 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
   const debouncedAddressInput = useDebounce(addressInput, 400);
   const shouldFetchAddress = !!debouncedAddressInput;
   const addressSuggestions = useFetchData(
-    shouldFetchAddress ? `shared/search-address?q=${encodeURIComponent(debouncedAddressInput)}` : '',
+    shouldFetchAddress
+      ? `shared/search-address?q=${encodeURIComponent(debouncedAddressInput)}`
+      : '',
     shouldFetchAddress
   );
-  const addressOptions = (addressSuggestions.data || [])?.map((item: any) => ({
-    value: item.display_name,
-    label: item.display_name,
-    data: { lon: item.lon, lat: item.lat },
-  }));
+
+  const addressOptions = (addressSuggestions.data?.data || [])?.map(
+    (item: any) => ({
+      value: item.address,
+      label: item.address,
+      data: { lon: item.longitude, lat: item.latitude },
+    })
+  );
 
   // Set form values only on mount or when editing
   useEffect(() => {
@@ -165,12 +172,7 @@ const BillingOrShippingAddyForm: React.FC<BillingOrShippingAddyFormProps> = ({
           loading={countries.isLoading}
           disabled={countries.isLoading}
           value={country}
-          options={
-            countries?.data?.data?.map((item: any) => ({
-              value: item.id,
-              label: item.name,
-            })) || [{ value: NIGERIA_ID, label: defaultCountryLabel }]
-          }
+          options={[{ value: NIGERIA_ID, label: defaultCountryLabel }]}
           onChange={handleCountryChange}
         />
       </Form.Item>

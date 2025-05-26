@@ -51,7 +51,7 @@ export const OrderView = ({
           <OrderSummary
             subtotal={orderData?.subtotal}
             itemCount={orderData?.items_count}
-            discount={orderData?.discount_breakdown?.total_product_discounts}
+            discount={orderData?.total_discount}
             tax={orderData?.fees?.tax}
             serviceFee={orderData?.fees?.service_fee}
             total={orderData?.amount}

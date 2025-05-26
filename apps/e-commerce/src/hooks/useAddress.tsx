@@ -68,8 +68,8 @@ export const useAddressManagement = (user: any) => {
         city_id: values[addressType].city_id.toString(),
         type: addressType,
         is_default: addressType === 'billing',
-        lon: 0,
-        lat: 0,
+        lon: values[addressType].longitude || 0,
+        lat: values[addressType].latitude || 0,
       };
 
       createAddress.mutate(address as any, {
