@@ -1,4 +1,4 @@
-// SubscriptionCheckout.tsx
+
 import {
   AppleOutlined,
   ArrowLeftOutlined,
@@ -92,13 +92,13 @@ export interface SuccessTransactionResponse {
   trxref: string;
   redirecturl: string;
 }
-
+const CALLBACK_URL = `https://builders-konnect-main.onrender.com/auth/register-vendor`;
 export default function SubscriptionCheckout() {
   const { subscription } = useSubscription();
   const { selectedPlan, planName, billingInterval, isFreeTrial } = subscription;
   const [form] = Form.useForm();
   const [paymentMethod, setPaymentMethod] = useState('');
-  const { initiatePayment, isLoading: isInitiatingPayment } = usePayment();
+  const { initiateSubscriptionPayment, isLoading: isInitiatingPayment } = usePayment();
   const navigate = useNavigate();
 
   if (!selectedPlan) return <div>No plan selected.</div>;
@@ -109,10 +109,10 @@ export default function SubscriptionCheckout() {
       return;
     }
     try {
-      await initiatePayment({
+      await initiateSubscriptionPayment({
         price_item_id: selectedPlan.id,
         isFreeTrial,
-        callbackUrl: `${frontendBaseUrl}/auth/register-vendor`,
+        callbackUrl: CALLBACK_URL,
         provider: paymentMethod as 'paystack' | 'stripe',
         userDetails: {
           name: values.name,

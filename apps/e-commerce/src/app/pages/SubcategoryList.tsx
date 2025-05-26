@@ -26,7 +26,7 @@ const SubcategoryList = () => {
       <CategoryBreadcrumb
         items={[
           { title: 'Home', path: '/' },
-          { title: currentCategory?.name || '', path: '/' }
+          { title: currentCategory?.name || '', path: `/category/${category}` }
         ]}
       />
 

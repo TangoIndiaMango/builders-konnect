@@ -106,16 +106,16 @@ const ContactPage = () => {
                   Connect With Us
                 </h4>
                 <div className="flex gap-4 text-2xl text-blackapp">
-                  <a href="#" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.facebook.com/share/1FbH5URBzD/?mibextid=wvvXIf" target="_blank" rel="noopener noreferrer">
                     <FacebookFilled />
                   </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer">
+                  <a href="https://x.com/builderskonnect?s=11&t=4QkS0C5XHKLFtOsOYKTww" target="_blank" rel="noopener noreferrer">
                     <TwitterSquareFilled />
                   </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.instagram.com/builderskonnectng?utm_source=qr&igsh=MTI3Z2htbnN5OGo4dA==" target="_blank" rel="noopener noreferrer">
                     <InstagramFilled />
                   </a>
-                  <a href="#" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.tiktok.com/@builderskonnect?_t=ZM-8wbEDdyuAG0&_r=1" target="_blank" rel="noopener noreferrer">
                     <LinkedinFilled />
                   </a>
                 </div>

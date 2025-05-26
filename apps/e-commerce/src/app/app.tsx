@@ -34,6 +34,7 @@ import SubcategoryList from './pages/SubcategoryList';
 import VendorShop from './pages/VendorStore/VendorPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import DealsPage from './pages/DealsPage';
+import SubscriptionCheckout from './components/onboarding/onboarding';
 
 const App = () => {
   return (
@@ -54,6 +55,7 @@ const App = () => {
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="sell" element={<Sell />} />
+        <Route path="subscribe/checkout" element={<SubscriptionCheckout />} />
         <Route path="advertise" element={<Advertise />} />
         <Route path="/category/:category" element={<SubcategoryList />} />
         <Route
