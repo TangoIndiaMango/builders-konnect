@@ -1,10 +1,16 @@
-
 import '@ant-design/v5-patch-for-react-19';
 import * as ReactDOM from 'react-dom/client';
 import App from './app/app';
 import { ConfigProvider, App as AntApp } from 'antd';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import useGetPermissions from './hooks/useGetPermissions';
+
+const PermissionsProvider = ({ children }: { children: React.ReactNode }) => {
+  useGetPermissions();
+  return <>{children}</>;
+};
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -37,7 +43,9 @@ root.render(
     <Router>
       <QueryClientProvider client={queryClient}>
         <AntApp notification={{ placement: 'topRight', maxCount: 3 }}>
-          <App />
+          <PermissionsProvider>
+            <App />
+          </PermissionsProvider>
         </AntApp>
       </QueryClientProvider>
     </Router>

@@ -19,7 +19,7 @@ const COLORS = [
   '#4BC0C0', // Aqua
   '#9966FF', // Lavender
   '#FF9F40', // Dark Orange
-  '#C9CBCF'  // Grey for fallback
+  '#C9CBCF', // Grey for fallback
 ];
 
 const ProductSalesChart = ({ data }: { data: TopCategories[] }) => {
@@ -31,9 +31,9 @@ const ProductSalesChart = ({ data }: { data: TopCategories[] }) => {
     0
   );
 
-  const numericData = data?.map(item => ({
+  const numericData = data?.map((item) => ({
     ...item,
-    total_orders: Number(item.total_orders),
+    total_orders: Number(item?.total_orders),
   }));
   // console.log(numericData, 'numericData');
   const config: PieConfig = {
@@ -43,7 +43,6 @@ const ProductSalesChart = ({ data }: { data: TopCategories[] }) => {
 
     radius: 1,
     innerRadius: 0.6,
-
 
     animation: {
       appear: {
@@ -66,17 +65,16 @@ const ProductSalesChart = ({ data }: { data: TopCategories[] }) => {
         {/* <Divider type="vertical" className="h-80 text-[#D9D9D9] bg-[#D9D9D9]" /> */}
         <div className="">
           <div className="space-y-4 ">
-            {/* Header row for alignment reference */}
             <div className="grid grid-cols-[24px_1fr_100px_100px] gap-4 text-sm text-gray-500">
-              <div></div> {/* Space for color dot */}
-              <div>Category</div> {/* Changed from Product to Category for consistency */}
-              <div>Orders</div>   {/* Changed from Sales to Orders */}
-              <div>Revenue</div>  {/* Changed from Amount to Revenue */}
+              <div></div>
+              <div>Category</div>
+              <div>Orders</div>
+              <div>Revenue</div>
             </div>
 
             {data?.map((item: TopCategories, index: number) => (
               <div
-                key={item.id} // Use stable item.id as key
+                key={item?.id}
                 className="grid grid-cols-[24px_1fr_100px_100px] gap-4 items-center"
               >
                 <div
@@ -85,14 +83,17 @@ const ProductSalesChart = ({ data }: { data: TopCategories[] }) => {
                     backgroundColor: COLORS[index % COLORS.length],
                   }}
                 />
-                <p className="text-sm font-medium text-gray-700 truncate" title={item?.category_name}>
+                <p
+                  className="text-sm font-medium text-gray-700 truncate"
+                  title={item?.category_name}
+                >
                   {item?.category_name}
                 </p>
                 <p className="text-xs text-gray-500">
                   {item?.total_orders} sold
                 </p>
                 <p className="text-sm font-semibold">
-                  {formatBalance(item.total_revenue)}
+                  {formatBalance(item?.total_revenue)}
                 </p>
               </div>
             ))}

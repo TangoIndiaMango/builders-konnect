@@ -6,7 +6,7 @@ const Column = RawColumn as unknown as React.FC<ColumnConfig>;
 
 const CustomerTrafficChart = ({ data }: { data: any }) => {
   const { containerRef, containerWidth } = useResizeContainer();
-  const cleanedData = data.map(item => ({
+  const cleanedData = data?.map(item => ({
     ...item,
     value: item.value == null ? 0 : Number(item.value),
   }));
