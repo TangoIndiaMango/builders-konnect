@@ -216,7 +216,8 @@ const CreateSales = () => {
   };
 
   const handlePaymentConfirm = (
-    payments: { methodId: string; amount: number; balance: number }[]
+    payments: { methodId: string; amount: number; balance: number }[], 
+    pauseSale: boolean
   ) => {
     setPaymentAmount(payments);
 
@@ -234,7 +235,7 @@ const CreateSales = () => {
 
     const payload = {
       customer: customerPayload,
-      status: 'completed',
+      status: pauseSale ? 'draft' : 'completed',
       sales_type: 'pos',
       line_items: selectedProducts.map((product) => ({
         product_id: product.id,
@@ -247,6 +248,8 @@ const CreateSales = () => {
       })),
       discount_id: selectedDiscount || '',
     };
+
+    console.log(payload, 'payload');
 
     checkOut(
       {
@@ -302,9 +305,9 @@ const CreateSales = () => {
         title="Create Sales"
         actionButton={
           <div className="flex items-center justify-end gap-3">
-            {/* <Button size="large" className="rounded">
-              Pause Sales
-            </Button> */}
+            <Button size="large" className="rounded" onClick={() => handlePaymentConfirm([], true)}>
+              Pause Sale
+            </Button>
             <Button
               type="primary"
               size="large"
@@ -410,7 +413,7 @@ const CreateSales = () => {
               <LabelValue
                 label="Discount"
                 value={`${formatBalance(
-                  orderSummary?.fees?.discount as number
+                  orderSummary?.total_discount as number
                 )}`}
               />
               <LabelValue
@@ -456,7 +459,7 @@ const CreateSales = () => {
         }}
         selectedMethods={selectedPaymentMethods}
         totalAmount={orderSummary?.total || 0}
-        onConfirmPayments={handlePaymentConfirm}
+        onConfirmPayments={(payments, pauseSale) => handlePaymentConfirm(payments, pauseSale)}
         isLoading={isCheckingOut}
         form={form}
       />

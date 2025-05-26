@@ -10,7 +10,7 @@ interface PaymentAmountModalProps {
   onBack: () => void;
   selectedMethods: paymentMethodInterface[];
   totalAmount: number;
-  onConfirmPayments: (payments: { methodId: string; amount: number; balance: number }[]) => void;
+  onConfirmPayments: (payments: { methodId: string; amount: number; balance: number }[], pauseSale: boolean) => void;
   isLoading: boolean;
   form: FormInstance<any>
 }
@@ -50,7 +50,7 @@ const PaymentAmountModal: React.FC<PaymentAmountModalProps> = ({
       amount: Number(form.getFieldValue([method.id, 'amount']) || 0),
       balance: Number(form.getFieldValue([method.id, 'balance']) || 0)
     }));
-    onConfirmPayments(payments);
+    onConfirmPayments(payments, false);
   };
 
   return (

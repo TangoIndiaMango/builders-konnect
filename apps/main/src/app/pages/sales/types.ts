@@ -54,6 +54,7 @@ export interface OrderSummary {
   subtotal: number;
   total: number;
   total_item_quantity: number;
+  total_discount: number;
   total_product_discount: number;
 }
 

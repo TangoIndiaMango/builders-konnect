@@ -1,6 +1,8 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Skeleton } from 'antd';
+import { Button } from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useFetchData } from '../../../hooks/useApis';
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
 import { useTableState } from '../../../hooks/useTable';
@@ -13,9 +15,14 @@ import Recent from '../../components/home/Recent';
 import Revenue from '../../components/home/Revenue';
 import Stats from '../../components/home/Stats';
 import { Stores } from '../../pages/staff/types';
-import { useNavigate } from 'react-router-dom';
-import dayjs, { Dayjs } from 'dayjs';
-import { DateRange } from '../../components/date/DatePickerrComp';
+import { usePermission } from '../../store/permission';
+export interface IUserPermissions {
+  access_type: string;
+  module: string;
+  name: string;
+  remarks: string;
+  sub_module: string;
+}
 
 function toQueryString(params: Record<string, any>) {
   return Object.entries(params)
@@ -90,6 +97,12 @@ const DashboardHome = () => {
     setSelectedStoreId('');
     reset();
   };
+
+  //User permissions
+  // const { setPermission } = usePermission();
+  // const userPermissions = useFetchData('merchants/access/user/permissions/all');
+  // const userPermissionsData = userPermissions?.data?.data as IUserPermissions[];
+  // console.log(userPermissionsData, 'userPermissions');
 
   const isLoading =
     statsData?.isLoading ||
