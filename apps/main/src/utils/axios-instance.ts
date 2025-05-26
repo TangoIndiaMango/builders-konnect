@@ -70,7 +70,9 @@ const handleError = (error: any) => {
 };
 
 axiosInstance.interceptors.request.use(
+
   (config) => {
+    attachTokenAndTenantID(config);
     console.log('Request:', config.url, config);
     return config;
   },
@@ -82,6 +84,7 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
+    // handleError(response);
     console.log('Response:', response.config.url, response);
     return response;
   },
