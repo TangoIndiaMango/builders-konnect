@@ -1,8 +1,9 @@
-import { message, Upload } from 'antd';
+import { GetProp, message, Upload, UploadProps } from 'antd';
 import dayjs from 'dayjs';
 import { saveAs } from 'file-saver';
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg';
+export const acceptedFileTypes = '.pdf,.doc,.docx,.jpg,.png,.jpeg,.gif,.webp,.csv,.xls,.xlsx';
 export const maxFileSize = 10 * 1024 * 1024; // 10MB
 export const getStatusColor = (status: string) => {
   const colorMap: Record<string, string> = {
@@ -67,31 +68,27 @@ export const beforeUpload = (file: File) => {
 };
 
 
-export const exportCsvFromString = (csvData: string, fileName: string) => {
-  console.log(csvData, "CSV Data looks like this");
-
-  try {
-    // Check if the CSV data is valid (not empty or null)
-    if (!csvData || typeof csvData !== "string") {
-      console.error("Invalid CSV content.");
-      return;
-    }
-
-    // Create a Blob object from the CSV string
-    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-
-    // Create a download link and trigger a click to download the file
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `${fileName}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error("Error exporting CSV from string:", error);
+export const exportCsvFromString = (csvData: string | Blob, fileName: string) => {
+  if (!csvData) {
+    console.error("Invalid CSV content.");
+    return;
   }
+
+  let blob: Blob;
+  if (typeof csvData === "string") {
+    blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+  } else {
+    blob = csvData;
+  }
+
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `${fileName}.csv`);
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 export const downloadAsPdf = (data: any[], fileName: string) => {
@@ -144,4 +141,31 @@ export const handleCopy = (val: string, successTitle: string) => {
         message.error('Failed to copy')
       );
   }
+};
+
+export const getBase64 = (file: FileType): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+
+
+export const monthAbbreviation = (month: string) => {
+  const monthMap = {
+    'January': 'Jan',
+    'February': 'Feb',
+    'March': 'Mar',
+    'April': 'Apr',
+    'May': 'May',
+    'June': 'Jun',
+    'July': 'Jul',
+    'August': 'Aug',
+    'September': 'Sep',
+    'October': 'Oct',
+    'November': 'Nov',
+    'December': 'Dec',
+  };
+  return monthMap[month] || month;
 };

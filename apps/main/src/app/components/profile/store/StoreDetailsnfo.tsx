@@ -55,8 +55,8 @@ const StoreDetailsInfo: React.FC<StoreDetailsInfoProps> = ({
               color={data?.status?.toLowerCase() === 'active' ? 'green' : 'red'}
             className={
               data?.status?.toLowerCase() === 'active'
-                ? 'border border-green-200 bg-green-50 text-green-700'
-                : 'border border-red-200 bg-red-50 text-red-700'
+                ? 'border border-green-200 bg-green-50 text-green-700 capitalize'
+                : 'border border-red-200 bg-red-50 text-red-700 capitalize'
             }
           >
               {data?.status ?? 'N/A'}

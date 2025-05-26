@@ -1,22 +1,16 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, MenuProps } from 'antd';
+import { Button, Divider } from 'antd';
 import { useEffect, useMemo } from 'react';
-import { data, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useFetchData, useGetExportData } from '../../../hooks/useApis';
 import { useTableState } from '../../../hooks/useTable';
-import { ProductStats } from '../../../service/inventory/inventory.types';
 import { exportCsvFromString, formatBalance } from '../../../utils/helper';
 import DisplayHeader from '../../components/common/DisplayHeader';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
 import TableWrapper from '../../components/common/Table/TableWrapper';
 import TableStats from '../../components/common/TableStats';
 import DatePickerComp from '../../components/date/DatePickerrComp';
-import {
-  ProductTable,
-  ProductTableData,
-} from '../../components/inventory/product-table';
-import { filterOptions } from '../../lib/constant';
-import { PaginatedResponse } from '../../types/paginatedData';
+import {  filterReturnsOptions } from '../../lib/constant';
 import { ReturnsTable } from '../../components/returns/table/ReturnsTable';
 import PageIntroBanner from '../../components/common/PageIntroBanner';
 
@@ -48,13 +42,14 @@ const ReturnsPage = () => {
 
 
   const exportProducts = useGetExportData(
-    `merchants/returns?export=${exportType}`
+    `merchants/returns?export=csv`
   );
 
   const handleExport = () => {
     exportProducts.mutate(null as any, {
       onSuccess: (data) => {
-        exportCsvFromString(data, 'Products');
+        // console.log(data, "DATA LOOKS LIKE THIS")
+        exportCsvFromString(data?.data, 'Returns');
       },
       onError: (error) => {
         console.log(error);
@@ -64,6 +59,10 @@ const ReturnsPage = () => {
       },
     });
   };
+
+
+
+
 
   useEffect(() => {
     if (exportType) {
@@ -77,23 +76,24 @@ const ReturnsPage = () => {
     }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
       limitSize ?? 10
     }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
-      filterKey === 'status' ? filterValue : ''
+      filterKey === 'order_status' ? filterValue : ''
     }`
   );
 
-  const products = useFetchData(
-    `merchants/inventory-products?paginate=1&page=${
-      currentPage ?? 1
-    }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
-      limitSize ?? 10
-    }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
-      filterKey === 'status' ? filterValue : ''
-    }`
-  );
 
-  const stats = returns?.data?.stats as ReturnStats;
-  const productsData = products?.data?.data
-  ?.data as PaginatedResponse<ProductTableData>;
+  // const products = useFetchData(
+  //   `merchants/inventory-products?paginate=1&page=${
+  //     currentPage ?? 1
+  //   }&date_filter=${customDateRange ?? ''}&q=${searchValue ?? ''}&limit=${
+  //     limitSize ?? 10
+  //   }&sort_by=${filterKey === 'sort_by' ? filterValue : ''}&status=${
+  //     filterKey === 'status' ? filterValue : ''
+  //   }`
+  // );
+
+  const stats = returns?.data?.data?.stats as ReturnStats;
+  const returnsData = returns?.data?.data?.data?.data 
+  // console.log(returnsData,"returnsData")
 
   const navigate = useNavigate();
 
@@ -132,7 +132,7 @@ const ReturnsPage = () => {
     <div className="h-full">
       <PageIntroBanner
         title="Returns and Refund"
-        description="Create sales order and track order sales and performance here"
+        description="View and manage all product returns and refunds here"
         actionButton={
           <div className="flex items-center gap-5">
             {/* <Button
@@ -148,7 +148,7 @@ const ReturnsPage = () => {
               className="rounded"
               size="large"
               icon={<PlusOutlined />}
-              onClick={() => navigate('/pos/sales/create')}
+              onClick={() => navigate('/pos/returns/create')}
             >
               New Return Log
             </Button>
@@ -159,18 +159,21 @@ const ReturnsPage = () => {
       <div className="p-5">
         <div className="p-5 space-y-3 bg-white">
           <DisplayHeader
-            title="All Products"
-            description="You're viewing all products below."
+            title="All Returns and Refund"
+            description="You're viewing all returns and refunds below."
             actionButton={
               <div className="flex flex-wrap items-center justify-end gap-3">
                 <Button onClick={reset}>Clear</Button>
-                <DatePickerComp onRangeChange={setCustomDateRange} />
+                <DatePickerComp
+                  onRangeChange={setCustomDateRange}
+                  value={customDateRange}
+                />
               </div>
             }
           />
 
           <SkeletonLoader active={returns?.isLoading} type="table" columns={4} rows={1}>
-            <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
+            <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
               {tableStatsData?.map((item, index) => (
                 <TableStats
                   key={index}
@@ -185,7 +188,7 @@ const ReturnsPage = () => {
           <Divider />
 
           <TableWrapper
-            filterOptions={filterOptions}
+            filterOptions={filterReturnsOptions}
             onFilterChange={handleFilterChange}
             selectedFilter={filterValue}
             searchValue={searchValue}
@@ -193,13 +196,13 @@ const ReturnsPage = () => {
             onExport={handleExport}
           >
             <ReturnsTable
-              data={productsData?.data}
+              data={returnsData}
               currentPage={currentPage}
               onPageChange={setPage}
-              loading={products?.isLoading}
+              loading={returns?.isLoading}
               showCheckbox={true}
-              total={productsData?.total}
-              perPage={productsData?.per_page}
+              total={returnsData?.total}
+              perPage={returnsData?.per_page}
               updateLimitSize={setLimitSize}
             />
           </TableWrapper>

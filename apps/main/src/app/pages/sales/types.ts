@@ -47,12 +47,14 @@ export interface OrderSummary {
   fees: {
     tax: number;
     service_fee: number;
+    discount: number;
   };
   items_count: number;
   sales_order_discount: number;
   subtotal: number;
   total: number;
   total_item_quantity: number;
+  total_discount: number;
   total_product_discount: number;
 }
 
@@ -107,6 +109,7 @@ export interface CustomerType {
     subtotal: number;
     discount_breakdown: DiscountBreakdown;
     fees: Fees;
+    total_discount: number;
   }
 
 

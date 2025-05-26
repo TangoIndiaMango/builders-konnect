@@ -1,4 +1,4 @@
-
+import { Dayjs } from 'dayjs';
 /**
  * This is the table atom/store.
  * We have some atoms destructured because we want to be able to call them independently in components without getting the whole table state.
@@ -29,12 +29,17 @@ export interface TableStateData {
   sortOrder?: string;
   limitSize?: number;
   exportType?: string;
-  customDateRange?: string;
+  customDateRange?: string | null;
+
+  // Year picker
+  year?: Dayjs | null;
+
 }
 
 // atoms.ts
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
+import { DateRange } from '../components/date/DatePickerrComp';
 
 export const defaultTableState: TableStateData = {
   searchTerm: '',
@@ -50,7 +55,7 @@ export const defaultTableState: TableStateData = {
   sortOrder: '',
   limitSize: 10,
   exportType: '',
-  customDateRange: '',
+  customDateRange: null,
   periodOptions: [
     { label: 'This Month', value: 'this_month' },
     { label: 'Last Month', value: 'last_month' },
@@ -58,6 +63,7 @@ export const defaultTableState: TableStateData = {
     { label: 'Custom Range', value: 'custom' },
   ],
   customFilterOptions: [],
+  year: null,
 };
 
 // Main atom storing all table states
@@ -118,8 +124,15 @@ export const createTableAtoms = (tableName: string) => {
 
   const customDateRangeAtom = atom(
     (get) => get(tableStateAtom).customDateRange,
-    (get, set, newValue: string) => {
+    (get, set, newValue: string | null) => {
       set(tableStateAtom, { customDateRange: newValue });
+    }
+  );
+
+  const yearAtom = atom(
+    (get) => get(tableStateAtom).year,
+    (get, set, newValue: Dayjs | null) => {
+      set(tableStateAtom, { year: newValue });
     }
   );
 
@@ -132,6 +145,8 @@ export const createTableAtoms = (tableName: string) => {
     filterValue: filterValueAtom,
     exportType: exportTypeAtom,
     customDateRange: customDateRangeAtom,
+    year: yearAtom,
+
     // ... other atoms
   };
 };

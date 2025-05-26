@@ -43,7 +43,7 @@ const SalesHome = () => {
     sort_by: filterKey === 'sort_by' ? filterValue : '',
     payment_status: filterKey === 'payment_status' ? filterValue : '',
     order_status: filterKey === 'order_status' ? filterValue : '',
-    date_filter: customDateRange,
+    date_filter: customDateRange || '',
     page: currentPage,
   });
 
@@ -98,6 +98,7 @@ const SalesHome = () => {
             filterValue={filterValue ?? ''}
             onExport={setExportType}
             updateLimitSize={setLimitSize}
+            dateRange={customDateRange || null}
           />
         ),
       })),
@@ -132,8 +133,14 @@ const SalesHome = () => {
         }
       />
 
-      <div className="px-5 bg-white">
-        <Tabs defaultActiveKey="all-sales" onChange={onChange} items={items} />
+      <div className="p-5">
+        <div className="px-5 bg-white">
+          <Tabs
+            defaultActiveKey="all-sales"
+            onChange={onChange}
+            items={items}
+          />
+        </div>
       </div>
 
       <ConfirmModal

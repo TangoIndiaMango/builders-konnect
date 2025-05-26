@@ -40,8 +40,8 @@ const StaffFormModal: FC<StaffFormModalProps> = ({
       if (mode === 'edit' && initialValues) {
         form.setFieldsValue({
           ...initialValues,
-          location_ids: initialValues.location_ids || [],
-          role_id: initialValues.role_id || null,
+          location_ids: (initialValues.location_ids ?? initialValues.store_id) || [],
+          role_id: (initialValues.role_id ?? initialValues.role_id) || null,
         });
       }
     }

@@ -33,7 +33,7 @@ export const useGetExportData = (url: string) => {
   const mutation = useMutation({
     mutationFn: async () => {
       const response = await axiosInstance.get(baseUrl + url, {
-        // responseType: 'blob',
+        responseType: 'blob',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -121,7 +121,7 @@ export const useFetchData = (url: string) => {
     enabled: !!url,
   });
 
-  return { ...query, isLoading: query.isFetching || query.isLoading };
+  return { ...query, isLoading: query.isLoading };
 };
 
 // Fetch Post Data (POST with Query)
@@ -134,7 +134,7 @@ export const useFetchPostData = (url: string, options: any) => {
     },
   });
 
-  return { ...query, isLoading: query.isFetching || query.isLoading };
+  return { ...query, isLoading: query.isLoading };
 };
 
 export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = true) => {
@@ -149,5 +149,29 @@ export const useFetchSingleData = (url: string, enabled = false, useBaseUrl = tr
     staleTime: 0,
   });
 
-  return { ...query, isLoading: query.isFetching || query.isLoading };
+  return { ...query, isLoading: query.isLoading };
+};
+
+
+export const useFetchDataSeperateLoading = (url: string) => {
+  const query = useQuery({
+    queryKey: ['fetchData', url],
+    queryFn: async () => {
+      if (!url) return null;
+      const response = await axiosInstance.get(baseUrl + url);
+      return response.data;
+    },
+    enabled: !!url,
+  });
+
+  // Expose both isLoading (first load) and isFetching (background refetch)
+  return { ...query, isLoading: query.isLoading, isFetching: query.isFetching };
+};
+
+// Get Merchant Data
+export const useGetMerchant = (id: string, options?: { limit?: number }) => {
+  const queryString = options?.limit ? `?limit=${options.limit}` : '';
+  const url = `api/v1/customers/merchants/${id}${queryString}`;
+
+  return useFetchData(url);
 };

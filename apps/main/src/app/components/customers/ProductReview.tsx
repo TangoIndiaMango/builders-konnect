@@ -1,29 +1,38 @@
 import DisplayHeader from '../common/DisplayHeader';
-import TimelineFilter from '../common/filters/TimelineFilter';
 import TableWrapper from '../common/Table/TableWrapper';
 import { PaginatedResponse } from '../../types/paginatedData';
 import { ProductTable } from './table/productTable';
 import { Product } from '../../pages/customers/types';
-import { FilterOption } from '@/app/store/table';
 import { Button } from 'antd';
+import DatePickerComp from '../date/DatePickerrComp';
+import { FilterState } from '@/app/types/table';
 
 export interface ProductReviewDataInterface {
   data: PaginatedResponse<Product>;
 }
-export interface ProductReviewProps {
+export interface ProductReviewProps  extends FilterState{
   data: ProductReviewDataInterface;
   isLoading: boolean;
-  setSearchTerm: (searchTerm: string) => void;
-  periodFilter: string;
-  setPeriodFilter: (periodFilter: string) => void;
-  periodOptions: FilterOption[];
-  currentPage: number;
-  setCurrentPage: (currentPage: number) => void;
-  reset: () => void;
+  withPagination?: boolean;
+  dateRange: string | null;
 }
-const ProductReview = ({ data, isLoading, setSearchTerm, periodFilter, setPeriodFilter, periodOptions, currentPage, setCurrentPage, reset }: ProductReviewProps) => {
-   
-  
+const ProductReview = ({ data,
+  isLoading,
+  setSearchValue,
+  searchValue,
+  currentPage,
+  setCustomDateRange,
+  handleFilterChange,
+  filterValue,
+  onExport,
+  filterOptions,
+  setPage,
+  reset,
+  updateLimitSize,
+  dateRange,
+  withPagination = true}: ProductReviewProps) => {
+
+
 
   return (
     <div className="space-y-3">
@@ -33,20 +42,33 @@ const ProductReview = ({ data, isLoading, setSearchTerm, periodFilter, setPeriod
             actionButton={
           <div className="flex flex-wrap items-center gap-3">
             <Button onClick={reset}>Clear</Button>
-            <TimelineFilter value={periodFilter} onChange={setPeriodFilter} options={periodOptions} />
+            <DatePickerComp
+              onRangeChange={setCustomDateRange}
+              value={dateRange}
+            />
           </div>
         }
       />
 
 
-      <TableWrapper onSearch={setSearchTerm}>
+      <TableWrapper
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        onFilterChange={handleFilterChange}
+        selectedFilter={filterValue}
+        onExport={onExport}
+        filterOptions={filterOptions}
+      >
         <ProductTable
           data={data?.data?.data}
           currentPage={currentPage}
-          onPageChange={setCurrentPage}
+          onPageChange={setPage}
           loading={isLoading}
           showCheckbox={true}
           total={data?.data?.total}
+          perPage={data?.data?.per_page}
+          updateLimitSize={updateLimitSize}
+          withPagination={withPagination}
         />
       </TableWrapper>
     </div>

@@ -30,7 +30,7 @@ interface StoreFormModalProps {
   loading?: boolean;
   onSubmit: (values: StoreFormValues) => void;
   mode: 'add' | 'edit';
-  initialValues: Stores | null;
+  initialValues: any;
   isLoading: boolean;
   handleStateChange: (value: string) => void;
 }
@@ -87,6 +87,8 @@ const StoreFormModal: FC<StoreFormModalProps> = ({
       if (mode === 'edit' && initialValues) {
         form.setFieldsValue({
           ...initialValues,
+          state_id: initialValues.state.id,
+          city_id: initialValues.city.name,
         });
       }
     }
@@ -105,7 +107,7 @@ const StoreFormModal: FC<StoreFormModalProps> = ({
     }
   };
 
-  const modalTitle = mode === 'add' ? 'Add Staff' : 'Edit Staff';
+  const modalTitle = mode === 'add' ? 'Add Store' : 'Edit Store';
 
   const handleAddressSelect = (value: string, option: any) => {
     form.setFieldsValue({

@@ -1,12 +1,18 @@
 import { DollarOutlined, ShoppingCartOutlined } from '@ant-design/icons';
-import { Button, Divider } from 'antd';
+import { Button, Divider, Select, Skeleton } from 'antd';
 import CardWithFilter from '../common/CardWithFilter';
 import EmptyState from '../common/EmptyState';
 import FilterGroup from '../common/filters/FilterGroup';
 import StatsCard from '../common/StatsCard';
 import ProductSalesChart from './charts/ProductSalesChart';
 import CustomerListItem from './customer/CustomerListItem';
-
+import CustomerTrafficChart from './charts/CustomerTrafficChart';
+import { customerData as dummyData } from './constant';
+import { useNavigate } from 'react-router-dom';
+import DatePickerComp, { DateRange } from '../date/DatePickerrComp';
+import { monthAbbreviation } from '../../../utils/helper';
+import { Dayjs } from 'dayjs';
+import YearPicker from '../date/YearPicker';
 const data = [
   { name: 'Cement', sales: 200, value: 30, amount: 4544 },
   { name: 'Paint', sales: 126, value: 25, amount: 4544 },
@@ -52,28 +58,81 @@ const statsData = [
   },
 ];
 
-const Product = () => {
+interface CustomerProps {
+  customerData: any;
+  storeList: any;
+  onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
+  setSelectedStore: (value: string) => void;
+  reset: () => void;
+  recentCustomerData: any;
+  recentCustomerLoading: boolean;
+  isLoading: boolean;
+  year: Dayjs | null;
+  setYear: (value: Dayjs | null) => void;
+}
+
+const Customer = ({
+  customerData,
+  storeList,
+  onRangeChange,
+  setSelectedStore,
+  reset,
+  recentCustomerData,
+  recentCustomerLoading,
+  isLoading,
+  year,
+  setYear,
+}: CustomerProps) => {
+  const customerRes = customerData?.data?.data;
+  const cusData = customerRes
+    ? Object.entries(customerRes)?.map(([month, value]) => ({
+        month: monthAbbreviation(month),
+        value: Number(value),
+      }))
+    : [];
+
+  const navigate = useNavigate();
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
       <div className="md:col-span-2">
-        <CardWithFilter title="Product Overview" rightSection={<FilterGroup />}>
-          {data?.length > 0 ? (
+        <CardWithFilter
+          title="Customer Traffic"
+          description=""
+          rightSection={
+            <div className="flex items-center gap-2 justify-end flex-wrap">
+              <Button onClick={reset}>Clear</Button>
+              <Select
+                placeholder="Select store"
+                // mode="multiple"
+                allowClear
+                size="large"
+                className="rounded w-[200px]"
+                showSearch
+                filterOption={(input, option) =>
+                  (option?.label?.toString() ?? '')
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                options={storeList?.map((store) => ({
+                  value: store.id,
+                  label: store.name,
+                }))}
+                onChange={(value) => setSelectedStore(value)}
+              />
+
+              <YearPicker onChange={setYear} value={year} />
+            </div>
+          }
+        >
+          {cusData?.length > 0 ? (
             <div className="space-y-5">
-              <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
-                {statsData.map((stat, index) => (
-                  <StatsCard
-                    key={index}
-                    title={stat.title}
-                    value={stat.value}
-                    color={stat.color}
-                    icon={stat.icon}
-                  />
-                ))}
-              </div>
-              <Divider />
               <div>
-                <h3 className="text-lg font-semibold">Product Sales</h3>
-                <ProductSalesChart data={data} />
+                {/* <h3 className="text-lg font-semibold">Customer Traffic</h3> */}
+                {isLoading ? (
+                  <Skeleton active />
+                ) : (
+                  <CustomerTrafficChart data={cusData} />
+                )}
               </div>
             </div>
           ) : (
@@ -83,20 +142,30 @@ const Product = () => {
       </div>
 
       <div className="w-full xl:col-span-1">
-        <CardWithFilter title="New products Added">
-          {products?.length > 0 ? (
+        <CardWithFilter title="Recent Customers">
+          {recentCustomerData?.data?.data?.data?.length > 0 ? (
             <div className="flex flex-col gap-4">
-              {products.map((customer) => (
-                <CustomerListItem
-                  key={customer.id}
-                  name={customer.name}
-                  email={customer.email}
-                  avatar={customer.avatar}
-                  onClick={() => console.log(`Clicked on ${customer.name}`)}
-                />
-              ))}
-
-              <Button type="link" className="w-full">
+              {isLoading || recentCustomerLoading ? (
+                <Skeleton active />
+              ) : (
+                recentCustomerData?.data?.data?.data
+                  ?.slice(0, 5)?.map((customer) => (
+                    <CustomerListItem
+                      key={customer.id}
+                      name={customer.name}
+                      email={customer.email}
+                      avatar={customer.avatar}
+                      onClick={() =>
+                        navigate(`/pos/customers/view/${customer.id}`)
+                      }
+                    />
+                  ))
+              )}
+              <Button
+                type="link"
+                className="w-full"
+                onClick={() => navigate('/pos/customers/list')}
+              >
                 View All
               </Button>
             </div>
@@ -109,4 +178,4 @@ const Product = () => {
   );
 };
 
-export default Product;
+export default Customer;

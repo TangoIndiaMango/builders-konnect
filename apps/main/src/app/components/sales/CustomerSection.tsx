@@ -5,18 +5,25 @@ import { CustomerType } from '../../lib./../pages/sales/types';
 
 interface CustomerSectionProps {
   onCustomerSelect?: (customer: CustomerType) => void;
+  onCustomerRemove?: () => void;
   customerData?: CustomerType[];
+  showCustomer?: boolean;
+  showAddNew?: boolean;
 }
 
 export const CustomerSection = ({
   onCustomerSelect,
+  onCustomerRemove,
   customerData,
+  showCustomer = true,
+  showAddNew = true,
 }: CustomerSectionProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerType | null>(
     null
   );
+
   const [form] = Form.useForm();
 
   const sourceOptions = [
@@ -74,11 +81,9 @@ export const CustomerSection = ({
       if (onCustomerSelect) {
         onCustomerSelect(newCustomer);
       }
-
     } catch (error) {
       console.error('Validation failed:', error);
-    }
-    finally {
+    } finally {
       form.resetFields();
       setIsAdding(false);
       setIsEditing(false);
@@ -90,6 +95,9 @@ export const CustomerSection = ({
     setIsAdding(false);
     setIsEditing(false);
     form.resetFields();
+    if (onCustomerRemove) {
+      onCustomerRemove();
+    }
   };
 
   const handleEdit = () => {
@@ -112,9 +120,11 @@ export const CustomerSection = ({
               onSearch={handleCustomerSearch}
               onSelect={handleCustomerSelect}
             />
-            <Button icon={<PlusOutlined />} onClick={handleAddNew}>
-              Add New
-            </Button>
+            {showAddNew && (
+              <Button icon={<PlusOutlined />} onClick={handleAddNew}>
+                Add New
+              </Button>
+            )}
           </div>
         )}
         {selectedCustomer && !isEditing && !isAdding && (
@@ -126,9 +136,11 @@ export const CustomerSection = ({
             >
               Remove Customer
             </Button>
-            <Button icon={<EditOutlined />} onClick={handleEdit}>
-              Edit
-            </Button>
+            {showCustomer && (
+              <Button icon={<EditOutlined />} onClick={handleEdit}>
+                Edit
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -146,7 +158,13 @@ export const CustomerSection = ({
           <Form.Item
             name="phone"
             label="Phone Number"
-            rules={[{ required: true, message: 'Please enter phone number' }]}
+            rules={[
+              { required: true, message: 'Please enter phone number' },
+              { 
+                pattern: /^[0-9]{11}$/,
+                message: 'Please enter a valid phone number'
+              }
+            ]}
           >
             <Input placeholder="Enter phone number" />
           </Form.Item>
@@ -186,7 +204,7 @@ export const CustomerSection = ({
         </Form>
       )}
 
-      {selectedCustomer && !isEditing && !isAdding && (
+      {showCustomer && selectedCustomer && !isEditing && !isAdding && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1">
             <label className="text-sm text-gray-500">Name</label>
@@ -204,7 +222,9 @@ export const CustomerSection = ({
           </div>
           <div className="space-y-1">
             <label className="text-sm text-gray-500">Source</label>
-            <p className="font-medium truncate">{selectedCustomer?.source || 'N/A'}</p>
+            <p className="font-medium truncate">
+              {selectedCustomer?.source || 'N/A'}
+            </p>
           </div>
         </div>
       )}

@@ -13,6 +13,7 @@ import { OrdersTable } from '../../sales/table/salesTable';
 interface OrderDetailsProps extends FilterState {
   data: SingleStoreResponse;
   isLoading: boolean;
+  dateRange: string | null;
 }
 
 const SalesOverview = ({
@@ -30,6 +31,7 @@ const SalesOverview = ({
   searchValue,
   setSearchValue,
   reset,
+  dateRange,
 }: OrderDetailsProps) => {
 
   const tableStatsData = useMemo(
@@ -81,12 +83,13 @@ const SalesOverview = ({
           </Button>
           <DatePickerComp
             onRangeChange={setCustomDateRange}
+            value={dateRange}
           />
         </div>}
       />
 
       <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
-        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
+        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
           {tableStatsData?.map((item, index) => (
             <TableStats
               key={index}

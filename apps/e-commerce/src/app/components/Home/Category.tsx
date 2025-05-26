@@ -1,23 +1,44 @@
-import { useState } from 'react';
-import { Button} from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Spin } from 'antd';
 import type { FC } from 'react';
-import { categories, filterCards } from '../../lib/Constants'; 
 import { Link } from 'react-router-dom';
 import ProductCards from '../ProductListing/ProductListingHomePage';
+import { useGetCategorizations, useGetProducts } from '../../../hooks/useApis';
+import { woodliketwo } from '../../lib/assets/images';
 
+interface Product {
+  id: string;
+  name: string;
+  retail_price: string;
+  discount_information?: {
+    value: string;
+  };
+  ratings?: number;
+  primary_media_url?: string;
+  category: string;
+}
 
-
-
-
+interface Category {
+  id: string;
+  name: string;
+}
 
 const CategoryFilter: FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState(
-    'Painting & Decoration'
-  );
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const { data: categories, isLoading: categoriesLoading } = useGetCategorizations('category');
+  const { data: products, isLoading: productsLoading } = useGetProducts({
+    categoryId: selectedCategory,
+  });
 
-  const filteredCards = filterCards.filter(
-    (card) => card.category === selectedCategory
-  );
+  useEffect(() => {
+    if (categories?.length > 0 && !selectedCategory) {
+      setSelectedCategory(categories[0].id);
+    }
+  }, [categories, selectedCategory]);
+
+  if (categoriesLoading) {
+    return <div className="flex justify-center py-4"><Spin /></div>;
+  }
 
   return (
     <div className="container mx-auto py-16 px-4">
@@ -29,29 +50,47 @@ const CategoryFilter: FC = () => {
       </div>
 
       <div className="flex gap-4 justify-center flex-wrap mb-6">
-        {categories.map((category) => (
+        {categories?.map((category: Category) => (
           <Button
-            key={category}
-            type={selectedCategory === category ? 'primary' : 'default'}
+            key={category.id}
+            type={selectedCategory === category.id ? 'primary' : 'default'}
             size="large"
             className={`min-w-[150px] h-16 rounded-xl text-lg font-semibold transition-all duration-200 ${
-              selectedCategory === category
+              selectedCategory === category.id
                 ? 'bg-[#D64545] border-none text-white'
                 : 'bg-gray-200 text-black'
             }`}
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => setSelectedCategory(category.id)}
           >
-            {category}
+            {category.name}
           </Button>
         ))}
       </div>
 
-      <div className="">
-        {filteredCards.map((item) => (
-          <ProductCards key={item.id} item={item} />
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {productsLoading ? (
+          <div className="col-span-full flex justify-center py-4"><Spin /></div>
+        ) : (
+          products?.data?.data?.slice(0, 4).map((product: Product) => (
+            <Link key={product.id} to={`/product-details/${product.id}`}>
+              <ProductCards 
+                key={product.id} 
+                item={{
+                  id: Number(product.id),
+                  name: product.name,
+                  price: parseFloat(product.retail_price),
+                  discount: product.discount_information?.value ? parseFloat(product.discount_information.value) : 0,
+                  rating: product.ratings || 0,
+                  image: product.primary_media_url || woodliketwo,
+                  category: product.category
+                }} 
+              />
+            </Link>
+          ))
+        )}
       </div>
-      <Link to="/">
+
+      <Link to={`/category/${selectedCategory}`}>
         <div className="mt-10 flex justify-center">
           <Button
             type="primary"

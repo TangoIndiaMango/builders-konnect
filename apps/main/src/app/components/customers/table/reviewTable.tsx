@@ -1,26 +1,21 @@
-import { EyeOutlined, StarFilled, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Tag } from 'antd';
+import { StarFilled, UserOutlined } from '@ant-design/icons';
+import { Avatar } from 'antd';
 import { useSelection } from '../../../../hooks/useSelection';
 import { PaginatedTable, type DataType } from '../../common/Table/Table';
 
 import { ColumnsType } from 'antd/es/table';
-import { useNavigate } from 'react-router-dom';
 import { Review } from '@/app/pages/customers/types';
 import dayjs from 'dayjs';
 import AddResponse from '../addResponse';
-import ViewResponse from '../viewResponse';
+import ViewResponse from '../ViewResponse';
+import { DataTableProps } from '../../../types/table';
 
 
-// Create a type that combines SalesOrder with required key
 type ReviewWithKey = Review & DataType;
 
-interface ReviewTableProps {
+interface ReviewTableProps extends DataTableProps {
   data: Review[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  showCheckbox?: boolean;
+  withPagination?: boolean;
 }
 
 export const ReviewTable = ({
@@ -29,15 +24,15 @@ export const ReviewTable = ({
   onPageChange,
   loading,
   total,
+  perPage,
   showCheckbox = true,
+  updateLimitSize,
+  withPagination = true,
 }: ReviewTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as ReviewWithKey[],
   });
-  // console.log('dataTable', data);
-  // const navigate = useNavigate();
-
-  // Map the data to include a key property
+  
   const dataWithKeys: ReviewWithKey[] = data?.map((item) => ({
     ...item,
     key: item.id.toString(),
@@ -113,11 +108,13 @@ export const ReviewTable = ({
         columns={columns}
         currentPage={currentPage}
         onPageChange={onPageChange}
+        updateLimitSize={updateLimitSize}
         loading={loading}
         total={total}
         showCheckbox={showCheckbox}
+        showPagination={withPagination}
         striped={true}
-        pageSize={10}
+        pageSize={perPage}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}

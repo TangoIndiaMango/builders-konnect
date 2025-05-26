@@ -1,10 +1,7 @@
 import { Button, Form, notification } from 'antd';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import {
-  useCreateData,
-  useFetchData
-} from '../../../hooks/useApis';
+import { useNavigate } from 'react-router-dom';
+import { useCreateData, useFetchData } from '../../../hooks/useApis';
 import { useProductDiscounts } from '../../../hooks/useProductDiscount';
 import { useGetCustomers } from '../../../service/customer/customerFN';
 import { useCheckOut } from '../../../service/sales/salesFN';
@@ -97,13 +94,13 @@ const CreateSales = () => {
     paymentMethodInterface[]
   >([]);
   const [selectedProductDiscount, setSelectedProductDiscount] = useState<
-  string | null
->(null);
+    string | null
+  >(null);
   const [paymentAmount, setPaymentAmount] = useState<
     { methodId: string; amount: number; balance: number }[]
   >([]);
 
-  const { mutate: checkOut, isLoading: isCheckingOut } = useCheckOut();
+  const { mutate: checkOut, isPending: isCheckingOut } = useCheckOut();
   const { data: customers, isLoading: isLoadingCustomers } = useGetCustomers();
   const discounts = useFetchData(
     'merchants/discounts?paginate=0&category=sales-orders'
@@ -120,9 +117,9 @@ const CreateSales = () => {
   // console.log(paymentMethods?.data);
 
   // console.log(customers);
-  console.log(form.getFieldsValue());
+  // console.log(form.getFieldsValue());
 
-  const discountData = discounts?.data as DiscountType[];
+  const discountData = discounts?.data?.data as DiscountType[];
   const productDiscountData = productDiscounts?.data?.data as DiscountType[];
   const productData = products?.data?.data as ProductType[];
 
@@ -131,9 +128,8 @@ const CreateSales = () => {
   const paymentMethodData = paymentMethods?.data
     ?.data as paymentMethodInterface[];
 
-  const { discountedPrices, applyDiscount, removeDiscount } = useProductDiscounts(
-    productDiscountData
-  );
+  const { discountedPrices, applyDiscount, removeDiscount } =
+    useProductDiscounts(productDiscountData);
 
   const handleProductSelect = (product: ProductType) => {
     // Check if product already exists
@@ -179,7 +175,6 @@ const CreateSales = () => {
   const handleRemoveDiscount = () => {
     setSelectedDiscount(null);
     setSelectedProductDiscount(null);
-
   };
 
   const handleApplyDiscount = () => {
@@ -210,11 +205,19 @@ const CreateSales = () => {
   }, [selectedProducts, selectedDiscount]);
 
   const handlePaymentMethodSelect = (methods: paymentMethodInterface[]) => {
-    setSelectedPaymentMethods((prev) => [...prev, ...methods]);
+    setSelectedPaymentMethods((prev) => {
+      const method = methods[0]
+      const alreadySelected = prev.find((p) => p.id === method.id)
+      if(alreadySelected){
+        return prev.filter((p) => p.id !== method.id)
+      }
+      return [...prev, method]
+    });
   };
 
   const handlePaymentConfirm = (
-    payments: { methodId: string; amount: number; balance: number }[]
+    payments: { methodId: string; amount: number; balance: number }[], 
+    pauseSale: boolean
   ) => {
     setPaymentAmount(payments);
 
@@ -232,7 +235,7 @@ const CreateSales = () => {
 
     const payload = {
       customer: customerPayload,
-      status: 'completed',
+      status: pauseSale ? 'draft' : 'completed',
       sales_type: 'pos',
       line_items: selectedProducts.map((product) => ({
         product_id: product.id,
@@ -245,6 +248,8 @@ const CreateSales = () => {
       })),
       discount_id: selectedDiscount || '',
     };
+
+    console.log(payload, 'payload');
 
     checkOut(
       {
@@ -259,7 +264,7 @@ const CreateSales = () => {
         onError: (error: any) => {
           notification.error({
             message: 'Error',
-            description: error?.response?.data?.message || 'An error occurred',
+            description: error?.response?.data?.message || error?.message || 'An error occurred',
           });
         },
       }
@@ -282,6 +287,8 @@ const CreateSales = () => {
     setShowSuccessModal(false);
     setShowPaymentModal(false);
     setShowAmountModal(false);
+    setSelectedPaymentMethods([]);
+    setPaymentAmount([]);
   };
 
   const isLoading =
@@ -290,7 +297,7 @@ const CreateSales = () => {
     discounts?.isLoading ||
     paymentMethods?.isLoading ||
     products?.isLoading ||
-    calculateAmount?.isLoading;
+    calculateAmount?.isPending;
 
   return (
     <div className="space-y-5">
@@ -298,9 +305,9 @@ const CreateSales = () => {
         title="Create Sales"
         actionButton={
           <div className="flex items-center justify-end gap-3">
-            {/* <Button size="large" className="rounded">
-              Pause Sales
-            </Button> */}
+            <Button size="large" className="rounded" onClick={() => handlePaymentConfirm([], true)}>
+              Pause Sale
+            </Button>
             <Button
               type="primary"
               size="large"
@@ -404,6 +411,12 @@ const CreateSales = () => {
                 value={`${formatBalance(orderSummary?.subtotal as number)}`}
               />
               <LabelValue
+                label="Discount"
+                value={`${formatBalance(
+                  orderSummary?.total_discount as number
+                )}`}
+              />
+              <LabelValue
                 label="Tax (7.5% VAT)"
                 value={`${formatBalance(orderSummary?.fees.tax as number)}`}
               />
@@ -446,7 +459,7 @@ const CreateSales = () => {
         }}
         selectedMethods={selectedPaymentMethods}
         totalAmount={orderSummary?.total || 0}
-        onConfirmPayments={handlePaymentConfirm}
+        onConfirmPayments={(payments, pauseSale) => handlePaymentConfirm(payments, pauseSale)}
         isLoading={isCheckingOut}
         form={form}
       />

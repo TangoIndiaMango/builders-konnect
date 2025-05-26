@@ -2,7 +2,11 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Form, notification, Typography } from 'antd';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useCreateData, useFetchSingleData, usePutData } from '../../../hooks/useApis';
+import {
+  useCreateData,
+  useFetchSingleData,
+  usePutData,
+} from '../../../hooks/useApis';
 import SuccessModal from '../../components/common/SuccessModal';
 import DiscountForm from '../../components/discount/DiscountForm';
 import ErrorModal from '../../components/common/ErrorModal';
@@ -18,6 +22,8 @@ const DiscountCreate = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [form] = Form.useForm();
   const allProductsValue = Form.useWatch('all_products', form);
+  const categoryValue = Form.useWatch('category', form);
+  // const typeValue = Form.useWatch('type', form);
 
   // console.log(allProductsValue);
   const handleSubmit = async () => {
@@ -29,11 +35,11 @@ const DiscountCreate = () => {
       category: Array.isArray(values.category)
         ? values.category.join(',')
         : values.category,
-      start_date: values.start_date.format('YYYY-MM-DD'),
-      end_date: values.end_date.format('YYYY-MM-DD'),
+      start_date: values.start_date,
+      end_date: values.end_date,
       type: values.type, // "percentage" or "amount"
       value: Number(values.value),
-      all_products: values.all_products,
+      all_products: values.all_products || false,
     };
 
     if (!values.all_products && values.discounted_products?.length) {
@@ -52,7 +58,7 @@ const DiscountCreate = () => {
       .catch((err: any) => {
         notification.error({ message: 'Error', description: err.message });
         setIsErrorModalOpen(true);
-        setErrorMessage(err?.response?.data?.message || 'An error occurred');
+        setErrorMessage(err?.response?.data?.message || err?.message || 'An error occurred');
       });
   };
 
@@ -74,7 +80,7 @@ const DiscountCreate = () => {
           <Button
             type="primary"
             onClick={handleSubmit}
-            loading={id ? updateDiscount.isLoading : createDiscount.isLoading}
+            loading={id ? updateDiscount.isPending : createDiscount.isPending}
           >
             {id ? 'Update Discount' : 'Add Discount'}
           </Button>
@@ -86,11 +92,9 @@ const DiscountCreate = () => {
             initialValues={getDiscount?.data?.data}
             form={form}
             onFinish={handleSubmit}
-            loading={
-              id ? updateDiscount.isLoading : createDiscount.isLoading ||
-              getDiscount.isLoading
-            }
+            loading={id ? getDiscount.isPending : false}
             allProductsValue={allProductsValue}
+            categoryValue={categoryValue}
           />
         </div>
       </div>

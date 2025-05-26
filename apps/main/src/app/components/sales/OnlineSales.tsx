@@ -54,7 +54,7 @@ const OnlineSales = ({
       valueColor: '#722ED1',
     },
     {
-      label: 'Offline Saless',
+      label: 'Offline Sales',
       value: `${formatBalance(data?.stats?.offline_sales)}`,
       valueBgColor: '#FFFBE6',
       valueColor: '#D48806',
@@ -75,7 +75,7 @@ const OnlineSales = ({
         }
       />
       <SkeletonLoader active={isLoading} type="table" columns={4} rows={1}>
-        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
+        <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
           {tableStatsData?.map((item, index) => (
             <TableStats
               key={index}

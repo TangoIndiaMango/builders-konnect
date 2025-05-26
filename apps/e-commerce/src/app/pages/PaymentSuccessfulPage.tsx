@@ -3,7 +3,7 @@ import { Button} from 'antd';
 import { Link } from 'react-router';
 
 
-const OrderSuccess = () => {
+const PaymentSuccessfulPage = () => {
     return (
       <div className="h-screen pb-48">
         <div className="min-h-[500px] flex items-center justify-center bg-white px-4">
@@ -28,7 +28,7 @@ const OrderSuccess = () => {
                 will get a confirmation mail from Builder’s Konnect soon.
               </p>
                     </div>
-                    <Link to="/">          
+                    <Link to="/">
             <Button type="primary" className="bg-[#0033A1] py-5 rounded-md w-80">
               Continue Shopping
             </Button>
@@ -39,4 +39,4 @@ const OrderSuccess = () => {
     );
 };
 
-export default OrderSuccess;
+export default PaymentSuccessfulPage;

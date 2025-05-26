@@ -39,7 +39,7 @@ export const OrderItemsTable = ({ items }: OrderItemsTableProps) => {
     {
       title: 'Unit Price',
       dataIndex: 'unit_cost',
-      render: (price: number) => <span>{formatBalance(price)}</span>,
+      render: (price: number) => <span>{price}</span>,
     },
     {
       title: 'Quantity',
@@ -49,7 +49,7 @@ export const OrderItemsTable = ({ items }: OrderItemsTableProps) => {
     {
       title: 'Total Price',
       dataIndex: 'total_cost',
-      render: (price: number) => <span>{formatBalance(price)}</span>,
+      render: (price: number) => <span>{price}</span>,
     },
   ];
 

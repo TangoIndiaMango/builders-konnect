@@ -1,7 +1,5 @@
+@import "tailwindcss";
 /* @import "antd/dist/antd.css"; */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* You can add global styles to this file, and also import other style files */
 .main-navigation-tabs .ant-tabs-nav {
@@ -83,4 +81,29 @@
 
 .ant-upload-list-item-name {
   color: #1677ff !important
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+.table-wrapper {
+  width: 80vw;
+  margin-left: -24px;
+  padding-right: 24px;
+  overflow-x: auto;
 }

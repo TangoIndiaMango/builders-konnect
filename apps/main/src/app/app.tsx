@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import ViewReview from './components/customers/VeiwReview';
 import { ProtectedRoute } from './hoc/ProtectedRoute';
+// Auth Pages
 import AddStaffPassword from './pages/auth/add-staff-password';
 import AuthOutlet from './pages/auth/auth-outlets';
 import ChangePassword from './pages/auth/change-password';
@@ -9,14 +10,33 @@ import ForgotPassword from './pages/auth/forgot-password';
 import Login from './pages/auth/login';
 import MultipleAccounts from './pages/auth/multiple-accounts';
 import RegisterVendor from './pages/auth/register-vendor';
+
+// Home
+import DashboardHome from './pages/home';
+import VendorHomeOutlet from './pages/home/dashboard-outlet';
+
+// Sales
+import SalesHome from './pages/sales';
+import SalesAnalytics from './pages/sales/analytics';
+import CreateSales from './pages/sales/create';
+import SalesOutlet from './pages/sales/outlet';
+import PauseSales from './pages/sales/pause-sales';
+import SalesViewPage from './pages/sales/view';
+
+// Profile
+import VendorProfile from './pages/profile';
+import VendorProfileOutlet from './pages/profile/profile-outlet';
+import SingleStoreDetails from './pages/profile/views/single-store';
+
+// Staff
+import { CustomerDetails } from './components/customers/VeiwCustomer';
+import ViewCustomerReturns from './components/customers/ViewCustomerReturns';
 import CustomersOutlet from './pages/customers/customer-outlet';
 import CustomersList from './pages/customers/customers-list';
 import ReviewFeedbackList from './pages/customers/reviewAndFeedback/review-feedback-list';
 import DiscountHome from './pages/discount';
 import DiscountCreate from './pages/discount/create';
 import DiscountOutlet from './pages/discount/outlet';
-import DashboardHome from './pages/home';
-import VendorHomeOutlet from './pages/home/dashboard-outlet';
 import ProductsPage from './pages/inventory';
 import AddBulkProductPage from './pages/inventory/addBulkProduct';
 import ScanProductPage from './pages/inventory/barcodeProductAdd';
@@ -31,28 +51,41 @@ import InventoryOutlet from './pages/inventory/inventory-outlet';
 import ProductPreview from './pages/inventory/previewProduct';
 import TriggerReorder from './pages/inventory/triggerReorder';
 import NotFound from './pages/NotFound';
-import VendorProfile from './pages/profile';
-import VendorProfileOutlet from './pages/profile/profile-outlet';
-import SingleStoreDetails from './pages/profile/views/single-store';
+import SubscriptionPlans from './pages/onboarding';
+import SubscriptionCheckout from './pages/onboarding/onboarding';
+import ReportsPage from './pages/report';
+import ReportsOutlet from './pages/report/outlet';
 import ReturnsPage from './pages/returns';
+import NewReturnLog from './pages/returns/create';
 import ReturnsOutlet from './pages/returns/outlet';
 import ReturnsViewPage from './pages/returns/view';
-import SalesHome from './pages/sales';
-import SalesAnalytics from './pages/sales/analytics';
-import CreateSales from './pages/sales/create';
-import SalesOutlet from './pages/sales/outlet';
-import PauseSales from './pages/sales/pause-sales';
-import SalesViewPage from './pages/sales/view';
 import SettingPage from './pages/settings';
 import SettingOutlet from './pages/settings/setting-outlet';
 import StaffHome from './pages/staff';
 import AddRole from './pages/staff/add-role';
 import StaffOutlet from './pages/staff/outlet';
 import ViewStaffDetails from './pages/staff/view-staff';
+import MultiVariants from './pages/inventory/components/MultiVariants';
+import ReceiptPreview from './pages/sales/RecieptReview';
+
+// Inventory
+
+// Discounts
+
+// Customers
+
+// Settings
+
+// Returns
+
+// Not Found
 const App = () => {
   return (
-    <>
     <Routes>
+      {/* Subscription */}
+      <Route path="/subscribe" element={<SubscriptionPlans />} />
+      <Route path="/subscribe/checkout" element={<SubscriptionCheckout />} />
+      {/* Auth Routes */}
       <Route path="auth" element={<AuthOutlet />}>
         <Route path="register-vendor" element={<RegisterVendor />} />
         <Route path="create-password" element={<CreatePassword />} />
@@ -63,6 +96,7 @@ const App = () => {
         <Route path="add-staff-password" element={<AddStaffPassword />} />
       </Route>
 
+      {/* Dashboard */}
       <Route
         path="/"
         element={
@@ -72,9 +106,9 @@ const App = () => {
         }
       >
         <Route index element={<DashboardHome />} />
-
       </Route>
 
+      {/* Profile */}
       <Route
         path="pos/profile"
         element={
@@ -87,6 +121,7 @@ const App = () => {
         <Route path="store/:id" element={<SingleStoreDetails />} />
       </Route>
 
+      {/* Sales */}
       <Route
         path="pos/sales"
         element={
@@ -95,13 +130,15 @@ const App = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<SalesHome /> } />
+        <Route index element={<SalesHome />} />
         <Route path="create" element={<CreateSales />} />
         <Route path="view/:id" element={<SalesViewPage />} />
         <Route path="pause" element={<PauseSales />} />
         <Route path="analytics" element={<SalesAnalytics />} />
+        <Route path="receipt-preview" element={<ReceiptPreview />} />
       </Route>
 
+      {/* Staff */}
       <Route
         path="pos/staff"
         element={
@@ -116,6 +153,7 @@ const App = () => {
         <Route path="role/:id" element={<AddRole />} />
       </Route>
 
+      {/* Inventory */}
       <Route
         path="pos/inventory"
         element={
@@ -130,14 +168,20 @@ const App = () => {
         <Route path="edit/:id" element={<EditInventoryById />} />
         <Route path="edit-product/:id" element={<EditProduct />} />
         <Route path="trigger-reorder" element={<TriggerReorder />} />
-        <Route path="create-product-by-search" element={<CreateProductBySearch />} />
+        <Route
+          path="create-product-by-search"
+          element={<CreateProductBySearch />}
+        />
         <Route path="add-product" element={<CreateProduct />} />
+        <Route path="product-edit/:id" element={<CreateProduct />} />
         <Route path="preview-page" element={<PreviewPage />} />
-        <Route path="product-preview" element={<ProductPreview />} />
+        <Route path="preview-product/:id" element={<ProductPreview />} />
         <Route path="scan-product" element={<ScanProductPage />} />
         <Route path="add-bulk-product" element={<AddBulkProductPage />} />
+        {/* <Route path="multi" element={<MultiVariants />} /> */}
       </Route>
 
+      {/* Settings */}
       <Route
         path="pos/settings"
         element={
@@ -148,7 +192,10 @@ const App = () => {
       >
         <Route index element={<SettingPage />} />
       </Route>
-       <Route path="pos/customers"
+
+      {/* Customers */}
+      <Route
+        path="pos/customers"
         element={
           <ProtectedRoute>
             <CustomersOutlet />
@@ -156,11 +203,17 @@ const App = () => {
         }
       >
         <Route path="list" element={<CustomersList />} />
+        <Route path="view/:id" element={<CustomerDetails />} />
         <Route path="reviews-and-feedback" element={<ReviewFeedbackList />} />
         <Route path="product-review/view/:id" element={<ViewReview />} />
+        <Route
+          path="order/view/:id"
+          element={<SalesViewPage isCustomerOrder={false} />}
+        />
+        <Route path="returns/view/:id" element={<ViewCustomerReturns />} />
       </Route>
 
-
+      {/* Discounts */}
       <Route
         path="pos/discounts"
         element={
@@ -174,6 +227,7 @@ const App = () => {
         <Route path="edit/:id" element={<DiscountCreate />} />
       </Route>
 
+      {/* Returns */}
       <Route
         path="pos/returns"
         element={
@@ -184,10 +238,24 @@ const App = () => {
       >
         <Route index element={<ReturnsPage />} />
         <Route path="view/:id" element={<ReturnsViewPage />} />
+        <Route path="create" element={<NewReturnLog />} />
       </Route>
+
+      {/* Reports */}
+      <Route
+        path="pos/reports"
+        element={
+          <ProtectedRoute>
+            <ReportsOutlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ReportsPage />} />
+      </Route>
+
+      {/* Not Found */}
       <Route path="*" element={<NotFound />} />
     </Routes>
-    </>
   );
 };
 

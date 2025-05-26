@@ -1,24 +1,26 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, MenuProps } from 'antd';
-import { useEffect } from 'react';
+import { Button, Divider, Dropdown, MenuProps, Modal, message } from 'antd';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFetchData, useGetExportData } from '../../../hooks/useApis';
+import {
+  useFetchData,
+  useGetExportData
+} from '../../../hooks/useApis';
 import { useTableState } from '../../../hooks/useTable';
 import { ProductStats } from '../../../service/inventory/inventory.types';
+import { useDeleteProduct } from '../../../service/inventory/inventoryFN';
 import { exportCsvFromString, formatBalance } from '../../../utils/helper';
 import DisplayHeader from '../../components/common/DisplayHeader';
-import TimelineFilter from '../../components/common/filters/DateFilter';
 import { SkeletonLoader } from '../../components/common/SkeletonLoader';
+import TableWrapper from '../../components/common/Table/TableWrapper';
 import TableStats from '../../components/common/TableStats';
-import { EmptyInventoryState } from '../../components/inventory/empty-inventory-state';
+import DatePickerComp from '../../components/date/DatePickerrComp';
 import {
   ProductTable,
   ProductTableData,
 } from '../../components/inventory/product-table';
-import { PaginatedResponse } from '../../types/paginatedData';
-import TableWrapper from '../../components/common/Table/TableWrapper';
 import { filterOptions } from '../../lib/constant';
-import DatePickerComp from '../../components/date/DatePickerrComp';
+import { PaginatedResponse } from '../../types/paginatedData';
 
 const ProductsPage = () => {
   // const [currentPage, setCurrentPage] = useState(1);
@@ -57,13 +59,13 @@ const ProductsPage = () => {
           navigate('/pos/inventory/create-product-by-search');
         },
       },
-      {
-        key: '2',
-        label: 'Add Bulk Products',
-        onClick: () => {
-          navigate('/pos/inventory/add-bulk-product');
-        },
-      },
+      // {
+      //   key: '2',
+      //   label: 'Add Bulk Products',
+      //   onClick: () => {
+      //     navigate('/pos/inventory/add-bulk-product');
+      //   },
+      // },
     ],
   };
 
@@ -101,7 +103,11 @@ const ProductsPage = () => {
     }`
   );
 
-  const stats = products?.data?.stats as ProductStats;
+  const [productId, setProductId] = useState();
+
+  const deleteProduct = useDeleteProduct();
+
+  const stats = products?.data?.data?.stats as ProductStats;
   const productsData = products?.data?.data
     ?.data as PaginatedResponse<ProductTableData>;
   // console.log(productsData);
@@ -148,6 +154,52 @@ const ProductsPage = () => {
 
   const navigate = useNavigate();
 
+  const handleEdit = (record: ProductTableData) => {
+    navigate(`/pos/inventory/product-edit/${record.id}`, { state: record });
+  };
+
+  const handleDelete = (record: ProductTableData) => {
+    Modal.confirm({
+      title: 'Delete Product',
+      content: `Are you sure you want to delete ${record.name}?`,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      okButtonProps: {
+        loading: deleteProduct.isPending,
+        disabled: deleteProduct.isPending,
+      },
+      centered: true,
+      styles: {
+        content: {
+          minWidth: 400,
+          borderRadius: '0px',
+        },
+      },
+      onOk: async () => {
+        try {
+          await deleteProduct.mutateAsync(record.id, {
+            onSuccess: () => {
+              message.success('Product deleted successfully');
+              products.refetch();
+            },
+            onError: (error) => {
+              // console.log(error);
+              message.error(error?.message || 'Failed to delete product');
+            },
+          });
+        } catch (err) {
+          console.error('Failed to delete product:', err);
+          // message.error('Failed to delete product');
+        }
+      },
+    });
+  };
+
+  const handleViewDetails = (record: ProductTableData) => {
+    navigate(`/pos/inventory/preview-product/${record.id}`, { state: record });
+  };
+
   // useEffect(() => {
   //   fetchProducts(currentPage, searchQuery);
   // }, [currentPage, searchQuery, dateFilter]);
@@ -184,14 +236,18 @@ const ProductsPage = () => {
         </div>
       </div>
 
-      <div className="p-10 space-y-3 bg-white">
+     <div className='p-5'>
+     <div className="p-5 space-y-3 bg-white">
         <DisplayHeader
           title="All Products"
           description="You're viewing all products below."
           actionButton={
             <div className="flex flex-wrap items-center justify-end gap-3">
               <Button onClick={reset}>Clear</Button>
-              <DatePickerComp onRangeChange={setCustomDateRange} />
+              <DatePickerComp
+                onRangeChange={setCustomDateRange}
+                value={customDateRange}
+              />
             </div>
           }
         />
@@ -202,7 +258,7 @@ const ProductsPage = () => {
           columns={4}
           rows={1}
         >
-          <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x-2">
+          <div className="flex flex-wrap items-start w-full gap-3 mx-auto divide-x divide-gray-300">
             {stats &&
               [
                 {
@@ -253,9 +309,13 @@ const ProductsPage = () => {
             total={productsData?.total}
             perPage={productsData?.per_page}
             updateLimitSize={setLimitSize}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onViewDetails={handleViewDetails}
           />
         </TableWrapper>
       </div>
+     </div>
     </div>
   );
 };

@@ -42,6 +42,7 @@ export const PaginatedTable = <T extends DataType>({
   updateLimitSize,
   ...rest // Spread remaining props for further customization (including scroll)
 }: CustomTableProps<T>) => {
+  // console.log('selectedRowKeys', selectedRowKeys?.length);
   return (
     <div className="w-full overflow-x-auto">
       {selectedRowKeys && selectedRowKeys.length > 0 && (
@@ -60,8 +61,8 @@ export const PaginatedTable = <T extends DataType>({
       ) : (
         <AntTable
           columns={columns}
-          dataSource={data}
-          loading={false} // We handle loading with our skeleton
+          dataSource={Array.isArray(data) ? data : []}
+          loading={false}
           rowSelection={showCheckbox ? rowSelection : undefined}
           pagination={
             showPagination
@@ -70,7 +71,7 @@ export const PaginatedTable = <T extends DataType>({
                   pageSize: pageSize,
                   total: total,
                   onChange: onPageChange,
-                  showSizeChanger: true,
+                  // showSizeChanger: true,
                   showQuickJumper: true,
                   showTotal: (total) => `Total ${total} items`,
                   onShowSizeChange: updateLimitSize,

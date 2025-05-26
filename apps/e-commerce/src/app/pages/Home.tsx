@@ -1,17 +1,27 @@
-import { Carousel, Button } from 'antd';
-import { paint, starburst } from '../lib/assets/images';
+import { Carousel, Button, Spin } from 'antd';
+import { paint, starburst, woodlikeone } from '../lib/assets/images';
 import { useEffect, useState, useRef } from 'react';
-import { Link } from 'react-router';
-import {dealItems, heroSlides } from '../lib/Constants';
+
+import { dealItems, heroSlides } from '../lib/Constants';
 import type { CarouselRef } from 'antd/es/carousel';
 import TileCard from '../components/Home/TileGrid';
 import CategoryFilter from '../components/Home/Category';
 import Reccomended from '../components/Home/Reccomended';
 import BestSellingItems from '../components/Home/BestSellingItems';
+import { useGetProducts } from '../../hooks/useApis';
+import type { FC } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
-const Home = () => {
+const Home: FC = () => {
   const carouselRef = useRef<CarouselRef>(null);
   const [current, setCurrent] = useState(0);
+
+  const scrollToProducts = () => {
+    const productsSection = document.getElementById('products-section');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleDotClick = (index: number) => {
     setCurrent(index);
@@ -40,7 +50,7 @@ const Home = () => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         let { days, hours, minutes, seconds } = prev;
-        
+
         if (seconds > 0) {
           seconds--;
         } else {
@@ -67,9 +77,12 @@ const Home = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleAddToCart = (productId: number) => {
-    console.log('Added to cart:', productId);
-  };
+
+
+  const { data: products, isLoading } = useGetProducts({
+    collection: 'deal_of_the_day',
+    limit: 4
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,6 +125,7 @@ const Home = () => {
                     type="primary"
                     size="large"
                     className="bg-white text-black hover:bg-gray-100"
+                    onClick={scrollToProducts}
                   >
                     {slide.buttonText}
                   </Button>
@@ -224,6 +238,7 @@ const Home = () => {
                       <Button
                         type="primary"
                         className="bg-white text-black hover:bg-gray-100 mt-2 border-0 shadow-md font-semibold"
+                        onClick={scrollToProducts}
                       >
                         {item.buttonText}
                       </Button>
@@ -274,29 +289,40 @@ const Home = () => {
                 </div>
               </div>
               <div>
-                <Link className="text-" to="/deals">
+                <RouterLink className="text-" to="/deals">
                   View All
-                </Link>
+                </RouterLink>
               </div>
             </div>
           </div>
         </div>
       </section>
       <div className="container mx-auto px-4">
-        <TileCard
-          item={{
-            id: 0,
-            image: '',
-            name: '',
-            price: 0,
-            discount: 0,
-            rating: 0,
-            icon: '',
-            timeleft: 0,
-          }}
-        />
+        <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {isLoading ? (
+            <div className="col-span-full flex justify-center py-4"><Spin /></div>
+          ) : (
+            products?.data?.data?.slice(0, 4).map((product) => {
+              return (
+                <RouterLink key={product.id} to={`/product-details/${product.id}`}>
+                  <TileCard
+                    item={{
+                      id: Number(product.id),
+                      name: product.name,
+                      price: parseFloat(product.retail_price),
+                      discount: product.discount_information?.value ? parseFloat(product.discount_information.value) : 0,
+                      rating: product.ratings || 0,
+                      image: product.primary_media_url || woodlikeone,
+                      timeleft: 24 // Hours remaining for the deal
+                    }}
+                  />
+                </RouterLink>
+              );
+            })
+          )}
+        </div>
       </div>
-      <div>
+      <div id="products-section">
         <CategoryFilter/>
       </div>
       <div>

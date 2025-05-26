@@ -14,6 +14,9 @@ export type ProductTableData = APIProductData & { key: string };
 
 interface ProductTableProps extends DataTableProps {
   data: ProductTableData[];
+  onEdit?: (record: ProductTableData) => void;
+  onDelete?: (record: ProductTableData) => void;
+  onViewDetails?: (record: ProductTableData) => void;
 }
 
 export const ProductTable = ({
@@ -25,16 +28,35 @@ export const ProductTable = ({
   showCheckbox = true,
   perPage,
   updateLimitSize,
+  onEdit,
+  onDelete,
+  onViewDetails,
 }: ProductTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } =
     useSelection<ProductTableData>({
       data,
     });
 
-  const actionItems: MenuProps['items'] = [
-    { key: '1', label: 'Edit' },
-    { key: '2', label: 'Delete' },
-    { key: '3', label: 'View Details' },
+  const handleMenuClick = (key: string, record: ProductTableData) => {
+    switch (key) {
+      case '1':
+        onEdit?.(record);
+        break;
+      case '2':
+        onDelete?.(record);
+        break;
+      case '3':
+        onViewDetails?.(record);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const getActionItems = (record: ProductTableData): MenuProps['items'] => [
+    { key: '1', label: 'Edit', onClick: () => handleMenuClick('1', record) },
+    { key: '2', label: 'Delete', onClick: () => handleMenuClick('2', record) },
+    { key: '3', label: 'View Details', onClick: () => handleMenuClick('3', record) },
   ];
 
   const columns: ColumnsType<ProductTableData> = [
@@ -49,7 +71,7 @@ export const ProductTable = ({
             src={
               record.primary_media_url
                 ? record.primary_media_url
-                : `https://placehold.co/150x150/E6F7FF/black?text=${record.name
+                : `https://placehold.co/150x150/E6F7FF/black.png?text=${record.name
                     ?.split(' ')
                     .map((word) => word[0]?.toUpperCase())
                     .join('')}`
@@ -132,8 +154,8 @@ export const ProductTable = ({
       key: 'action',
       fixed: 'right',
       width: 80,
-      render: () => (
-        <Dropdown menu={{ items: actionItems }} trigger={['click']}>
+      render: (_, record) => (
+        <Dropdown menu={{ items: getActionItems(record) }} trigger={['click']}>
           <Button
             type="text"
             className="w-8 h-8 flex items-center justify-center bg-[#E6F7FF] hover:opacity-80 rounded-lg"

@@ -6,22 +6,22 @@ import { PaginatedTable, type DataType } from '../../common/Table/Table';
 import { ColumnsType } from 'antd/es/table';
 import { useNavigate } from 'react-router-dom';
 import { Product } from '@/app/pages/customers/types';
+import { DataTableProps } from '@/app/types/table';
 
 // Create a type that combines SalesOrder with required key
 type ProductWithKey = Product & DataType;
 
-interface ProductTableProps {
+interface ProductTableProps extends DataTableProps {
   data: Product[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  showCheckbox?: boolean;
+  withPagination?: boolean;
 }
 
 export const ProductTable = ({
   data,
   currentPage,
+  updateLimitSize,
+  perPage,
+  withPagination,
   onPageChange,
   loading,
   total,
@@ -45,7 +45,15 @@ export const ProductTable = ({
       dataIndex: 'product',
       render: (_, record: ProductWithKey) => (
         <div className="flex items-center space-x-2">
-          <Avatar shape="square" src={record.primary_media_url} size="large" />
+          <Avatar shape="square"  src={
+              record.primary_media_url
+                ? record.primary_media_url
+                : `https://placehold.co/150x150/E6F7FF/black?text=${record.name
+                    ?.split(' ')
+                    .map((word) => word[0]?.toUpperCase())
+                    .join('')}`
+            }
+            alt={record.name} size="large" />
           <div>
             <div className="text-sm text-gray-500">{record.name}</div>
             <div className="text-xs font-medium text-blue-600">{record.quantity}</div>
@@ -84,7 +92,7 @@ export const ProductTable = ({
               key={index}
               style={{
                 color:
-                  index < Math.round(record.ratings) ? '#FFD700' : '#D3D3D3',
+                  index < Math.round(record.ratings || 0) ? '#FFD700' : '#D3D3D3',
               }}
             />
           ))}
@@ -108,19 +116,21 @@ export const ProductTable = ({
   return (
     <div>
       <PaginatedTable<ProductWithKey>
-        data={dataWithKeys}
-        columns={columns}
-        currentPage={currentPage}
-        onPageChange={onPageChange}
-        loading={loading}
-        total={total}
-        showCheckbox={showCheckbox}
-        striped={true}
-        pageSize={10}
-        rowSelection={rowSelection}
-        selectedRowKeys={selectedRowKeys}
-        resetSelection={resetSelection}
-        scroll={{ x: '1000px' }}
+       data={dataWithKeys}
+       columns={columns}
+       currentPage={currentPage}
+       onPageChange={onPageChange}
+       updateLimitSize={updateLimitSize}
+       loading={loading}
+       total={total}
+       showCheckbox={showCheckbox}
+       showPagination={withPagination}
+       striped={true}
+       pageSize={perPage}
+       rowSelection={rowSelection}
+       selectedRowKeys={selectedRowKeys}
+       resetSelection={resetSelection}
+       scroll={{ x: '1000px' }}
       />
     </div>
   );

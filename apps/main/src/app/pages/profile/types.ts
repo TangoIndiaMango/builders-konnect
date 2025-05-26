@@ -106,3 +106,30 @@ export interface PaginationLink {
   label: string;
   active: boolean;
 }
+
+
+export interface Subscription {
+    id: string;
+    merchant: string;
+    merchant_code: string;
+    payment_date: string;
+    payment_reference: string;
+    amount_paid: string;
+    plan_name: string;
+    interval: string;
+    payment_method: string;
+    payment_channel: string;
+    status: string;
+    plan_amount: string;
+    end_date: string;
+    features: SubscriptionFeature[];
+}
+
+export interface SubscriptionFeature {
+  id: string;
+  name: string;
+}
+
+export interface SubscriptionListResponse {
+  data: PaginatedResponse<Subscription>;
+}

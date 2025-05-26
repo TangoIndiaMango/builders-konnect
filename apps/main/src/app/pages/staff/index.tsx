@@ -3,7 +3,7 @@ import SuccessModal from '../../components/common/SuccessModal';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Tabs, TabsProps } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   useCreateData,
   useFetchData,
@@ -19,23 +19,7 @@ import { PaginatedResponse } from '../../types/paginatedData';
 import { exportCsvFromString } from '../../../utils/helper';
 import { useTableState } from '../../../hooks/useTable';
 import { StaffFilterOptions } from './constant';
-/**
- * paginate
-1
 
-limit
-status
-active, inactive
-
-date_filter
-Today, 3 days, 7 days, 14 days, this month, 3 months, this year, 2025, 2025-03-01|2025-03-31
-
-sort_by
-alphabetically, date_ascending, date_descending
-
-export
-csv
- */
 export interface Role {
   id: number;
   name: string;
@@ -85,7 +69,13 @@ const StaffHome = () => {
   }, [exportType]);
 
 
-  const [tab, setTab] = useState('staff');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialParams = searchParams.get('tab') || 'staff';
+  const [tab, setTab] = useState(initialParams);
+  console.log(tab)
+
+  const searchTabValue = searchValue
+
   const staff = useFetchData(
     `merchants/staff?paginate=1&page=${currentPage ?? 1}&status=${
       filterKey === 'status' ? filterValue : ''
@@ -102,7 +92,7 @@ const StaffHome = () => {
     data: rolesFetch,
     isLoading,
     refetch,
-  } = useFetchData('merchants/roles?paginate=1');
+  } = useFetchData(`merchants/roles?paginate=1&q=${searchValue ?? ''}`);
 
   const rolesData = rolesFetch?.data as PaginatedResponse<Role>;
 
@@ -119,6 +109,7 @@ const StaffHome = () => {
 
   const onChange = (key: string) => {
     setTab(key);
+    setSearchParams({ tab: key });
   };
   const baseUrl = window.location.origin;
   const handleStaffSubmit = (values: any) => {
@@ -189,13 +180,14 @@ const StaffHome = () => {
             setSearchValue={setSearch}
             handleFilterChange={handleFilterChange}
             filterOptions={StaffFilterOptions}
-            onExport={handleExport}
+            onExport={setExportType}
             filterValue={filterValue ?? ''}
             setCustomDateRange={setCustomDateRange}
             pageSize={pageSize}
             reset={reset}
             updateLimitSize={setLimitSize}
             searchValue={searchValue}
+            dateRange={customDateRange || null}
           />
         ),
       },
@@ -207,6 +199,8 @@ const StaffHome = () => {
             rolesData={rolesData}
             isLoading={isLoading}
             refetch={refetch}
+            searchValue={searchValue}
+            setSearchValue={setSearch}
           />
         ),
       },
@@ -246,8 +240,10 @@ const StaffHome = () => {
         }
       />
 
-      <div className="px-5 bg-white">
-        <Tabs defaultActiveKey="all-sales" onChange={onChange} items={items} />
+      <div className='p-5'>
+      <div className="p-5 bg-white">
+        <Tabs defaultActiveKey={tab} onChange={onChange} items={items} />
+      </div>
       </div>
 
       <AddStaffModal
@@ -259,7 +255,7 @@ const StaffHome = () => {
         stores={storeList || []}
         roles={roleList || []}
         loading={
-          modalMode === 'add' ? createStaff.isLoading : updateStaff.isLoading
+          modalMode === 'add' ? createStaff.isPending : updateStaff.isPending
         }
         onSubmit={handleStaffSubmit}
         mode={modalMode}

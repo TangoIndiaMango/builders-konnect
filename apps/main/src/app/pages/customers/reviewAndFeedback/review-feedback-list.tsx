@@ -1,58 +1,98 @@
-import { Button, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import PageIntroBanner from '../../../components/common/PageIntroBanner';
 import { TabsProps } from 'antd';
-import ConfirmModal from '../../../components/common/ConfirmModal';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ProductReview from '../../../components/customers/ProductReview';
 import VendorReview from '../../../components/customers/VendorReview';
-import { useFetchData } from '../../../../hooks/useApis';
-import { FilterOption } from '@/app/store/table';
+import { useFetchData, useGetExportData } from '../../../../hooks/useApis';
+import { useTableState } from '../../../../hooks/useTable';
+import { exportCsvFromString } from '../../../../utils/helper';
+import { filterOptions } from '../../../lib/constant';
 
 const ReviewAndFeedbackList: React.FC = () => {
   const [tab, setTab] = useState<string>('product-reviews');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
-  const [dateFilter, setDateFilter] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('');
-  const [periodFilter, setPeriodFilter] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  // const [searchQuery, setSearchQuery] = useState<string>('');
+  // const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  // const [dateFilter, setDateFilter] = useState<string>('');
+  // const [sortBy, setSortBy] = useState<string>('');
+  // const [periodFilter, setPeriodFilter] = useState<string>('');
+  // const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const periodOptions: FilterOption[] = [
-    { label: 'Today', value: 'today' },
-    { label: 'Last 7 Days', value: '7 days' },
-    { label: 'Last 30 Days', value: '30 days' },
-    { label: 'Custom', value: 'custom' },
-  ];
+  const {
+    searchValue,
+    setSearch,
+    currentPage,
+    pageSize,
+    setPage,
+    reset,
+    customDateRange,
+    setCustomDateRange,
+    filterKey,
+    filterValue,
+    handleFilterChange,
+    exportType,
+    setExportType,
+    limitSize,
+    setLimitSize,
+  } = useTableState('product-reviews');
 
-  const { data: productData, isLoading } = useFetchData(
-    `merchants/inventory-products?paginate=${currentPage}&limit=${itemsPerPage}&product_review=true&q=${searchQuery}&date_filter=${dateFilter}&sort_by=${sortBy}`
+  const {
+    searchValue: vendorSearchValue  ,
+    setSearch: vendorSetSearch,
+    currentPage: vendorCurrentPage,
+    pageSize: vendorPageSize,
+    setPage: vendorSetPage,
+    reset: vendorReset,
+    customDateRange: vendorCustomDateRange,
+    setCustomDateRange: vendorSetCustomDateRange,
+    filterKey: vendorFilterKey,
+    filterValue: vendorFilterValue,
+    handleFilterChange: vendorHandleFilterChange,
+    exportType: vendorExportType,
+    setExportType: vendorSetExportType,
+    limitSize: vendorLimitSize,
+    setLimitSize: vendorSetLimitSize,
+  } = useTableState('vendor-reviews');
+
+  const { data: productData, isLoading, refetch } = useFetchData(
+    `merchants/inventory-products?paginate=1&page=${currentPage ?? 1}&status=${
+      filterKey === 'status' ? filterValue : ''
+    }&date_filter=${customDateRange ?? ''}&sort_by=${
+      filterKey === 'sort_by' ? filterValue : ''
+    }&q=${searchValue ?? ''}&limit=${limitSize ?? 10}`
   );
-
+  // console.log(limitSize);
   const { data: vendorData, isLoading: vendorLoading } = useFetchData(
-    `merchants/reviews?page=${currentPage}&limit=${itemsPerPage}&date_filter=${dateFilter}&sort_by=${sortBy}&q=${searchQuery}`
+    `merchants/reviews?paginate=1&page=${vendorCurrentPage ?? 1}&status=${
+      vendorFilterKey === 'status' ? vendorFilterValue : ''
+    }&date_filter=${vendorCustomDateRange ?? ''}&sort_by=${
+      vendorFilterKey === 'sort_by' ? vendorFilterValue : ''
+    }&q=${vendorSearchValue ?? ''}&limit=${vendorLimitSize ?? 10}`
   );
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    setCurrentPage(page);
-    setItemsPerPage(pageSize);
-  };
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
+  const exportReviews = useGetExportData(
+    `merchants/reviews?export=${exportType}`
+  );
+
+  const handleExport = () => {
+    exportReviews.mutate(null as any, {
+      onSuccess: (data) => {
+        exportCsvFromString(data, 'Product Reviews');
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      onSettled: () => {
+        setExportType('');
+      },
+    });
   };
 
-  const handleDateFilterChange = (value: string) => {
-    setDateFilter(value);
-  };
-
-  const handleSortByChange = (value: string) => {
-    setSortBy(value);
-  };
-
-  const handleReset = () => {
-    setSearchQuery('');
-    setDateFilter('');
-    setSortBy('');
-  };
+  useEffect(() => {
+    if (exportType) {
+      handleExport();
+    }
+  }, [exportType]);
 
   const onChange = (key: string) => {
     setTab(key);
@@ -67,13 +107,19 @@ const ReviewAndFeedbackList: React.FC = () => {
           <ProductReview
             data={productData?.data}
             isLoading={isLoading}
-            setSearchTerm={handleSearch}
-            periodFilter={periodFilter}
-            setPeriodFilter={handleDateFilterChange}
-            periodOptions={periodOptions}
+            searchValue={searchValue}
+            pageSize={pageSize}
+            updateLimitSize={setLimitSize}
+            setSearchValue={setSearch}
+            setCustomDateRange={setCustomDateRange}
+            handleFilterChange={handleFilterChange}
+            filterValue={filterValue ?? ''}
+            onExport={setExportType}
+            filterOptions={filterOptions}
             currentPage={currentPage}
-            setCurrentPage={(page) => handlePageChange(page, itemsPerPage)}
-            reset={handleReset}
+            dateRange={customDateRange || null}
+            reset={reset}
+            setPage={setPage}
           />
         ),
       },
@@ -84,14 +130,24 @@ const ReviewAndFeedbackList: React.FC = () => {
           <VendorReview
             data={vendorData?.data}
             isLoading={vendorLoading}
-            setCurrentPage={(page) => handlePageChange(page, itemsPerPage)}
-            setSearchTerm={handleSearch}
-            currentPage={currentPage}
+            searchValue={vendorSearchValue}
+            pageSize={vendorPageSize}
+            updateLimitSize={vendorSetLimitSize}
+            setSearchValue={vendorSetSearch}
+            setCustomDateRange={vendorSetCustomDateRange}
+            handleFilterChange={vendorHandleFilterChange}
+            filterValue={vendorFilterValue ?? ''}
+            onExport={vendorSetExportType}
+            filterOptions={filterOptions}
+            currentPage={vendorCurrentPage}
+            dateRange={vendorCustomDateRange || null}
+            reset={vendorReset}
+            setPage={vendorSetPage}
           />
         ),
       },
     ],
-    [tab, currentPage, itemsPerPage, searchQuery, dateFilter, sortBy, vendorData, vendorLoading, productData, isLoading]
+    [tab, productData, refetch, isLoading, vendorData, vendorLoading]
   );
 
   return (

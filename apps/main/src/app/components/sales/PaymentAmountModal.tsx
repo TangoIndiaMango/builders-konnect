@@ -1,4 +1,4 @@
-import { Modal, Button, Input, Form, FormInstance } from 'antd';
+import { Modal, Button, Input, Form, FormInstance, InputNumber } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { paymentMethodInterface } from '../../pages/sales/create';
 import { formatBalance } from '../../../utils/helper';
@@ -10,7 +10,7 @@ interface PaymentAmountModalProps {
   onBack: () => void;
   selectedMethods: paymentMethodInterface[];
   totalAmount: number;
-  onConfirmPayments: (payments: { methodId: string; amount: number; balance: number }[]) => void;
+  onConfirmPayments: (payments: { methodId: string; amount: number; balance: number }[], pauseSale: boolean) => void;
   isLoading: boolean;
   form: FormInstance<any>
 }
@@ -50,7 +50,7 @@ const PaymentAmountModal: React.FC<PaymentAmountModalProps> = ({
       amount: Number(form.getFieldValue([method.id, 'amount']) || 0),
       balance: Number(form.getFieldValue([method.id, 'balance']) || 0)
     }));
-    onConfirmPayments(payments);
+    onConfirmPayments(payments, false);
   };
 
   return (
@@ -79,7 +79,7 @@ const PaymentAmountModal: React.FC<PaymentAmountModalProps> = ({
           layout="vertical"
         >
           {selectedMethods.map((method) => (
-            <div key={method.id} className="p-4 mb-4 border rounded-sm">
+            <div key={method.id} className="p-4 mb-4 border border-gray-200 rounded-sm">
               <h3 className="mb-3 font-medium">{method.name}</h3>
               <div className="flex items-center justify-between gap-2">
                 <Form.Item
@@ -97,10 +97,17 @@ const PaymentAmountModal: React.FC<PaymentAmountModalProps> = ({
                     }
                   ]}
                 >
-                  <Input
-                    prefix="₦"
-                    type="number"
+                  <InputNumber
+                    min={0}
                     placeholder="0.00"
+                    className="!w-full"
+                    formatter={(value: any) =>
+                      value
+                        ? `₦ ${value
+                            ?.toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
+                        : '₦'
+                    }
 
                   />
                 </Form.Item>
@@ -109,9 +116,19 @@ const PaymentAmountModal: React.FC<PaymentAmountModalProps> = ({
                   name={[method.id, 'balance']}
                   label="Balance"
                 >
-                  <Input
-                    prefix="₦"
+                  <InputNumber
+                    min={0}
+                    placeholder="0.00"
                     disabled
+                    className="text-red-500 !w-full"
+                    formatter={(value: any) =>
+                      value
+                        ? `₦ ${value
+                            ?.toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
+                        : '₦'
+                    }
+
                   />
                 </Form.Item>
               </div>

@@ -1,18 +1,21 @@
-import React from 'react';
-import { VendorProfile } from '../../pages/profile/types';
-import { SkeletonLoader } from '../common/SkeletonLoader';
+import { Typography } from 'antd';
 import { handleCopy } from '../../../utils/helper';
-import { CopyOutlined } from '@ant-design/icons';
+import { CopyIcon } from '../../lib/CustomIcon';
+// import { VendorProfile } from '../../pages/profile/types';
+import { SkeletonLoader } from '../common/SkeletonLoader';
+import { StaffProfile } from '../../pages/settings/types';
+
+const Text = Typography;
 const ProfileInfoSection = ({
   data,
   isLoading,
 }: {
-  data: VendorProfile;
+  data: StaffProfile;
   isLoading: boolean;
 }) => {
   return (
-    <div className="p-6 bg-white border rounded-md shadow-sm">
-      <div className="grid grid-cols-6 gap-6 text-sm text-gray-700">
+    <div className="p-6 bg-white border border-gray-50 rounded-md shadow-sm">
+      <div className="grid md:grid-cols-6 grid-cols-1 gap-6 text-sm text-gray-700">
         {/* Left label only */}
         <div className="col-span-1">
           <h3 className="text-sm font-semibold text-black">
@@ -22,20 +25,20 @@ const ProfileInfoSection = ({
 
         {/* Right content */}
         <SkeletonLoader active={isLoading} type="list" rows={1}>
-          <div className="grid grid-cols-2 col-span-5 gap-y-5">
+          <div className="grid md:grid-cols-2 col-span-5 gap-y-5">
             {/* Left Sub-Column */}
             <div className="space-y-2">
               <div>
                 <p className="text-xs text-gray-400">Name</p>
-                <p className="font-medium">{data?.personal?.name}</p>
+                <p className="font-medium">{data?.name}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-400">Phone number</p>
-                <p className="font-medium">{data?.business?.phone}</p>
+                <p className="font-medium">{data?.phone}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-400">Role</p>
-                <p className="font-medium">{data?.business?.category}</p>
+                <p className="font-medium">{data?.assigned_roles || 'N/A'}</p>
               </div>
             </div>
 
@@ -43,26 +46,24 @@ const ProfileInfoSection = ({
             <div className="space-y-2">
               <div>
                 <p className="text-xs text-gray-400">Email</p>
-                <p className="font-medium">{data?.personal?.email}</p>
+                <p className="font-medium">{data?.email}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-400">User ID</p>
-                <button
-                  onClick={() =>
-                    handleCopy(data?.business?.vendorID, 'Vendor ID copied!')
-                  }
-                  className="flex items-start gap-3"
+                <div
+                  onClick={() => handleCopy(data?.staffID, 'Staff ID copied!')}
+                  className="flex gap-3 hover:text-blue-600 cursor-pointer"
                 >
-                  <CopyOutlined color="blue" />
-                  <h5 className="text-xs text-[#344054]">
-                    {data?.business?.vendorID}
-                  </h5>
-                </button>
+                  <CopyIcon color="blue" />
+                  <Text className="hover:text-blue-600 cursor-pointer">
+                    {data?.staffID || 'N/A'}
+                  </Text>
+                </div>
               </div>
               <div>
                 <p className="text-xs text-gray-400">Store Assigned</p>
                 <span className="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full">
-                  {data?.business?.name}
+                  {data?.store?.[0]?.name || 'N/A'}
                 </span>
               </div>
             </div>

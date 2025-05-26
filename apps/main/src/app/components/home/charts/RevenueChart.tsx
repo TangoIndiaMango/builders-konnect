@@ -7,20 +7,26 @@ const Line = RawLine as unknown as React.FC<LineConfig>;
 const RevenueChart = ({ data }: { data: any }) => {
   const { containerRef, containerWidth } = useResizeContainer();
 
+  const newData = data?.map((item: any) => {
+    return {
+      ...item,
+      value: Number(item?.value?.replace(/[^\d.]/g, '')) || 0,
+    };
+  });
+  // console.log('newData', newData);
   const config: LineConfig = {
-    data,
+    data: newData,
     autoFit: true,
     height: 400,
 
-    width: containerWidth || undefined, // Use container width
-    padding: [40, 20, 40, 40], // [top, right, bottom, left]
-    xField: 'year',
+    width: containerWidth,
+    xField: 'month',
     yField: 'value',
-    smooth: true,
-    xAxis: {
-      tickCount: 10,
-      type: 'linear',
+    axis: {
+      y: { labelFormatter: (v) => `₦${v?.toLocaleString()}`, title: 'Revenue' },
+      x: { title: 'Month' },
     },
+
     color: '#303F9E',
     style: {
       lineWidth: 2,
@@ -36,6 +42,7 @@ const RevenueChart = ({ data }: { data: any }) => {
         fill: 'l(90) 0:#003399 1:#00339900',
       },
     },
+    tooltip: { channel: 'y', valueFormatter: (v) => `₦${v?.toLocaleString()}` },
   };
 
   return (

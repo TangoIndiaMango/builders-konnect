@@ -1,38 +1,40 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './layouts/Applayout';
 
-import Login from './pages/auth/login';
-import Register from './pages/auth/register';
-import ForgotPassword from './pages/auth/forgot-password';
-import NotFound from './pages/NotFound';
-import MainLayout from './layouts/MainLayout';
-import Home from './pages/Home';
-import NewPassword from './pages/auth/new-password';
-import About from './pages/About';
-import Sell from './pages/sell';
-import Advertise from './pages/advertise';
-import VerifyEmail from './pages/auth/verify-email';
-import CheckYourMail from './pages/auth/check-your-mail';
-import TilingAndFlooring from './pages/TilingAndFlooring';
-import ProductDetails from './pages/ProductDetails';
-import Profile from './pages/Profile';
-import Orders from './pages/Profile/Orders';
-import Addresses from './pages/Profile/Addresses';
-import PaymentMethods from './pages/Profile/PaymentMethods';
-import AccountDetails from './pages/Profile/AccountDetails';
-import ContactPage from './pages/Contact';
-import ProductCategory from './pages/TillingAndFlooringListings';
-import CheckoutPage from './pages/CheckoutPage';
-import OrderSuccess from './pages/PaymentSuccessfulPage';
-import FooterOnlyLayout from './components/FooterOnlyLayout';
-import EmptyCart from './pages/EmptyCartPage';
-import CartSummary from './pages/CartSummaryPage';
-import CartPage from './pages/Cart';
 import { CheckoutProvider } from '../hooks/useContext';
-import VendorShop from './pages/VendorStore/VendorPage';
-import ReviewSection from './pages/ReviewSection';
-import BillingAddressEditPage from './pages/Profile/EditAddressPage';
+import MainLayout from './layouts/MainLayout';
+import About from './pages/About';
+import Advertise from './pages/advertise';
+import CheckYourMail from './pages/auth/check-your-mail';
+import ForgotPassword from './pages/auth/forgot-password';
+import Login from './pages/auth/login';
+import NewPassword from './pages/auth/new-password';
+import Register from './pages/auth/register';
+import VerifyEmail from './pages/auth/verify-email';
+import CartPage from './pages/Cart';
+import CartSummary from './pages/CartSummaryPage';
+import CheckoutPage from './pages/CheckoutPage';
+import ContactPage from './pages/Contact';
+import EmptyCart from './pages/EmptyCartPage';
+import Home from './pages/Home';
+import NotFound from './pages/NotFound';
+import OrderSuccess from './pages/PaymentSuccessfulPage';
+import ProductDetails from './pages/ProductDetails';
+import ProductList from './pages/ProductList';
+import Profile from './pages/Profile';
+import AccountDetails from './pages/Profile/AccountDetails';
+import Addresses from './pages/Profile/Addresses';
+import BillingAddressEditPage from './pages/Profile/BillingAddressEditPage';
+import Orders from './pages/Profile/Orders';
+import PaymentMethods from './pages/Profile/PaymentMethods';
 import ShippingAddressEditPage from './pages/Profile/ShippingAddressEditPage';
+import ReviewSection from './pages/ReviewSection';
+import Sell from './pages/sell';
+import SubcategoryList from './pages/SubcategoryList';
+import VendorShop from './pages/VendorStore/VendorPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import DealsPage from './pages/DealsPage';
+import SubscriptionCheckout from './components/onboarding/onboarding';
 
 const App = () => {
   return (
@@ -49,42 +51,62 @@ const App = () => {
 
       {/* Main Site Routes */}
       <Route path="/" element={<MainLayout />}>
-        <Route
-          path="checkout"
-          element={
-            <CheckoutProvider>
-              <CheckoutPage />
-            </CheckoutProvider>
-          }
-        />
-        <Route path="carts" element={<EmptyCart />} />
-        <Route path="order-summary" element={<CartSummary />} />
+        {/* Public Routes */}
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="sell" element={<Sell />} />
+        <Route path="subscribe/checkout" element={<SubscriptionCheckout />} />
         <Route path="advertise" element={<Advertise />} />
-        <Route path="/category/:category" element={<TilingAndFlooring />} />
+        <Route path="/category/:category" element={<SubcategoryList />} />
         <Route
-          path="/category/:category/:subcategory"
-          element={<ProductCategory />}
+          path="/category/:category/subcategory/:subcategory"
+          element={<ProductList />}
         />
         <Route path="/product-details/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/success" element={<OrderSuccess />} />
-        <Route path="/vendor-store" element={<VendorShop />} />
-        <Route path="/review" element={<ReviewSection />} />
+        <Route path="/customer-support" element={<ContactPage />} />
+        <Route path="/deals" element={<DealsPage />} />
+        <Route path="/vendor-store/:id" element={<VendorShop />} />
+        <Route path="/review/:id" element={<ReviewSection />} />
+        <Route path="carts" element={<EmptyCart />} />
+        <Route path="order-summary" element={<CartSummary />} />
 
-        {/* Profile Routes */}
-        <Route path="/profile" element={<Profile />}>
+        {/* Protected Routes - Require Authentication */}
+        <Route
+          path="checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutProvider>
+                <CheckoutPage />
+              </CheckoutProvider>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
+        
+        {/* Protected Profile Routes */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Navigate to="/profile/orders" replace />} />
           <Route path="orders" element={<Orders />} />
           <Route path="addresses" element={<Addresses />} />
           <Route path="payment" element={<PaymentMethods />} />
           <Route path="account" element={<AccountDetails />} />
         </Route>
-        <Route path="/edit/billing" element={<BillingAddressEditPage />} />
-        <Route path="/edit/shipping" element={<ShippingAddressEditPage />} />
+        <Route
+          path="/edit/billing/:id?"
+          element={<ProtectedRoute><BillingAddressEditPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/edit/shipping/:id?"
+          element={<ProtectedRoute><ShippingAddressEditPage /></ProtectedRoute>}
+        />
       </Route>
 
       {/* 404 */}

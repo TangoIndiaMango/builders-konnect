@@ -41,6 +41,7 @@ interface DiscountFormProps {
   loading?: boolean;
   form: FormInstance<DiscountFormValues>;
   allProductsValue: boolean;
+  categoryValue: string;
 }
 
 const { Panel } = Collapse;
@@ -50,6 +51,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   loading,
   form,
   allProductsValue,
+  categoryValue,
 }) => {
   const discountedProducts =
     initialValues?.products?.map((product: ProductType) => product.id) || [];
@@ -61,30 +63,33 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
     null
   );
   const [searchedProducts, setSearchedProducts] = useState<ProductType[]>([]);
-
+  const typeValue = Form.useWatch('type', form);
   useEffect(() => {
     if (initialValues?.products) {
       const discountedProducts = initialValues.products.map(
         (product: ProductType) => product.id
       );
       setSelectedProducts(discountedProducts);
+      const startDate = initialValues?.start_date;
+      const endDate = initialValues?.end_date;
       form.setFieldsValue({
         category: initialValues?.category,
         name: initialValues?.name,
         code: initialValues?.code,
-        start_date: dayjs(initialValues?.start_date, 'YYYY-MM-DD HH:mm:ss'),
-        end_date: dayjs(initialValues?.end_date, 'YYYY-MM-DD HH:mm:ss'),
-        type: initialValues?.type,
-        value: initialValues?.value,
+        start_date: startDate,
+        end_date: endDate,
+        type: initialValues?.type ?? 'percentage',
+        value:
+          typeValue === 'percentage'
+            ? parseFloat(initialValues?.percent)
+            : parseFloat(initialValues?.amount),
         all_products:
-          initialValues?.category?.toLowerCase() === 'products'
-            ? true
-            : false,
+          initialValues?.category?.toLowerCase() === 'products' ? true : false,
         discounted_products: discountedProducts,
       });
       setSearchedProducts(initialValues.products);
     }
-  }, [initialValues, form]);
+  }, [initialValues, form, typeValue]);
 
   const handleProductSelect = (ids: string[], products: ProductType[]) => {
     setSelectedProducts(ids);
@@ -107,7 +112,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
   }
 
   return (
-    <>
+    <div className="min-h-screen">
       <Form
         form={form}
         layout="horizontal"
@@ -156,6 +161,9 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
           label="Start Date"
           name="start_date"
           rules={[{ required: true, message: 'Please select start date' }]}
+          getValueProps={(value) => ({
+            value: value ? dayjs(value, 'YYYY-MM-DD HH:mm:ss') : null,
+          })}
         >
           <DatePicker
             format="YYYY-MM-DD"
@@ -168,6 +176,9 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
           label="End Date"
           name="end_date"
           rules={[{ required: true, message: 'Please select end date' }]}
+          getValueProps={(value) => ({
+            value: value ? dayjs(value, 'YYYY-MM-DD HH:mm:ss') : null,
+          })}
         >
           <DatePicker
             format="YYYY-MM-DD"
@@ -190,21 +201,41 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         <Form.Item
           label="Value"
           name="value"
-          rules={[{ required: true, message: 'Please enter value' }]}
+          rules={[
+            { required: true, message: 'Please enter value' },
+            {
+              validator: (_, value) => {
+                if (
+                  value &&
+                  typeValue === 'percentage' &&
+                  (value < 0 || value > 100)
+                ) {
+                  return Promise.reject('Percentage must be between 0 and 100');
+                }
+                return Promise.resolve();
+              },
+            },
+          ]}
         >
-          <Input type="number" placeholder="Enter value" />
+          <Input
+            type="number"
+            prefix={typeValue === 'percentage' ? '%' : '₦'}
+            placeholder="Enter value"
+          />
         </Form.Item>
 
-        <Form.Item
-          label="Is the discount for all products"
-          name="all_products"
-          rules={[{ required: true, message: 'Please select an option' }]}
-        >
-          <Radio.Group>
-            <Radio value={true}>Yes</Radio>
-            <Radio value={false}>No</Radio>
-          </Radio.Group>
-        </Form.Item>
+        {categoryValue === 'products' && (
+          <Form.Item
+            label="Is the discount for all products"
+            name="all_products"
+            rules={[{ required: true, message: 'Please select an option' }]}
+          >
+            <Radio.Group>
+              <Radio value={true}>Yes</Radio>
+              <Radio value={false}>No</Radio>
+            </Radio.Group>
+          </Form.Item>
+        )}
 
         {/* Only show product selection if not for all products */}
         {allProductsValue === false && (
@@ -225,47 +256,50 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         <Form.Item name="discounted_products" noStyle>
           <Input type="hidden" />
         </Form.Item>
-      </Form>
 
-      {/* Selected products collpasable here */}
-      {searchedProducts.length > 0 && (
-        <Collapse
-          defaultActiveKey={['selected-products']}
-          expandIconPosition="end"
-          className="p-4 mx-auto mt-6 rounded-lg bg-[#F5F5F5] md:max-w-2xl"
-        >
-          <Panel
-            header={
-              <div className="font-semibold">
-                Selected Products ({searchedProducts.length})
-              </div>
-            }
-            key="selected-products"
-          >
-            <List
-              dataSource={searchedProducts}
-              renderItem={(item) => (
-                <List.Item
-                  actions={[
-                    <span
-                      key="delete"
-                      className="text-red-500 cursor-pointer"
-                      onClick={() => {
-                        setProductToDelete(item);
-                        setShowDeleteModal(true);
-                      }}
+        <div className="max-w-2xl mx-auto">
+          {/* Selected products collpasable here */}
+          {searchedProducts.length > 0 && (
+            <Collapse
+              defaultActiveKey={['selected-products']}
+              expandIconPosition="end"
+              className="rounded-lg bg-[#F5F5F5]"
+            >
+              <Panel
+                header={
+                  <div className="font-semibold">
+                    Selected Products ({searchedProducts.length})
+                  </div>
+                }
+                key="selected-products"
+              >
+                <List
+                  dataSource={searchedProducts}
+                  className="max-h-[300px] xl:max-h-[400px] overflow-y-auto custom-scrollbar bg-white"
+                  renderItem={(item) => (
+                    <List.Item
+                      actions={[
+                        <span
+                          key="delete"
+                          className="text-red-500 cursor-pointer flex items-center justify-end"
+                          onClick={() => {
+                            setProductToDelete(item);
+                            setShowDeleteModal(true);
+                          }}
+                        >
+                          <DeleteOutlined />
+                        </span>,
+                      ]}
                     >
-                      <DeleteOutlined />
-                    </span>,
-                  ]}
-                >
-                  <SingleProductItem item={item} />
-                </List.Item>
-              )}
-            />
-          </Panel>
-        </Collapse>
-      )}
+                      <SingleProductItem item={item} />
+                    </List.Item>
+                  )}
+                />
+              </Panel>
+            </Collapse>
+          )}
+        </div>
+      </Form>
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -291,7 +325,7 @@ const DiscountForm: React.FC<DiscountFormProps> = ({
         onSelect={handleProductSelect}
         selected={selectedProducts}
       />
-    </>
+    </div>
   );
 };
 

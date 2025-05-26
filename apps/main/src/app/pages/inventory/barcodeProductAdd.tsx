@@ -1,7 +1,6 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BarcodeScannerComponent from 'react-qr-barcode-scanner';
 import { message, Modal } from 'antd';
 
 export default function ScanProductPage() {
@@ -29,7 +28,7 @@ export default function ScanProductPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className="min-h-screen p-6 bg-white">
       <div className="flex items-center justify-between mb-4">
         <button className="flex items-center font-bold text-[#000000D9]">
           Scan Product
@@ -40,13 +39,13 @@ export default function ScanProductPage() {
         />
       </div>
 
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="mb-4 text-sm text-gray-500">
         The quantity you put will affect only the selected product options
       </p>
 
-      <div className="bg-gray-100 p-4 rounded mb-6">
+      <div className="p-4 mb-6 bg-gray-100 rounded">
         <h3 className="font-semibold text-[#101928]">Scanning Guide</h3>
-        <ol className="list-decimal list-inside text-sm mt-2 space-y-1">
+        <ol className="mt-2 space-y-1 text-sm list-decimal list-inside">
           <li>Connect your barcode scanner to your device</li>
           <li>
             Using the barcode scanner, scan the product's barcode at the back or
@@ -55,8 +54,8 @@ export default function ScanProductPage() {
         </ol>
       </div>
 
-      <div className="rounded overflow-hidden border border-gray-300 bg-black w-full max-w-3xl mx-auto mb-6">
-        <BarcodeScannerComponent onUpdate={handleScan} />
+      <div className="w-full max-w-3xl mx-auto mb-6 overflow-hidden bg-black border border-gray-300 rounded">
+        {/* <BarcodeScannerComponent onUpdate={handleScan} /> */}
       </div>
 
       <Modal

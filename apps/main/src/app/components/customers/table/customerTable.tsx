@@ -7,19 +7,15 @@ import { PaginatedTable, type DataType } from '../../common/Table/Table';
 import { ColumnsType } from 'antd/es/table';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { Customer } from '@/app/lib/mockData';
-
+import { Customer } from '../../../lib/mockData';
+import { DataTableProps } from '../../../types/table';
 
 // Create a type that combines SalesOrder with required key
 type CustomerWithKey = Customer & DataType;
 
-interface CustomersTableProps {
+interface CustomersTableProps extends DataTableProps {
   data: Customer[];
-  currentPage: number;
-  onPageChange: (page: number, pageSize: number) => void;
-  loading: boolean;
-  total: number;
-  showCheckbox?: boolean;
+  withPagination?: boolean;
 }
 
 export const CustomersTable = ({
@@ -28,7 +24,10 @@ export const CustomersTable = ({
   onPageChange,
   loading,
   total,
+  perPage,
   showCheckbox = true,
+  updateLimitSize,
+  withPagination = true,
 }: CustomersTableProps) => {
   const { rowSelection, selectedRowKeys, resetSelection } = useSelection({
     data: data as CustomerWithKey[],
@@ -51,7 +50,7 @@ export const CustomersTable = ({
           <Avatar size="large" style={{ backgroundColor: '#E6F7FF',color: '#1890ff' }} icon={<UserOutlined />} />
           <div>
             <div className="text-sm text-gray-500">{record.name}</div>
-            <div className="text-xs font-medium text-blue-600"><span className="font-bold text-gray-500">ID:</span> {record.customerID}</div>
+            <div className="text-xs font-medium text-blue-600"><span className="font-bold text-gray-500">ID:</span> {record.officerID}</div>
           </div>
         </div>
       ),
@@ -109,7 +108,7 @@ export const CustomersTable = ({
         <Button
           type="text"
           icon={<EyeOutlined />}
-          // onClick={() => ()}
+          onClick={() => navigate(`/pos/customers/view/${record.id}`)}
           className="text-gray-600 hover:text-blue-600"
         />
       ),
@@ -124,11 +123,13 @@ export const CustomersTable = ({
         columns={columns}
         currentPage={currentPage}
         onPageChange={onPageChange}
+        updateLimitSize={updateLimitSize}
         loading={loading}
         total={total}
         showCheckbox={showCheckbox}
+        showPagination={withPagination}
         striped={true}
-        pageSize={10}
+        pageSize={perPage}
         rowSelection={rowSelection}
         selectedRowKeys={selectedRowKeys}
         resetSelection={resetSelection}

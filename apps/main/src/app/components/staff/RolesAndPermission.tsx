@@ -8,28 +8,31 @@ import DisplayHeader from '../common/DisplayHeader';
 import { SearchInput } from '../common/SearchInput';
 import { SkeletonLoader } from '../common/SkeletonLoader';
 import RolesCard from './roles/RolesCard';
+import { useState } from 'react';
 
 interface RolesAndPermissionProps {
   rolesData: PaginatedResponse<Role>;
   isLoading: boolean;
   refetch: () => void;
+  searchValue: string;
+  setSearchValue: (value: string) => void;
 }
 
 const RolesAndPermission = ({
   rolesData,
   isLoading,
   refetch,
+  searchValue,
+  setSearchValue,
 }: RolesAndPermissionProps) => {
-  const { searchValue, setSearch } = useTableState('roles');
-  const updateRole = usePutData('merchants/roles');
+  const [roleId, setRoleId] = useState<string>('');
+  const updateRole = usePutData(`merchants/roles/${roleId}`);
   const navigate = useNavigate();
 
   const handleToggleRole = async (roleId: string, newStatus: boolean) => {
+    setRoleId(roleId);
     try {
-      await updateRole.mutateAsync({
-        id: roleId,
-        data: { isActive: newStatus },
-      });
+      await updateRole.mutateAsync({ is_active: newStatus });
       message.success('Role status updated successfully');
       refetch(); // Refresh roles data
     } catch (error) {
@@ -46,7 +49,7 @@ const RolesAndPermission = ({
       />
       <div className="w-full md:max-w-sm">
         <SearchInput
-          onChange={setSearch}
+          onChange={setSearchValue}
           value={searchValue}
           placeholder="Search"
         />
@@ -58,7 +61,7 @@ const RolesAndPermission = ({
               key={role.id}
               role={role}
               handleToggleRole={handleToggleRole}
-              isLoading={updateRole.isLoading}
+              isLoading={updateRole.isPending}
               onClick={() => navigate(`/pos/staff/role/${role.id}`)}
             />
           ))}

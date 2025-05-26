@@ -3,53 +3,58 @@ import CardWithFilter from '../../common/CardWithFilter';
 import FilterDropdown from '../../common/filters/FilterDropdown';
 import ReturnRateChart from './chart/ReturnRate';
 import { useFetchData } from '../../../../hooks/useApis';
+import DatePickerComp, { DateRange } from '../../date/DatePickerrComp';
+import { Button } from 'antd';
+import { useTableState } from '../../../../hooks/useTable';
 
 interface ReturnRateProps {
-  [key: string]: number;
-}
-
+  // reset: () => void;
+  // onRangeChange: (dates: DateRange, dateStrings: string[]) => void;
+  // dateRange: string | null;
+  [key: string]: any;
+} 
 const ReturnRate = () => {
-  const [selectedStore, setSelectedStore] = useState<string>('all');
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('this_month');
+  const {reset, setCustomDateRange, customDateRange} = useTableState("sales-analytics")
+
 
   const returnRate = useFetchData(
     `merchants/sales-orders/analytics/returns-rate`
   );
   const returnRateStats = returnRate?.data?.data as ReturnRateProps;
 
-  const storeOptions = [
-    { label: 'All orders', value: 'all' },
-    { label: 'Order 1', value: 'order_1' },
-    { label: 'Order 2', value: 'order_2' },
-  ];
-
-  const periodOptions = [
-    { label: 'This Month', value: 'this_month' },
-    { label: 'Last Month', value: 'last_month' },
-    { label: 'This Year', value: 'this_year' },
-    { label: 'Custom Range', value: 'custom' },
-  ];
 
   return (
     <CardWithFilter
       title="Return Rate"
       description="View order return rates."
       rightSection={
-        <div className="flex flex-wrap items-center justify-end gap-2 ">
-          <FilterDropdown
-            // label="Store"
-            options={storeOptions}
-            value={selectedStore}
-            onChange={setSelectedStore}
-          />
+        <div className="flex items-center gap-2 justify-end flex-wrap">
+        <Button onClick={reset}>Clear</Button>
+        {/* <Select
+          placeholder="Select store"
+          // mode="multiple"
+          allowClear
+          size="large"
+          className="rounded w-[200px]"
+          showSearch
+          value={selectedStore || undefined}
+          filterOption={(input, option) =>
+            (option?.label?.toString() ?? '')
+              .toLowerCase()
+              .includes(input.toLowerCase())
+          }
+          options={storeList?.map((store) => ({
+            value: store.id,
+            label: store.name,
+          }))}
+          onChange={(value) => {
+            setSelectedStore(value);
+            console.log(value, 'value');
+          }}
+        /> */}
 
-          <FilterDropdown
-            // label="Period"
-            options={periodOptions}
-            value={selectedPeriod}
-            onChange={setSelectedPeriod}
-          />
-        </div>
+        <DatePickerComp onRangeChange={setCustomDateRange} value={customDateRange} />
+      </div>
       }
     >
       <div>

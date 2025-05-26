@@ -1,10 +1,11 @@
 import { useSessionStorage } from '../../../hooks/useSessionStorage';
-import { useCreateData, useGetData } from '../../../hooks/useApis';
+import { useCreateData, useFetchDataSeperateLoading, useGetData } from '../../../hooks/useApis';
 import { App, Button, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Password from 'antd/es/input/Password';
 import { EyeInvisibleOutlined } from '@ant-design/icons';
 import { EyeTwoTone } from '@ant-design/icons';
+import { VendorProfile } from '../profile/types';
 
 const Login = () => {
   const { notification } = App.useApp();
@@ -12,8 +13,9 @@ const Login = () => {
   const { mutateAsync, isPending } = useCreateData('auth/signin');
 
   const getMerchantDetailState = useGetData('merchants/profile/all');
-
-  const { updateUser } = useSessionStorage();
+  const profileData = useGetData(`merchants/profile/view`);
+  // const profile = profileData?.data?.data as VendorProfile;
+  const { updateUser, updateBusinessProfile } = useSessionStorage();
   const [form] = Form.useForm();
 
   const onFinish = () => {
@@ -33,17 +35,20 @@ const Login = () => {
       const res = await mutateAsync(payload);
       sessionStorage.setItem('access_token', res.data.accessToken || '');
       updateUser(res?.data?.user);
-      navigate('/');
+
+      // navigate('/');
       // notification.success({
       //   message: 'Login Successful',
       // });
-
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       const merchantRes = await getMerchantDetailState.mutateAsync();
       if (merchantRes?.data?.length <= 1) {
         sessionStorage.setItem(
           'tenant_id',
           String(merchantRes?.data?.[0]?.id) || ''
         );
+        const profileRes = await profileData.mutateAsync();
+        updateBusinessProfile(profileRes?.data);
         notification.success({
           message: 'Login Successful',
           description: 'Welcome back! You have been logged in successfully.',
@@ -63,7 +68,7 @@ const Login = () => {
       notification.error({
         message: 'Login Failed',
         description:
-          error?.response?.data?.message ||
+          error?.message ||
           'An error occurred during login. Please try again.',
       });
     }

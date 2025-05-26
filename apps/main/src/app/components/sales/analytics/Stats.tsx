@@ -11,6 +11,10 @@ import {
 } from '@ant-design/icons';
 import { useFetchData } from '../../../../hooks/useApis';
 import { formatBalance } from '../../../../utils/helper';
+import { Button, Select, Skeleton } from 'antd';
+import { DateRange } from '../../date/DatePickerrComp';
+import DatePickerComp from '../../date/DatePickerrComp';
+import { useTableState } from '../../../../hooks/useTable';
 
 export interface DashboardMetrics {
   orders: MetricValue<number>;
@@ -24,7 +28,9 @@ export interface MetricValue<T> {
   shift: string;
 }
 
+
 const SalesAnalyticsStats = () => {
+  const {reset, setCustomDateRange, customDateRange} = useTableState("sales-analytics")
   const stats = useFetchData(`merchants/sales-orders/analytics/stats`);
 
   const salesStats = stats?.data?.data as DashboardMetrics;
@@ -58,38 +64,57 @@ const SalesAnalyticsStats = () => {
     [salesStats]
   );
 
-  console.log('salesStats', salesStats);
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('this_month');
 
-  const periodOptions = [
-    { label: 'This Month', value: 'this_month' },
-    { label: 'Last Month', value: 'last_month' },
-    { label: 'This Year', value: 'this_year' },
-    { label: 'Custom Range', value: 'custom' },
-  ];
   return (
     <CardWithFilter
       title="Order Overview"
       description="An overview of your sales performance"
       rightSection={
-        <FilterDropdown
-          // label="Period"
-          options={periodOptions}
-          value={selectedPeriod}
-          onChange={setSelectedPeriod}
-        />
+        <div className="flex items-center gap-2 justify-end flex-wrap">
+          <Button onClick={reset}>Clear</Button>
+          {/* <Select
+            placeholder="Select store"
+            // mode="multiple"
+            allowClear
+            size="large"
+            className="rounded w-[200px]"
+            showSearch
+            value={selectedStore || undefined}
+            filterOption={(input, option) =>
+              (option?.label?.toString() ?? '')
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+            options={storeList?.map((store) => ({
+              value: store.id,
+              label: store.name,
+            }))}
+            onChange={(value) => {
+              setSelectedStore(value);
+              console.log(value, 'value');
+            }}
+          /> */}
+
+          <DatePickerComp onRangeChange={setCustomDateRange} value={customDateRange} />
+        </div>
       }
     >
       <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statsData.map((stat, index) => (
-          <StatsCard
-            key={index}
-            title={stat.title}
-            value={stat.value}
-            color={stat.color}
+        {stats.isLoading ? (
+        <>
+          {[1,2,3,4].map((_,i) => (<Skeleton.Node active key={i} style={{width: 160}}/>))}
+        </>
+        ) : (
+          statsData.map((stat, index) => (
+            <StatsCard
+              key={index}
+              title={stat.title}
+              value={stat.value}
+              color={stat.color}
             icon={stat.icon}
-          />
-        ))}
+            />
+          ))
+        )}
       </div>
     </CardWithFilter>
   );
