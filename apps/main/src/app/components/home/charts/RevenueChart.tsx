@@ -23,7 +23,7 @@ const RevenueChart = ({ data }: { data: any }) => {
     xField: 'month',
     yField: 'value',
     axis: {
-      y: { labelFormatter: (v) => `₦${v.toLocaleString()}`, title: 'Revenue' },
+      y: { labelFormatter: (v) => `₦${v?.toLocaleString()}`, title: 'Revenue' },
       x: { title: 'Month' },
     },
 
@@ -42,7 +42,7 @@ const RevenueChart = ({ data }: { data: any }) => {
         fill: 'l(90) 0:#003399 1:#00339900',
       },
     },
-    tooltip: { channel: 'y', valueFormatter: (v) => `₦${v.toLocaleString()}` },
+    tooltip: { channel: 'y', valueFormatter: (v) => `₦${v?.toLocaleString()}` },
   };
 
   return (

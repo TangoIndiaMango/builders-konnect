@@ -85,7 +85,7 @@ const Customer = ({
 }: CustomerProps) => {
   const customerRes = customerData?.data?.data;
   const cusData = customerRes
-    ? Object.entries(customerRes).map(([month, value]) => ({
+    ? Object.entries(customerRes)?.map(([month, value]) => ({
         month: monthAbbreviation(month),
         value: Number(value),
       }))
@@ -149,8 +149,7 @@ const Customer = ({
                 <Skeleton active />
               ) : (
                 recentCustomerData?.data?.data?.data
-                  ?.slice(0, 5)
-                  .map((customer) => (
+                  ?.slice(0, 5)?.map((customer) => (
                     <CustomerListItem
                       key={customer.id}
                       name={customer.name}

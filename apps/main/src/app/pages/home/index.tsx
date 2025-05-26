@@ -98,12 +98,6 @@ const DashboardHome = () => {
     reset();
   };
 
-  //User permissions
-  // const { setPermission } = usePermission();
-  // const userPermissions = useFetchData('merchants/access/user/permissions/all');
-  // const userPermissionsData = userPermissions?.data?.data as IUserPermissions[];
-  // console.log(userPermissionsData, 'userPermissions');
-
   const isLoading =
     statsData?.isLoading ||
     revenueData?.isLoading ||
