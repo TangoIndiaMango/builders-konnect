@@ -10,52 +10,23 @@ const RevenueChart = ({ data }: { data: any }) => {
   const newData = data?.map((item: any) => {
     return {
       ...item,
-      value: Number(item?.value?.replace(/[^\d.]/g, '')),
+      value: Number(item?.value?.replace(/[^\d.]/g, '')) || 0,
     };
   });
-
+  // console.log('newData', newData);
   const config: LineConfig = {
     data: newData,
     autoFit: true,
     height: 400,
 
     width: containerWidth,
-    padding: [40, 20, 40, 40],
     xField: 'month',
     yField: 'value',
-    smooth: true,
-    yAxis: {
-      label: {
-        formatter: (v) => {
-          // Format as Naira with commas
-          return `₦${v.toLocaleString()}`;
-        },
-        style: {
-          fontSize: 12,
-          fill: '#888',
-        },
-      },
-      title: {
-        text: 'Revenue',
-        style: {
-          fontWeight: 600,
-          fontSize: 14,
-          fill: '#222',
-        },
-      },
+    axis: {
+      y: { labelFormatter: (v) => `₦${v.toLocaleString()}`, title: 'Revenue' },
+      x: { title: 'Month' },
     },
-    xAxis: {
-      tickCount: 10,
-      type: 'linear',
-      title: {
-        text: 'Month',
-        style: {
-          fontWeight: 600,
-          fontSize: 14,
-          fill: '#222',
-        },
-      },
-    },
+
     color: '#303F9E',
     style: {
       lineWidth: 2,
@@ -71,6 +42,7 @@ const RevenueChart = ({ data }: { data: any }) => {
         fill: 'l(90) 0:#003399 1:#00339900',
       },
     },
+    tooltip: { channel: 'y', valueFormatter: (v) => `₦${v.toLocaleString()}` },
   };
 
   return (
@@ -82,11 +54,7 @@ const RevenueChart = ({ data }: { data: any }) => {
         overflow: 'hidden',
       }}
     >
-      {containerWidth > 0 && (
-        <Line
-          {...config}
-        />
-      )}
+      {containerWidth > 0 && <Line {...config} />}
     </div>
   );
 };

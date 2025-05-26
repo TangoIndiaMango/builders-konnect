@@ -68,7 +68,7 @@ const Login = () => {
       notification.error({
         message: 'Login Failed',
         description:
-          error?.response?.data?.message ||
+          error?.message ||
           'An error occurred during login. Please try again.',
       });
     }

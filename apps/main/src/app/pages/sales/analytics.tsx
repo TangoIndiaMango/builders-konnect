@@ -29,7 +29,7 @@ const SalesAnalytics = () => {
       <div className="p-5 space-y-5 ">
         <SalesAnalyticsStats />
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           <ReturnRate />
           <TopSellingProducts />
         </div>
